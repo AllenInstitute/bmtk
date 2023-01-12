@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>bmtk.simulator.core package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.core.sonata_reader package" href="bmtk.simulator.core.sonata_reader.html" />
@@ -623,78 +620,176 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-simulator-core-package">
-<h1>bmtk.simulator.core package<a class="headerlink" href="#bmtk-simulator-core-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+  <section id="bmtk-simulator-core-package">
+<h1>bmtk.simulator.core package<a class="headerlink" href="#bmtk-simulator-core-package" title="Permalink to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html">bmtk.simulator.core.sonata_reader package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.edge_adaptor">bmtk.simulator.core.sonata_reader.edge_adaptor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.network_reader">bmtk.simulator.core.sonata_reader.network_reader module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.node_adaptor">bmtk.simulator.core.sonata_reader.node_adaptor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.edge_adaptor">bmtk.simulator.core.sonata_reader.edge_adaptor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.batch_process"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.batch_process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.create_adaptor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.get_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.patch_adaptor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.preprocess_edge_types()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.delay"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.dynamics_params"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.dynamics_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.edge_type_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.edge_type_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.is_gap_junction"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.is_gap_junction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.model_template"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.model_template</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.nsyns"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.nsyns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.preselected_targets"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.preselected_targets</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.source_node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_population"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.source_population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.syn_weight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_distance"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_distance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_population"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_sections"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_sections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.weight_function"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.weight_function</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params"><code class="docutils literal notranslate"><span class="pre">group_dynamics_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns"><code class="docutils literal notranslate"><span class="pre">no_nsyns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns"><code class="docutils literal notranslate"><span class="pre">nsyns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function"><code class="docutils literal notranslate"><span class="pre">ret_none_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight"><code class="docutils literal notranslate"><span class="pre">syn_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function"><code class="docutils literal notranslate"><span class="pre">syn_weight_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params"><code class="docutils literal notranslate"><span class="pre">types_dynamics_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function"><code class="docutils literal notranslate"><span class="pre">weight_function()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.network_reader">bmtk.simulator.core.sonata_reader.network_reader module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges"><code class="docutils literal notranslate"><span class="pre">SonataEdges</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_edges"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_source"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_source()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_target"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_target()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.initialize"><code class="docutils literal notranslate"><span class="pre">SonataEdges.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load"><code class="docutils literal notranslate"><span class="pre">SonataEdges.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.name"><code class="docutils literal notranslate"><span class="pre">SonataEdges.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.source_nodes"><code class="docutils literal notranslate"><span class="pre">SonataEdges.source_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.target_nodes"><code class="docutils literal notranslate"><span class="pre">SonataEdges.target_nodes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.adaptor"><code class="docutils literal notranslate"><span class="pre">SonataNodes.adaptor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.filter"><code class="docutils literal notranslate"><span class="pre">SonataNodes.filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_node"><code class="docutils literal notranslate"><span class="pre">SonataNodes.get_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_nodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes.get_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize"><code class="docutils literal notranslate"><span class="pre">SonataNodes.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load"><code class="docutils literal notranslate"><span class="pre">SonataNodes.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes.n_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.name"><code class="docutils literal notranslate"><span class="pre">SonataNodes.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df"><code class="docutils literal notranslate"><span class="pre">SonataNodes.nodes_df()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.load_edges"><code class="docutils literal notranslate"><span class="pre">load_edges()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.load_nodes"><code class="docutils literal notranslate"><span class="pre">load_nodes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader.node_adaptor">bmtk.simulator.core.sonata_reader.node_adaptor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_DYNAMICS_PARAM"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_DYNAMICS_PARAM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_GID"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_GID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_PROCESSING"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_PROCESSING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TEMPLATE"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_TEMPLATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TYPE"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_TYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.batch_process"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.batch_process</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.create_adaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.create_adaptor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.get_node"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.get_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_processing"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_processing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_template"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_type"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.node_id"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.node_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.patch_adaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.patch_adaptor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.preprocess_node_types"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.preprocess_node_types()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.dynamics_params"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.dynamics_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.gid"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.gid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_processing"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_processing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_template"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_template</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_type"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.network"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population_name"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.population_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.empty_list"><code class="docutils literal notranslate"><span class="pre">empty_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.group_dynamics_params"><code class="docutils literal notranslate"><span class="pre">group_dynamics_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.none_function"><code class="docutils literal notranslate"><span class="pre">none_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params"><code class="docutils literal notranslate"><span class="pre">types_dynamics_params()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#module-bmtk.simulator.core.sonata_reader">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.simulator.core.edge_population">
-<span id="bmtk-simulator-core-edge-population-module"></span><h2>bmtk.simulator.core.edge_population module<a class="headerlink" href="#module-bmtk.simulator.core.edge_population" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.edge_population">
+<span id="bmtk-simulator-core-edge-population-module"></span><h2>bmtk.simulator.core.edge_population module<a class="headerlink" href="#module-bmtk.simulator.core.edge_population" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.edge_population.EdgePopulation">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.edge_population.</code><code class="sig-name descname">EdgePopulation</code><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#EdgePopulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.EdgePopulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.edge_population.</span></span><span class="sig-name descname"><span class="pre">EdgePopulation</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#EdgePopulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.edge_population.EdgePopulation.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#EdgePopulation.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.initialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.EdgePopulation.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#EdgePopulation.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.initialize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.edge_population.EdgePopulation.source_nodes">
-<em class="property">property </em><code class="sig-name descname">source_nodes</code><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.source_nodes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.EdgePopulation.source_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.source_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.edge_population.EdgePopulation.target_nodes">
-<em class="property">property </em><code class="sig-name descname">target_nodes</code><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.target_nodes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.EdgePopulation.target_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.edge_population.EdgePopulation.target_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.simulator.core.edge_population.SimEdge">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.edge_population.</code><code class="sig-name descname">SimEdge</code><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#SimEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.SimEdge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.edge_population.</span></span><span class="sig-name descname"><span class="pre">SimEdge</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/edge_population.html#SimEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.simulator.core.edge_population.SimEdge.gid">
-<em class="property">property </em><code class="sig-name descname">gid</code><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge.gid" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.SimEdge.gid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gid</span></span><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge.gid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.edge_population.SimEdge.node_id">
-<em class="property">property </em><code class="sig-name descname">node_id</code><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge.node_id" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.edge_population.SimEdge.node_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.edge_population.SimEdge.node_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.graph">
-<span id="bmtk-simulator-core-graph-module"></span><h2>bmtk.simulator.core.graph module<a class="headerlink" href="#module-bmtk.simulator.core.graph" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.graph">
+<span id="bmtk-simulator-core-graph-module"></span><h2>bmtk.simulator.core.graph module<a class="headerlink" href="#module-bmtk.simulator.core.graph" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.graph.SimGraph">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.graph.</code><code class="sig-name descname">SimGraph</code><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.graph.</span></span><span class="sig-name descname"><span class="pre">SimGraph</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.add_component">
-<code class="sig-name descname">add_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_component" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.add_component">
+<span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a component key-value pair</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – name of component</p></li>
 <li><p><strong>value</strong> – value</p></li>
@@ -704,10 +799,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.add_edges">
-<code class="sig-name descname">add_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_file</span></em>, <em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_pop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_pop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sonata_file</strong> – </p></li>
 <li><p><strong>populations</strong> – </p></li>
@@ -715,18 +810,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><p><strong>target_pop</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.add_nodes">
-<code class="sig-name descname">add_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_file</span></em>, <em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add nodes from a network to the graph.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sonata_file</strong> – A NodesFormat type object containing list of nodes.</p></li>
 <li><p><strong>populations</strong> – name/identifier of network. If none will attempt to retrieve from nodes object</p></li>
@@ -736,89 +831,89 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.build_nodes">
-<code class="sig-name descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_nodes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.build_nodes">
+<span class="sig-name descname"><span class="pre">build_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.build_recurrent_edges">
-<code class="sig-name descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.build_recurrent_edges">
+<span class="sig-name descname"><span class="pre">build_recurrent_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_recurrent_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.external_edge_populations">
-<code class="sig-name descname">external_edge_populations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_pop</span></em>, <em class="sig-param"><span class="n">trg_pop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.external_edge_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.external_edge_populations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.external_edge_populations">
+<span class="sig-name descname"><span class="pre">external_edge_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_pop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_pop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.external_edge_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.external_edge_populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.from_config">
-<em class="property">classmethod </em><code class="sig-name descname">from_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conf</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.from_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a graph structure from a json config file or dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>conf</strong> – name of json config file, or a dictionary with config parameters</p></li>
 <li><p><strong>properties</strong> – optional properties.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A graph object of type cls</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.get_component">
-<code class="sig-name descname">get_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_component" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.get_component">
+<span class="sig-name descname"><span class="pre">get_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_component" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of item in the components dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> – name of component</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>value assigned to component</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.get_node_population">
-<code class="sig-name descname">get_node_population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">population_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_population" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.get_node_population">
+<span class="sig-name descname"><span class="pre">get_node_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_population" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.get_node_populations">
-<code class="sig-name descname">get_node_populations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_populations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.get_node_populations">
+<span class="sig-name descname"><span class="pre">get_node_populations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.get_node_set">
-<code class="sig-name descname">get_node_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_set</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_set" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.get_node_set">
+<span class="sig-name descname"><span class="pre">get_node_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_set</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_set" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.io">
-<em class="property">property </em><code class="sig-name descname">io</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.io" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.io">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">io</span></span><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.io" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="bmtk.simulator.core.graph.SimGraph.model_type_col">
-<code class="sig-name descname">model_type_col</code><em class="property"> = 'model_type'</em><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.model_type_col" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.model_type_col">
+<span class="sig-name descname"><span class="pre">model_type_col</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_type'</span></em><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.model_type_col" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.graph.SimGraph.node_populations">
-<em class="property">property </em><code class="sig-name descname">node_populations</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.node_populations" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.graph.SimGraph.node_populations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_populations</span></span><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.node_populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.io_tools">
-<span id="bmtk-simulator-core-io-tools-module"></span><h2>bmtk.simulator.core.io_tools module<a class="headerlink" href="#module-bmtk.simulator.core.io_tools" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.io_tools">
+<span id="bmtk-simulator-core-io-tools-module"></span><h2>bmtk.simulator.core.io_tools module<a class="headerlink" href="#module-bmtk.simulator.core.io_tools" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.io_tools.IOUtils">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.io_tools.</code><code class="sig-name descname">IOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.io_tools.</span></span><span class="sig-name descname"><span class="pre">IOUtils</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>For logging/mkdir commands we sometimes need to use different MPI classes depending on the simulator being used
 (NEST and NEURON have their own barrier functions that don’t work well with mpi). We also need to be able to
@@ -826,302 +921,302 @@ adjust the logging levels/format at run-time depending on the simulator/configur
 <p>Thus the bulk of the io and logging functions are put into their own class and can be overwritten by specific
 simulator modules</p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.barrier">
-<code class="sig-name descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.barrier" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.barrier">
+<span class="sig-name descname"><span class="pre">barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.barrier" title="Permalink to this definition">¶</a></dt>
 <dd><p>MPI Barrier call</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.log_error">
-<code class="sig-name descname">log_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_error" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.log_error">
+<span class="sig-name descname"><span class="pre">log_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_error" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.log_exception">
-<code class="sig-name descname">log_exception</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">raise_exception</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_exception"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_exception" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.log_exception">
+<span class="sig-name descname"><span class="pre">log_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_exception" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.log_info">
-<code class="sig-name descname">log_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">all_ranks</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_info" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.log_info">
+<span class="sig-name descname"><span class="pre">log_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_ranks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.log_to_console">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_to_console</span></span><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_to_console" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.log_to_console">
-<em class="property">property </em><code class="sig-name descname">log_to_console</code><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_to_console" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.log_warning">
+<span class="sig-name descname"><span class="pre">log_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_ranks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_once</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.logger">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logger</span></span><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.logger" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.log_warning">
-<code class="sig-name descname">log_warning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">all_ranks</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">display_once</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.log_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.log_warning" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.logger">
-<em class="property">property </em><code class="sig-name descname">logger</code><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.logger" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.quiet_simulator">
-<code class="sig-name descname">quiet_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.quiet_simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.quiet_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.quiet_simulator">
+<span class="sig-name descname"><span class="pre">quiet_simulator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.quiet_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.quiet_simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turns off logging/messages of the native simulator</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.set_log_format">
-<code class="sig-name descname">set_log_format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">format_str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.set_log_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.set_log_format" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.set_log_format">
+<span class="sig-name descname"><span class="pre">set_log_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.set_log_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.set_log_format" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.set_log_level">
-<code class="sig-name descname">set_log_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loglevel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.set_log_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.set_log_level" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.set_log_level">
+<span class="sig-name descname"><span class="pre">set_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loglevel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.set_log_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.set_log_level" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.io_tools.IOUtils.setup_output_dir">
-<code class="sig-name descname">setup_output_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_dir</span></em>, <em class="sig-param"><span class="n">log_file</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.setup_output_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.setup_output_dir" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.io_tools.IOUtils.setup_output_dir">
+<span class="sig-name descname"><span class="pre">setup_output_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/io_tools.html#IOUtils.setup_output_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.io_tools.IOUtils.setup_output_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.network_reader">
-<span id="bmtk-simulator-core-network-reader-module"></span><h2>bmtk.simulator.core.network_reader module<a class="headerlink" href="#module-bmtk.simulator.core.network_reader" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.network_reader">
+<span id="bmtk-simulator-core-network-reader-module"></span><h2>bmtk.simulator.core.network_reader module<a class="headerlink" href="#module-bmtk.simulator.core.network_reader" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.network_reader.</code><code class="sig-name descname">EdgesReader</code><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.network_reader.</span></span><span class="sig-name descname"><span class="pre">EdgesReader</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.initialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.initialize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.mixed">
-<code class="sig-name descname">mixed</code><em class="property"> = 2</em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.mixed" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.mixed">
+<span class="sig-name descname"><span class="pre">mixed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.mixed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.mixed_connections">
-<em class="property">property </em><code class="sig-name descname">mixed_connections</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.mixed_connections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.recurrent">
-<code class="sig-name descname">recurrent</code><em class="property"> = 0</em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.recurrent" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.recurrent_connections">
-<em class="property">property </em><code class="sig-name descname">recurrent_connections</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.recurrent_connections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.set_connection_type">
-<code class="sig-name descname">set_connection_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_pop</span></em>, <em class="sig-param"><span class="n">trg_pop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader.set_connection_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.set_connection_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.source_nodes">
-<em class="property">property </em><code class="sig-name descname">source_nodes</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.source_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.target_nodes">
-<em class="property">property </em><code class="sig-name descname">target_nodes</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.target_nodes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.mixed_connections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mixed_connections</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.mixed_connections" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.unknown">
-<code class="sig-name descname">unknown</code><em class="property"> = 0</em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.unknown" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.recurrent">
+<span class="sig-name descname"><span class="pre">recurrent</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.recurrent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.recurrent_connections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recurrent_connections</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.recurrent_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.set_connection_type">
+<span class="sig-name descname"><span class="pre">set_connection_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_pop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_pop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#EdgesReader.set_connection_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.set_connection_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.source_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.source_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.target_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.target_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.virtual">
-<code class="sig-name descname">virtual</code><em class="property"> = 1</em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.virtual" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.unknown">
+<span class="sig-name descname"><span class="pre">unknown</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.unknown" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.EdgesReader.virtual_connections">
-<em class="property">property </em><code class="sig-name descname">virtual_connections</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.virtual_connections" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.virtual">
+<span class="sig-name descname"><span class="pre">virtual</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.virtual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.EdgesReader.virtual_connections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">virtual_connections</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.EdgesReader.virtual_connections" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.simulator.core.network_reader.NodesReader">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.network_reader.</code><code class="sig-name descname">NodesReader</code><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.network_reader.</span></span><span class="sig-name descname"><span class="pre">NodesReader</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.initialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.internal_nodes_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">internal_nodes_only</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.internal_nodes_only" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.internal_nodes_only">
-<em class="property">property </em><code class="sig-name descname">internal_nodes_only</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.internal_nodes_only" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.load">
-<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/network_reader.html#NodesReader.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.load" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.mixed_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mixed_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.mixed_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.mixed_nodes">
-<em class="property">property </em><code class="sig-name descname">mixed_nodes</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.mixed_nodes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.name">
-<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.network_reader.NodesReader.virtual_nodes_only">
-<em class="property">property </em><code class="sig-name descname">virtual_nodes_only</code><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.virtual_nodes_only" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.network_reader.NodesReader.virtual_nodes_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">virtual_nodes_only</span></span><a class="headerlink" href="#bmtk.simulator.core.network_reader.NodesReader.virtual_nodes_only" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.node_population">
-<span id="bmtk-simulator-core-node-population-module"></span><h2>bmtk.simulator.core.node_population module<a class="headerlink" href="#module-bmtk.simulator.core.node_population" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.node_population">
+<span id="bmtk-simulator-core-node-population-module"></span><h2>bmtk.simulator.core.node_population module<a class="headerlink" href="#module-bmtk.simulator.core.node_population" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.node_population.NodePopulation">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.node_population.</code><code class="sig-name descname">NodePopulation</code><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.node_population.</span></span><span class="sig-name descname"><span class="pre">NodePopulation</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.initialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.internal_nodes_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">internal_nodes_only</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.internal_nodes_only" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.internal_nodes_only">
-<em class="property">property </em><code class="sig-name descname">internal_nodes_only</code><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.internal_nodes_only" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.load">
-<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#NodePopulation.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.load" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.mixed_nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mixed_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.mixed_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.mixed_nodes">
-<em class="property">property </em><code class="sig-name descname">mixed_nodes</code><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.mixed_nodes" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.name">
-<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_population.NodePopulation.virtual_nodes_only">
-<em class="property">property </em><code class="sig-name descname">virtual_nodes_only</code><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.virtual_nodes_only" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.NodePopulation.virtual_nodes_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">virtual_nodes_only</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.NodePopulation.virtual_nodes_only" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.simulator.core.node_population.SimNode">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.node_population.</code><code class="sig-name descname">SimNode</code><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#SimNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.SimNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.node_population.</span></span><span class="sig-name descname"><span class="pre">SimNode</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_population.html#SimNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.SimNode.gid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gid</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode.gid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_population.SimNode.node_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode.node_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bmtk.simulator.core.node_sets">
+<span id="bmtk-simulator-core-node-sets-module"></span><h2>bmtk.simulator.core.node_sets module<a class="headerlink" href="#module-bmtk.simulator.core.node_sets" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.node_sets.</span></span><span class="sig-name descname"><span class="pre">NodeSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_population.SimNode.gid">
-<em class="property">property </em><code class="sig-name descname">gid</code><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode.gid" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSet.gids">
+<span class="sig-name descname"><span class="pre">gids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.gids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_population.SimNode.node_id">
-<em class="property">property </em><code class="sig-name descname">node_id</code><a class="headerlink" href="#bmtk.simulator.core.node_population.SimNode.node_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-bmtk.simulator.core.node_sets">
-<span id="bmtk-simulator-core-node-sets-module"></span><h2>bmtk.simulator.core.node_sets module<a class="headerlink" href="#module-bmtk.simulator.core.node_sets" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.simulator.core.node_sets.NodeSet">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.node_sets.</code><code class="sig-name descname">NodeSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter_params</span></em>, <em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_sets.NodeSet.gids">
-<code class="sig-name descname">gids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.gids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSet.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_sets.NodeSet.nodes">
-<code class="sig-name descname">nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.nodes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSet.population_names">
+<span class="sig-name descname"><span class="pre">population_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.population_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.population_names" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.node_sets.NodeSet.population_names">
-<code class="sig-name descname">population_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.population_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.population_names" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.node_sets.NodeSet.populations">
-<code class="sig-name descname">populations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.populations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSet.populations">
+<span class="sig-name descname"><span class="pre">populations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSet.populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSet.populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.simulator.core.node_sets.NodeSetAll">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.node_sets.</code><code class="sig-name descname">NodeSetAll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSetAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSetAll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.core.node_sets.NodeSet" title="bmtk.simulator.core.node_sets.NodeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.node_sets.NodeSet</span></code></a></p>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.NodeSetAll">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.node_sets.</span></span><span class="sig-name descname"><span class="pre">NodeSetAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#NodeSetAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.NodeSetAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.core.node_sets.NodeSet" title="bmtk.simulator.core.node_sets.NodeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">NodeSet</span></code></a></p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.node_sets.to_list">
-<code class="sig-prename descclassname">bmtk.simulator.core.node_sets.</code><code class="sig-name descname">to_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.to_list" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.node_sets.to_list">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.node_sets.</span></span><span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/node_sets.html#to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.node_sets.to_list" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.pyfunction_cache">
-<span id="bmtk-simulator-core-pyfunction-cache-module"></span><h2>bmtk.simulator.core.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.core.pyfunction_cache" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.pyfunction_cache">
+<span id="bmtk-simulator-core-pyfunction-cache-module"></span><h2>bmtk.simulator.core.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.core.pyfunction_cache" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.add_cell_model">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">add_cell_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">directive</span></em>, <em class="sig-param"><span class="n">model_type</span><span class="o">=</span><span class="default_value">'*'</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_cell_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.add_cell_processor">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">add_cell_processor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_cell_processor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_cell_processor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.add_cell_model">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">add_cell_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_cell_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_cell_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.add_synapse_model">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">add_synapse_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_synapse_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.add_cell_processor">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">add_cell_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_cell_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_cell_processor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.add_weight_function">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">add_weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_weight_function" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.add_synapse_model">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">add_synapse_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_synapse_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_synapse_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.cell_model">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">cell_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.cell_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.add_weight_function">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">add_weight_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#add_weight_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.add_weight_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.cell_model">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">cell_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">wargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">wkwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#cell_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.cell_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering NEURON cell loader functions.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.load_py_modules">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">load_py_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_models</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">syn_models</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">syn_weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cell_processors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#load_py_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.load_py_modules" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.load_py_modules">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">load_py_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell_models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_processors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#load_py_modules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.load_py_modules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.synapse_model">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">synapse_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.synapse_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.synapse_model">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">synapse_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">wargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">wkwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#synapse_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.synapse_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering NEURON synapse loader functions.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.pyfunction_cache.synaptic_weight">
-<code class="sig-prename descclassname">bmtk.simulator.core.pyfunction_cache.</code><code class="sig-name descname">synaptic_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#synaptic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.synaptic_weight" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.pyfunction_cache.synaptic_weight">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">synaptic_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">wargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">wkwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/pyfunction_cache.html#synaptic_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.pyfunction_cache.synaptic_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering a function as a synaptic weight function.
 To use either:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@synaptic_weight</span>
@@ -1139,61 +1234,61 @@ To use either:</p>
 will when assigning synaptic/gap junction weights for edges with matching “weight_function” attribute</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.simulation_config">
-<span id="bmtk-simulator-core-simulation-config-module"></span><h2>bmtk.simulator.core.simulation_config module<a class="headerlink" href="#module-bmtk.simulator.core.simulation_config" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.simulation_config">
+<span id="bmtk-simulator-core-simulation-config-module"></span><h2>bmtk.simulator.core.simulation_config module<a class="headerlink" href="#module-bmtk.simulator.core.simulation_config" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.simulation_config.</code><code class="sig-name descname">SimulationConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.sonata.config.html#bmtk.utils.sonata.config.sonata_config.SonataConfig" title="bmtk.utils.sonata.config.sonata_config.SonataConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sonata.config.sonata_config.SonataConfig</span></code></a></p>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulation_config.</span></span><span class="sig-name descname"><span class="pre">SimulationConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.sonata.config.html#bmtk.utils.sonata.config.sonata_config.SonataConfig" title="bmtk.utils.sonata.config.sonata_config.SonataConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SonataConfig</span></code></a></p>
 <p>A special version of SonataConfig that contains some methods that can be used by the simulators. Mainly
 it contains the build_env() method which can be called to setup logging plus initialize the ‘output_dir’ folder.</p>
 <p>Functionality that is specific to SONATA should go in SonataConfig</p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig.build_env">
-<code class="sig-name descname">build_env</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.build_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.build_env" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig.build_env">
+<span class="sig-name descname"><span class="pre">build_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.build_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.build_env" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the folder(s) set in ‘output’ section, sets up logging and copies over the configuration</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig.copy_to_output">
-<code class="sig-name descname">copy_to_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.copy_to_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.copy_to_output" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig.copy_to_output">
+<span class="sig-name descname"><span class="pre">copy_to_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.copy_to_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.copy_to_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig.io">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">io</span></span><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.io" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig.io">
-<em class="property">property </em><code class="sig-name descname">io</code><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.io" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.validate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#SimulationConfig.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.validate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config.SimulationConfig.validator">
-<em class="property">property </em><code class="sig-name descname">validator</code><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.validator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.SimulationConfig.validator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validator</span></span><a class="headerlink" href="#bmtk.simulator.core.simulation_config.SimulationConfig.validator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.simulation_config.from_dict">
-<code class="sig-prename descclassname">bmtk.simulator.core.simulation_config.</code><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_dict</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.from_dict" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.from_dict">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulation_config.</span></span><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.from_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.simulator.core.simulation_config.from_json">
-<code class="sig-prename descclassname">bmtk.simulator.core.simulation_config.</code><code class="sig-name descname">from_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.from_json" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config.from_json">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulation_config.</span></span><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config.html#from_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config.from_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.simulation_config_validator">
-<span id="bmtk-simulator-core-simulation-config-validator-module"></span><h2>bmtk.simulator.core.simulation_config_validator module<a class="headerlink" href="#module-bmtk.simulator.core.simulation_config_validator" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.simulation_config_validator">
+<span id="bmtk-simulator-core-simulation-config-validator-module"></span><h2>bmtk.simulator.core.simulation_config_validator module<a class="headerlink" href="#module-bmtk.simulator.core.simulation_config_validator" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.simulation_config_validator.</code><code class="sig-name descname">SimulationConfigValidator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">schema</span></em>, <em class="sig-param"><span class="n">resolver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_formats</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config_validator.html#SimulationConfigValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">jsonschema.validators.create.&lt;locals&gt;.Validator</span></code></p>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulation_config_validator.</span></span><span class="sig-name descname"><span class="pre">SimulationConfigValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_formats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config_validator.html#SimulationConfigValidator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Draft4Validator</span></code></p>
 <p>A JSON Schema validator class that will store a schema (passed into the constructor) and validate a json file.
 It has all the functionality of the JSONSchema format, plus includes special types and parameters like making
 sure a value is a file or directory type, checking csv files, etc.</p>
@@ -1203,187 +1298,187 @@ validator.validate(file.json)</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator.is_type">
-<code class="sig-name descname">is_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance</span></em>, <em class="sig-param"><span class="n">dtype</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config_validator.html#SimulationConfigValidator.is_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator.is_type" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator.is_type">
+<span class="sig-name descname"><span class="pre">is_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulation_config_validator.html#SimulationConfigValidator.is_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulation_config_validator.SimulationConfigValidator.is_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.simulator">
-<span id="bmtk-simulator-core-simulator-module"></span><h2>bmtk.simulator.core.simulator module<a class="headerlink" href="#module-bmtk.simulator.core.simulator" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.simulator">
+<span id="bmtk-simulator-core-simulator-module"></span><h2>bmtk.simulator.core.simulator module<a class="headerlink" href="#module-bmtk.simulator.core.simulator" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.simulator.Simulator">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.simulator.</code><code class="sig-name descname">Simulator</code><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator.Simulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulator.</span></span><span class="sig-name descname"><span class="pre">Simulator</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator.Simulator.add_mod">
-<code class="sig-name descname">add_mod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">module</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator.add_mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator.add_mod" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator.Simulator.add_mod">
+<span class="sig-name descname"><span class="pre">add_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator.add_mod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator.add_mod" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator.Simulator.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator.run" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator.Simulator.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator.html#Simulator.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator.Simulator.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core.simulator_network">
-<span id="bmtk-simulator-core-simulator-network-module"></span><h2>bmtk.simulator.core.simulator_network module<a class="headerlink" href="#module-bmtk.simulator.core.simulator_network" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.simulator.core.simulator_network">
+<span id="bmtk-simulator-core-simulator-network-module"></span><h2>bmtk.simulator.core.simulator_network module<a class="headerlink" href="#module-bmtk.simulator.core.simulator_network" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.simulator_network.</code><code class="sig-name descname">SimNetwork</code><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.simulator_network.</span></span><span class="sig-name descname"><span class="pre">SimNetwork</span></span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.add_component">
-<code class="sig-name descname">add_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_component" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.add_component">
+<span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_component" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.add_edges">
-<code class="sig-name descname">add_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.add_edges">
+<span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.add_node_set">
-<code class="sig-name descname">add_node_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_set</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_node_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_node_set" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.add_node_set">
+<span class="sig-name descname"><span class="pre">add_node_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_set</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_node_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_node_set" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.add_nodes">
-<code class="sig-name descname">add_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.add_nodes">
+<span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.build_nodes">
-<code class="sig-name descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_nodes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.build_nodes">
+<span class="sig-name descname"><span class="pre">build_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">
-<code class="sig-name descname">build_recurrent_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">
+<span class="sig-name descname"><span class="pre">build_recurrent_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">opts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_recurrent_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections">
-<code class="sig-name descname">build_virtual_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_virtual_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections">
+<span class="sig-name descname"><span class="pre">build_virtual_connections</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.build_virtual_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.from_builder">
-<em class="property">classmethod </em><code class="sig-name descname">from_builder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_builder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_builder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.from_builder">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_builder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_builder" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.from_config">
-<em class="property">classmethod </em><code class="sig-name descname">from_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conf</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.from_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a graph structure from a json config file or dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>conf</strong> – name of json config file, or a dictionary with config parameters</p></li>
 <li><p><strong>properties</strong> – optional properties.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A graph object of type cls</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.from_manifest">
-<em class="property">classmethod </em><code class="sig-name descname">from_manifest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">manifest_json</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_manifest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_manifest" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.from_manifest">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest_json</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.from_manifest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.from_manifest" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_component">
-<code class="sig-name descname">get_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_component" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_component">
+<span class="sig-name descname"><span class="pre">get_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_component" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_edge_adaptor">
-<code class="sig-name descname">get_edge_adaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_edge_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_edge_adaptor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_edge_adaptor">
+<span class="sig-name descname"><span class="pre">get_edge_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_edge_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_edge_adaptor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_adaptor">
-<code class="sig-name descname">get_node_adaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_adaptor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_adaptor">
+<span class="sig-name descname"><span class="pre">get_node_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_adaptor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_groups">
-<code class="sig-name descname">get_node_groups</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_groups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_groups" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_groups">
+<span class="sig-name descname"><span class="pre">get_node_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_groups" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_population">
-<code class="sig-name descname">get_node_population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_population" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_population">
+<span class="sig-name descname"><span class="pre">get_node_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_population" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_populations">
-<code class="sig-name descname">get_node_populations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_populations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_populations">
+<span class="sig-name descname"><span class="pre">get_node_populations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_set">
-<code class="sig-name descname">get_node_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_set</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_set" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_set">
+<span class="sig-name descname"><span class="pre">get_node_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_set</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_set" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_sets">
-<code class="sig-name descname">get_node_sets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groupby</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">filterby</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_sets" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.get_node_sets">
+<span class="sig-name descname"><span class="pre">get_node_sets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupby</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">filterby</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.get_node_sets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.get_node_sets" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.has_component">
-<code class="sig-name descname">has_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.has_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.has_component" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.has_component">
+<span class="sig-name descname"><span class="pre">has_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.has_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.has_component" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.io">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">io</span></span><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.io" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.io">
-<em class="property">property </em><code class="sig-name descname">io</code><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.io" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.load_gap_junc_files">
+<span class="sig-name descname"><span class="pre">load_gap_junc_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gj_dic</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.load_gap_junc_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.load_gap_junc_files" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.node_populations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_populations</span></span><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.node_populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.load_gap_junc_files">
-<code class="sig-name descname">load_gap_junc_files</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gj_dic</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.load_gap_junc_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.load_gap_junc_files" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.node_properties">
+<span class="sig-name descname"><span class="pre">node_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.node_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.node_properties" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.node_populations">
-<em class="property">property </em><code class="sig-name descname">node_populations</code><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.node_populations" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.py_function_caches">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">py_function_caches</span></span><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.py_function_caches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.node_properties">
-<code class="sig-name descname">node_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/simulator_network.html#SimNetwork.node_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.node_properties" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.py_function_caches">
-<em class="property">property </em><code class="sig-name descname">py_function_caches</code><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.py_function_caches" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.simulator.core.simulator_network.SimNetwork.recurrent_edges">
-<em class="property">property </em><code class="sig-name descname">recurrent_edges</code><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.core.simulator_network.SimNetwork.recurrent_edges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recurrent_edges</span></span><a class="headerlink" href="#bmtk.simulator.core.simulator_network.SimNetwork.recurrent_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.simulator.core">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.core" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+<section id="module-bmtk.simulator.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.core" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1419,6 +1514,7 @@ validator.validate(file.json)</p>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
@@ -1441,12 +1537,12 @@ validator.validate(file.json)</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

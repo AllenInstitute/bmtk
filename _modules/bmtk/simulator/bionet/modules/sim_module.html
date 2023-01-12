@@ -1,21 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.modules.sim_module &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/language_data.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -645,7 +641,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <div class="viewcode-block" id="SimulatorMod"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.sim_module.SimulatorMod">[docs]</a><span class="k">class</span> <span class="nc">SimulatorMod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for writing custom bionet functions that will be called during the simulation. To use overwrite one or</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for writing custom bionet functions that will be called during the simulation. To use overwrite one or</span>
 <span class="sd">    more of the following methods in a subclass, and bionet will call the function at the appropiate time.</span>
 
 <span class="sd">    To call during a simulation:</span>
@@ -658,7 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SimulatorMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.sim_module.SimulatorMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Will be called once at the beginning of the simulation run, after the network and simulation parameters have</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Will be called once at the beginning of the simulation run, after the network and simulation parameters have</span>
 <span class="sd">        all been finalized.</span>
 
 <span class="sd">        :param sim: Simulation object</span>
@@ -666,7 +662,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SimulatorMod.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.sim_module.SimulatorMod.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Called on every single time step (dt).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on every single time step (dt).</span>
 
 <span class="sd">        The step method is used for anything that should be recorded or changed continously. dt is determined during</span>
 <span class="sd">        the setup, and the sim parameter can be used to access simulation, network and individual cell properties</span>
@@ -677,7 +673,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SimulatorMod.block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.sim_module.SimulatorMod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This method is called once after every block of time, as specified by the configuration.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is called once after every block of time, as specified by the configuration.</span>
 
 <span class="sd">        Unlike the step method which is called during every time-step, the block method will typically be called only a</span>
 <span class="sd">        few times over the entire simulation. The block method is preferable for accessing and saving to the disk,</span>
@@ -689,7 +685,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SimulatorMod.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.sim_module.SimulatorMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Call once at the very end of the simulation.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call once at the very end of the simulation.</span>
 
 <span class="sd">        :param sim: Simulation object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -729,6 +725,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>
@@ -751,12 +748,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

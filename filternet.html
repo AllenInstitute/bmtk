@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>FilterNet &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Analyzing the Results" href="analyzer.html" />
@@ -623,19 +620,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="filternet">
-<h1>FilterNet<a class="headerlink" href="#filternet" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-default">
+  <section id="filternet">
+<h1>FilterNet<a class="headerlink" href="#filternet" title="Permalink to this heading">¶</a></h1>
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_filternet_highlight.jpg"><img alt="_images/bmtk_architecture_filternet_highlight.jpg" src="_images/bmtk_architecture_filternet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
+</figure>
 <p>FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
 uses neural filters to simulate firing rates and spike trains over a given time course and stimuli. It is based on a
 <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson cascade model</a>
 with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
 optimized to closely mimic mammalian thalamic cells:</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/lnp_model.jpg"><img alt="_images/lnp_model.jpg" src="_images/lnp_model.jpg" style="width: 768.6px; height: 204.6px;" /></a>
-</div>
+</figure>
 <p>FilterNet is very useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
 PointNet, or PopNet. The procedure is as follows:</p>
 <ol class="arabic simple">
@@ -644,20 +641,20 @@ PointNet, or PopNet. The procedure is as follows:</p>
 <li><p>Connect the receptive field network created in step #1 to some higher-level cortical circuit.</p></li>
 <li><p>Use the spike trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.</p></li>
 </ol>
-<div class="section" id="inputs">
-<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h2>
 <p>Currently, FilterNet allows for a number of different types of custom and pre-aligned types of stimuli. To change the
 type of stimuli requires updating the inputs section in the simulation_config.json file like above.</p>
-<div class="section" id="movie">
-<h3>Movie<a class="headerlink" href="#movie" title="Permalink to this headline">¶</a></h3>
+<section id="movie">
+<h3>Movie<a class="headerlink" href="#movie" title="Permalink to this heading">¶</a></h3>
 <p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a npy file.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;movie_input&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;data_file&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span> <span class="mf">30.0</span>
-   <span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;movie_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span>
+<span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -665,23 +662,23 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li><p>movie: Link to a 3-dimensional (x, y, time) matrix representing a movie</p></li>
 <li><p>frame_rate: frames per second</p></li>
 </ul>
-</div>
-<div class="section" id="grating">
-<h3>Grating<a class="headerlink" href="#grating" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="grating">
+<h3>Grating<a class="headerlink" href="#grating" title="Permalink to this heading">¶</a></h3>
 <p>Plays a drifting grating across the screen</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;gratings_input&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;graiting&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
-      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
-      <span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-      <span class="nt">&quot;cpd&quot;</span><span class="p">:</span> <span class="mf">0.04</span><span class="p">,</span>
-      <span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
-      <span class="nt">&quot;contrast&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
-      <span class="nt">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span>
-      <span class="nt">&quot;phase&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
-   <span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;gratings_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;graiting&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cpd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.04</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;contrast&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;theta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -694,20 +691,20 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li><p>phase: temporal phase, in degrees (default: 0.0)</p></li>
 <li><p>contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)</p></li>
 </ul>
-</div>
-<div class="section" id="full-field-flash">
-<h3>Full Field Flash<a class="headerlink" href="#full-field-flash" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="full-field-flash">
+<h3>Full Field Flash<a class="headerlink" href="#full-field-flash" title="Permalink to this heading">¶</a></h3>
 <p>Creates a bright (or dark) flash on a gray screen for a limited number of seconds</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
-      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
-      <span class="nt">&quot;t_on&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
-      <span class="nt">&quot;t_off&quot;</span><span class="p">:</span> <span class="mf">2000.0</span><span class="p">,</span>
-      <span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span> <span class="mf">20.0</span>
-   <span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
+<span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -717,20 +714,20 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li><p>t_off: length (ms) of flash</p></li>
 <li><p>max_intensity: intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to a gray screen.</p></li>
 </ul>
-</div>
-<div class="section" id="looming">
-<h3>Looming<a class="headerlink" href="#looming" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="looming">
+<h3>Looming<a class="headerlink" href="#looming" title="Permalink to this heading">¶</a></h3>
 <p>Creates a spreading black field originating from the center.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;looming_input&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;looming&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
-      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
-      <span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
-      <span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-      <span class="nt">&quot;t_looming&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
-   <span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;looming_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;looming&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_looming&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -740,9 +737,9 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li><p>gray_screen_dur: duration of the initial grey screen (seconds)</p></li>
 <li><p>t_looming: time of the looming movie (seconds).</p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -778,6 +775,7 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
@@ -800,12 +798,12 @@ type of stimuli requires updating the inputs section in the simulation_config.js
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,21 +1,20 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>Tools for generating cell placements &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Synaptic plasticity in Pointnet (STP, facilitation, depression, STDP, and others)" href="tutorial_dynamic_synapses.html" />
@@ -628,21 +627,35 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container,
-div.nbinput.container div.prompt,
-div.nbinput.container div.input_area,
-div.nbinput.container div[class*=highlight],
-div.nbinput.container div[class*=highlight] pre,
-div.nboutput.container,
-div.nboutput.container div.prompt,
-div.nboutput.container div.output_area,
-div.nboutput.container div[class*=highlight],
-div.nboutput.container div[class*=highlight] pre {
-    background: none;
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
     border: none;
-    padding: 0 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -719,10 +732,11 @@ div.nboutput.container div.prompt > div {
     }
 }
 
-/* disable scrollbars on prompts */
+/* disable scrollbars and line breaks on prompts */
 div.nbinput.container div.prompt pre,
 div.nboutput.container div.prompt pre {
     overflow: hidden;
+    white-space: pre;
 }
 
 /* input/output area */
@@ -743,7 +757,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f5f5f5;
+    /*background: #f5f5f5;*/
 }
 
 /* override MathJax center alignment in output cells */
@@ -809,6 +823,7 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
+    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -818,11 +833,12 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -831,10 +847,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -846,28 +866,30 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Tools-for-generating-cell-placements">
-<h1>Tools for generating cell placements<a class="headerlink" href="#Tools-for-generating-cell-placements" title="Permalink to this headline">¶</a></h1>
+<section id="Tools-for-generating-cell-placements">
+<h1>Tools for generating cell placements<a class="headerlink" href="#Tools-for-generating-cell-placements" title="Permalink to this heading">¶</a></h1>
 <p>Although users are always welcomed to place their neuronal somata according to their own custom generated positions, BMTK provides several tools to facilitate this placement, including simple geometries and placement based on geometries or densities from *.nrrd files. Units can be placed with a minimum distance between them (please see second part of this tutorial).</p>
-<div class="section" id="Generate-a-cylindrical-column-of-cell-positions">
-<h2>Generate a cylindrical column of cell positions<a class="headerlink" href="#Generate-a-cylindrical-column-of-cell-positions" title="Permalink to this headline">¶</a></h2>
+<section id="Generate-a-cylindrical-column-of-cell-positions">
+<h2>Generate a cylindrical column of cell positions<a class="headerlink" href="#Generate-a-cylindrical-column-of-cell-positions" title="Permalink to this heading">¶</a></h2>
 <p>This function places random locations uniformly within a cylinder or cylindrical ring. Note that ‘y’ is the vertical axis.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columnar</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columnar</span>
 
 <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_columnar</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">300.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
                         <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -886,8 +908,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">positions</span> <span class="o">=</span> <span class="n">positions_columnar</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">300.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">positions</span> <span class="o">=</span> <span class="n">positions_columnar</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">300.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
                         <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -899,16 +920,15 @@ div.rendered_html tbody tr:hover {
 <img alt="_images/tutorial_cell_placement_4_0.png" src="_images/tutorial_cell_placement_4_0.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Generate-a-rectangular-prism-volume-of-cell-positions">
-<h2>Generate a rectangular prism volume of cell positions<a class="headerlink" href="#Generate-a-rectangular-prism-volume-of-cell-positions" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="Generate-a-rectangular-prism-volume-of-cell-positions">
+<h2>Generate a rectangular prism volume of cell positions<a class="headerlink" href="#Generate-a-rectangular-prism-volume-of-cell-positions" title="Permalink to this heading">¶</a></h2>
 <p>Alternatively, if a sheet of cells (with some thickness) or other such geometry is desired, the following function can be used.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_rect_prism</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_rect_prism</span>
 
 <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_rect_prism</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">x_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">z_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -921,16 +941,15 @@ div.rendered_html tbody tr:hover {
 <img alt="_images/tutorial_cell_placement_6_0.png" src="_images/tutorial_cell_placement_6_0.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Generate-an-ovoid-volume-of-cell-positions">
-<h2>Generate an ovoid volume of cell positions<a class="headerlink" href="#Generate-an-ovoid-volume-of-cell-positions" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="Generate-an-ovoid-volume-of-cell-positions">
+<h2>Generate an ovoid volume of cell positions<a class="headerlink" href="#Generate-an-ovoid-volume-of-cell-positions" title="Permalink to this heading">¶</a></h2>
 <p>Lastly, if an ellipsoid is desired, e.g., to simulate a nucleus, one can use the following function:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_ellipsoid</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_ellipsoid</span>
 
 <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_ellipsoid</span> <span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">x_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">z_length</span><span class="o">=</span><span class="mf">200.0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -943,9 +962,9 @@ div.rendered_html tbody tr:hover {
 <img alt="_images/tutorial_cell_placement_8_0.png" src="_images/tutorial_cell_placement_8_0.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Generate-random-locations-according-to-a-*.nrrd-file">
-<h2>Generate random locations according to a *.nrrd file<a class="headerlink" href="#Generate-random-locations-according-to-a-*.nrrd-file" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="Generate-random-locations-according-to-a-*.nrrd-file">
+<h2>Generate random locations according to a *.nrrd file<a class="headerlink" href="#Generate-random-locations-according-to-a-*.nrrd-file" title="Permalink to this heading">¶</a></h2>
 <p>We may want to place the units according to a file containing 3D location information, such as the <a class="reference external" href="https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels">Allen Brain Atlas Common Coordinate Frame</a>. You can obtain a structural mask that describes the extent of a structure of interest. Cells will be placed randomly within that structure at a density of max_dens. If the *.nrrd file contains varying cell densities, this function can also be used to place
 cells randomly according to that density raster.</p>
 <p>You will need to install the <code class="docutils literal notranslate"><span class="pre">pynrrd</span></code> library to use this function.</p>
@@ -955,8 +974,7 @@ cells randomly according to that density raster.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_nrrd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_nrrd</span>
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
 <span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>       <span class="c1"># Cells per mm^3</span>
 
@@ -983,8 +1001,7 @@ positions: (102437, 3)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">positions</span> <span class="o">=</span> <span class="n">positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">positions</span> <span class="o">=</span> <span class="n">positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1004,9 +1021,9 @@ positions: (51218, 3)
 </div>
 </div>
 <p>You can also directly use a 3-dimensional density matrix with the function <code class="docutils literal notranslate"><span class="pre">positions_density_matrix</span></code> to generate cell placements.</p>
-</div>
-<div class="section" id="Cell-Placements-with-minimum-distance-between-units">
-<h2>Cell Placements with minimum distance between units<a class="headerlink" href="#Cell-Placements-with-minimum-distance-between-units" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="Cell-Placements-with-minimum-distance-between-units">
+<h2>Cell Placements with minimum distance between units<a class="headerlink" href="#Cell-Placements-with-minimum-distance-between-units" title="Permalink to this heading">¶</a></h2>
 <p>The same built-in placement options above are available now with a minimum distance enforced between cells. With the use of the cell placement object, multiple populations can be placed at the same time, but must use the same minimum distance, which is enforced between and within populations.</p>
 <p>For a given minimum distance, there is a maximum density above which it will be physically impossible to pack the units. The functions will inform users of the packing limit for random close packing or hexagonal close packing. The default method is progressive sampling (‘prog’), which iteratively replaces units that violate the minimum distance until the final density is achieved. As this can be slow to run when the requested density is near the packing limit, you may set <code class="docutils literal notranslate"><span class="pre">verbose</span></code> to True to
 monitor the progress. You may find that in such cases just slightly decreasing the dmin value significantly speeds up the run.</p>
@@ -1015,8 +1032,7 @@ monitor the progress. You may find that in such cases just slightly decreasing t
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">CellLocations</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">CellLocations</span>
 
 <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
 
@@ -1074,8 +1090,7 @@ positions: (51218, 3)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
 
@@ -1113,8 +1128,7 @@ positions: (25609, 3)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">20.0</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
 
@@ -1147,8 +1161,7 @@ positions: (25609, 3)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">N</span><span class="o">=</span><span class="mi">4000</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="o">=</span><span class="mi">4000</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;ctx&#39;</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
@@ -1180,8 +1193,7 @@ Max density requested:113176.848
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">N</span><span class="o">=</span><span class="mi">2500</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="o">=</span><span class="mi">2500</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
@@ -1218,8 +1230,7 @@ Max density requested:70735.530
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">N</span><span class="o">=</span><span class="mi">3000</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">N</span><span class="o">=</span><span class="mi">3000</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
 <span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
@@ -1251,8 +1262,7 @@ Max density requested:127323.954
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
@@ -1273,8 +1283,8 @@ Max density requested:127323.954
 </pre></div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1310,6 +1320,7 @@ Max density requested:127323.954
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
@@ -1332,12 +1343,12 @@ Max density requested:127323.954
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

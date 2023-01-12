@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>bmtk.utils package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.compile_mechanisms package" href="bmtk.utils.compile_mechanisms.html" />
@@ -623,32 +620,178 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-utils-package">
-<h1>bmtk.utils package<a class="headerlink" href="#bmtk-utils-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+  <section id="bmtk-utils-package">
+<h1>bmtk.utils package<a class="headerlink" href="#bmtk-utils-package" title="Permalink to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#module-bmtk.utils.compile_mechanisms.compile_mechanisms">bmtk.utils.compile_mechanisms.compile_mechanisms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#module-bmtk.utils.compile_mechanisms.compile_mechanisms">bmtk.utils.compile_mechanisms.compile_mechanisms module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#bmtk.utils.compile_mechanisms.compile_mechanisms.compile_mechanisms"><code class="docutils literal notranslate"><span class="pre">compile_mechanisms()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#bmtk.utils.compile_mechanisms.compile_mechanisms.copy_modfiles"><code class="docutils literal notranslate"><span class="pre">copy_modfiles()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html#module-bmtk.utils.compile_mechanisms">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#module-bmtk.utils.create_environment.create_environment">bmtk.utils.create_environment.create_environment module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#module-bmtk.utils.create_environment.env_builder">bmtk.utils.create_environment.env_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#module-bmtk.utils.create_environment.create_environment">bmtk.utils.create_environment.create_environment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.create_environment.create_environment"><code class="docutils literal notranslate"><span class="pre">create_environment()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#module-bmtk.utils.create_environment.env_builder">bmtk.utils.create_environment.env_builder module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder"><code class="docutils literal notranslate"><span class="pre">BioNetEnvBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.bmtk_simulator"><code class="docutils literal notranslate"><span class="pre">BioNetEnvBuilder.bmtk_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms"><code class="docutils literal notranslate"><span class="pre">BioNetEnvBuilder.compile_mechanisms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.examples_dir"><code class="docutils literal notranslate"><span class="pre">BioNetEnvBuilder.examples_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.target_simulator"><code class="docutils literal notranslate"><span class="pre">BioNetEnvBuilder.target_simulator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.base_dir"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.base_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.bmtk_simulator"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.bmtk_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.build"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.compile_mechanisms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.components_dir"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.components_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.examples_dir"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.examples_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.network_dir"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.network_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.output_dir"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.output_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.scripts_root"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.scripts_root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.target_simulator"><code class="docutils literal notranslate"><span class="pre">EnvBuilder.target_simulator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder"><code class="docutils literal notranslate"><span class="pre">FilterNetEnvBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.bmtk_simulator"><code class="docutils literal notranslate"><span class="pre">FilterNetEnvBuilder.bmtk_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.examples_dir"><code class="docutils literal notranslate"><span class="pre">FilterNetEnvBuilder.examples_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.target_simulator"><code class="docutils literal notranslate"><span class="pre">FilterNetEnvBuilder.target_simulator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder"><code class="docutils literal notranslate"><span class="pre">PointNetEnvBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.bmtk_simulator"><code class="docutils literal notranslate"><span class="pre">PointNetEnvBuilder.bmtk_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.examples_dir"><code class="docutils literal notranslate"><span class="pre">PointNetEnvBuilder.examples_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.target_simulator"><code class="docutils literal notranslate"><span class="pre">PointNetEnvBuilder.target_simulator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder"><code class="docutils literal notranslate"><span class="pre">PopNetEnvBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.bmtk_simulator"><code class="docutils literal notranslate"><span class="pre">PopNetEnvBuilder.bmtk_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.examples_dir"><code class="docutils literal notranslate"><span class="pre">PopNetEnvBuilder.examples_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.target_simulator"><code class="docutils literal notranslate"><span class="pre">PopNetEnvBuilder.target_simulator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.create_environment.html#module-bmtk.utils.create_environment">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.io.html">bmtk.utils.io package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.cell_vars">bmtk.utils.io.cell_vars module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.firing_rates">bmtk.utils.io.firing_rates module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.ioutils">bmtk.utils.io.ioutils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.spike_trains">bmtk.utils.io.spike_trains module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.cell_vars">bmtk.utils.io.cell_vars module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.DataTable"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.DataTable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.add_cell"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.add_cell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.close"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.dt"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.dt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.flush"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.initialize"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.is_initialized"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.is_initialized</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.merge"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.record_cell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell_block"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.record_cell_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.tstart"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.tstart</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.tstop"><code class="docutils literal notranslate"><span class="pre">CellVarRecorder.tstop</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorderParallel"><code class="docutils literal notranslate"><span class="pre">CellVarRecorderParallel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge"><code class="docutils literal notranslate"><span class="pre">CellVarRecorderParallel.merge()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.firing_rates">bmtk.utils.io.firing_rates module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesInput"><code class="docutils literal notranslate"><span class="pre">RatesInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesInput.get_rate"><code class="docutils literal notranslate"><span class="pre">RatesInput.get_rate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesInput.populations"><code class="docutils literal notranslate"><span class="pre">RatesInput.populations</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesWriter"><code class="docutils literal notranslate"><span class="pre">RatesWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesWriter.add_rates"><code class="docutils literal notranslate"><span class="pre">RatesWriter.add_rates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesWriter.to_csv"><code class="docutils literal notranslate"><span class="pre">RatesWriter.to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.firing_rates.RatesWriter.to_h5"><code class="docutils literal notranslate"><span class="pre">RatesWriter.to_h5()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.ioutils">bmtk.utils.io.ioutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.BMTKWorldComm"><code class="docutils literal notranslate"><span class="pre">BMTKWorldComm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank"><code class="docutils literal notranslate"><span class="pre">BMTKWorldComm.MPI_rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size"><code class="docutils literal notranslate"><span class="pre">BMTKWorldComm.MPI_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.BMTKWorldComm.barrier"><code class="docutils literal notranslate"><span class="pre">BMTKWorldComm.barrier()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.BMTKWorldComm.comm"><code class="docutils literal notranslate"><span class="pre">BMTKWorldComm.comm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.ioutils.set_world_comm"><code class="docutils literal notranslate"><span class="pre">set_world_comm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io.spike_trains">bmtk.utils.io.spike_trains module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.DFIndexedGIDs"><code class="docutils literal notranslate"><span class="pre">DFIndexedGIDs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes"><code class="docutils literal notranslate"><span class="pre">DFIndexedGIDs.get_spikes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.DictIndexedGIDs"><code class="docutils literal notranslate"><span class="pre">DictIndexedGIDs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes"><code class="docutils literal notranslate"><span class="pre">DictIndexedGIDs.get_spikes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.HDF5IndexedGIDs"><code class="docutils literal notranslate"><span class="pre">HDF5IndexedGIDs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.PoissonSpikesGenerator"><code class="docutils literal notranslate"><span class="pre">PoissonSpikesGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5"><code class="docutils literal notranslate"><span class="pre">PoissonSpikesGenerator.to_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SONATAIndexer"><code class="docutils literal notranslate"><span class="pre">SONATAIndexer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes"><code class="docutils literal notranslate"><span class="pre">SONATAIndexer.get_spikes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.TmpFileMetadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spike"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.add_spike()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.add_spikes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes_file"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.add_spikes_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.close"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.close_tmp_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.flush"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_csv"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_hdf5"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.to_hdf5()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_nwb"><code class="docutils literal notranslate"><span class="pre">SpikeTrainWriter.to_nwb()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInput"><code class="docutils literal notranslate"><span class="pre">SpikesInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInput.get_spikes"><code class="docutils literal notranslate"><span class="pre">SpikesInput.get_spikes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInput.load"><code class="docutils literal notranslate"><span class="pre">SpikesInput.load()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputCSV"><code class="docutils literal notranslate"><span class="pre">SpikesInputCSV</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes"><code class="docutils literal notranslate"><span class="pre">SpikesInputCSV.get_spikes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputH5"><code class="docutils literal notranslate"><span class="pre">SpikesInputH5</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes"><code class="docutils literal notranslate"><span class="pre">SpikesInputH5.get_spikes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputH5.gids"><code class="docutils literal notranslate"><span class="pre">SpikesInputH5.gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputH5.timestamps"><code class="docutils literal notranslate"><span class="pre">SpikesInputH5.timestamps</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputNWBv1"><code class="docutils literal notranslate"><span class="pre">SpikesInputNWBv1</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes"><code class="docutils literal notranslate"><span class="pre">SpikesInputNWBv1.get_spikes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.spike_trains.UnindexedGIDs"><code class="docutils literal notranslate"><span class="pre">UnindexedGIDs</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.io.html#module-bmtk.utils.io">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.log_warning"><code class="docutils literal notranslate"><span class="pre">log_warning()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.reports.html">bmtk.utils.reports package</a><ul>
@@ -679,7 +822,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.reports.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.reports.html#module-bmtk.utils.reports.current_writer">bmtk.utils.reports.current_writer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.reports.html#module-bmtk.utils.reports.current_writer">bmtk.utils.reports.current_writer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.DataTable"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.DataTable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.close"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.dt"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.dt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.flush"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.flush()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.initialize"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.merge"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.merge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.n_steps"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.n_steps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.record_clamps"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.record_clamps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.set_dt"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.set_dt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.set_tstart"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.set_tstart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.set_tstop"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.set_tstop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.set_units"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.set_units()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.tstart"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.tstart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.tstop"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.tstop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.units"><code class="docutils literal notranslate"><span class="pre">CurrentWriterv01.units()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.reports.html#module-bmtk.utils.reports">Module contents</a></li>
 </ul>
 </li>
@@ -694,204 +857,423 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.column_property">bmtk.utils.sonata.column_property module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.edge">bmtk.utils.sonata.edge module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.file">bmtk.utils.sonata.file module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.file_root">bmtk.utils.sonata.file_root module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.group">bmtk.utils.sonata.group module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.node">bmtk.utils.sonata.node module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.population">bmtk.utils.sonata.population module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.types_table">bmtk.utils.sonata.types_table module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.utils">bmtk.utils.sonata.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.column_property">bmtk.utils.sonata.column_property module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty"><code class="docutils literal notranslate"><span class="pre">ColumnProperty</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.attributes"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.attributes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.dimension"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.dimension</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.dtype"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.dtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.from_csv"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.from_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.from_h5"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.from_h5()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.name"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.column_property.ColumnProperty.nrows"><code class="docutils literal notranslate"><span class="pre">ColumnProperty.nrows</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.edge">bmtk.utils.sonata.edge module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge"><code class="docutils literal notranslate"><span class="pre">Edge</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.dynamics_params"><code class="docutils literal notranslate"><span class="pre">Edge.dynamics_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.edge_type_id"><code class="docutils literal notranslate"><span class="pre">Edge.edge_type_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.group_id"><code class="docutils literal notranslate"><span class="pre">Edge.group_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.source_node_id"><code class="docutils literal notranslate"><span class="pre">Edge.source_node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.source_population"><code class="docutils literal notranslate"><span class="pre">Edge.source_population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.target_node_id"><code class="docutils literal notranslate"><span class="pre">Edge.target_node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.Edge.target_population"><code class="docutils literal notranslate"><span class="pre">Edge.target_population</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.EdgeSet"><code class="docutils literal notranslate"><span class="pre">EdgeSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.edge.EdgeSet.next"><code class="docutils literal notranslate"><span class="pre">EdgeSet.next()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.file">bmtk.utils.sonata.file module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File"><code class="docutils literal notranslate"><span class="pre">File</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File.edges"><code class="docutils literal notranslate"><span class="pre">File.edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File.has_edges"><code class="docutils literal notranslate"><span class="pre">File.has_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File.has_nodes"><code class="docutils literal notranslate"><span class="pre">File.has_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File.nodes"><code class="docutils literal notranslate"><span class="pre">File.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file.File.version"><code class="docutils literal notranslate"><span class="pre">File.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.file_root">bmtk.utils.sonata.file_root module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.EdgesRoot"><code class="docutils literal notranslate"><span class="pre">EdgesRoot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.EdgesRoot.edge_types_table"><code class="docutils literal notranslate"><span class="pre">EdgesRoot.edge_types_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.EdgesRoot.get_populations"><code class="docutils literal notranslate"><span class="pre">EdgesRoot.get_populations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot"><code class="docutils literal notranslate"><span class="pre">FileRoot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.check_format"><code class="docutils literal notranslate"><span class="pre">FileRoot.check_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.get_population"><code class="docutils literal notranslate"><span class="pre">FileRoot.get_population()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.population_names"><code class="docutils literal notranslate"><span class="pre">FileRoot.population_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.populations"><code class="docutils literal notranslate"><span class="pre">FileRoot.populations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.root_name"><code class="docutils literal notranslate"><span class="pre">FileRoot.root_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.types_table"><code class="docutils literal notranslate"><span class="pre">FileRoot.types_table</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot"><code class="docutils literal notranslate"><span class="pre">NodesRoot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.generate_gids"><code class="docutils literal notranslate"><span class="pre">NodesRoot.generate_gids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.has_gids"><code class="docutils literal notranslate"><span class="pre">NodesRoot.has_gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.node_types_table"><code class="docutils literal notranslate"><span class="pre">NodesRoot.node_types_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.set_gid_table"><code class="docutils literal notranslate"><span class="pre">NodesRoot.set_gid_table()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.group">bmtk.utils.sonata.group module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup"><code class="docutils literal notranslate"><span class="pre">EdgeGroup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.build_indicies"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.build_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.edge_type_ids"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.edge_type_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.filter"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.get_values"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.get_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.next"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.src_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.src_node_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.to_dataframe"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.trg_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgeGroup.trg_node_ids</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group"><code class="docutils literal notranslate"><span class="pre">Group</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.all_columns"><code class="docutils literal notranslate"><span class="pre">Group.all_columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.build_indicies"><code class="docutils literal notranslate"><span class="pre">Group.build_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.check_format"><code class="docutils literal notranslate"><span class="pre">Group.check_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.column"><code class="docutils literal notranslate"><span class="pre">Group.column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.columns"><code class="docutils literal notranslate"><span class="pre">Group.columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.get_dataset"><code class="docutils literal notranslate"><span class="pre">Group.get_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.get_values"><code class="docutils literal notranslate"><span class="pre">Group.get_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.group_columns"><code class="docutils literal notranslate"><span class="pre">Group.group_columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.group_id"><code class="docutils literal notranslate"><span class="pre">Group.group_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.has_dynamics_params"><code class="docutils literal notranslate"><span class="pre">Group.has_dynamics_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.has_gids"><code class="docutils literal notranslate"><span class="pre">Group.has_gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.parent"><code class="docutils literal notranslate"><span class="pre">Group.parent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Group.to_dataframe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup"><code class="docutils literal notranslate"><span class="pre">NodeGroup</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.build_indicies"><code class="docutils literal notranslate"><span class="pre">NodeGroup.build_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.filter"><code class="docutils literal notranslate"><span class="pre">NodeGroup.filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.get_values"><code class="docutils literal notranslate"><span class="pre">NodeGroup.get_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.gids"><code class="docutils literal notranslate"><span class="pre">NodeGroup.gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.node_ids"><code class="docutils literal notranslate"><span class="pre">NodeGroup.node_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.node_type_ids"><code class="docutils literal notranslate"><span class="pre">NodeGroup.node_type_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.to_dataframe"><code class="docutils literal notranslate"><span class="pre">NodeGroup.to_dataframe()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.node">bmtk.utils.sonata.node module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.dynamics_params"><code class="docutils literal notranslate"><span class="pre">Node.dynamics_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.gid"><code class="docutils literal notranslate"><span class="pre">Node.gid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.group_id"><code class="docutils literal notranslate"><span class="pre">Node.group_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.group_props"><code class="docutils literal notranslate"><span class="pre">Node.group_props</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.node_id"><code class="docutils literal notranslate"><span class="pre">Node.node_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.node_type_id"><code class="docutils literal notranslate"><span class="pre">Node.node_type_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.node_type_properties"><code class="docutils literal notranslate"><span class="pre">Node.node_type_properties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node.population_name"><code class="docutils literal notranslate"><span class="pre">Node.population_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet"><code class="docutils literal notranslate"><span class="pre">NodeSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet.get_properties"><code class="docutils literal notranslate"><span class="pre">NodeSet.get_properties()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet.gids"><code class="docutils literal notranslate"><span class="pre">NodeSet.gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet.next"><code class="docutils literal notranslate"><span class="pre">NodeSet.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet.node_ids"><code class="docutils literal notranslate"><span class="pre">NodeSet.node_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.node.NodeSet.node_type_ids"><code class="docutils literal notranslate"><span class="pre">NodeSet.node_type_ids</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.population">bmtk.utils.sonata.population module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation"><code class="docutils literal notranslate"><span class="pre">EdgePopulation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.build_indicies"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.build_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.edge_types_table"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.edge_types_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.filter"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_row"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_source"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_source()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_source_population"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_source_population()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_sources"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_sources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_target"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_target()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_target_population"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_target_population()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.get_targets"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.get_targets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.group_id_column"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.group_id_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.group_index_column"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.group_index_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.group_indicies"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.group_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.next"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.source_population"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.source_population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.target_population"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.target_population</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.to_dataframe"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.type_ids_column"><code class="docutils literal notranslate"><span class="pre">EdgePopulation.type_ids_column</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation"><code class="docutils literal notranslate"><span class="pre">NodePopulation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.add_gids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.add_gids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.filter"><code class="docutils literal notranslate"><span class="pre">NodePopulation.filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_gid"><code class="docutils literal notranslate"><span class="pre">NodePopulation.get_gid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_node_id"><code class="docutils literal notranslate"><span class="pre">NodePopulation.get_node_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_row"><code class="docutils literal notranslate"><span class="pre">NodePopulation.get_row()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_rows"><code class="docutils literal notranslate"><span class="pre">NodePopulation.get_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.gids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.group_id_column"><code class="docutils literal notranslate"><span class="pre">NodePopulation.group_id_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.group_index_column"><code class="docutils literal notranslate"><span class="pre">NodePopulation.group_index_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.has_gids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.has_gids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.igids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.igids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.index_column_name"><code class="docutils literal notranslate"><span class="pre">NodePopulation.index_column_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.inode_ids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.inode_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.inode_type_ids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.inode_type_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.next"><code class="docutils literal notranslate"><span class="pre">NodePopulation.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.node_ids"><code class="docutils literal notranslate"><span class="pre">NodePopulation.node_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.node_types_table"><code class="docutils literal notranslate"><span class="pre">NodePopulation.node_types_table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.to_dataframe"><code class="docutils literal notranslate"><span class="pre">NodePopulation.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.type_ids_column"><code class="docutils literal notranslate"><span class="pre">NodePopulation.type_ids_column</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population"><code class="docutils literal notranslate"><span class="pre">Population</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.get_group"><code class="docutils literal notranslate"><span class="pre">Population.get_group()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_id_column"><code class="docutils literal notranslate"><span class="pre">Population.group_id_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_id_ds"><code class="docutils literal notranslate"><span class="pre">Population.group_id_ds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_ids"><code class="docutils literal notranslate"><span class="pre">Population.group_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_index_column"><code class="docutils literal notranslate"><span class="pre">Population.group_index_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_index_ds"><code class="docutils literal notranslate"><span class="pre">Population.group_index_ds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.group_indicies"><code class="docutils literal notranslate"><span class="pre">Population.group_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.groups"><code class="docutils literal notranslate"><span class="pre">Population.groups</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.igroup_ids"><code class="docutils literal notranslate"><span class="pre">Population.igroup_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.igroup_indicies"><code class="docutils literal notranslate"><span class="pre">Population.igroup_indicies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.name"><code class="docutils literal notranslate"><span class="pre">Population.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.to_dataframe"><code class="docutils literal notranslate"><span class="pre">Population.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.type_ids"><code class="docutils literal notranslate"><span class="pre">Population.type_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.type_ids_column"><code class="docutils literal notranslate"><span class="pre">Population.type_ids_column</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.population.Population.types_table"><code class="docutils literal notranslate"><span class="pre">Population.types_table</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.types_table">bmtk.utils.sonata.types_table module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.EdgeTypesTable"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.EdgeTypesTable.edge_type_ids"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTable.edge_type_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.EdgeTypesTable.index_column_name"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTable.index_column_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.NodeTypesTable"><code class="docutils literal notranslate"><span class="pre">NodeTypesTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.NodeTypesTable.index_column_name"><code class="docutils literal notranslate"><span class="pre">NodeTypesTable.index_column_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.NodeTypesTable.node_type_ids"><code class="docutils literal notranslate"><span class="pre">NodeTypesTable.node_type_ids</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable"><code class="docutils literal notranslate"><span class="pre">TypesTable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.add_table"><code class="docutils literal notranslate"><span class="pre">TypesTable.add_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.column"><code class="docutils literal notranslate"><span class="pre">TypesTable.column()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.columns"><code class="docutils literal notranslate"><span class="pre">TypesTable.columns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.find"><code class="docutils literal notranslate"><span class="pre">TypesTable.find()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.index_column_name"><code class="docutils literal notranslate"><span class="pre">TypesTable.index_column_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.next"><code class="docutils literal notranslate"><span class="pre">TypesTable.next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.to_dataframe"><code class="docutils literal notranslate"><span class="pre">TypesTable.to_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.TypesTable.type_ids"><code class="docutils literal notranslate"><span class="pre">TypesTable.type_ids</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.types_table.remove_nans"><code class="docutils literal notranslate"><span class="pre">remove_nans()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata.utils">bmtk.utils.sonata.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.add_hdf5_magic"><code class="docutils literal notranslate"><span class="pre">add_hdf5_magic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.add_hdf5_version"><code class="docutils literal notranslate"><span class="pre">add_hdf5_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.check_magic"><code class="docutils literal notranslate"><span class="pre">check_magic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.get_attribute_h5"><code class="docutils literal notranslate"><span class="pre">get_attribute_h5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.get_node_ids"><code class="docutils literal notranslate"><span class="pre">get_node_ids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.get_version"><code class="docutils literal notranslate"><span class="pre">get_version()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.listify"><code class="docutils literal notranslate"><span class="pre">listify()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.load_csv"><code class="docutils literal notranslate"><span class="pre">load_csv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.sonata.html#bmtk.utils.sonata.utils.load_h5"><code class="docutils literal notranslate"><span class="pre">load_h5()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.sonata.html#module-bmtk.utils.sonata">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.utils.hdf5_helper">
-<span id="bmtk-utils-hdf5-helper-module"></span><h2>bmtk.utils.hdf5_helper module<a class="headerlink" href="#module-bmtk.utils.hdf5_helper" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-bmtk.utils.hdf5_helper">
+<span id="bmtk-utils-hdf5-helper-module"></span><h2>bmtk.utils.hdf5_helper module<a class="headerlink" href="#module-bmtk.utils.hdf5_helper" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.utils.hdf5_helper.get_attribute_h5">
-<code class="sig-prename descclassname">bmtk.utils.hdf5_helper.</code><code class="sig-name descname">get_attribute_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">h5obj</span></em>, <em class="sig-param"><span class="n">attribut_name</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/hdf5_helper.html#get_attribute_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.hdf5_helper.get_attribute_h5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.hdf5_helper.get_attribute_h5">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.hdf5_helper.</span></span><span class="sig-name descname"><span class="pre">get_attribute_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h5obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribut_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/hdf5_helper.html#get_attribute_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.hdf5_helper.get_attribute_h5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.sim_setup">
-<span id="bmtk-utils-sim-setup-module"></span><h2>bmtk.utils.sim_setup module<a class="headerlink" href="#module-bmtk.utils.sim_setup" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.utils.sim_setup">
+<span id="bmtk-utils-sim-setup-module"></span><h2>bmtk.utils.sim_setup module<a class="headerlink" href="#module-bmtk.utils.sim_setup" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">BioNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.BioNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">BioNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms">
-<code class="sig-name descname">compile_mechanisms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder.compile_mechanisms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms">
+<span class="sig-name descname"><span class="pre">compile_mechanisms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder.compile_mechanisms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.sim_setup.EnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">EnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">EnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.base_dir">
-<em class="property">property </em><code class="sig-name descname">base_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.base_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.base_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.base_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_voltage_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">run_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_relative_paths</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">report_vars</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">report_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clamp_reports</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">se_voltage_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">'config.json'</span></em>, <em class="sig-param"><span class="n">overwrite_config</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">run_args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.build" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.components_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.components_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.components_dir">
-<em class="property">property </em><code class="sig-name descname">components_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.components_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.network_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.network_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.network_dir">
-<em class="property">property </em><code class="sig-name descname">network_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.network_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.node_sets_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_sets_file</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.node_sets_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.node_sets_file">
-<em class="property">property </em><code class="sig-name descname">node_sets_file</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.node_sets_file" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.output_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.output_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.output_dir">
-<em class="property">property </em><code class="sig-name descname">output_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.output_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.scripts_root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scripts_root</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.scripts_root" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.scripts_root">
-<em class="property">property </em><code class="sig-name descname">scripts_root</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.scripts_root" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.EnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.EnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.sim_setup.FilterNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">FilterNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#FilterNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.FilterNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.FilterNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">FilterNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#FilterNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.FilterNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.FilterNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.FilterNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.FilterNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">PointNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#PointNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.FilterNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.FilterNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.sim_setup.PopNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">PopNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#PopNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PopNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PointNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">PointNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#PointNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PopNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.sim_setup.PopNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PopNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">PopNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#PopNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PopNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PopNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.PopNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.sim_setup.PopNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.utils.sim_setup.build_env_bionet">
-<code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">build_env_bionet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite_config</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">dt</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">dL</span><span class="o">=</span><span class="default_value">20.0</span></em>, <em class="sig-param"><span class="n">spikes_threshold</span><span class="o">=</span><span class="default_value">- 15.0</span></em>, <em class="sig-param"><span class="n">nsteps_block</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">v_init</span><span class="o">=</span><span class="default_value">- 80.0</span></em>, <em class="sig-param"><span class="n">celsius</span><span class="o">=</span><span class="default_value">34.0</span></em>, <em class="sig-param"><span class="n">report_vars</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">report_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clamp_reports</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">se_voltage_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compile_mechanisms</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_relative_paths</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_bionet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_bionet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.build_env_bionet">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">build_env_bionet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-15.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-80.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celsius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">34.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_voltage_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_mechanisms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_bionet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_bionet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.utils.sim_setup.build_env_filternet">
-<code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">build_env_filternet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">'config.json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_filternet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_filternet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.build_env_filternet">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">build_env_filternet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_filternet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_filternet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.utils.sim_setup.build_env_pointnet">
-<code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">build_env_pointnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">dt</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">dL</span><span class="o">=</span><span class="default_value">20.0</span></em>, <em class="sig-param"><span class="n">spikes_threshold</span><span class="o">=</span><span class="default_value">- 15.0</span></em>, <em class="sig-param"><span class="n">nsteps_block</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">v_init</span><span class="o">=</span><span class="default_value">- 80.0</span></em>, <em class="sig-param"><span class="n">celsius</span><span class="o">=</span><span class="default_value">34.0</span></em>, <em class="sig-param"><span class="n">report_vars</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">report_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_relative_paths</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_pointnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_pointnet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.build_env_pointnet">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">build_env_pointnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-15.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-80.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celsius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">34.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_pointnet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_pointnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.utils.sim_setup.build_env_popnet">
-<code class="sig-prename descclassname">bmtk.utils.sim_setup.</code><code class="sig-name descname">build_env_popnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reports</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">dt</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_popnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_popnet" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.sim_setup.build_env_popnet">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.sim_setup.</span></span><span class="sig-name descname"><span class="pre">build_env_popnet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_popnet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_popnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+<section id="module-bmtk.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -927,6 +1309,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
@@ -949,12 +1332,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

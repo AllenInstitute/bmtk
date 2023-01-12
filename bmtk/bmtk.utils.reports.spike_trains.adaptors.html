@@ -1,22 +1,20 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>bmtk.utils.reports.spike_trains.adaptors package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>bmtk.utils.reports.spike_trains.adaptors package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.utils.sonata package" href="bmtk.utils.sonata.html" />
-    <link rel="prev" title="bmtk.utils.reports.spike_trains package" href="bmtk.utils.reports.spike_trains.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -620,594 +618,34 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-utils-reports-spike-trains-adaptors-package">
-<h1>bmtk.utils.reports.spike_trains.adaptors package<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.csv_adaptors">
-<span id="bmtk-utils-reports-spike-trains-adaptors-csv-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.csv_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.csv_adaptors" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.</code><code class="descname">CSVSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>sep=' '</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.get_times">
-<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.get_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of spike-times for a given node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node_id</strong> – The id of the node</li>
-<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.n_spikes">
-<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of spikes for the given population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.nodes">
-<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of (node-ids, population_name).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.populations">
-<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.populations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all available spike population names</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.spikes">
-<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.time_range">
-<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
-than one node population is specified will search across all and return values that encompasses all spikes
-across each population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.to_dataframe">
-<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.write_csv">
-<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.</code><code class="descname">write_csv</code><span class="sig-paren">(</span><em>path</em>, <em>spiketrain_reader</em>, <em>mode='w'</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>include_header=True</em>, <em>include_population=True</em>, <em>units='ms'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#write_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.write_csv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors">
-<span id="bmtk-utils-reports-spike-trains-adaptors-nwb-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.</code><code class="descname">NWBSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.get_times">
-<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.get_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of spike-times for a given node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node_id</strong> – The id of the node</li>
-<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.n_spikes">
-<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of spikes for the given population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.nodes">
-<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of (node-ids, population_name).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.populations">
-<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.populations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all available spike population names</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.spikes">
-<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.time_range">
-<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
-than one node population is specified will search across all and return values that encompasses all spikes
-across each population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.to_dataframe">
-<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors">
-<span id="bmtk-utils-reports-spike-trains-adaptors-sonata-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">EmptySonataReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
-<p>A Hack that is needed for when a simulation produces a file with no spikes, since there won’t/can’t be
-&lt;population_name&gt; subgroup and/or gids/timestamps datasets.</p>
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.get_times">
-<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.get_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of spike-times for a given node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node_id</strong> – The id of the node</li>
-<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.n_spikes">
-<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.n_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of spikes for the given population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.nodes">
-<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of (node-ids, population_name).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.populations">
-<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.populations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all available spike population names</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.spikes">
-<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.time_range">
-<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
-than one node population is specified will search across all and return values that encompasses all spikes
-across each population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.to_dataframe">
-<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">SonataOldReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader" title="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader</span></code></a></p>
-<p>Older version of SONATA</p>
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.get_times">
-<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.get_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of spike-times for a given node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node_id</strong> – The id of the node</li>
-<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.n_spikes">
-<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.n_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of spikes for the given population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.nodes">
-<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of (node-ids, population_name).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.spikes">
-<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.time_range">
-<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
-than one node population is specified will search across all and return values that encompasses all spikes
-across each population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.to_dataframe">
-<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">SonataSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.get_times">
-<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.get_times" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of spike-times for a given node.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>node_id</strong> – The id of the node</li>
-<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.n_spikes">
-<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the number of spikes for the given population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.nodes">
-<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of (node-ids, population_name).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.populations">
-<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.populations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all available spike population names</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.sort_order">
-<code class="descname">sort_order</code><span class="sig-paren">(</span><em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.sort_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.sort_order" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.spikes">
-<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.time_range">
-<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.time_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
-than one node population is specified will search across all and return values that encompasses all spikes
-across each population.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.to_dataframe">
-<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.units">
-<code class="descname">units</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.units" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the units used in the timestamps.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.load_sonata_file">
-<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">load_sonata_file</code><span class="sig-paren">(</span><em>path</em>, <em>version=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#load_sonata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.load_sonata_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a Sonata file reader, making sure it matches the correct version.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>path</strong> – </li>
-<li><strong>version</strong> – </li>
-<li><strong>kwargs</strong> – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.to_list">
-<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">to_list</code><span class="sig-paren">(</span><em>v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.to_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.write_sonata">
-<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">write_sonata</code><span class="sig-paren">(</span><em>path</em>, <em>spiketrain_reader</em>, <em>mode='a'</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>units='ms'</em>, <em>population_renames=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#write_sonata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.write_sonata" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="bmtk.utils.reports.spike_trains.adaptors.find_file_type">
-<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.</code><code class="descname">find_file_type</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors.html#find_file_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.find_file_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tries to find the input type (sonata/h5, NWB, CSV) from the file-name</p>
-</dd></dl>
-
-</div>
-</div>
+  <section id="bmtk-utils-reports-spike-trains-adaptors-package">
+<h1>bmtk.utils.reports.spike_trains.adaptors package<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="bmtk-utils-reports-spike-trains-adaptors-csv-adaptors-module">
+<h2>bmtk.utils.reports.spike_trains.adaptors.csv_adaptors module<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-csv-adaptors-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="bmtk-utils-reports-spike-trains-adaptors-nwb-adaptors-module">
+<h2>bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors module<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-nwb-adaptors-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="bmtk-utils-reports-spike-trains-adaptors-sonata-adaptors-module">
+<h2>bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors module<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-sonata-adaptors-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Contents</a></h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
@@ -1217,32 +655,51 @@ across each population.</p>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_cite.html">How to Cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

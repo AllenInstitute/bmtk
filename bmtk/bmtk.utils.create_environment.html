@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>bmtk.utils.create_environment package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.io package" href="bmtk.utils.io.html" />
@@ -623,18 +620,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-utils-create-environment-package">
-<h1>bmtk.utils.create_environment package<a class="headerlink" href="#bmtk-utils-create-environment-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.utils.create_environment.create_environment">
-<span id="bmtk-utils-create-environment-create-environment-module"></span><h2>bmtk.utils.create_environment.create_environment module<a class="headerlink" href="#module-bmtk.utils.create_environment.create_environment" title="Permalink to this headline">¶</a></h2>
+  <section id="bmtk-utils-create-environment-package">
+<h1>bmtk.utils.create_environment package<a class="headerlink" href="#bmtk-utils-create-environment-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-bmtk.utils.create_environment.create_environment">
+<span id="bmtk-utils-create-environment-create-environment-module"></span><h2>bmtk.utils.create_environment.create_environment module<a class="headerlink" href="#module-bmtk.utils.create_environment.create_environment" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.utils.create_environment.create_environment.create_environment">
-<code class="sig-prename descclassname">bmtk.utils.create_environment.create_environment.</code><code class="sig-name descname">create_environment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulator</span></em>, <em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">run_script</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split_configs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">network_filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_vars</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">report_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rates_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clamp_reports</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">se_voltage_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">dt</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">dL</span><span class="o">=</span><span class="default_value">20.0</span></em>, <em class="sig-param"><span class="n">spikes_threshold</span><span class="o">=</span><span class="default_value">- 15.0</span></em>, <em class="sig-param"><span class="n">nsteps_block</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">v_init</span><span class="o">=</span><span class="default_value">- 80.0</span></em>, <em class="sig-param"><span class="n">celsius</span><span class="o">=</span><span class="default_value">34.0</span></em>, <em class="sig-param"><span class="n">compile_mechanisms</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_relative_paths</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/create_environment.html#create_environment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.create_environment.create_environment" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.create_environment.create_environment">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.create_environment.</span></span><span class="sig-name descname"><span class="pre">create_environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_script</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rates_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_voltage_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-15.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsteps_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-80.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">celsius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">34.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_mechanisms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/create_environment.html#create_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.create_environment.create_environment" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>simulator</strong> – </p></li>
 <li><p><strong>base_dir</strong> – </p></li>
@@ -672,159 +669,159 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.create_environment.env_builder">
-<span id="bmtk-utils-create-environment-env-builder-module"></span><h2>bmtk.utils.create_environment.env_builder module<a class="headerlink" href="#module-bmtk.utils.create_environment.env_builder" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.utils.create_environment.env_builder">
+<span id="bmtk-utils-create-environment-env-builder-module"></span><h2>bmtk.utils.create_environment.env_builder module<a class="headerlink" href="#module-bmtk.utils.create_environment.env_builder" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.create_environment.env_builder.</code><code class="sig-name descname">BioNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#BioNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.create_environment.env_builder.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.env_builder.</span></span><span class="sig-name descname"><span class="pre">BioNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#BioNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms">
-<code class="sig-name descname">compile_mechanisms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#BioNetEnvBuilder.compile_mechanisms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms">
+<span class="sig-name descname"><span class="pre">compile_mechanisms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#BioNetEnvBuilder.compile_mechanisms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.create_environment.env_builder.</code><code class="sig-name descname">EnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.env_builder.</span></span><span class="sig-name descname"><span class="pre">EnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.base_dir">
-<em class="property">property </em><code class="sig-name descname">base_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.base_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.base_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.base_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_examples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_relative_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report_nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_reports</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_current_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">se_voltage_clamp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_filter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rates_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'config.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_script</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">run_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">include_examples</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_relative_paths</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">report_vars</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">report_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clamp_reports</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">file_current_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">se_voltage_clamp</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">network_filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rates_inputs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">'config.json'</span></em>, <em class="sig-param"><span class="n">overwrite_config</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">config_name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">split_configs</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">run_script</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">run_args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms">
+<span class="sig-name descname"><span class="pre">compile_mechanisms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder.compile_mechanisms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms">
-<code class="sig-name descname">compile_mechanisms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#EnvBuilder.compile_mechanisms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.components_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.components_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.components_dir">
-<em class="property">property </em><code class="sig-name descname">components_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.components_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.network_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.network_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.network_dir">
-<em class="property">property </em><code class="sig-name descname">network_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.network_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.output_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.output_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.output_dir">
-<em class="property">property </em><code class="sig-name descname">output_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.output_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.scripts_root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scripts_root</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.scripts_root" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.scripts_root">
-<em class="property">property </em><code class="sig-name descname">scripts_root</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.scripts_root" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.EnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.create_environment.env_builder.</code><code class="sig-name descname">FilterNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#FilterNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.create_environment.env_builder.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.EnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.EnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.create_environment.env_builder.</code><code class="sig-name descname">PointNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#PointNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.create_environment.env_builder.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.env_builder.</span></span><span class="sig-name descname"><span class="pre">FilterNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#FilterNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.create_environment.env_builder.</code><code class="sig-name descname">PopNetEnvBuilder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">network_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">components_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_sets_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#PopNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.create_environment.env_builder.EnvBuilder</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.bmtk_simulator">
-<em class="property">property </em><code class="sig-name descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.env_builder.</span></span><span class="sig-name descname"><span class="pre">PointNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#PointNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.examples_dir">
-<em class="property">property </em><code class="sig-name descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.target_simulator">
-<em class="property">property </em><code class="sig-name descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.create_environment">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.create_environment" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.create_environment.env_builder.</span></span><span class="sig-name descname"><span class="pre">PopNetEnvBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_sets_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/create_environment/env_builder.html#PopNetEnvBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.create_environment.env_builder.EnvBuilder" title="bmtk.utils.create_environment.env_builder.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvBuilder</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.bmtk_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bmtk_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.examples_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">examples_dir</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.target_simulator">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_simulator</span></span><a class="headerlink" href="#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bmtk.utils.create_environment">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.create_environment" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -860,6 +857,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
@@ -882,12 +880,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

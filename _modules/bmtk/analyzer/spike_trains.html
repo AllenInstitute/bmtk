@@ -1,21 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.analyzer.spike_trains &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -769,7 +765,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a raster plot (plus optional histogram) from the results of the simulation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a raster plot (plus optional histogram) from the results of the simulation.</span>
 
 <span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
 <span class="sd">    display them::</span>
@@ -821,7 +817,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">smoothing_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the</span>
 <span class="sd">    simulation.</span>
 
 <span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
@@ -876,7 +872,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="plot_rates_boxplot"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates_boxplot">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a box plot of the firing rates taken from nodes recorded during the simulation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a box plot of the firing rates taken from nodes recorded during the simulation.</span>
 
 <span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
 <span class="sd">    display them::</span>
@@ -925,7 +921,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="spike_statistics"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.spike_statistics">[docs]</a><span class="k">def</span> <span class="nf">spike_statistics</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                      <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterparams</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get spike statistics (firing_rate, counts, inter-spike interval) of the nodes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get spike statistics (firing_rate, counts, inter-spike interval) of the nodes.</span>
 
 <span class="sd">    :param spikes_file: Path to SONATA spikes file. Do not use with &quot;config_file&quot; options.</span>
 <span class="sd">    :param simulation:</span>
@@ -974,7 +970,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="to_dataframe"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    :param config_file:</span>
 <span class="sd">    :param spikes_file:</span>
@@ -1020,6 +1016,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Networks</a></li>
@@ -1042,12 +1039,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>bmtk.builder.edges_sorter package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.builder.network_adaptors package" href="bmtk.builder.network_adaptors.html" />
@@ -623,19 +620,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-builder-edges-sorter-package">
-<h1>bmtk.builder.edges_sorter package<a class="headerlink" href="#bmtk-builder-edges-sorter-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.builder.edges_sorter.memory_sorter">
-<span id="bmtk-builder-edges-sorter-memory-sorter-module"></span><h2>bmtk.builder.edges_sorter.memory_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.memory_sorter" title="Permalink to this headline">¶</a></h2>
+  <section id="bmtk-builder-edges-sorter-package">
+<h1>bmtk.builder.edges_sorter package<a class="headerlink" href="#bmtk-builder-edges-sorter-package" title="Permalink to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-bmtk.builder.edges_sorter.memory_sorter">
+<span id="bmtk-builder-edges-sorter-memory-sorter-module"></span><h2>bmtk.builder.edges_sorter.memory_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.memory_sorter" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.builder.edges_sorter.memory_sorter.copy_attributes">
-<code class="sig-prename descclassname">bmtk.builder.edges_sorter.memory_sorter.</code><code class="sig-name descname">copy_attributes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_grp</span></em>, <em class="sig-param"><span class="n">out_grp</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/memory_sorter.html#copy_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.memory_sorter.copy_attributes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.memory_sorter.copy_attributes">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.memory_sorter.</span></span><span class="sig-name descname"><span class="pre">copy_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_grp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/memory_sorter.html#copy_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.memory_sorter.copy_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_grp</strong> – hdf5 Group object whose attributes will be copied from.</p></li>
 <li><p><strong>out_grp</strong> – hdf5 Group object that will have it’s attributes updated/copied to.</p></li>
@@ -645,29 +642,29 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.builder.edges_sorter.memory_sorter.quicksort_edges">
-<code class="sig-prename descclassname">bmtk.builder.edges_sorter.memory_sorter.</code><code class="sig-name descname">quicksort_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_edges_path</span></em>, <em class="sig-param"><span class="n">output_edges_path</span></em>, <em class="sig-param"><span class="n">edges_population</span></em>, <em class="sig-param"><span class="n">sort_by</span></em>, <em class="sig-param"><span class="n">sort_model_properties</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/memory_sorter.html#quicksort_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.memory_sorter.quicksort_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.memory_sorter.quicksort_edges">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.memory_sorter.</span></span><span class="sig-name descname"><span class="pre">quicksort_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_model_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/memory_sorter.html#quicksort_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.memory_sorter.quicksort_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.builder.edges_sorter.merge_sorter">
-<span id="bmtk-builder-edges-sorter-merge-sorter-module"></span><h2>bmtk.builder.edges_sorter.merge_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.merge_sorter" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.builder.edges_sorter.merge_sorter">
+<span id="bmtk-builder-edges-sorter-merge-sorter-module"></span><h2>bmtk.builder.edges_sorter.merge_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.merge_sorter" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.builder.edges_sorter.merge_sorter.ProgressFile">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.edges_sorter.merge_sorter.</code><code class="sig-name descname">ProgressFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cache_dir</span></em>, <em class="sig-param"><span class="n">n_edges</span></em>, <em class="sig-param"><span class="n">n_chunks</span></em>, <em class="sig-param"><span class="n">sort_key</span></em>, <em class="sig-param"><span class="n">root_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#ProgressFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.ProgressFile" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.merge_sorter.ProgressFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.merge_sorter.</span></span><span class="sig-name descname"><span class="pre">ProgressFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#ProgressFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.ProgressFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for keeping track of the progress of the sorting of the hdf5 edges files. Will write progress to disk, so
 that if sorting fails we can still continue from where it left off.</p>
 <dl class="py method">
-<dt id="bmtk.builder.edges_sorter.merge_sorter.ProgressFile.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">initialized</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_edges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">n_chunks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">iteration</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chunk_files</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chunk_indices</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_index</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">completed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#ProgressFile.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.ProgressFile.update" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.merge_sorter.ProgressFile.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initialized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#ProgressFile.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.ProgressFile.update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.builder.edges_sorter.merge_sorter.external_merge_sort">
-<code class="sig-prename descclassname">bmtk.builder.edges_sorter.merge_sorter.</code><code class="sig-name descname">external_merge_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_edges_path</span></em>, <em class="sig-param"><span class="n">output_edges_path</span></em>, <em class="sig-param"><span class="n">edges_population</span></em>, <em class="sig-param"><span class="n">sort_by</span></em>, <em class="sig-param"><span class="n">sort_model_properties</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_chunks</span><span class="o">=</span><span class="default_value">12</span></em>, <em class="sig-param"><span class="n">max_itrs</span><span class="o">=</span><span class="default_value">13</span></em>, <em class="sig-param"><span class="n">cache_dir</span><span class="o">=</span><span class="default_value">'.sort_cache'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#external_merge_sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.external_merge_sort" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.merge_sorter.external_merge_sort">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.merge_sorter.</span></span><span class="sig-name descname"><span class="pre">external_merge_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_model_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chunks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_itrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">13</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.sort_cache'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#external_merge_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.external_merge_sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network
 files where we are not able to load into memory.</p>
 <p>Will split the original hdf5 into &lt;n_chunks&gt; chunks on the disk in cache_dir, Will sort each individual chunk
@@ -676,7 +673,7 @@ merging in multiple iterations.</p>
 <p>Itermediate sorting results are saved in cache_dir (eg .sort_cache) and if the sorting fails or doesn’t finish in
 max_itrs, running this function again will continue where it last left off.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_edges_path</strong> – path to original edges file</p></li>
 <li><p><strong>output_edges_path</strong> – path name of new file that will be created</p></li>
@@ -692,16 +689,16 @@ time. (default: 12)</p></li>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.builder.edges_sorter">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.edges_sorter" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-bmtk.builder.edges_sorter">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.edges_sorter" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.builder.edges_sorter.sort_edges">
-<code class="sig-prename descclassname">bmtk.builder.edges_sorter.</code><code class="sig-name descname">sort_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_edges_path</span></em>, <em class="sig-param"><span class="n">output_edges_path</span></em>, <em class="sig-param"><span class="n">edges_population</span></em>, <em class="sig-param"><span class="n">sort_by</span></em>, <em class="sig-param"><span class="n">sort_model_properties</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sort_on_disk</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">sorter_args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter.html#sort_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.sort_edges" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.builder.edges_sorter.sort_edges">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.</span></span><span class="sig-name descname"><span class="pre">sort_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_model_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_on_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">sorter_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter.html#sort_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.sort_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -737,6 +734,7 @@ time. (default: 12)</p></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
@@ -759,12 +757,12 @@ time. (default: 12)</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

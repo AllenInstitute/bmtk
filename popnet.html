@@ -1,21 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
     <title>PopNet &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="FilterNet" href="filternet.html" />
@@ -623,53 +620,53 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="popnet">
-<h1>PopNet<a class="headerlink" href="#popnet" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-default">
+  <section id="popnet">
+<h1>PopNet<a class="headerlink" href="#popnet" title="Permalink to this heading">¶</a></h1>
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_popnet_highlight.jpg"><img alt="_images/bmtk_architecture_popnet_highlight.jpg" src="_images/bmtk_architecture_popnet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
+</figure>
 <p>The PopNet simulation engine uses the <a class="reference external" href="http://alleninstitute.github.io/dipde/">DiPDE simulator</a> to simulate firing
 rate dynamics of connected population of cells. You can use networks of populations “nodes”, or take an existing
 network of individual cell models and PopNet will cluster them into populations.</p>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
 <p>PopNet supports both Python 2.7 or Python 3.6+, and also requires DiPDE to be installed. See our
 <a class="reference external" href="installation">Installation instructions</a> for help on installing DiPDE and the BMTK.</p>
-</div>
-<div class="section" id="documentation-and-tutorials">
-<h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="documentation-and-tutorials">
+<h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this heading">¶</a></h2>
 <p>Our <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial">github page</a> contains a number of jupyter-notebook
 tutorials for using the BMTK in general and PopNet specific examples for:
 * <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/06_population_modeling.ipynb">Building a simple two population model</a>.</p>
-<div class="section" id="about-dipde">
-<h3>About DiPDE<a class="headerlink" href="#about-dipde" title="Permalink to this headline">¶</a></h3>
+<section id="about-dipde">
+<h3>About DiPDE<a class="headerlink" href="#about-dipde" title="Permalink to this heading">¶</a></h3>
 <p>DiPDE was developed at the Allen Institute for Brain Science for population level modeling of the mammallian cortex. For
 a list of the available features please see the <a class="reference external" href="http://alleninstitute.github.io/dipde/index.html">DiPDE documentation</a>.</p>
 <p>For further questions about DiPDE please contact Nicholas Cain (nicholasc at alleninstitute dot org)</p>
-</div>
-<div class="section" id="previous-materials">
-<h3>Previous Materials<a class="headerlink" href="#previous-materials" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="previous-materials">
+<h3>Previous Materials<a class="headerlink" href="#previous-materials" title="Permalink to this heading">¶</a></h3>
 <p>The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the BMTK.
 * CNS 2018 Workshop: <a class="reference external" href="https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk">notebooks</a>
 * Summer Workshop on the Dynamic Brain 2018: <a class="reference external" href="https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling">notebooks</a>.</p>
-</div>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <p>The AllenInstitute/bmtk repo contains a number of PopNet examples, many with pre-built networks and can be immediately ran. These
 tutorials will have the folder prefix <em>pop_</em> and to run them in the command-line simply call:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python run_popnet.py config.json
 </pre></div>
 </div>
-<div class="section" id="current-examples">
-<h3>Current examples<a class="headerlink" href="#current-examples" title="Permalink to this headline">¶</a></h3>
+<section id="current-examples">
+<h3>Current examples<a class="headerlink" href="#current-examples" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_2pops">pop_2pop</a> - A simple recurrently connected network with one excitatory and one inhibitory population.</p></li>
 <li><p><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted">pop_7pops_converted</a> - A conversion our a mouse cortex L4 spiking network into a population rates network.</p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -705,6 +702,7 @@ tutorials will have the folder prefix <em>pop_</em> and to run them in the comma
 <li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
@@ -727,12 +725,12 @@ tutorials will have the folder prefix <em>pop_</em> and to run them in the comma
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
