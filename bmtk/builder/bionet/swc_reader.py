@@ -394,7 +394,7 @@ class SWCReader(object):
         else:
             new_swc_reader = self._copy()
             new_swc_reader._seg_props = self.seg_props
-            new_swc_reader._swc_map = self.swc_map
+            new_swc_reader._swc_map = self._swc_map
             new_swc_reader._nseg = self.nseg
             new_swc_reader._seg_coords = new_seg_coords
             new_swc_reader._soma_pos = new_soma_pos
