@@ -99,7 +99,7 @@ def stimx_waveform_factory(waveform):
             with open(waveform, 'r') as f:
                 waveform = json.load(f)
         else:
-            io.log_warning('Unknwon filetype for waveform')
+            io.log_warning('Unknown filetype for waveform')
 
     shape_key = waveform["shape"].lower()
 
