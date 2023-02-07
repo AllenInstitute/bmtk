@@ -2,6 +2,7 @@ import os
 import json
 import types
 import numpy as np
+from six import string_types
 
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
 
@@ -62,7 +63,28 @@ class FilterNode(SonataBaseNode):
     def delays_non_dom(self):
         return self._prop_adaptor.delays_non_dom(self._node)
 
+    @property
+    def sigma_f(self):
+        return self._prop_adaptor.sigma_f(self._node)
 
+    @property
+    def sigma_t(self):
+        return self._prop_adaptor.sigma_t(self._node)
+    @property
+    def t_mod_freq(self):
+        return self._prop_adaptor.t_mod_freq(self._node)
+
+    @property
+    def sp_mod_freq(self):
+        return self._prop_adaptor.sp_mod_freq(self._node)
+
+    @property
+    def psi(self):
+        return self._prop_adaptor.psi(self._node)
+
+    @property
+    def delay(self):
+        return self._prop_adaptor.delay(self._node)
 class FilterNodeAdaptor(NodeAdaptor):
     def get_node(self, sonata_node):
         return FilterNode(sonata_node, self)
@@ -122,6 +144,8 @@ class FilterNodeAdaptor(NodeAdaptor):
         find_nondom_weight_params(node_group, node_adaptor)
         find_nondom_kpeaks_params(node_group, node_adaptor)
         find_nondom_delays_params(node_group, node_adaptor)
+
+        find_gabor_params(node_group, node_adaptor)
 
         return node_adaptor
 
@@ -234,3 +258,27 @@ def find_nondom_delays_params(node_group, node_adaptor):
         )
     else:
         node_adaptor.delays_non_dom = types.MethodType(return_none, node_adaptor)
+
+
+def find_gabor_params(node_group, node_adaptor):
+    if 'sigma_f' in node_group.all_columns:
+        node_adaptor.sigma_f = types.MethodType(lambda self, node: node['sigma_f'], node_adaptor)
+    if 'sigma_t' in node_group.all_columns:
+        node_adaptor.sigma_t = types.MethodType(lambda self, node: node['sigma_t'], node_adaptor)
+    if 't_mod_freq' in node_group.all_columns:
+        node_adaptor.t_mod_freq = types.MethodType(lambda self, node: node['t_mod_freq'], node_adaptor)
+    if 'sp_mod_freq' in node_group.all_columns:
+        node_adaptor.sp_mod_freq = types.MethodType(lambda self, node: node['sp_mod_freq'], node_adaptor)
+    if 'psi' in node_group.all_columns:
+        node_adaptor.psi = types.MethodType(lambda self, node: node['psi'], node_adaptor)
+    if 'delay' in node_group.all_columns:
+        node_adaptor.delay = types.MethodType(lambda self, node: node['delay'], node_adaptor)
+    else:
+        node_adaptor.sigma_f = types.MethodType(return_none, node_adaptor)
+        node_adaptor.sigma_t = types.MethodType(return_none, node_adaptor)
+        node_adaptor.t_mod_freq = types.MethodType(return_none, node_adaptor)
+        node_adaptor.sp_mod_freq = types.MethodType(return_none, node_adaptor)
+        node_adaptor.psi = types.MethodType(return_none, node_adaptor)
+        if isinstance(node_adaptor.psi, string_types):
+            node_adaptor.psi = eval(node_adaptor.psi.replace('pi', 'np.pi'))
+        node_adaptor.delay = types.MethodType(return_none, node_adaptor)

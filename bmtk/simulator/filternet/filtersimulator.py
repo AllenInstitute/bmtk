@@ -9,6 +9,7 @@ from bmtk.simulator.filternet.lgnmodel.movie import *
 from bmtk.simulator.filternet import modules as mods
 from bmtk.simulator.filternet.io_tools import io
 from bmtk.utils.io.ioutils import bmtk_world_comm
+from bmtk.simulator.filternet.auditory_processing import AuditoryInput
 
 
 class FilterSimulator(Simulator):
@@ -100,6 +101,57 @@ class FilterSimulator(Simulator):
         else:
             self._eval_options.append({})
 
+    def add_audio(self, audio_type, params):
+        # Create cochleagram "movie" from audio wav file
+        audio_type = audio_type.lower() if isinstance(audio_type, string_types) else 'movie'
+        if audio_type == 'wav_file' or not audio_type:
+            if 'data_file' in params:
+                if 'data_file' in params:
+                    aud_file = params['data_file']
+                #elif 'data' in params:
+                #    m_data = params['data']
+                else:
+                    raise Exception('Could not find audio "data_file" in config to use as input.')
+
+                aud = AuditoryInput(aud_file)
+
+                #if params.get('frame_rate'):
+                #    frame_rate = params.get('frame_rate')
+                #else:
+                frame_rate = 1000
+
+                coch, center_freqs_log, times = aud.get_cochleagram(frame_rate, interp_to_freq=params['interp_to_freq'])
+                coch = coch.T
+                coch = coch[:,:, np.newaxis]
+                # Log step?
+                coch = np.log(coch)
+
+                contrast_min, contrast_max = coch.min(), coch.max()
+                normalize_data = params.get('normalize', False)
+                if normalize_data:
+                    self.io.log_info('Normalizing auditory input to (-1.0, 1.0).')
+                    coch = (coch-contrast_min)*2.0/(contrast_max - contrast_min) - 1.0
+                else:
+                    self.io.log_info('Auditory input range is not normalized to (-1.0, 1.0).')
+
+                amplitude = 100
+                coch *= amplitude
+                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
+                                                           't_range'], **params)
+                init_params['row_range'] = center_freqs_log
+                init_params['col_range'] = [0]
+                init_params['t_range'] = times
+                #? Frame_rate
+                # Dimensions of time, row, column
+                self._movies.append(Movie(coch, **init_params))
+        else:
+            raise Exception('Unknown audio type {}'.format(audio_type))
+
+        if 'evaluation_options' in params:
+            self._eval_options.append(params['evaluation_options'])
+        else:
+            self._eval_options.append({})
+
     def run(self):
         for mod in self._sim_mods:
             mod.initialize(self)
@@ -155,6 +207,8 @@ class FilterSimulator(Simulator):
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'movie':
                 sim.add_movie(sim_input.module, sim_input.params)
+            elif sim_input.input_type == 'audio':
+                sim.add_audio(sim_input.module, sim_input.params)
             else:
                 raise Exception('Unable to load input type {}'.format(sim_input.input_type))
 

@@ -130,18 +130,31 @@ class Kernel2D(object):
     
     def normalize(self):
         self.kernel /= np.abs(self.kernel.sum())
-            
+
+    def normalize2(self):
+        # Better for kernels that are not all positive
+        self.kernel -= self.kernel.sum()      # Set amplitude offset to 0
+        self.kernel /= np.sum(np.abs(self.kernel))        # Normalize overall size and maximum output
+
     @classmethod
     def from_dense(cls, row_range, col_range, kernel_array, threshold=0.):
         col_range = np.array(col_range).copy()
         row_range = np.array(row_range).copy()
         kernel_array = np.array(kernel_array).copy()
-        inds_to_keep = np.where(np.abs(kernel_array) > threshold)
-        kernel = kernel_array[inds_to_keep]
-        if len(inds_to_keep) == 1:
+        #inds_to_keep = np.where(np.abs(kernel_array) > threshold)
+        # Find cropped contiguous rectangle containing above threshold kernel values
+        above_thresh = np.abs(kernel_array) > threshold
+        start_ind0 = np.argmax(np.max(above_thresh, axis=1))
+        b = above_thresh[::-1,:]
+        end_ind0 = b.shape[0] - np.argmax(np.max(b,axis=1))
+        start_ind1 = np.argmax(np.max(above_thresh, axis=0))
+        b = above_thresh[:,::-1]
+        end_ind1 = b.shape[1] - np.argmax(np.max(b, axis=0))
+        #kernel = kernel_array[inds_to_keep]
+        col_inds, row_inds = [v.flatten() for v in np.meshgrid(range(start_ind0, end_ind0), range(start_ind1, end_ind1), indexing='ij')]
+        kernel = kernel_array[col_inds, row_inds]
+        if len(np.where(above_thresh)) == 1:
             col_inds, row_inds = np.array([]), np.array([])
-        else:
-            col_inds, row_inds = inds_to_keep
         
         return cls(row_range, col_range, row_inds, col_inds,  kernel)
     
@@ -186,12 +199,12 @@ class Kernel2D(object):
         return Kernel2D(row_range, col_range, row_inds, col_inds, kernel)
     
     def apply_threshold(self, threshold):
-        
+
         inds_to_keep = np.where(np.abs(self.kernel) > threshold)
         self.row_inds = self.row_inds[inds_to_keep]
         self.col_inds = self.col_inds[inds_to_keep]
         self.kernel = self.kernel[inds_to_keep]
-        
+
     def full(self):
         data = np.zeros((len(self.row_range), len(self.col_range)))
         data[self.row_inds, self.col_inds] = self.kernel

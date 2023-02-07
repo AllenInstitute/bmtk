@@ -2,7 +2,7 @@ import numpy as np
 import scipy.signal as spsig
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
-
+from .linearfilter import SpatioTemporalFilter, SpectroTemporalFilter
 
 class KernelCursor(object):
     """A class that takes care of the convolution of the (non-separable) spatial-temporal linear filter with the move.
@@ -106,8 +106,13 @@ class LNUnitCursor(KernelCursor):
     """
     def __init__(self, lnunit, movie, threshold=0):
         self.lnunit = lnunit
-        kernel = lnunit.get_spatiotemporal_kernel(movie.row_range, movie.col_range, movie.t_range, reverse=True,
+        if isinstance(self.lnunit.linear_filter, SpatioTemporalFilter):
+            kernel = lnunit.get_spatiotemporal_kernel(movie.row_range, movie.col_range, movie.t_range, reverse=True,
                                                   threshold=threshold)
+        elif isinstance(self.lnunit.linear_filter, SpectroTemporalFilter):
+            kernel = lnunit.get_spectrotemporal_kernel(movie.row_range, movie.t_range, reverse=True, threshold=threshold)
+        else:
+            pass
         kernel.apply_threshold(threshold)
              
         super(LNUnitCursor, self).__init__(kernel, movie)
