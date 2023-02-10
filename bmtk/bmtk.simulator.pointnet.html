@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>bmtk.simulator.pointnet package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -622,22 +621,54 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-simulator-pointnet-package">
-<h1>bmtk.simulator.pointnet package<a class="headerlink" href="#bmtk-simulator-pointnet-package" title="Permalink to this headline">¶</a></h1>
+<h1>bmtk.simulator.pointnet package<a class="headerlink" href="#bmtk-simulator-pointnet-package" title="Permalink to this heading">¶</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html">bmtk.simulator.pointnet.default_setters package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#module-bmtk.simulator.pointnet.default_setters.synapse_models">bmtk.simulator.pointnet.default_setters.synapse_models module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#module-bmtk.simulator.pointnet.default_setters.synaptic_weights">bmtk.simulator.pointnet.default_setters.synaptic_weights module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#module-bmtk.simulator.pointnet.default_setters.synapse_models">bmtk.simulator.pointnet.default_setters.synapse_models module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#bmtk.simulator.pointnet.default_setters.synapse_models.static_synapse"><code class="docutils literal notranslate"><span class="pre">static_synapse()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#module-bmtk.simulator.pointnet.default_setters.synaptic_weights">bmtk.simulator.pointnet.default_setters.synaptic_weights module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#bmtk.simulator.pointnet.default_setters.synaptic_weights.default_weight_fnc"><code class="docutils literal notranslate"><span class="pre">default_weight_fnc()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.default_setters.html#module-bmtk.simulator.pointnet.default_setters">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html">bmtk.simulator.pointnet.modules package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#module-bmtk.simulator.pointnet.modules.multimeter_reporter">bmtk.simulator.pointnet.modules.multimeter_reporter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#module-bmtk.simulator.pointnet.modules.record_spikes">bmtk.simulator.pointnet.modules.record_spikes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#module-bmtk.simulator.pointnet.modules.multimeter_reporter">bmtk.simulator.pointnet.modules.multimeter_reporter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod"><code class="docutils literal notranslate"><span class="pre">MultimeterMod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod.finalize"><code class="docutils literal notranslate"><span class="pre">MultimeterMod.finalize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod.initialize"><code class="docutils literal notranslate"><span class="pre">MultimeterMod.initialize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter"><code class="docutils literal notranslate"><span class="pre">create_multimeter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest2"><code class="docutils literal notranslate"><span class="pre">create_multimeter_nest2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest3"><code class="docutils literal notranslate"><span class="pre">create_multimeter_nest3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat"><code class="docutils literal notranslate"><span class="pre">read_dat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest2"><code class="docutils literal notranslate"><span class="pre">read_dat_nest2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest3"><code class="docutils literal notranslate"><span class="pre">read_dat_nest3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#module-bmtk.simulator.pointnet.modules.record_spikes">bmtk.simulator.pointnet.modules.record_spikes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod"><code class="docutils literal notranslate"><span class="pre">SpikesMod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.finalize"><code class="docutils literal notranslate"><span class="pre">SpikesMod.finalize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.initialize"><code class="docutils literal notranslate"><span class="pre">SpikesMod.initialize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.create_spike_detector"><code class="docutils literal notranslate"><span class="pre">create_spike_detector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.create_spike_detector_nest2"><code class="docutils literal notranslate"><span class="pre">create_spike_detector_nest2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.create_spike_detector_nest3"><code class="docutils literal notranslate"><span class="pre">create_spike_detector_nest3()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.read_spikes_file"><code class="docutils literal notranslate"><span class="pre">read_spikes_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.read_spikes_file_nest2"><code class="docutils literal notranslate"><span class="pre">read_spikes_file_nest2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.read_spikes_file_nest3"><code class="docutils literal notranslate"><span class="pre">read_spikes_file_nest3()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.pointnet.modules.html#module-bmtk.simulator.pointnet.modules">Module contents</a></li>
 </ul>
 </li>
@@ -645,14 +676,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.pointnet.config">
-<span id="bmtk-simulator-pointnet-config-module"></span><h2>bmtk.simulator.pointnet.config module<a class="headerlink" href="#module-bmtk.simulator.pointnet.config" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-config-module"></span><h2>bmtk.simulator.pointnet.config module<a class="headerlink" href="#module-bmtk.simulator.pointnet.config" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.config.Config">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulation_config.SimulationConfig" title="bmtk.simulator.core.simulation_config.SimulationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulation_config.SimulationConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulation_config.SimulationConfig" title="bmtk.simulator.core.simulation_config.SimulationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationConfig</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.config.Config.io">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">io</span></span><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config.io" title="Permalink to this definition">¶</a></dt>
@@ -672,7 +703,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.pointnet.gids">
-<span id="bmtk-simulator-pointnet-gids-module"></span><h2>bmtk.simulator.pointnet.gids module<a class="headerlink" href="#module-bmtk.simulator.pointnet.gids" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-gids-module"></span><h2>bmtk.simulator.pointnet.gids module<a class="headerlink" href="#module-bmtk.simulator.pointnet.gids" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.gids.GidPool">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.gids.</span></span><span class="sig-name descname"><span class="pre">GidPool</span></span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool" title="Permalink to this definition">¶</a></dt>
@@ -764,7 +795,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.pointnet.glif_utils">
-<span id="bmtk-simulator-pointnet-glif-utils-module"></span><h2>bmtk.simulator.pointnet.glif_utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.glif_utils" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-glif-utils-module"></span><h2>bmtk.simulator.pointnet.glif_utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.glif_utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.glif_utils.convert_aibs2nest">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.glif_utils.</span></span><span class="sig-name descname"><span class="pre">convert_aibs2nest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.convert_aibs2nest" title="Permalink to this definition">¶</a></dt>
@@ -784,10 +815,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.glif_utils.lif_aibs_converter">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.glif_utils.</span></span><span class="sig-name descname"><span class="pre">lif_aibs_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_syn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[5.5,</span> <span class="pre">8.5,</span> <span class="pre">2.8,</span> <span class="pre">5.8]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_aibs_converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>config</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -797,10 +828,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.glif_utils.lif_asc_aibs_converter">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.glif_utils.</span></span><span class="sig-name descname"><span class="pre">lif_asc_aibs_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_syn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[5.5,</span> <span class="pre">8.5,</span> <span class="pre">2.8,</span> <span class="pre">5.8]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_asc_aibs_converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_asc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>config</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -822,10 +853,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.glif_utils.lif_r_aibs_converter">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.glif_utils.</span></span><span class="sig-name descname"><span class="pre">lif_r_aibs_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_aibs_converter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>config</strong> – </p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -863,12 +894,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.pointnet.io_tools">
-<span id="bmtk-simulator-pointnet-io-tools-module"></span><h2>bmtk.simulator.pointnet.io_tools module<a class="headerlink" href="#module-bmtk.simulator.pointnet.io_tools" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-io-tools-module"></span><h2>bmtk.simulator.pointnet.io_tools module<a class="headerlink" href="#module-bmtk.simulator.pointnet.io_tools" title="Permalink to this heading">¶</a></h2>
 <p>Functions for logging, writing and reading from file.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.io_tools.NestIOUtils">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.io_tools.</span></span><span class="sig-name descname"><span class="pre">NestIOUtils</span></span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOUtils</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.io_tools.NestIOUtils.barrier">
 <span class="sig-name descname"><span class="pre">barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.barrier" title="Permalink to this definition">¶</a></dt>
@@ -890,14 +921,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.pointnet.nest_utils">
-<span id="bmtk-simulator-pointnet-nest-utils-module"></span><h2>bmtk.simulator.pointnet.nest_utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.nest_utils" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-nest-utils-module"></span><h2>bmtk.simulator.pointnet.nest_utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.nest_utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.nest_utils.get_version">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.nest_utils.</span></span><span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/nest_utils.html#get_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.nest_utils.get_version" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trys to get NEST version major, minor, and patch (optional) of the current running version of nest. Will return
 as a list of ints [major, minor, patch], although patch may be None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[major, minor, patch] if able to parse version, None if fails. ‘patch’ may be None value.</p>
 </dd>
 </dl>
@@ -905,11 +936,11 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet.pointnetwork">
-<span id="bmtk-simulator-pointnet-pointnetwork-module"></span><h2>bmtk.simulator.pointnet.pointnetwork module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointnetwork" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-pointnetwork-module"></span><h2>bmtk.simulator.pointnet.pointnetwork module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointnetwork" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.pointnetwork.PointNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.pointnetwork.</span></span><span class="sig-name descname"><span class="pre">PointNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimNetwork</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains">
 <span class="sig-name descname"><span class="pre">add_spike_trains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_trains</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sg_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'precise_times':</span> <span class="pre">True}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_spike_trains"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
@@ -989,11 +1020,11 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet.pointsimulator">
-<span id="bmtk-simulator-pointnet-pointsimulator-module"></span><h2>bmtk.simulator.pointnet.pointsimulator module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointsimulator" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-pointsimulator-module"></span><h2>bmtk.simulator.pointnet.pointsimulator module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointsimulator" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.pointsimulator.PointSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.pointsimulator.</span></span><span class="sig-name descname"><span class="pre">PointSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator.Simulator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_mod">
 <span class="sig-name descname"><span class="pre">add_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.add_mod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_mod" title="Permalink to this definition">¶</a></dt>
@@ -1063,7 +1094,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet.property_map">
-<span id="bmtk-simulator-pointnet-property-map-module"></span><h2>bmtk.simulator.pointnet.property_map module<a class="headerlink" href="#module-bmtk.simulator.pointnet.property_map" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-property-map-module"></span><h2>bmtk.simulator.pointnet.property_map module<a class="headerlink" href="#module-bmtk.simulator.pointnet.property_map" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.property_map.EdgePropertyMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.property_map.</span></span><span class="sig-name descname"><span class="pre">EdgePropertyMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap" title="Permalink to this definition">¶</a></dt>
@@ -1163,14 +1194,14 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet.pyfunction_cache">
-<span id="bmtk-simulator-pointnet-pyfunction-cache-module"></span><h2>bmtk.simulator.pointnet.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pyfunction_cache" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-pyfunction-cache-module"></span><h2>bmtk.simulator.pointnet.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pyfunction_cache" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.pointnet.sonata_adaptors">
-<span id="bmtk-simulator-pointnet-sonata-adaptors-module"></span><h2>bmtk.simulator.pointnet.sonata_adaptors module<a class="headerlink" href="#module-bmtk.simulator.pointnet.sonata_adaptors" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-sonata-adaptors-module"></span><h2>bmtk.simulator.pointnet.sonata_adaptors module<a class="headerlink" href="#module-bmtk.simulator.pointnet.sonata_adaptors" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">PointEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">SonataBaseEdge</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge.nest_params">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nest_params</span></span><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.nest_params" title="Permalink to this definition">¶</a></dt>
@@ -1191,7 +1222,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">PointEdgeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeAdaptor</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.batch_process">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
@@ -1248,7 +1279,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointNode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">PointNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SonataBaseNode</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.build" title="Permalink to this definition">¶</a></dt>
@@ -1289,7 +1320,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">PointNodeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">NodeAdaptor</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.batch_process">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
@@ -1376,7 +1407,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet.utils">
-<span id="bmtk-simulator-pointnet-utils-module"></span><h2>bmtk.simulator.pointnet.utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.utils" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-simulator-pointnet-utils-module"></span><h2>bmtk.simulator.pointnet.utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.pointnet.utils.gen_recurrent_csv">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.utils.</span></span><span class="sig-name descname"><span class="pre">gen_recurrent_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#gen_recurrent_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.gen_recurrent_csv" title="Permalink to this definition">¶</a></dt>
@@ -1392,12 +1423,12 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.utils.</span></span><span class="sig-name descname"><span class="pre">load_conns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cnn_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_conns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_conns" title="Permalink to this definition">¶</a></dt>
 <dd><p>load information regarding connectivity from csv files</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>cnn_fn: json file name for connection information</strong></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>connection dictionary</dt><dd></dd>
 </dl>
@@ -1410,13 +1441,13 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.pointnet.utils.</span></span><span class="sig-name descname"><span class="pre">load_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>load information regarding nodes and cell_models from csv files</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>node_name: json file name for node information</strong></dt><dd></dd>
 <dt><strong>model_name: json file name for neuron model information</strong></dt><dd></dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>node_info: 2d array of node info read out from the json file</dt><dd></dd>
 <dt>mode_info: 2d array of model info read out from the json file</dt><dd></dd>
@@ -1438,7 +1469,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
 
 </section>
 <section id="module-bmtk.simulator.pointnet">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.pointnet" title="Permalink to this headline">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.pointnet" title="Permalink to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -1504,7 +1535,7 @@ as a list of ints [major, minor, patch], although patch may be None.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

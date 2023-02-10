@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>bmtk.builder package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -622,39 +621,229 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-builder-package">
-<h1>bmtk.builder package<a class="headerlink" href="#bmtk-builder-package" title="Permalink to this headline">¶</a></h1>
+<h1>bmtk.builder package<a class="headerlink" href="#bmtk-builder-package" title="Permalink to this heading">¶</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.auxi.html">bmtk.builder.auxi package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#module-bmtk.builder.auxi.edge_connectors">bmtk.builder.auxi.edge_connectors module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#module-bmtk.builder.auxi.node_params">bmtk.builder.auxi.node_params module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#module-bmtk.builder.auxi.edge_connectors">bmtk.builder.auxi.edge_connectors module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.auxi.html#bmtk.builder.auxi.edge_connectors.connect_random"><code class="docutils literal notranslate"><span class="pre">connect_random()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.auxi.html#bmtk.builder.auxi.edge_connectors.distance_connector"><code class="docutils literal notranslate"><span class="pre">distance_connector()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#bmtk-builder-auxi-node-params-module">bmtk.builder.auxi.node_params module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.auxi.html#module-bmtk.builder.auxi">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.bionet.html">bmtk.builder.bionet package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet.swc_reader">bmtk.builder.bionet.swc_reader module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet.swc_reader">bmtk.builder.bionet.swc_reader module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader"><code class="docutils literal notranslate"><span class="pre">SWCReader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.choose_sections"><code class="docutils literal notranslate"><span class="pre">SWCReader.choose_sections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.delete_axon"><code class="docutils literal notranslate"><span class="pre">SWCReader.delete_axon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.find_sections"><code class="docutils literal notranslate"><span class="pre">SWCReader.find_sections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.fix_axon"><code class="docutils literal notranslate"><span class="pre">SWCReader.fix_axon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_coords"><code class="docutils literal notranslate"><span class="pre">SWCReader.get_coords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_section"><code class="docutils literal notranslate"><span class="pre">SWCReader.get_section()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_swc_id"><code class="docutils literal notranslate"><span class="pre">SWCReader.get_swc_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.move_and_rotate"><code class="docutils literal notranslate"><span class="pre">SWCReader.move_and_rotate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.n_sections"><code class="docutils literal notranslate"><span class="pre">SWCReader.n_sections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.nseg"><code class="docutils literal notranslate"><span class="pre">SWCReader.nseg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.sec_type_swc"><code class="docutils literal notranslate"><span class="pre">SWCReader.sec_type_swc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.sections"><code class="docutils literal notranslate"><span class="pre">SWCReader.sections</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.seg_coords"><code class="docutils literal notranslate"><span class="pre">SWCReader.seg_coords</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.seg_props"><code class="docutils literal notranslate"><span class="pre">SWCReader.seg_props</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.set_segment_dl"><code class="docutils literal notranslate"><span class="pre">SWCReader.set_segment_dl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.soma_position"><code class="docutils literal notranslate"><span class="pre">SWCReader.soma_position</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.swc_map"><code class="docutils literal notranslate"><span class="pre">SWCReader.swc_map</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentCoords"><code class="docutils literal notranslate"><span class="pre">SegmentCoords</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentCoords.p0"><code class="docutils literal notranslate"><span class="pre">SegmentCoords.p0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentCoords.p05"><code class="docutils literal notranslate"><span class="pre">SegmentCoords.p05</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentCoords.p1"><code class="docutils literal notranslate"><span class="pre">SegmentCoords.p1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps"><code class="docutils literal notranslate"><span class="pre">SegmentProps</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.area"><code class="docutils literal notranslate"><span class="pre">SegmentProps.area</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.dist"><code class="docutils literal notranslate"><span class="pre">SegmentProps.dist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.dist0"><code class="docutils literal notranslate"><span class="pre">SegmentProps.dist0</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.dist1"><code class="docutils literal notranslate"><span class="pre">SegmentProps.dist1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.length"><code class="docutils literal notranslate"><span class="pre">SegmentProps.length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.sec_id"><code class="docutils literal notranslate"><span class="pre">SegmentProps.sec_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.type"><code class="docutils literal notranslate"><span class="pre">SegmentProps.type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SegmentProps.x"><code class="docutils literal notranslate"><span class="pre">SegmentProps.x</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.get_swc"><code class="docutils literal notranslate"><span class="pre">get_swc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.rotation_matrix"><code class="docutils literal notranslate"><span class="pre">rotation_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk.builder.bionet.rand_syn_locations"><code class="docutils literal notranslate"><span class="pre">rand_syn_locations()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.edges_sorter.html">bmtk.builder.edges_sorter package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter.memory_sorter">bmtk.builder.edges_sorter.memory_sorter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter.merge_sorter">bmtk.builder.edges_sorter.merge_sorter module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter.memory_sorter">bmtk.builder.edges_sorter.memory_sorter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.memory_sorter.copy_attributes"><code class="docutils literal notranslate"><span class="pre">copy_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.memory_sorter.quicksort_edges"><code class="docutils literal notranslate"><span class="pre">quicksort_edges()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter.merge_sorter">bmtk.builder.edges_sorter.merge_sorter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.ProgressFile"><code class="docutils literal notranslate"><span class="pre">ProgressFile</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.ProgressFile.update"><code class="docutils literal notranslate"><span class="pre">ProgressFile.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.external_merge_sort"><code class="docutils literal notranslate"><span class="pre">external_merge_sort()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.edges_sorter.html#module-bmtk.builder.edges_sorter">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.sort_edges"><code class="docutils literal notranslate"><span class="pre">sort_edges()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.network_adaptors.html">bmtk.builder.network_adaptors package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.dm_network">bmtk.builder.network_adaptors.dm_network module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.dm_network_orig">bmtk.builder.network_adaptors.dm_network_orig module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.edge_props_table">bmtk.builder.network_adaptors.edge_props_table module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.edges_collator">bmtk.builder.network_adaptors.edges_collator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.network">bmtk.builder.network_adaptors.network module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.nxnetwork">bmtk.builder.network_adaptors.nxnetwork module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.dm_network">bmtk.builder.network_adaptors.dm_network module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork"><code class="docutils literal notranslate"><span class="pre">DenseNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.edges_iter"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.edges_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.edges_table"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.edges_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.import_nodes"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.import_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.nedges"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.nedges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.nnodes"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.nnodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.DenseNetwork.nodes_iter"><code class="docutils literal notranslate"><span class="pre">DenseNetwork.nodes_iter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.add_hdf5_attrs"><code class="docutils literal notranslate"><span class="pre">add_hdf5_attrs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network.barrier"><code class="docutils literal notranslate"><span class="pre">barrier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.dm_network_orig">bmtk.builder.network_adaptors.dm_network_orig module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.EdgeTable"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.EdgeTable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.PropertyTable"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.PropertyTable</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.edges_iter"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.edges_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.edges_table"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.edges_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.import_nodes"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.import_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.nedges"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.nedges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.nnodes"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.nnodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.nodes_iter"><code class="docutils literal notranslate"><span class="pre">DenseNetworkOrig.nodes_iter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.add_hdf5_attrs"><code class="docutils literal notranslate"><span class="pre">add_hdf5_attrs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.dm_network_orig.barrier"><code class="docutils literal notranslate"><span class="pre">barrier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.edge_props_table">bmtk.builder.network_adaptors.edge_props_table module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTable"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTable</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableIFace"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableIFace</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableIFace.n_edges"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableIFace.n_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableIFace.n_syns"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableIFace.n_syns</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI.get_tmp_table_path"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMPI.get_tmp_table_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI.save"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMPI.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.create_property"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.create_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.edge_type_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.edge_type_node_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.edge_type_properties"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.edge_type_properties</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.free_data"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.free_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.get_property_metatadata"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.get_property_metatadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.get_property_value"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.get_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.hash_key"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.hash_key</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.iter_edges"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.iter_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.n_edges"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.n_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.n_syns"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.n_syns</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.save"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.set_nsyns"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.set_nsyns()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.set_property_value"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.set_property_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.source_nodes_map"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.source_nodes_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.target_nodes_map"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.target_nodes_map</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.to_dataframe"><code class="docutils literal notranslate"><span class="pre">EdgeTypesTableMemory.to_dataframe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.barrier"><code class="docutils literal notranslate"><span class="pre">barrier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.edges_collator">bmtk.builder.network_adaptors.edges_collator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollator"><code class="docutils literal notranslate"><span class="pre">EdgesCollator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_group_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_edge_group_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_group_indices"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_edge_group_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_type_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_edge_type_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_data"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_group_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_metadata"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_group_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_property"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_group_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_source_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_source_node_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_target_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.get_target_node_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.group_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.group_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.itr_chunks"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.itr_chunks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.process"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.sort"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorMPI.sort()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.assign_groups"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.assign_groups()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_edge_group_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_edge_group_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_edge_group_indices"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_edge_group_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_edge_type_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_edge_type_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_group_data"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_group_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_group_metadata"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_group_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_group_property"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_group_property()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_source_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_source_node_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_target_node_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.get_target_node_ids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.group_ids"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.group_ids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.itr_chunks"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.itr_chunks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.process"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.process()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.sort"><code class="docutils literal notranslate"><span class="pre">EdgesCollatorSingular.sort()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.barrier"><code class="docutils literal notranslate"><span class="pre">barrier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.network">bmtk.builder.network_adaptors.network module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.add_edges"><code class="docutils literal notranslate"><span class="pre">Network.add_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.add_gap_junctions"><code class="docutils literal notranslate"><span class="pre">Network.add_gap_junctions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.add_nodes"><code class="docutils literal notranslate"><span class="pre">Network.add_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.build"><code class="docutils literal notranslate"><span class="pre">Network.build()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.clear"><code class="docutils literal notranslate"><span class="pre">Network.clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.edges"><code class="docutils literal notranslate"><span class="pre">Network.edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.edges_built"><code class="docutils literal notranslate"><span class="pre">Network.edges_built</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.edges_iter"><code class="docutils literal notranslate"><span class="pre">Network.edges_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.get_connections"><code class="docutils literal notranslate"><span class="pre">Network.get_connections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.import_nodes"><code class="docutils literal notranslate"><span class="pre">Network.import_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.name"><code class="docutils literal notranslate"><span class="pre">Network.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.nedges"><code class="docutils literal notranslate"><span class="pre">Network.nedges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.nnodes"><code class="docutils literal notranslate"><span class="pre">Network.nnodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.nodes"><code class="docutils literal notranslate"><span class="pre">Network.nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.nodes_built"><code class="docutils literal notranslate"><span class="pre">Network.nodes_built</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.nodes_iter"><code class="docutils literal notranslate"><span class="pre">Network.nodes_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.save"><code class="docutils literal notranslate"><span class="pre">Network.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.save_edges"><code class="docutils literal notranslate"><span class="pre">Network.save_edges()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.Network.save_nodes"><code class="docutils literal notranslate"><span class="pre">Network.save_nodes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.network.barrier"><code class="docutils literal notranslate"><span class="pre">barrier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors.nxnetwork">bmtk.builder.network_adaptors.nxnetwork module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.nxnetwork.NxNetwork"><code class="docutils literal notranslate"><span class="pre">NxNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.nxnetwork.NxNetwork.nedges"><code class="docutils literal notranslate"><span class="pre">NxNetwork.nedges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.nxnetwork.NxNetwork.nnodes"><code class="docutils literal notranslate"><span class="pre">NxNetwork.nnodes</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.network_adaptors.html#module-bmtk.builder.network_adaptors">Module contents</a></li>
 </ul>
 </li>
@@ -662,10 +851,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-bmtk.builder.builder_utils">
-<span id="bmtk-builder-builder-utils-module"></span><h2>bmtk.builder.builder_utils module<a class="headerlink" href="#module-bmtk.builder.builder_utils" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-builder-utils-module"></span><h2>bmtk.builder.builder_utils module<a class="headerlink" href="#module-bmtk.builder.builder_utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.builder_utils.add_hdf5_attrs">
 <span class="sig-prename descclassname"><span class="pre">bmtk.builder.builder_utils.</span></span><span class="sig-name descname"><span class="pre">add_hdf5_attrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hdf5_handle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/builder_utils.html#add_hdf5_attrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.builder_utils.add_hdf5_attrs" title="Permalink to this definition">¶</a></dt>
@@ -685,7 +874,7 @@ method due to bug where using random generator without rng_seed was causing issu
 consistantly using multiple cores.</p>
 <p>Will throw an Exception or a warning message (if MPI_fail_params_nonuniform is false)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>properties</strong> – A dictionary</p></li>
 <li><p><strong>graph_type</strong> – ‘node’ or ‘edge’, used in error message. default ‘node’.</p></li>
@@ -701,7 +890,7 @@ consistantly using multiple cores.</p>
 
 </section>
 <section id="module-bmtk.builder.connection_map">
-<span id="bmtk-builder-connection-map-module"></span><h2>bmtk.builder.connection_map module<a class="headerlink" href="#module-bmtk.builder.connection_map" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-connection-map-module"></span><h2>bmtk.builder.connection_map module<a class="headerlink" href="#module-bmtk.builder.connection_map" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.connection_map.ConnectionMap">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.connection_map.</span></span><span class="sig-name descname"><span class="pre">ConnectionMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connector_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'one_to_one'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_type_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap" title="Permalink to this definition">¶</a></dt>
@@ -816,7 +1005,7 @@ a value for the property. Such rule is a user defined function, and will be call
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>names</strong> – list, or single string, of the property</p></li>
 <li><p><strong>rule</strong> – function, list or value of property</p></li>
@@ -903,7 +1092,7 @@ and create a connection rule based on the connector.</p>
 
 </section>
 <section id="module-bmtk.builder.connector">
-<span id="bmtk-builder-connector-module"></span><h2>bmtk.builder.connector module<a class="headerlink" href="#module-bmtk.builder.connector" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-connector-module"></span><h2>bmtk.builder.connector module<a class="headerlink" href="#module-bmtk.builder.connector" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.connector.create">
 <span class="sig-prename descclassname"><span class="pre">bmtk.builder.connector.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connector</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connector.html#create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.connector.create" title="Permalink to this definition">¶</a></dt>
@@ -916,7 +1105,7 @@ and create a connection rule based on the connector.</p>
 
 </section>
 <section id="module-bmtk.builder.edge">
-<span id="bmtk-builder-edge-module"></span><h2>bmtk.builder.edge module<a class="headerlink" href="#module-bmtk.builder.edge" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-edge-module"></span><h2>bmtk.builder.edge module<a class="headerlink" href="#module-bmtk.builder.edge" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.edge.Edge">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.edge.</span></span><span class="sig-name descname"><span class="pre">Edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_type_props</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edge.html#Edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edge.Edge" title="Permalink to this definition">¶</a></dt>
@@ -960,7 +1149,7 @@ and create a connection rule based on the connector.</p>
 
 </section>
 <section id="module-bmtk.builder.functor_cache">
-<span id="bmtk-builder-functor-cache-module"></span><h2>bmtk.builder.functor_cache module<a class="headerlink" href="#module-bmtk.builder.functor_cache" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-functor-cache-module"></span><h2>bmtk.builder.functor_cache module<a class="headerlink" href="#module-bmtk.builder.functor_cache" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.functor_cache.FunctorCache">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.functor_cache.</span></span><span class="sig-name descname"><span class="pre">FunctorCache</span></span><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache" title="Permalink to this definition">¶</a></dt>
@@ -979,7 +1168,7 @@ and create a connection rule based on the connector.</p>
 
 </section>
 <section id="module-bmtk.builder.id_generator">
-<span id="bmtk-builder-id-generator-module"></span><h2>bmtk.builder.id_generator module<a class="headerlink" href="#module-bmtk.builder.id_generator" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-id-generator-module"></span><h2>bmtk.builder.id_generator module<a class="headerlink" href="#module-bmtk.builder.id_generator" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.id_generator.IDGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.id_generator.</span></span><span class="sig-name descname"><span class="pre">IDGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/id_generator.html#IDGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.id_generator.IDGenerator" title="Permalink to this definition">¶</a></dt>
@@ -1013,7 +1202,7 @@ when using imported networks and we want to eliminate previously created id.</p>
 
 </section>
 <section id="module-bmtk.builder.index_builders">
-<span id="bmtk-builder-index-builders-module"></span><h2>bmtk.builder.index_builders module<a class="headerlink" href="#module-bmtk.builder.index_builders" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-index-builders-module"></span><h2>bmtk.builder.index_builders module<a class="headerlink" href="#module-bmtk.builder.index_builders" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.index_builders.create_index_in_memory">
 <span class="sig-prename descclassname"><span class="pre">bmtk.builder.index_builders.</span></span><span class="sig-name descname"><span class="pre">create_index_in_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_rebuild</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/index_builders.html#create_index_in_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.index_builders.create_index_in_memory" title="Permalink to this definition">¶</a></dt>
@@ -1031,7 +1220,7 @@ when using imported networks and we want to eliminate previously created id.</p>
 
 </section>
 <section id="module-bmtk.builder.iterator">
-<span id="bmtk-builder-iterator-module"></span><h2>bmtk.builder.iterator module<a class="headerlink" href="#module-bmtk.builder.iterator" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-iterator-module"></span><h2>bmtk.builder.iterator module<a class="headerlink" href="#module-bmtk.builder.iterator" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.iterator.IteratorCache">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.iterator.</span></span><span class="sig-name descname"><span class="pre">IteratorCache</span></span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache" title="Permalink to this definition">¶</a></dt>
@@ -1097,18 +1286,18 @@ when using imported networks and we want to eliminate previously created id.</p>
 
 </section>
 <section id="module-bmtk.builder.network_builder">
-<span id="bmtk-builder-network-builder-module"></span><h2>bmtk.builder.network_builder module<a class="headerlink" href="#module-bmtk.builder.network_builder" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-network-builder-module"></span><h2>bmtk.builder.network_builder module<a class="headerlink" href="#module-bmtk.builder.network_builder" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.BioNetBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_builder.</span></span><span class="sig-name descname"><span class="pre">BioNetBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor_cls=&lt;class</span> <span class="pre">'bmtk.builder.network_adaptors.dm_network.DenseNetwork'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#BioNetBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.BioNetBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_builder.NetworkBuilder</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkBuilder</span></code></a></p>
 <p>An instance of NetworkBuilder specifically designed for building BioNet (NEURON) complainant networks</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.BioNetBuilder.add_edges">
 <span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'one_to_one'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#BioNetBuilder.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.BioNetBuilder.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add rules for creating edges between a subset of source and target cells.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source</strong> – A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
 subset of nodes.</p></li>
@@ -1140,7 +1329,7 @@ specific locations use afferent_section_id/afferent_section_pos along with the r
 <li><p><strong>properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A ConnectionMap object</p>
 </dd>
 </dl>
@@ -1151,7 +1340,7 @@ specific locations use afferent_section_id/afferent_section_pos along with the r
 <span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morphology</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_angle_xaxis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_angle_yaxis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_angle_zaxis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#BioNetBuilder.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.BioNetBuilder.add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a set of N NEURON type nodes/cells to the network</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> – number of nodes (cells) in this group</p></li>
 <li><p><strong>model_type</strong> – the type of node, ‘biophysical’, ‘virtual’, ‘single_compartment’, or ‘point_neuron’</p></li>
@@ -1331,7 +1520,7 @@ more info.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source</strong> – A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
 subset of nodes.</p></li>
@@ -1347,7 +1536,7 @@ each target, and ‘one-to-all’ will pass in a list of all possible targets fo
 <li><p><strong>edge_type_properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A ConnectionMap object</p>
 </dd>
 </dl>
@@ -1372,7 +1561,7 @@ columns). For example to have one property ‘positions’ which keeps track of 
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> – number of nodes in this group</p></li>
 <li><p><strong>properties</strong> – Individual and group properties of given nodes</p></li>
@@ -1386,7 +1575,7 @@ columns). For example to have one property ‘positions’ which keeps track of 
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#NetworkBuilder.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.NetworkBuilder.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds nodes and edges.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>force</strong> – set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been
 called before then forcing a rebuild may change gids of each node.</p>
 </dd>
@@ -1416,7 +1605,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target_nodes</strong> – gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</p></li>
 <li><p><strong>source_nodes</strong> – gid, list of gid, dict or node-pool. Set of source nodes for a given edge.</p></li>
@@ -1425,7 +1614,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 <li><p><strong>properties</strong> – edge-properties used to filter out only certain edges.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of bmtk.builder.edge.Edge properties.</p>
 </dd>
 </dl>
@@ -1442,7 +1631,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 <span class="sig-name descname"><span class="pre">import_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#NetworkBuilder.import_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.NetworkBuilder.import_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import nodes from an existing sonata file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nodes_file_name</strong> – </p></li>
 <li><p><strong>node_types_file_name</strong> – </p></li>
@@ -1484,10 +1673,10 @@ called before then forcing a rebuild may change gids of each node.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>properties</strong> – key-value pair of node attributes to filter returned nodes</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An iterator of Node objects</p>
 </dd>
 </dl>
@@ -1506,7 +1695,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 names will be automatically generated based on the network names.</p>
 <p>To have more control over the output and file names use the <strong>save_nodes()</strong> and <strong>save_edges()</strong> methods.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dir</strong> – string, directory where network files will be generated. Default, current working directory.</p></li>
 <li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
@@ -1520,7 +1709,7 @@ names will be automatically generated based on the network names.</p>
 <span class="sig-name descname"><span class="pre">save_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#NetworkBuilder.save_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.NetworkBuilder.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the instantiated edges in SONATA format files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edges_file_name</strong> – file-name of hdf5 edges file. By default will use &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</p></li>
 <li><p><strong>edge_types_file_name</strong> – file-name of csv edge-types file. By default will use
@@ -1541,7 +1730,7 @@ names will be automatically generated based on the network names.</p>
 <span class="sig-name descname"><span class="pre">save_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#NetworkBuilder.save_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.NetworkBuilder.save_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the instantiated nodes in SONATA format files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nodes_file_name</strong> – file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</p></li>
 <li><p><strong>node_types_file_name</strong> – file-name of the csv node-types file. By default will use
@@ -1558,14 +1747,14 @@ names will be automatically generated based on the network names.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.PointNetBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_builder.</span></span><span class="sig-name descname"><span class="pre">PointNetBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor_cls=&lt;class</span> <span class="pre">'bmtk.builder.network_adaptors.dm_network.DenseNetwork'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PointNetBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PointNetBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_builder.NetworkBuilder</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkBuilder</span></code></a></p>
 <p>An instance of NetworkBuilder specifically designed for building PointNet (NEST) complainant networks</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.PointNetBuilder.add_edges">
 <span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'one_to_one'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PointNetBuilder.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PointNetBuilder.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add rules for creating edges between a subset of source and target cells.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source</strong> – A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
 subset of nodes.</p></li>
@@ -1588,7 +1777,7 @@ json file the parameter values will be applied to a edges.</p></li>
 <li><p><strong>properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A ConnectionMap object</p>
 </dd>
 </dl>
@@ -1599,7 +1788,7 @@ json file the parameter values will be applied to a edges.</p></li>
 <span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'point_neuron'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PointNetBuilder.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PointNetBuilder.add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a set of N NEST model nodes/cells to the network.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> – </p></li>
 <li><p><strong>model_type</strong> – The type of node, should be value ‘point_neuron’</p></li>
@@ -1626,13 +1815,13 @@ want unique params for each cell pass in a dictionary where each key has an asso
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.PopNetBuilder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_builder.</span></span><span class="sig-name descname"><span class="pre">PopNetBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor_cls=&lt;class</span> <span class="pre">'bmtk.builder.network_adaptors.dm_network.DenseNetwork'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PopNetBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PopNetBuilder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_builder.NetworkBuilder</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_builder.NetworkBuilder" title="bmtk.builder.network_builder.NetworkBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">NetworkBuilder</span></code></a></p>
 <p>An instance of NetworkBuilder specifically designed for building PopNet (DiPDE) complainant networks</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.builder.network_builder.PopNetBuilder.add_edges">
 <span class="sig-name descname"><span class="pre">add_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nsyns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PopNetBuilder.add_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PopNetBuilder.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source</strong> – A dictionary or list of efferent dipde Populations</p></li>
 <li><p><strong>target</strong> – A dictionary or list of afferent dipde Populations</p></li>
@@ -1643,7 +1832,7 @@ want unique params for each cell pass in a dictionary where each key has an asso
 <li><p><strong>properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A ConnectionMap object</p>
 </dd>
 </dl>
@@ -1654,7 +1843,7 @@ want unique params for each cell pass in a dictionary where each key has an asso
 <span class="sig-name descname"><span class="pre">add_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'population'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamics_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_builder.html#PopNetBuilder.add_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_builder.PopNetBuilder.add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a DiPDE cell population</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model_type</strong> – The type of node, should be value ‘population’</p></li>
 <li><p><strong>model_template</strong> – Should be either ‘dipde:Internal’ or ‘dipde:External’ (or ‘virtual’)</p></li>
@@ -1669,10 +1858,10 @@ want unique params for each cell pass in a dictionary where each key has an asso
 
 </section>
 <section id="module-bmtk.builder.networks">
-<span id="bmtk-builder-networks-module"></span><h2>bmtk.builder.networks module<a class="headerlink" href="#module-bmtk.builder.networks" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-networks-module"></span><h2>bmtk.builder.networks module<a class="headerlink" href="#module-bmtk.builder.networks" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-bmtk.builder.node">
-<span id="bmtk-builder-node-module"></span><h2>bmtk.builder.node module<a class="headerlink" href="#module-bmtk.builder.node" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-node-module"></span><h2>bmtk.builder.node module<a class="headerlink" href="#module-bmtk.builder.node" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.node.Node">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">)</span> <span class="pre">-&gt;</span> <span class="pre">new</span> <span class="pre">empty</span> <span class="pre">dictionary</span> <span class="pre">dict(mapping)</span> <span class="pre">-&gt;</span> <span class="pre">new</span> <span class="pre">dictionary</span> <span class="pre">initialized</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">mapping</span> <span class="pre">object's</span> <span class="pre">(key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value)</span> <span class="pre">pairs</span> <span class="pre">dict(iterable)</span> <span class="pre">-&gt;</span> <span class="pre">new</span> <span class="pre">dictionary</span> <span class="pre">initialized</span> <span class="pre">as</span> <span class="pre">if</span> <span class="pre">via:</span> <span class="pre">d</span> <span class="pre">=</span> <span class="pre">{}</span> <span class="pre">for</span> <span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span> <span class="pre">in</span> <span class="pre">iterable:</span> <span class="pre">d[k]</span> <span class="pre">=</span> <span class="pre">v</span> <span class="pre">dict(**kwargs)</span> <span class="pre">-&gt;</span> <span class="pre">new</span> <span class="pre">dictionary</span> <span class="pre">initialized</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">name=value</span> <span class="pre">pairs</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">keyword</span> <span class="pre">argument</span> <span class="pre">list.</span>&#160; <span class="pre">For</span> <span class="pre">example:</span>&#160; <span class="pre">dict(one=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two=2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.node.Node" title="Permalink to this definition">¶</a></dt>
@@ -1712,7 +1901,7 @@ want unique params for each cell pass in a dictionary where each key has an asso
 
 </section>
 <section id="module-bmtk.builder.node_pool">
-<span id="bmtk-builder-node-pool-module"></span><h2>bmtk.builder.node_pool module<a class="headerlink" href="#module-bmtk.builder.node_pool" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-node-pool-module"></span><h2>bmtk.builder.node_pool module<a class="headerlink" href="#module-bmtk.builder.node_pool" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.node_pool.NodePool">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.node_pool.</span></span><span class="sig-name descname"><span class="pre">NodePool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_pool.html#NodePool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.node_pool.NodePool" title="Permalink to this definition">¶</a></dt>
@@ -1761,7 +1950,7 @@ nodes = 100 in net.nodes(val)</p>
 
 </section>
 <section id="module-bmtk.builder.node_set">
-<span id="bmtk-builder-node-set-module"></span><h2>bmtk.builder.node_set module<a class="headerlink" href="#module-bmtk.builder.node_set" title="Permalink to this headline">¶</a></h2>
+<span id="bmtk-builder-node-set-module"></span><h2>bmtk.builder.node_set module<a class="headerlink" href="#module-bmtk.builder.node_set" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.node_set.NodeSet">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.node_set.</span></span><span class="sig-name descname"><span class="pre">NodeSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_type_properties</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_set.html#NodeSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.node_set.NodeSet" title="Permalink to this definition">¶</a></dt>
@@ -1795,7 +1984,7 @@ nodes = 100 in net.nodes(val)</p>
 
 </section>
 <section id="module-bmtk.builder">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder" title="Permalink to this headline">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder" title="Permalink to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -1861,7 +2050,7 @@ nodes = 100 in net.nodes(val)</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

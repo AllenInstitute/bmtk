@@ -1,20 +1,19 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Chapter 7: Modeling the visual field (with FilterNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -733,10 +732,11 @@ div.nboutput.container div.prompt > div {
     }
 }
 
-/* disable scrollbars on prompts */
+/* disable scrollbars and line breaks on prompts */
 div.nbinput.container div.prompt pre,
 div.nboutput.container div.prompt pre {
     overflow: hidden;
+    white-space: pre;
 }
 
 /* input/output area */
@@ -833,11 +833,12 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
+.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -846,10 +847,14 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
+.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
+.jp-RenderedHTMLCommon tr,
+.jp-RenderedHTMLCommon th,
+.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -861,32 +866,34 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
+.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
+.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
+.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
 <section id="Chapter-7:-Modeling-the-visual-field-(with-FilterNet)">
-<h1>Chapter 7: Modeling the visual field (with FilterNet)<a class="headerlink" href="#Chapter-7:-Modeling-the-visual-field-(with-FilterNet)" title="Permalink to this headline">¶</a></h1>
+<h1>Chapter 7: Modeling the visual field (with FilterNet)<a class="headerlink" href="#Chapter-7:-Modeling-the-visual-field-(with-FilterNet)" title="Permalink to this heading">¶</a></h1>
 <p>FilterNet is a part of the BMTK that simulates the effects of visual input onto cells in the LGN. It uses LGNModel as a backend, which uses neural-filters to simulate firing rates and spike-trains one may expect given a stimulus on (especially mouse) visual field. FilterNet supports a number of visual stimuli including static-graitings, moving-graiting, full-field flashes, static images and even movies.</p>
 <p>Filternet uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson (lnp) model</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
-<p><img alt="FilterNet LNP" src="_images/bmtk_lnp.png" /></p>
+<img alt="FilterNet LNP" src="_images/bmtk_lnp.png" />
 <section id="A-simple-example">
-<h2>A simple example<a class="headerlink" href="#A-simple-example" title="Permalink to this headline">¶</a></h2>
+<h2>A simple example<a class="headerlink" href="#A-simple-example" title="Permalink to this heading">¶</a></h2>
 <section id="1.-Building-the-network">
-<h3>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h3>
+<h3>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this heading">¶</a></h3>
 <p>FilterNet is modeled on the mammalian LGN and expects a two-dimensional network of cells that can be mapped onto the receptive field. The default parameters of the filters are based on experimental recordings from the mouse LGN [Durant et. al, 2016, Billeh et. al, 2019] As our starting case we will have a simple network of 20 ON cells and 20 OFF cells with coordinates that correspond to the 240x120 movie we will be playing against it.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 
@@ -915,20 +922,18 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Create and save the network</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network&#39;</span><span class="p">)</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 </section>
 <section id="2.-Setting-up-the-simulation-enviornment">
-<h3>2. Setting up the simulation enviornment<a class="headerlink" href="#2.-Setting-up-the-simulation-enviornment" title="Permalink to this headline">¶</a></h3>
+<h3>2. Setting up the simulation enviornment<a class="headerlink" href="#2.-Setting-up-the-simulation-enviornment" title="Permalink to this heading">¶</a></h3>
 <p>The following will create the necessarcy python and configuration files to run a simulation, all placed in the <strong>sim_ch07</strong> directory.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_filternet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_filternet</span>
 
 <span class="n">build_env_filternet</span><span class="p">(</span>
     <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07&#39;</span><span class="p">,</span>
@@ -950,32 +955,31 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 </div>
 <p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
 <p>By default the config file does not contain any stimulus so the firing rate will simply be at the baseline firing rate. To change this and play a certain type of movie/stimulus, which here we’ll use a movie with a bright flash full-screen for an extend period of time. To do so open up simulation_config.json and add the following inputs section:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>This will create a flash on the screen from 1 to 2 seconds. Make sure the frame rate is sufficient for the temporal fluctuations in the LGN filters (e.g., 1000.0).</p>
 </section>
 <section id="3-Running-the-simulation">
-<h3>3 Running the simulation<a class="headerlink" href="#3-Running-the-simulation" title="Permalink to this headline">¶</a></h3>
+<h3>3 Running the simulation<a class="headerlink" href="#3-Running-the-simulation" title="Permalink to this heading">¶</a></h3>
 <p>You can run the simulation from the command line by going to the <strong>sim_ch07</strong> directory and running:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_filternet.py simulation_config.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_filternet.py<span class="w"> </span>simulation_config.json
 </pre></div>
 </div>
 <p>And if you have MPI installed with access to a cluster you can parallize much of the process</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mpirun -np <span class="nv">$NCORES</span> python run_filternet.py simulation_config.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="nv">$NCORES</span><span class="w"> </span>python<span class="w"> </span>run_filternet.py<span class="w"> </span>simulation_config.json
 </pre></div>
 </div>
 <p>or we can run it directly</p>
@@ -983,8 +987,7 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">filternet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">filternet</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
@@ -1079,12 +1082,10 @@ INFO:FilterNetIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1098,108 +1099,106 @@ INFO:FilterNetIOUtils:Done.
 </section>
 </section>
 <section id="Running-different-types-of-Stimuli">
-<h2>Running different types of Stimuli<a class="headerlink" href="#Running-different-types-of-Stimuli" title="Permalink to this headline">¶</a></h2>
+<h2>Running different types of Stimuli<a class="headerlink" href="#Running-different-types-of-Stimuli" title="Permalink to this heading">¶</a></h2>
 <p>Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the type of stimuli requires updating the <em>inputs</em> section in the <strong>simulation_config.json</strong> file like above.</p>
 <section id="movie">
-<h3>movie<a class="headerlink" href="#movie" title="Permalink to this headline">¶</a></h3>
+<h3>movie<a class="headerlink" href="#movie" title="Permalink to this heading">¶</a></h3>
 <p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">npy file</a>.</p>
 <p><em>example</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;movie_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;movie_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><em>parameters</em> * <strong>movie</strong> - Link to a 3-dimensional (x, y, time) matrix representing a movie * <strong>frame_rate</strong> - frames per second</p>
 </section>
 <section id="grating">
-<h3>grating<a class="headerlink" href="#grating" title="Permalink to this headline">¶</a></h3>
+<h3>grating<a class="headerlink" href="#grating" title="Permalink to this heading">¶</a></h3>
 <p>Plays a drifting grating across the screen</p>
 <p><em>example</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;graiting&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;cpd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.04</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;contrast&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;theta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;graiting&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cpd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.04</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;contrast&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;theta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>grapy_screen_dur</strong> - displays an optional gray screen for a number of seconds before the grating starts. (default: 0) * <strong>cpd</strong> - spatial frequncy represented as cycles per degree. (default: 0.05) * <strong>temporal_f</strong> - temporal frequency in Hz. (default: 4.0) * <strong>theta</strong>: orientation angle, in degrees (default: 45.0) * <strong>phase</strong>: temporal phase, in degrees (default: 0.0) * <strong>contrast</strong>: the
 maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 </section>
 <section id="full-field-flash">
-<h3>full field flash<a class="headerlink" href="#full-field-flash" title="Permalink to this headline">¶</a></h3>
+<h3>full field flash<a class="headerlink" href="#full-field-flash" title="Permalink to this heading">¶</a></h3>
 <p>Creates a bright (or dark) flash on a gray screen for a limited number of seconds</p>
 <p><em>example</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>t_on</strong> - time (ms) from the beginning on when to start the flash * <strong>t_off</strong> - length (ms) of flash * <strong>max_intensity</strong> - intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to gray screen.</p>
 </section>
 <section id="looming">
-<h3>looming<a class="headerlink" href="#looming" title="Permalink to this headline">¶</a></h3>
+<h3>looming<a class="headerlink" href="#looming" title="Permalink to this heading">¶</a></h3>
 <p>Creates a spreading black field originating from the center.</p>
 <p><em>example</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;looming&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;t_looming&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;looming&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_looming&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>frame_rate</strong> - frames per second * <strong>gray_screen_dur</strong> - durating of initial grey screen (seconds) * <strong>t_looming</strong> - time of looming movie (seconds).</p>
 </section>
 </section>
 <section id="Units">
-<h2>Units<a class="headerlink" href="#Units" title="Permalink to this headline">¶</a></h2>
+<h2>Units<a class="headerlink" href="#Units" title="Permalink to this heading">¶</a></h2>
 <section id="simple-ON/OFF-cells">
-<h3>simple ON/OFF cells<a class="headerlink" href="#simple-ON/OFF-cells" title="Permalink to this headline">¶</a></h3>
+<h3>simple ON/OFF cells<a class="headerlink" href="#simple-ON/OFF-cells" title="Permalink to this heading">¶</a></h3>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
 (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="529b890d5aa243d383528c5feae50001" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="bd6f11c1e22148258fe7d969d53c0f86" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="d94ee49afbea42a4bf7c4a6e20af34d0" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="96c38252672f4ab8aa266def20b32718" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="parameters">
-<h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+<h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
 <p>The parameters for the cell are by default set in the .json file pointed to by the <code class="docutils literal notranslate"><span class="pre">dynamic_params</span></code> parameter are calculated from extracellular recordings from the mouse LGN (Durand et. al 2016, Billeh et. al, 2019). These parameters may be over ridden to be unique to each cell by passing in a list of values in the call to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code>. For example to given every cell a randomized spontaneous firing rate using the spont_fr variable (see below) you would just add the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -1210,19 +1209,19 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 </pre></div>
 </div>
 <p><strong>spatial filter parameters</strong> * <em>spatial_size</em>: (float, float) - the row and column spread of the gaussian filter, default: (1.0, 1.0) * <em>spatial_rotation</em>: float - the gaussian rotation in degrees, default: 0.0</p>
-<p><img alt="image0" src="_images/filternet_sfilt_params.png" /></p>
+<img alt="_images/filternet_sfilt_params.png" src="_images/filternet_sfilt_params.png" />
 <p><strong>temporal filter parameters</strong> * <em>weights</em>: (float, float) - used to control amplitude of the the two bumps in cosine filter. The first value is used to set the major bump and must have weights[0] &gt; weights[1] * <em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first. * <em>delays</em>: (float, float) - controls the delays of the first and second
 bumps</p>
-<p><img alt="image1" src="_images/filternet_tfilt_params.png" /></p>
+<img alt="_images/filternet_tfilt_params.png" src="_images/filternet_tfilt_params.png" />
 <p><strong>non-linear filter parameters</strong> * <em>spont_fr</em>: float - The spontaneous/resting firing rate of the cell. ON/OFF cells use the function <span class="math notranslate nohighlight">\(Heaviside(s+spont\_fr)*(s+spont\_fr)\)</span> to filter the firing rate following the spatialtemporal filter.</p>
 <section id="Spatial-Mixture-cells">
-<h4>Spatial Mixture cells<a class="headerlink" href="#Spatial-Mixture-cells" title="Permalink to this headline">¶</a></h4>
+<h4>Spatial Mixture cells<a class="headerlink" href="#Spatial-Mixture-cells" title="Permalink to this heading">¶</a></h4>
 <p>These types of units combine two spatial filters to create a <a class="reference external" href="https://en.wikipedia.org/w/index.php?title=Mexican_Hat_Function">Mexican hat</a> filter so the spatial filter responds to a bright area surrounded by darkness (or vice-versa). To use set <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:LGNOnOFFCell'</span></code></p>
 <p><strong>parameters</strong> * <em>sigma_on</em>: (float, float) - spread of the ON region of the spatial filter. * <em>sigma_off</em>: (float, float) - spread of the OFF region of the spatial filter.</p>
 <p>The temporal filter is set using the same parameters as a simple cell.</p>
 </section>
 <section id="Dual-filter-cells-(sONtOFF,-sONsOFF)">
-<h4>Dual filter cells (sONtOFF, sONsOFF)<a class="headerlink" href="#Dual-filter-cells-(sONtOFF,-sONsOFF)" title="Permalink to this headline">¶</a></h4>
+<h4>Dual filter cells (sONtOFF, sONsOFF)<a class="headerlink" href="#Dual-filter-cells-(sONtOFF,-sONsOFF)" title="Permalink to this heading">¶</a></h4>
 <p>These units combine two simple linear filters into one, and can be set using either <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONsOFF'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONtOFF'</span></code>, both with a non-dominate spatial-off filter.</p>
 <p><strong>parameters</strong></p>
 <p>The parameters for the first filter (tOFF or sOFF subunit) is set using the same parameters as a simple cell. You can set non-dominate secondary subunit parameters in two ways: 1. Adding parameter <em>non_dom_params</em> that points to a second dynamics_params .json file. (eg. <code class="docutils literal notranslate"><span class="pre">non_dom_params='sON_TF8.json'</span></code>) 2. add the postfix *_non_dom* to the specified params (eg. weights_non_dom, kpeaks_non_dom, delays_non_dom)</p>
@@ -1230,8 +1229,7 @@ bumps</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -1302,7 +1300,7 @@ bumps</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

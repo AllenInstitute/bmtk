@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -686,7 +685,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="Movie.play"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.play">[docs]</a>    <span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">playback_speed</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param interval:</span>
 <span class="sd">        :param skip: skip every Nth frame, useful for very large data sets</span>
@@ -823,7 +822,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="GratingMovie.create_movie"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.GratingMovie.create_movie">[docs]</a>    <span class="k">def</span> <span class="nf">create_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gray_screen_dur</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cpd</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">temporal_f</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
                      <span class="n">phase</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">row_size_new</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">col_size_new</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create the grating movie with the desired parameters</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the grating movie with the desired parameters</span>
 
 <span class="sd">        :param t_min: start time in seconds</span>
 <span class="sd">        :param t_max: end time in seconds</span>
@@ -880,7 +879,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">frame_rate</span><span class="p">)</span>  <span class="c1"># in Hz</span>
 
 <div class="viewcode-block" id="LoomingMovie.create_movie"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.LoomingMovie.create_movie">[docs]</a>    <span class="k">def</span> <span class="nf">create_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_looming</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">gray_screen_dur</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Create the looming movie with the desired parameters</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the looming movie with the desired parameters</span>
 
 <span class="sd">        :param t_looming: duration of time looming</span>
 <span class="sd">        :param gray_screen_dur:</span>
@@ -973,7 +972,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -683,7 +682,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="IntFire1"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.IntFire1">[docs]</a><span class="k">def</span> <span class="nf">IntFire1</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Loads a point integrate and fire neuron&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads a point integrate and fire neuron&quot;&quot;&quot;</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">IntFire1</span><span class="p">()</span>
     <span class="n">hobj</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
     <span class="n">hobj</span><span class="o">.</span><span class="n">refrac</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;refrac&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
@@ -691,7 +690,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="Biophys1"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.Biophys1">[docs]</a><span class="k">def</span> <span class="nf">Biophys1</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamic_params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Loads a biophysical NEURON hoc object using Cell-Types database objects.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads a biophysical NEURON hoc object using Cell-Types database objects.&quot;&quot;&quot;</span>
     <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology_file</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Biophys1</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">))</span>
     <span class="c1">#fix_axon(hobj)</span>
@@ -705,7 +704,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="Biophys1_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict">[docs]</a><span class="k">def</span> <span class="nf">Biophys1_dict</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the</span>
 <span class="sd">    axon with the stub</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
@@ -722,7 +721,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="fix_axon_peri"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri">[docs]</a><span class="k">def</span> <span class="nf">fix_axon_peri</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
 
 <span class="sd">    :param hobj: hoc object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -744,7 +743,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="set_params_peri"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.set_params_peri">[docs]</a><span class="k">def</span> <span class="nf">set_params_peri</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">biophys_params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set biophysical parameters for the cell</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set biophysical parameters for the cell</span>
 
 <span class="sd">    :param hobj: NEURON&#39;s cell object</span>
 <span class="sd">    :param biophys_params: name of json file with biophys params for cell&#39;s model which determine spiking behavior</span>
@@ -788,7 +787,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="fix_axon_allactive"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive">[docs]</a><span class="k">def</span> <span class="nf">fix_axon_allactive</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1020,7 +1019,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="n">nml_files</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># For caching neuroml file trees</span>
 <div class="viewcode-block" id="NMLLoad"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.NMLLoad">[docs]</a><span class="k">def</span> <span class="nf">NMLLoad</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamic_params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a NEUROML file to a NEURON hoc cell object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a NEUROML file to a NEURON hoc cell object.</span>
 
 <span class="sd">    Current limitations:</span>
 <span class="sd">    * Ignores nml morphology section. You must pass in a swc file</span>
@@ -1165,7 +1164,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

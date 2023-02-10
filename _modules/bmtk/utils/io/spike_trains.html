@@ -1,18 +1,18 @@
 
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.utils.io.spike_trains &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
-    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.utils.io.spike_trains &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -626,16 +626,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.utils</span> <span class="kn">import</span> <span class="n">add_hdf5_magic</span><span class="p">,</span> <span class="n">add_hdf5_version</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.utils</span> <span class="k">import</span> <span class="n">add_hdf5_magic</span><span class="p">,</span> <span class="n">add_hdf5_version</span>
 
 
 <div class="viewcode-block" id="SpikeTrainWriter"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter">[docs]</a><span class="k">class</span> <span class="nc">SpikeTrainWriter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="SpikeTrainWriter.TmpFileMetadata"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata">[docs]</a>    <span class="k">class</span> <span class="nc">TmpFileMetadata</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sort_order</span> <span class="o">=</span> <span class="n">sort_order</span></div>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="c1"># For NEST/NEURON based simulations it is prefereable not to use mpi4py, so let the parent simulator determine</span>
         <span class="c1"># MPI rank and size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_rank</span> <span class="o">=</span> <span class="n">mpi_rank</span>
@@ -839,7 +839,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="PoissonSpikesGenerator"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.PoissonSpikesGenerator">[docs]</a><span class="k">class</span> <span class="nc">PoissonSpikesGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gids</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gids</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span> <span class="n">gids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_firing_rate</span> <span class="o">=</span> <span class="n">firing_rate</span> <span class="o">/</span> <span class="mf">1000.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">tstart</span>
@@ -885,7 +885,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="SpikesInputNWBv1"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputNWBv1">[docs]</a><span class="k">class</span> <span class="nc">SpikesInputNWBv1</span><span class="p">(</span><span class="n">SpikesInput</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trial</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;trial&#39;</span><span class="p">]</span>
@@ -901,7 +901,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="DictIndexedGIDs"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.DictIndexedGIDs">[docs]</a><span class="k">class</span> <span class="nc">DictIndexedGIDs</span><span class="p">(</span><span class="n">SONATAIndexer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_indicies</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">spikes_input_h5</span>
 
@@ -923,7 +923,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="DFIndexedGIDs"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.DFIndexedGIDs">[docs]</a><span class="k">class</span> <span class="nc">DFIndexedGIDs</span><span class="p">(</span><span class="n">SONATAIndexer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">spikes_input_h5</span>
 
         <span class="n">index_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;gids&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">gids</span><span class="p">},</span> <span class="p">)</span>
@@ -945,17 +945,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="HDF5IndexedGIDs"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.HDF5IndexedGIDs">[docs]</a><span class="k">class</span> <span class="nc">HDF5IndexedGIDs</span><span class="p">(</span><span class="n">SONATAIndexer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="UnindexedGIDs"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.UnindexedGIDs">[docs]</a><span class="k">class</span> <span class="nc">UnindexedGIDs</span><span class="p">(</span><span class="n">SONATAIndexer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_input_h5</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikesInputH5"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputH5">[docs]</a><span class="k">class</span> <span class="nc">SpikesInputH5</span><span class="p">(</span><span class="n">SpikesInput</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_file</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="p">[</span><span class="s1">&#39;/spikes/gids&#39;</span><span class="p">]</span>
@@ -992,7 +992,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="SpikesInputCSV"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputCSV">[docs]</a><span class="k">class</span> <span class="nc">SpikesInputCSV</span><span class="p">(</span><span class="n">SpikesInput</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SpikesInputCSV.get_spikes"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
@@ -1000,7 +1000,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_times_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span></div></div>
 </pre></div>
 
-            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1017,34 +1016,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Main Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../workshop.html">Annual Modeling Software Workshop</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../how_to_cite.html">How to Cite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -1053,15 +1031,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
