@@ -68,8 +68,13 @@ class FilterNode(SonataBaseNode):
         return self._prop_adaptor.sigma_f(self._node)
 
     @property
-    def sigma_t(self):
-        return self._prop_adaptor.sigma_t(self._node)
+    def b_t(self):
+        return self._prop_adaptor.b_t(self._node)
+
+    @property
+    def order_t(self):
+        return self._prop_adaptor.order_t(self._node)
+
     @property
     def t_mod_freq(self):
         return self._prop_adaptor.t_mod_freq(self._node)
@@ -85,6 +90,10 @@ class FilterNode(SonataBaseNode):
     @property
     def delay(self):
         return self._prop_adaptor.delay(self._node)
+
+    @property
+    def amplitude(self):
+        return self._prop_adaptor.amplitude(self._node)
 class FilterNodeAdaptor(NodeAdaptor):
     def get_node(self, sonata_node):
         return FilterNode(sonata_node, self)
@@ -145,7 +154,7 @@ class FilterNodeAdaptor(NodeAdaptor):
         find_nondom_kpeaks_params(node_group, node_adaptor)
         find_nondom_delays_params(node_group, node_adaptor)
 
-        find_gabor_params(node_group, node_adaptor)
+        find_spectrotemporal_params(node_group, node_adaptor)
 
         return node_adaptor
 
@@ -260,11 +269,13 @@ def find_nondom_delays_params(node_group, node_adaptor):
         node_adaptor.delays_non_dom = types.MethodType(return_none, node_adaptor)
 
 
-def find_gabor_params(node_group, node_adaptor):
+def find_spectrotemporal_params(node_group, node_adaptor):
     if 'sigma_f' in node_group.all_columns:
         node_adaptor.sigma_f = types.MethodType(lambda self, node: node['sigma_f'], node_adaptor)
-    if 'sigma_t' in node_group.all_columns:
-        node_adaptor.sigma_t = types.MethodType(lambda self, node: node['sigma_t'], node_adaptor)
+    if 'b_t' in node_group.all_columns:
+        node_adaptor.b_t = types.MethodType(lambda self, node: node['b_t'], node_adaptor)
+    if 'order_t' in node_group.all_columns:
+        node_adaptor.order_t = types.MethodType(lambda self, node: node['order_t'], node_adaptor)
     if 't_mod_freq' in node_group.all_columns:
         node_adaptor.t_mod_freq = types.MethodType(lambda self, node: node['t_mod_freq'], node_adaptor)
     if 'sp_mod_freq' in node_group.all_columns:
@@ -273,12 +284,16 @@ def find_gabor_params(node_group, node_adaptor):
         node_adaptor.psi = types.MethodType(lambda self, node: node['psi'], node_adaptor)
     if 'delay' in node_group.all_columns:
         node_adaptor.delay = types.MethodType(lambda self, node: node['delay'], node_adaptor)
+    if 'amplitude' in node_group.all_columns:
+        node_adaptor.amplitude = types.MethodType(lambda self, node: node['amplitude'], node_adaptor)
     else:
         node_adaptor.sigma_f = types.MethodType(return_none, node_adaptor)
-        node_adaptor.sigma_t = types.MethodType(return_none, node_adaptor)
+        node_adaptor.b_t = types.MethodType(return_none, node_adaptor)
+        node_adaptor.order_t = types.MethodType(return_none, node_adaptor)
         node_adaptor.t_mod_freq = types.MethodType(return_none, node_adaptor)
         node_adaptor.sp_mod_freq = types.MethodType(return_none, node_adaptor)
         node_adaptor.psi = types.MethodType(return_none, node_adaptor)
         if isinstance(node_adaptor.psi, string_types):
             node_adaptor.psi = eval(node_adaptor.psi.replace('pi', 'np.pi'))
         node_adaptor.delay = types.MethodType(return_none, node_adaptor)
+        node_adaptor.amplitude = types.MethodType(return_none, node_adaptor)

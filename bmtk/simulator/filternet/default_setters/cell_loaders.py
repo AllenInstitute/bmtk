@@ -4,7 +4,7 @@ from sympy.abc import y as symbolic_y
 from six import string_types
 
 from bmtk.simulator.filternet.filters import TemporalFilterCosineBump, GaussianSpatialFilter, SpatioTemporalFilter, \
-    GaborFilter, SpectroTemporalFilter
+    WaveletFilter, SpectroTemporalFilter
 from bmtk.simulator.filternet.cell_models import TwoSubfieldLinearCell, OnUnit, OffUnit, LGNOnOffCell
 from bmtk.simulator.filternet.transfer_functions import ScalarTransferFunction, MultiTransferFunction
 from bmtk.simulator.filternet.utils import get_data_metrics_for_each_subclass, get_tcross_from_temporal_kernel
@@ -81,7 +81,7 @@ def get_sigma(node, dynamics_params):
     return sigma[0]/3.0, sigma[1]/3.0
 
 
-def get_gb_params(node, dynamics_params):
+def get_wavelet_params(node, dynamics_params):
     t_mod_freq = node.t_mod_freq if node.t_mod_freq is not None else dynamics_params['t_mod_freq']
     sp_mod_freq = node.sp_mod_freq if node.sp_mod_freq is not None else dynamics_params['sp_mod_freq']
     Lambda = 1/np.linalg.norm([t_mod_freq, sp_mod_freq])    # Wavelength of oscillatory component
@@ -89,7 +89,9 @@ def get_gb_params(node, dynamics_params):
     #sigma1 = Lambda /sigma1_ratio     # Width of Gaussian in direction of oscillation
     #sigma2 = node.sigma2 if node.sigma2 is not None else dynamics_params['sigma2']
     sigma_f = node.sigma_f if node.sigma_f is not None else dynamics_params['sigma_f']
-    sigma_t = node.sigma_t if node.sigma_t is not None else dynamics_params['sigma_t']
+    b_t = node.b_t if node.b_t is not None else dynamics_params['b_t']
+    order_t = node.order_t if node.order_t is not None else dynamics_params['order_t']
+    amplitude = node.amplitude if node.amplitude is not None else dynamics_params['amplitude']             # Scale factor on normalized filter
     if t_mod_freq != 0:
         theta = np.arctan(sp_mod_freq / t_mod_freq)
     else:
@@ -112,7 +114,7 @@ def get_gb_params(node, dynamics_params):
         kpeaks = jitter_fnc(kpeaks) if kpeaks is not None else kpeaks
         delays = jitter_fnc(delays) if delays is not None else delays
     '''
-    return Lambda, sigma_f, sigma_t, theta, psi, delay
+    return Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude
 
 
 def default_cell_loader(node, template_name, dynamics_params):
@@ -243,9 +245,9 @@ def default_cell_loader(node, template_name, dynamics_params):
         # Currently tying y to center freq
         translate = (node['y'])
 
-        Lambda, sigma_f, sigma_t, theta, psi, delay = get_gb_params(node, dynamics_params)
+        Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude = get_wavelet_params(node, dynamics_params)
 
-        spectrotemporal_filter = GaborFilter(translate, sigma_f, sigma_t, theta, Lambda, psi)
+        spectrotemporal_filter = WaveletFilter(translate, sigma_f, b_t, order_t, theta, Lambda, psi, amplitude)
 
         if template_name:
             model_name = template_name[1]

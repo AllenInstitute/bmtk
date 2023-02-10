@@ -133,8 +133,10 @@ class Kernel2D(object):
 
     def normalize2(self):
         # Better for kernels that are not all positive
-        self.kernel -= self.kernel.sum()      # Set amplitude offset to 0
-        self.kernel /= np.sum(np.abs(self.kernel))        # Normalize overall size and maximum output
+        self.kernel -= self.kernel.mean()      # Set amplitude offset to 0
+        size = np.sum(np.abs(self.kernel))
+
+        self.kernel /= size        # Normalize overall size and maximum output
 
     @classmethod
     def from_dense(cls, row_range, col_range, kernel_array, threshold=0.):
