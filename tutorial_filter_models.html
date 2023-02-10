@@ -944,8 +944,8 @@ div.rendered_html tbody tr:hover {
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/config.circuit.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/config.simulation.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
 </pre></div></div>
 </div>
 <p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
@@ -959,13 +959,14 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 <span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
 <span class="w">        </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>This will create a flash on the screen from 1 to 2 seconds.</p>
+<p>This will create a flash on the screen from 1 to 2 seconds. Make sure the frame rate is sufficient for the temporal fluctuations in the LGN filters (e.g., 1000.0).</p>
 </section>
 <section id="3-Running-the-simulation">
 <h3>3 Running the simulation<a class="headerlink" href="#3-Running-the-simulation" title="Permalink to this headline">¶</a></h3>
@@ -998,7 +999,7 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:34:08,049 [WARNING] Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/output already exists.
+2023-02-10 13:38:44,402 [WARNING] Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/output already exists.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1014,7 +1015,7 @@ WARNING:FilterNetIOUtils:Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:34:08,050 [INFO] Created log file
+2023-02-10 13:38:44,403 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1030,7 +1031,7 @@ INFO:FilterNetIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:34:08,141 [INFO] Building cells.
+2023-02-10 13:39:03,776 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1046,7 +1047,7 @@ INFO:FilterNetIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:34:09,128 [INFO] Evaluating rates.
+2023-02-10 13:39:04,649 [INFO] Evaluating rates.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1062,7 +1063,7 @@ INFO:FilterNetIOUtils:Evaluating rates.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:34:09,279 [INFO] Done.
+2023-02-10 13:39:11,702 [INFO] Done.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1109,7 +1110,7 @@ INFO:FilterNetIOUtils:Done.
 <span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -1133,7 +1134,8 @@ INFO:FilterNetIOUtils:Done.
 <span class="w">      </span><span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;contrast&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;theta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="w">  </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -1156,6 +1158,7 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
 <span class="w">        </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
@@ -1192,8 +1195,8 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
 (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="67f24cb4c349457e9f6bfd84f914270f" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="f5efb03c9e7549ecbd4f45e181a57115" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="529b890d5aa243d383528c5feae50001" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="bd6f11c1e22148258fe7d969d53c0f86" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="parameters">
 <h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
@@ -1271,6 +1274,7 @@ bumps</p>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>

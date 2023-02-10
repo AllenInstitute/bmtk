@@ -718,9 +718,9 @@ only support injections at the soma.</p>
 <ul class="simple">
 <li><p>module:  Always xstim</p></li>
 <li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
-<li><p>positions_file: onset of current injection in ms</p></li>
-<li><p>resistance: extracelluar resistance between electrode and cells in Ohms / cm^3 (default: 300.0)</p></li>
-<li><p>waveform: form on the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)</p></li>
+<li><p>positions_file: space separated file containing cartesian coordinates of the electrodes.</p></li>
+<li><p>resistance: extracellular resistance between electrode and cells in Ohms / cm^3 (default: 300.0)</p></li>
+<li><p>waveform: form of the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)</p></li>
 </ul>
 </section>
 <section id="spontaneous-firing">
@@ -1039,6 +1039,7 @@ folder for examples of running replayed simulations.</p>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
