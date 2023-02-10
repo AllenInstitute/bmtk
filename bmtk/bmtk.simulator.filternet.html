@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>bmtk.simulator.filternet package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -621,310 +622,46 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-simulator-filternet-package">
-<h1>bmtk.simulator.filternet package<a class="headerlink" href="#bmtk-simulator-filternet-package" title="Permalink to this heading">¶</a></h1>
+<h1>bmtk.simulator.filternet package<a class="headerlink" href="#bmtk-simulator-filternet-package" title="Permalink to this headline">¶</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">¶</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html">bmtk.simulator.filternet.default_setters package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-bmtk.simulator.filternet.default_setters.cell_loaders">bmtk.simulator.filternet.default_setters.cell_loaders module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.createOneUnitOfTwoSubunitFilter"><code class="docutils literal notranslate"><span class="pre">createOneUnitOfTwoSubunitFilter()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.create_two_sub_cell"><code class="docutils literal notranslate"><span class="pre">create_two_sub_cell()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.default_cell_loader"><code class="docutils literal notranslate"><span class="pre">default_cell_loader()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.get_sigma"><code class="docutils literal notranslate"><span class="pre">get_sigma()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.get_tf_params"><code class="docutils literal notranslate"><span class="pre">get_tf_params()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-bmtk.simulator.filternet.default_setters.cell_loaders">bmtk.simulator.filternet.default_setters.cell_loaders module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-bmtk.simulator.filternet.default_setters">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html">bmtk.simulator.filternet.lgnmodel package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmetrics">bmtk.simulator.filternet.lgnmodel.cellmetrics module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmetrics.SubclassMetricsCache"><code class="docutils literal notranslate"><span class="pre">SubclassMetricsCache</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmetrics.SubclassMetricsCache.get_metrics"><code class="docutils literal notranslate"><span class="pre">SubclassMetricsCache.get_metrics()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmetrics.SubclassMetricsCache.load_dir"><code class="docutils literal notranslate"><span class="pre">SubclassMetricsCache.load_dir()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmetrics.SubclassMetricsCache.saved_metrics_dir"><code class="docutils literal notranslate"><span class="pre">SubclassMetricsCache.saved_metrics_dir</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmetrics.get_data_metrics_for_each_subclass"><code class="docutils literal notranslate"><span class="pre">get_data_metrics_for_each_subclass()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmodel">bmtk.simulator.filternet.lgnmodel.cellmodel module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnOffCell"><code class="docutils literal notranslate"><span class="pre">LGNOnOffCell</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit"><code class="docutils literal notranslate"><span class="pre">OffUnit</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.OnUnit"><code class="docutils literal notranslate"><span class="pre">OnUnit</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.TwoSubfieldLinearCell"><code class="docutils literal notranslate"><span class="pre">TwoSubfieldLinearCell</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cursor">bmtk.simulator.filternet.lgnmodel.cursor module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.FilterCursor"><code class="docutils literal notranslate"><span class="pre">FilterCursor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor"><code class="docutils literal notranslate"><span class="pre">KernelCursor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.apply_dot_product"><code class="docutils literal notranslate"><span class="pre">KernelCursor.apply_dot_product()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.col_range"><code class="docutils literal notranslate"><span class="pre">KernelCursor.col_range</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.evaluate"><code class="docutils literal notranslate"><span class="pre">KernelCursor.evaluate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.frame_rate"><code class="docutils literal notranslate"><span class="pre">KernelCursor.frame_rate</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.row_range"><code class="docutils literal notranslate"><span class="pre">KernelCursor.row_range</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.t_range"><code class="docutils literal notranslate"><span class="pre">KernelCursor.t_range</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.LNUnitCursor"><code class="docutils literal notranslate"><span class="pre">LNUnitCursor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor"><code class="docutils literal notranslate"><span class="pre">MultiLNUnitCursor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor.evaluate"><code class="docutils literal notranslate"><span class="pre">MultiLNUnitCursor.evaluate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitMultiMovieCursor"><code class="docutils literal notranslate"><span class="pre">MultiLNUnitMultiMovieCursor</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor"><code class="docutils literal notranslate"><span class="pre">SeparableKernelCursor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor.evaluate"><code class="docutils literal notranslate"><span class="pre">SeparableKernelCursor.evaluate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor"><code class="docutils literal notranslate"><span class="pre">SeparableLNUnitCursor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor.evaluate"><code class="docutils literal notranslate"><span class="pre">SeparableLNUnitCursor.evaluate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor"><code class="docutils literal notranslate"><span class="pre">SeparableMultiLNUnitCursor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor.evaluate"><code class="docutils literal notranslate"><span class="pre">SeparableMultiLNUnitCursor.evaluate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor"><code class="docutils literal notranslate"><span class="pre">SeparableSpatioTemporalFilterCursor</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.fitfuns">bmtk.simulator.filternet.lgnmodel.fitfuns module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.ff"><code class="docutils literal notranslate"><span class="pre">ff()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.invnl"><code class="docutils literal notranslate"><span class="pre">invnl()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel"><code class="docutils literal notranslate"><span class="pre">makeBasis_StimKernel()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel_exp"><code class="docutils literal notranslate"><span class="pre">makeBasis_StimKernel_exp()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeFitStruct_GLM"><code class="docutils literal notranslate"><span class="pre">makeFitStruct_GLM()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.nlin"><code class="docutils literal notranslate"><span class="pre">nlin()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.normalizecols"><code class="docutils literal notranslate"><span class="pre">normalizecols()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.sameconv"><code class="docutils literal notranslate"><span class="pre">sameconv()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.kernel">bmtk.simulator.filternet.lgnmodel.kernel module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D"><code class="docutils literal notranslate"><span class="pre">Kernel1D</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.full"><code class="docutils literal notranslate"><span class="pre">Kernel1D.full()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.imshow"><code class="docutils literal notranslate"><span class="pre">Kernel1D.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.normalize"><code class="docutils literal notranslate"><span class="pre">Kernel1D.normalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.rescale"><code class="docutils literal notranslate"><span class="pre">Kernel1D.rescale()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D"><code class="docutils literal notranslate"><span class="pre">Kernel2D</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.apply_threshold"><code class="docutils literal notranslate"><span class="pre">Kernel2D.apply_threshold()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.copy"><code class="docutils literal notranslate"><span class="pre">Kernel2D.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.from_dense"><code class="docutils literal notranslate"><span class="pre">Kernel2D.from_dense()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.full"><code class="docutils literal notranslate"><span class="pre">Kernel2D.full()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.imshow"><code class="docutils literal notranslate"><span class="pre">Kernel2D.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.normalize"><code class="docutils literal notranslate"><span class="pre">Kernel2D.normalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.rescale"><code class="docutils literal notranslate"><span class="pre">Kernel2D.rescale()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D"><code class="docutils literal notranslate"><span class="pre">Kernel3D</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.apply_threshold"><code class="docutils literal notranslate"><span class="pre">Kernel3D.apply_threshold()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.copy"><code class="docutils literal notranslate"><span class="pre">Kernel3D.copy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.full"><code class="docutils literal notranslate"><span class="pre">Kernel3D.full()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.imshow"><code class="docutils literal notranslate"><span class="pre">Kernel3D.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.normalize"><code class="docutils literal notranslate"><span class="pre">Kernel3D.normalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.rescale"><code class="docutils literal notranslate"><span class="pre">Kernel3D.rescale()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.t_slice"><code class="docutils literal notranslate"><span class="pre">Kernel3D.t_slice()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.find_l_r_in_t_range"><code class="docutils literal notranslate"><span class="pre">find_l_r_in_t_range()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.get_contour"><code class="docutils literal notranslate"><span class="pre">get_contour()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.merge_spatial_temporal"><code class="docutils literal notranslate"><span class="pre">merge_spatial_temporal()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.plot_single_contour"><code class="docutils literal notranslate"><span class="pre">plot_single_contour()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor">bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_lattice_unit"><code class="docutils literal notranslate"><span class="pre">make_lattice_unit()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_overlapping_onoff_cell_list"><code class="docutils literal notranslate"><span class="pre">make_overlapping_onoff_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_sOFF_cell_list"><code class="docutils literal notranslate"><span class="pre">make_sOFF_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_sON_cell_list"><code class="docutils literal notranslate"><span class="pre">make_sON_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_separate_onoff_cell_list"><code class="docutils literal notranslate"><span class="pre">make_separate_onoff_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_tOFF_cell_list"><code class="docutils literal notranslate"><span class="pre">make_tOFF_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor.make_tON_cell_list"><code class="docutils literal notranslate"><span class="pre">make_tON_cell_list()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lgnmodel1">bmtk.simulator.filternet.lgnmodel.lgnmodel1 module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel"><code class="docutils literal notranslate"><span class="pre">LGNModel</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel.evaluate"><code class="docutils literal notranslate"><span class="pre">LGNModel.evaluate()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lgnmodel1.heat_plot"><code class="docutils literal notranslate"><span class="pre">heat_plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lgnmodel1.line_plot"><code class="docutils literal notranslate"><span class="pre">line_plot()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.linearfilter">bmtk.simulator.filternet.lgnmodel.linearfilter module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.get_spatiotemporal_kernel"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter.get_spatiotemporal_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_spatial_filter"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter.show_spatial_filter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_temporal_filter"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter.show_temporal_filter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.t_slice"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter.t_slice()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.to_dict"><code class="docutils literal notranslate"><span class="pre">SpatioTemporalFilter.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lnunit">bmtk.simulator.filternet.lgnmodel.lnunit module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit"><code class="docutils literal notranslate"><span class="pre">LNUnit</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.evaluate"><code class="docutils literal notranslate"><span class="pre">LNUnit.evaluate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_cursor"><code class="docutils literal notranslate"><span class="pre">LNUnit.get_cursor()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_spatiotemporal_kernel"><code class="docutils literal notranslate"><span class="pre">LNUnit.get_spatiotemporal_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_spatial_filter"><code class="docutils literal notranslate"><span class="pre">LNUnit.show_spatial_filter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_temporal_filter"><code class="docutils literal notranslate"><span class="pre">LNUnit.show_temporal_filter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.to_dict"><code class="docutils literal notranslate"><span class="pre">LNUnit.to_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.evaluate"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit.evaluate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_cursor"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit.get_cursor()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_spatiotemporal_kernel"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit.get_spatiotemporal_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_spatial_filter"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit.show_spatial_filter()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_temporal_filter"><code class="docutils literal notranslate"><span class="pre">MultiLNUnit.show_temporal_filter()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.make_cell_list">bmtk.simulator.filternet.lgnmodel.make_cell_list module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.make_cell_list.evaluate_cell_and_plot"><code class="docutils literal notranslate"><span class="pre">evaluate_cell_and_plot()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.make_cell_list.make_on_off_cell_list"><code class="docutils literal notranslate"><span class="pre">make_on_off_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.make_cell_list.make_single_unit_cell_list"><code class="docutils literal notranslate"><span class="pre">make_single_unit_cell_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.make_cell_list.multi_cell_random_generator"><code class="docutils literal notranslate"><span class="pre">multi_cell_random_generator()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.movie">bmtk.simulator.filternet.lgnmodel.movie module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldFlashMovie"><code class="docutils literal notranslate"><span class="pre">FullFieldFlashMovie</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie"><code class="docutils literal notranslate"><span class="pre">FullFieldMovie</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.create_movie"><code class="docutils literal notranslate"><span class="pre">FullFieldMovie.create_movie()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.data"><code class="docutils literal notranslate"><span class="pre">FullFieldMovie.data</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.frame_rate"><code class="docutils literal notranslate"><span class="pre">FullFieldMovie.frame_rate</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.full"><code class="docutils literal notranslate"><span class="pre">FullFieldMovie.full()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.GratingMovie"><code class="docutils literal notranslate"><span class="pre">GratingMovie</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.GratingMovie.create_movie"><code class="docutils literal notranslate"><span class="pre">GratingMovie.create_movie()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.LoomingMovie"><code class="docutils literal notranslate"><span class="pre">LoomingMovie</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.LoomingMovie.create_movie"><code class="docutils literal notranslate"><span class="pre">LoomingMovie.create_movie()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie"><code class="docutils literal notranslate"><span class="pre">Movie</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow"><code class="docutils literal notranslate"><span class="pre">Movie.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow_summary"><code class="docutils literal notranslate"><span class="pre">Movie.imshow_summary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.play"><code class="docutils literal notranslate"><span class="pre">Movie.play()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.ranges"><code class="docutils literal notranslate"><span class="pre">Movie.ranges</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.poissongeneration">bmtk.simulator.filternet.lgnmodel.poissongeneration module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_inhomogenous_poisson"><code class="docutils literal notranslate"><span class="pre">generate_inhomogenous_poisson()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process"><code class="docutils literal notranslate"><span class="pre">generate_poisson_process()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling"><code class="docutils literal notranslate"><span class="pre">generate_poisson_rescaling()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling_function"><code class="docutils literal notranslate"><span class="pre">generate_poisson_rescaling_function()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_renewal_process"><code class="docutils literal notranslate"><span class="pre">generate_renewal_process()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmetrics">bmtk.simulator.filternet.lgnmodel.cellmetrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmodel">bmtk.simulator.filternet.lgnmodel.cellmodel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cursor">bmtk.simulator.filternet.lgnmodel.cursor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.fitfuns">bmtk.simulator.filternet.lgnmodel.fitfuns module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.gaborfilter">bmtk.simulator.filternet.lgnmodel.gaborfilter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.kernel">bmtk.simulator.filternet.lgnmodel.kernel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor">bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lgnmodel1">bmtk.simulator.filternet.lgnmodel.lgnmodel1 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.linearfilter">bmtk.simulator.filternet.lgnmodel.linearfilter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lnunit">bmtk.simulator.filternet.lgnmodel.lnunit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.make_cell_list">bmtk.simulator.filternet.lgnmodel.make_cell_list module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.movie">bmtk.simulator.filternet.lgnmodel.movie module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.poissongeneration">bmtk.simulator.filternet.lgnmodel.poissongeneration module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.singleunitcell">bmtk.simulator.filternet.lgnmodel.singleunitcell module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.spatialfilter">bmtk.simulator.filternet.lgnmodel.spatialfilter module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter"><code class="docutils literal notranslate"><span class="pre">ArrayFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.get_kernel"><code class="docutils literal notranslate"><span class="pre">ArrayFilter.get_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.imshow"><code class="docutils literal notranslate"><span class="pre">ArrayFilter.imshow()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter"><code class="docutils literal notranslate"><span class="pre">GaussianSpatialFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.get_kernel"><code class="docutils literal notranslate"><span class="pre">GaussianSpatialFilter.get_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.imshow"><code class="docutils literal notranslate"><span class="pre">GaussianSpatialFilter.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.to_dict"><code class="docutils literal notranslate"><span class="pre">GaussianSpatialFilter.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.temporalfilter">bmtk.simulator.filternet.lgnmodel.temporalfilter module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter"><code class="docutils literal notranslate"><span class="pre">ArrayTemporalFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter.get_default_t_grid"><code class="docutils literal notranslate"><span class="pre">ArrayTemporalFilter.get_default_t_grid()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter"><code class="docutils literal notranslate"><span class="pre">TemporalFilter</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_default_t_grid"><code class="docutils literal notranslate"><span class="pre">TemporalFilter.get_default_t_grid()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_kernel"><code class="docutils literal notranslate"><span class="pre">TemporalFilter.get_kernel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.imshow"><code class="docutils literal notranslate"><span class="pre">TemporalFilter.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.to_dict"><code class="docutils literal notranslate"><span class="pre">TemporalFilter.to_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump"><code class="docutils literal notranslate"><span class="pre">TemporalFilterCosineBump</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.get_default_t_grid"><code class="docutils literal notranslate"><span class="pre">TemporalFilterCosineBump.get_default_t_grid()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict"><code class="docutils literal notranslate"><span class="pre">TemporalFilterCosineBump.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.transferfunction">bmtk.simulator.filternet.lgnmodel.transferfunction module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction"><code class="docutils literal notranslate"><span class="pre">MultiTransferFunction</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction.to_dict"><code class="docutils literal notranslate"><span class="pre">MultiTransferFunction.to_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction"><code class="docutils literal notranslate"><span class="pre">ScalarTransferFunction</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.imshow"><code class="docutils literal notranslate"><span class="pre">ScalarTransferFunction.imshow()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.to_dict"><code class="docutils literal notranslate"><span class="pre">ScalarTransferFunction.to_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.util_fns">bmtk.simulator.filternet.lgnmodel.util_fns module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.check_optim_results_against_bounds"><code class="docutils literal notranslate"><span class="pre">check_optim_results_against_bounds()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.chunks"><code class="docutils literal notranslate"><span class="pre">chunks()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.compute_FFT_OneCycle"><code class="docutils literal notranslate"><span class="pre">compute_FFT_OneCycle()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.create_ff_mov"><code class="docutils literal notranslate"><span class="pre">create_ff_mov()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.create_grating_movie_list"><code class="docutils literal notranslate"><span class="pre">create_grating_movie_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.cross_from_above"><code class="docutils literal notranslate"><span class="pre">cross_from_above()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.get_tcross_from_temporal_kernel"><code class="docutils literal notranslate"><span class="pre">get_tcross_from_temporal_kernel()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.utilities">bmtk.simulator.filternet.lgnmodel.utilities module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.apply_transformation_matrix"><code class="docutils literal notranslate"><span class="pre">apply_transformation_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.convert_tmin_tmax_framerate_to_trange"><code class="docutils literal notranslate"><span class="pre">convert_tmin_tmax_framerate_to_trange()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_convolution"><code class="docutils literal notranslate"><span class="pre">get_convolution()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_convolution_ind"><code class="docutils literal notranslate"><span class="pre">get_convolution_ind()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_scale_matrix"><code class="docutils literal notranslate"><span class="pre">get_scale_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_translation_matrix"><code class="docutils literal notranslate"><span class="pre">get_translation_matrix()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_vanhateren"><code class="docutils literal notranslate"><span class="pre">get_vanhateren()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.spatialfilter">bmtk.simulator.filternet.lgnmodel.spatialfilter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.temporalfilter">bmtk.simulator.filternet.lgnmodel.temporalfilter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.transferfunction">bmtk.simulator.filternet.lgnmodel.transferfunction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.util_fns">bmtk.simulator.filternet.lgnmodel.util_fns module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.utilities">bmtk.simulator.filternet.lgnmodel.utilities module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.filternet.modules.html">bmtk.simulator.filternet.modules package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.base">bmtk.simulator.filternet.modules.base module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.base.SimModule"><code class="docutils literal notranslate"><span class="pre">SimModule</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.base.SimModule.finalize"><code class="docutils literal notranslate"><span class="pre">SimModule.finalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.base.SimModule.initialize"><code class="docutils literal notranslate"><span class="pre">SimModule.initialize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.base.SimModule.save"><code class="docutils literal notranslate"><span class="pre">SimModule.save()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.create_spikes">bmtk.simulator.filternet.modules.create_spikes module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator"><code class="docutils literal notranslate"><span class="pre">SpikesGenerator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.finalize"><code class="docutils literal notranslate"><span class="pre">SpikesGenerator.finalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.save"><code class="docutils literal notranslate"><span class="pre">SpikesGenerator.save()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.f_rate_to_spike_train"><code class="docutils literal notranslate"><span class="pre">f_rate_to_spike_train()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.record_rates">bmtk.simulator.filternet.modules.record_rates module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.record_rates.RecordRates"><code class="docutils literal notranslate"><span class="pre">RecordRates</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.record_rates.RecordRates.finalize"><code class="docutils literal notranslate"><span class="pre">RecordRates.finalize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.record_rates.RecordRates.initialize"><code class="docutils literal notranslate"><span class="pre">RecordRates.initialize()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.record_rates.RecordRates.save"><code class="docutils literal notranslate"><span class="pre">RecordRates.save()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.base">bmtk.simulator.filternet.modules.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.create_spikes">bmtk.simulator.filternet.modules.create_spikes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.record_rates">bmtk.simulator.filternet.modules.record_rates module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules">Module contents</a></li>
 </ul>
 </li>
@@ -932,10 +669,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.filternet.cell">
-<span id="bmtk-simulator-filternet-cell-module"></span><h2>bmtk.simulator.filternet.cell module<a class="headerlink" href="#module-bmtk.simulator.filternet.cell" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-cell-module"></span><h2>bmtk.simulator.filternet.cell module<a class="headerlink" href="#module-bmtk.simulator.filternet.cell" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.cell.Cell">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.cell.</span></span><span class="sig-name descname"><span class="pre">Cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/cell.html#Cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.cell.Cell" title="Permalink to this definition">¶</a></dt>
@@ -974,14 +711,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.cell_models">
-<span id="bmtk-simulator-filternet-cell-models-module"></span><h2>bmtk.simulator.filternet.cell_models module<a class="headerlink" href="#module-bmtk.simulator.filternet.cell_models" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-cell-models-module"></span><h2>bmtk.simulator.filternet.cell_models module<a class="headerlink" href="#module-bmtk.simulator.filternet.cell_models" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.filternet.config">
-<span id="bmtk-simulator-filternet-config-module"></span><h2>bmtk.simulator.filternet.config module<a class="headerlink" href="#module-bmtk.simulator.filternet.config" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-config-module"></span><h2>bmtk.simulator.filternet.config module<a class="headerlink" href="#module-bmtk.simulator.filternet.config" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.config.Config">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.config.</span></span><span class="sig-name descname"><span class="pre">Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/config.html#Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulation_config.SimulationConfig" title="bmtk.simulator.core.simulation_config.SimulationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulation_config.SimulationConfig" title="bmtk.simulator.core.simulation_config.SimulationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulation_config.SimulationConfig</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.config.Config.io">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">io</span></span><a class="headerlink" href="#bmtk.simulator.filternet.config.Config.io" title="Permalink to this definition">¶</a></dt>
@@ -996,11 +733,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.filternetwork">
-<span id="bmtk-simulator-filternet-filternetwork-module"></span><h2>bmtk.simulator.filternet.filternetwork module<a class="headerlink" href="#module-bmtk.simulator.filternet.filternetwork" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-filternetwork-module"></span><h2>bmtk.simulator.filternet.filternetwork module<a class="headerlink" href="#module-bmtk.simulator.filternet.filternetwork" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.filternetwork.FilterNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.filternetwork.</span></span><span class="sig-name descname"><span class="pre">FilterNetwork</span></span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/filternetwork.html#FilterNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.filternetwork.FilterNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimNetwork</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.filternetwork.FilterNetwork.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/filternetwork.html#FilterNetwork.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.filternetwork.FilterNetwork.build" title="Permalink to this definition">¶</a></dt>
@@ -1030,14 +767,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.filters">
-<span id="bmtk-simulator-filternet-filters-module"></span><h2>bmtk.simulator.filternet.filters module<a class="headerlink" href="#module-bmtk.simulator.filternet.filters" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-filters-module"></span><h2>bmtk.simulator.filternet.filters module<a class="headerlink" href="#module-bmtk.simulator.filternet.filters" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.filternet.filtersimulator">
-<span id="bmtk-simulator-filternet-filtersimulator-module"></span><h2>bmtk.simulator.filternet.filtersimulator module<a class="headerlink" href="#module-bmtk.simulator.filternet.filtersimulator" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-filtersimulator-module"></span><h2>bmtk.simulator.filternet.filtersimulator module<a class="headerlink" href="#module-bmtk.simulator.filternet.filtersimulator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.filtersimulator.FilterSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.filtersimulator.</span></span><span class="sig-name descname"><span class="pre">FilterSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/filtersimulator.html#FilterSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.filtersimulator.FilterSimulator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator.Simulator</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.filtersimulator.FilterSimulator.add_movie">
 <span class="sig-name descname"><span class="pre">add_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">movie_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/filtersimulator.html#FilterSimulator.add_movie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.filtersimulator.FilterSimulator.add_movie" title="Permalink to this definition">¶</a></dt>
@@ -1077,11 +814,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.io_tools">
-<span id="bmtk-simulator-filternet-io-tools-module"></span><h2>bmtk.simulator.filternet.io_tools module<a class="headerlink" href="#module-bmtk.simulator.filternet.io_tools" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-io-tools-module"></span><h2>bmtk.simulator.filternet.io_tools module<a class="headerlink" href="#module-bmtk.simulator.filternet.io_tools" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.io_tools.FilterNetIOUtils">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.io_tools.</span></span><span class="sig-name descname"><span class="pre">FilterNetIOUtils</span></span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/io_tools.html#FilterNetIOUtils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.io_tools.FilterNetIOUtils" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">IOUtils</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.io_tools.FilterNetIOUtils.barrier">
 <span class="sig-name descname"><span class="pre">barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/io_tools.html#FilterNetIOUtils.barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.io_tools.FilterNetIOUtils.barrier" title="Permalink to this definition">¶</a></dt>
@@ -1102,7 +839,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.pyfunction_cache">
-<span id="bmtk-simulator-filternet-pyfunction-cache-module"></span><h2>bmtk.simulator.filternet.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.filternet.pyfunction_cache" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-pyfunction-cache-module"></span><h2>bmtk.simulator.filternet.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.filternet.pyfunction_cache" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.pyfunction_cache.add_cell_processor">
 <span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.pyfunction_cache.</span></span><span class="sig-name descname"><span class="pre">add_cell_processor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/pyfunction_cache.html#add_cell_processor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.pyfunction_cache.add_cell_processor" title="Permalink to this definition">¶</a></dt>
@@ -1121,11 +858,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.sonata_adaptors">
-<span id="bmtk-simulator-filternet-sonata-adaptors-module"></span><h2>bmtk.simulator.filternet.sonata_adaptors module<a class="headerlink" href="#module-bmtk.simulator.filternet.sonata_adaptors" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-sonata-adaptors-module"></span><h2>bmtk.simulator.filternet.sonata_adaptors module<a class="headerlink" href="#module-bmtk.simulator.filternet.sonata_adaptors" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.sonata_adaptors.FilterNode">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">FilterNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/sonata_adaptors.html#FilterNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.sonata_adaptors.FilterNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">SonataBaseNode</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.sonata_adaptors.FilterNode.delays">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delays</span></span><a class="headerlink" href="#bmtk.simulator.filternet.sonata_adaptors.FilterNode.delays" title="Permalink to this definition">¶</a></dt>
@@ -1186,7 +923,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.sonata_adaptors.FilterNodeAdaptor">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.filternet.sonata_adaptors.</span></span><span class="sig-name descname"><span class="pre">FilterNodeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/sonata_adaptors.html#FilterNodeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.sonata_adaptors.FilterNodeAdaptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">NodeAdaptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.sonata_adaptors.FilterNodeAdaptor.get_node">
 <span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/sonata_adaptors.html#FilterNodeAdaptor.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.sonata_adaptors.FilterNodeAdaptor.get_node" title="Permalink to this definition">¶</a></dt>
@@ -1261,13 +998,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.simulator.filternet.transfer_functions">
-<span id="bmtk-simulator-filternet-transfer-functions-module"></span><h2>bmtk.simulator.filternet.transfer_functions module<a class="headerlink" href="#module-bmtk.simulator.filternet.transfer_functions" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-transfer-functions-module"></span><h2>bmtk.simulator.filternet.transfer_functions module<a class="headerlink" href="#module-bmtk.simulator.filternet.transfer_functions" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.filternet.utils">
-<span id="bmtk-simulator-filternet-utils-module"></span><h2>bmtk.simulator.filternet.utils module<a class="headerlink" href="#module-bmtk.simulator.filternet.utils" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-simulator-filternet-utils-module"></span><h2>bmtk.simulator.filternet.utils module<a class="headerlink" href="#module-bmtk.simulator.filternet.utils" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.simulator.filternet">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.filternet" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.filternet" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -1333,7 +1070,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

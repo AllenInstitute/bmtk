@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Configuration file &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -619,10 +620,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="configuration-file">
-<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading">¶</a></h1>
+<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h1>
 <p>The configuration file defines the files describing the network, its input as well as run-time parameters. For convenience it is grouped into the following categories:</p>
 <section id="manifest">
-<h2>Manifest<a class="headerlink" href="#manifest" title="Permalink to this heading">¶</a></h2>
+<h2>Manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where the configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -637,7 +638,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">¶</a></h2>
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes run-time parameters</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -655,7 +656,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="conditions">
-<h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this heading">¶</a></h2>
+<h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes information about the initial conditions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -667,7 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="node-id-selections">
-<h2>Node_id selections<a class="headerlink" href="#node-id-selections" title="Permalink to this heading">¶</a></h2>
+<h2>Node_id selections<a class="headerlink" href="#node-id-selections" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -678,7 +679,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="input">
-<h2>Input<a class="headerlink" href="#input" title="Permalink to this heading">¶</a></h2>
+<h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Defines spike_trains for the external inputs</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span>
@@ -696,7 +697,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="output">
-<h2>Output<a class="headerlink" href="#output" title="Permalink to this heading">¶</a></h2>
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Defines file names for the output</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -712,7 +713,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="components">
-<h2>Components<a class="headerlink" href="#components" title="Permalink to this heading">¶</a></h2>
+<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>The “components” grouping includes paths to directories containing building blocks of a network model</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -728,7 +729,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="recording-extracellular-electrode">
-<h2>Recording Extracellular Electrode<a class="headerlink" href="#recording-extracellular-electrode" title="Permalink to this heading">¶</a></h2>
+<h2>Recording Extracellular Electrode<a class="headerlink" href="#recording-extracellular-electrode" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes parameters defining extracellular electrodes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;recXelectrode&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -739,7 +740,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div></blockquote>
 </section>
 <section id="networks">
-<h2>Networks<a class="headerlink" href="#networks" title="Permalink to this heading">¶</a></h2>
+<h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes files defining nodes and edges:</p>
 </div></blockquote>
@@ -830,7 +831,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

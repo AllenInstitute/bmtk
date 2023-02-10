@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>bmtk.utils.reports.spike_trains package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -621,16 +622,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-utils-reports-spike-trains-package">
-<h1>bmtk.utils.reports.spike_trains package<a class="headerlink" href="#bmtk-utils-reports-spike-trains-package" title="Permalink to this heading">¶</a></h1>
+<h1>bmtk.utils.reports.spike_trains package<a class="headerlink" href="#bmtk-utils-reports-spike-trains-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.core">
-<span id="bmtk-utils-reports-spike-trains-core-module"></span><h2>bmtk.utils.reports.spike_trains.core module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.core" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-core-module"></span><h2>bmtk.utils.reports.spike_trains.core module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.core" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.core.SortOrder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.core.</span></span><span class="sig-name descname"><span class="pre">SortOrder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/core.html#SortOrder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.core.SortOrder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.core.SortOrder.by_id">
@@ -667,7 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.plotting">
-<span id="bmtk-utils-reports-spike-trains-plotting-module"></span><h2>bmtk.utils.reports.spike_trains.plotting module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.plotting" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-plotting-module"></span><h2>bmtk.utils.reports.spike_trains.plotting module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.plotting" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.plotting.moving_average">
 <span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.plotting.</span></span><span class="sig-name descname"><span class="pre">moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/plotting.html#moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.plotting.moving_average" title="Permalink to this definition">¶</a></dt>
@@ -687,7 +688,7 @@ nodes (by node_id) by dot colors and labels then you can use the node_groups, wh
 </div>
 <p>The histogram will not be grouped.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>spike_trains</strong> – SpikeTrains object or path to a (SONATA) spikes file.</p></li>
 <li><p><strong>with_histogram</strong> – If True the a histogram will be shown as a small subplot below the scatter plot. Default
@@ -706,7 +707,7 @@ data.</p></li>
 save plot.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>matplotlib figure.Figure object</p>
 </dd>
 </dl>
@@ -725,7 +726,7 @@ labels then you can use the node_groups, which should be a list of dicts:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>spike_trains</strong> – SpikeTrains object or path to a (SONATA) spikes file.</p></li>
 <li><p><strong>population</strong> – string. If a spikes-file contains more than one population of nodes, use this to determine which
@@ -745,7 +746,7 @@ will using a moving average smoothing function. Or use a function pointer.</p></
 save plot.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>matplotlib figure.Figure object</p>
 </dd>
 </dl>
@@ -766,7 +767,7 @@ the node_groups options:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>spike_trains</strong> – SpikeTrains object or path to a (SONATA) spikes file.</p></li>
 <li><p><strong>population</strong> – string. If a spikes-file contains more than one population of nodes, use this to determine which
@@ -781,7 +782,7 @@ label and color. If None all nodes will be labeled and colored the same.</p></li
 save plot.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>matplotlib figure.Figure object</p>
 </dd>
 </dl>
@@ -789,11 +790,11 @@ save plot.</p></li>
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.spike_train_buffer">
-<span id="bmtk-utils-reports-spike-trains-spike-train-buffer-module"></span><h2>bmtk.utils.reports.spike_trains.spike_train_buffer module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_train_buffer" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-spike-train-buffer-module"></span><h2>bmtk.utils.reports.spike_trains.spike_train_buffer module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_train_buffer" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.</span></span><span class="sig-name descname"><span class="pre">STCSVBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spikes'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI</span></code></a></p>
 <p>A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
 large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
 individual spike.</p>
@@ -805,7 +806,7 @@ will always have an upper bound on the maximum memory used.</p>
 <span class="sig-name descname"><span class="pre">add_spike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.add_spike"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a single spike</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
@@ -821,7 +822,7 @@ will always have an upper bound on the maximum memory used.</p>
 <span class="sig-name descname"><span class="pre">add_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.add_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sequence of spikes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_ids</strong> – list of ints or int. If a list is used, it should be the same lenght as the corresponding
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
@@ -849,7 +850,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -858,7 +859,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -869,10 +870,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -883,10 +884,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -897,7 +898,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -919,7 +920,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -928,7 +929,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -944,7 +945,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -955,7 +956,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -966,7 +967,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the units used in the timestamps.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -977,7 +978,7 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.</span></span><span class="sig-name descname"><span class="pre">STCSVMPIBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spikes'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">STCSVBuffer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.get_populations">
 <span class="sig-name descname"><span class="pre">get_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer.get_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.get_populations" title="Permalink to this definition">¶</a></dt>
@@ -988,7 +989,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -997,7 +998,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1008,10 +1009,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1022,10 +1023,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1036,7 +1037,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1052,7 +1053,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1061,7 +1062,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1072,13 +1073,13 @@ populations with spikes data is iterated over</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.</span></span><span class="sig-name descname"><span class="pre">STCSVMPIBufferV2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spikes'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBufferV2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">STCSVMPIBuffer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2.to_dataframe">
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBufferV2.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1089,7 +1090,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1100,7 +1101,7 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.</span></span><span class="sig-name descname"><span class="pre">STMPIBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">STMemoryBuffer</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.get_populations">
 <span class="sig-name descname"><span class="pre">get_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.get_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.get_populations" title="Permalink to this definition">¶</a></dt>
@@ -1111,7 +1112,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1120,7 +1121,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1131,10 +1132,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1145,10 +1146,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1159,7 +1160,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1175,7 +1176,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1184,7 +1185,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1195,7 +1196,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1206,7 +1207,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1217,7 +1218,7 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.</span></span><span class="sig-name descname"><span class="pre">STMemoryBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'array'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI</span></code></a></p>
 <p>A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
 large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
 individual spike.</p>
@@ -1228,7 +1229,7 @@ to work with parallel simulations.</p>
 <span class="sig-name descname"><span class="pre">add_spike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.add_spike"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.add_spike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a single spike</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
@@ -1244,7 +1245,7 @@ to work with parallel simulations.</p>
 <span class="sig-name descname"><span class="pre">add_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.add_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.add_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sequence of spikes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_ids</strong> – list of ints or int. If a list is used, it should be the same lenght as the corresponding
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
@@ -1272,7 +1273,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1281,7 +1282,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1298,10 +1299,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1312,10 +1313,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1326,7 +1327,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1348,7 +1349,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1357,7 +1358,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1368,7 +1369,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1379,7 +1380,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1390,7 +1391,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the units used in the timestamps.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1400,17 +1401,17 @@ dataframs with only one population). True by default</p></li>
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.spike_train_readers">
-<span id="bmtk-utils-reports-spike-trains-spike-train-readers-module"></span><h2>bmtk.utils.reports.spike_trains.spike_train_readers module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_train_readers" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-spike-train-readers-module"></span><h2>bmtk.utils.reports.spike_trains.spike_train_readers module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_train_readers" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">CSVSTReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsReadOnlyAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.get_times">
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1419,7 +1420,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1430,10 +1431,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1444,10 +1445,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1458,7 +1459,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1474,7 +1475,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1483,7 +1484,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1494,7 +1495,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1505,7 +1506,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1516,7 +1517,7 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">EmptySonataReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsReadOnlyAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI</span></code></a></p>
 <p>A Hack that is needed for when a simulation produces a file with no spikes, since there won’t/can’t be
 &lt;population_name&gt; subgroup and/or gids/timestamps datasets.</p>
 <dl class="py method">
@@ -1524,7 +1525,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1533,7 +1534,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1544,10 +1545,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1558,10 +1559,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1572,7 +1573,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1588,7 +1589,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1597,7 +1598,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1613,7 +1614,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1624,7 +1625,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1635,13 +1636,13 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">NWBSTReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsReadOnlyAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.get_times">
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1650,7 +1651,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1661,10 +1662,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1675,10 +1676,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1689,7 +1690,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1705,7 +1706,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1714,7 +1715,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1725,7 +1726,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1736,7 +1737,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1747,14 +1748,14 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">SonataOldReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader" title="bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SonataSTReader</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader" title="bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader</span></code></a></p>
 <p>Older version of SONATA</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.get_times">
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1763,7 +1764,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1774,10 +1775,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1788,10 +1789,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1807,7 +1808,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1816,7 +1817,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1832,7 +1833,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1843,7 +1844,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1854,13 +1855,13 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">SonataSTReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsReadOnlyAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.get_times">
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -1869,7 +1870,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -1880,10 +1881,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -1894,10 +1895,10 @@ default population (if possible).</p></li>
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -1908,7 +1909,7 @@ default population (if possible).</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -1935,7 +1936,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -1944,7 +1945,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -1960,7 +1961,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -1971,7 +1972,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -1982,7 +1983,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the units used in the timestamps.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1995,14 +1996,14 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_readers.</span></span><span class="sig-name descname"><span class="pre">load_sonata_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#load_sonata_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.load_sonata_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a Sonata file reader, making sure it matches the correct version.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> – </p></li>
 <li><p><strong>version</strong> – </p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -2015,17 +2016,17 @@ dataframs with only one population). True by default</p></li>
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.spike_trains">
-<span id="bmtk-utils-reports-spike-trains-spike-trains-module"></span><h2>bmtk.utils.reports.spike_trains.spike_trains module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_trains" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-spike-trains-module"></span><h2>bmtk.utils.reports.spike_trains.spike_trains module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_trains" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.</span></span><span class="sig-name descname"><span class="pre">GammaSpikeGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains.html#GammaSpikeGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeGenerator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator</span></code></a></p>
 <p>A Class for generating spike-trains based on a gamma-distributed renewal process.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firing_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">1.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains.html#GammaSpikeGenerator.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator.add" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>firing_rate</strong> – Stationary firing rate (Hz)</p></li>
 <li><p><strong>a</strong> – Shape parameter (a&gt;0). For a=1, this becomes a Poisson distribution.</p></li>
@@ -2045,14 +2046,14 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.</span></span><span class="sig-name descname"><span class="pre">PoissonSpikeGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains.html#PoissonSpikeGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeGenerator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator</span></code></a></p>
 <p>A Class for generating spike-trains with a homogeneous and inhomogeneous Poisson distribution.</p>
 <p>Uses the methods describe in Dayan and Abbott, 2001.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firing_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">1.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains.html#PoissonSpikeGenerator.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator.add" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>firing_rate</strong> – Scalar stationary firing rate or array of values for inhomogeneous (Hz)</p></li>
 <li><p><strong>times</strong> – Start and end time for spike train (s)</p></li>
@@ -2073,7 +2074,7 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikeGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains.html#SpikeGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrains</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains" title="bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
@@ -2110,7 +2111,7 @@ dataframs with only one population). True by default</p></li>
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.spike_trains_api">
-<span id="bmtk-utils-reports-spike-trains-spike-trains-api-module"></span><h2>bmtk.utils.reports.spike_trains.spike_trains_api module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_trains_api" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-spike-trains-api-module"></span><h2>bmtk.utils.reports.spike_trains.spike_trains_api module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_trains_api" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.</span></span><span class="sig-name descname"><span class="pre">SpikeTrainsAPI</span></span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="Permalink to this definition">¶</a></dt>
@@ -2120,7 +2121,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">add_spike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.add_spike"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a single spike</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
@@ -2136,7 +2137,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">add_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.add_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sequence of spikes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_ids</strong> – list of ints or int. If a list is used, it should be the same lenght as the corresponding
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
@@ -2164,7 +2165,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of spike-times for a given node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
 <li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
@@ -2173,7 +2174,7 @@ default population (if possible).</p></li>
 <li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of spike times [float]</p>
 </dd>
 </dl>
@@ -2192,7 +2193,7 @@ default population (if possible).</p></li>
 storage). Use this method instead of == when one of the spike-train instances has extra populations or
 timestamps are stored at a different precision.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> – spike-trains instance being compared</p></li>
 <li><p><strong>populations</strong> – string or list of strings, populations to compare between the two. By default
@@ -2201,7 +2202,7 @@ timestamps are stored at a different precision.</p>
 <li><p><strong>time_window</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True if the two spike-trains have the same node-ids/timestamps (given the conditions).</p>
 </dd>
 </dl>
@@ -2217,14 +2218,14 @@ now this isn’t accounted for, and if self’s node 0 has two spikes at 100.00 
 two spikes at 100.00 ms as well.
 # TODO: Account for non-uniqueness in on the timestamps</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> – </p></li>
 <li><p><strong>err</strong> – precision for comparing two timestamps</p></li>
 <li><p><strong>strict</strong> – bool, if True makes sure that self is a strict subset of other. default False</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -2235,7 +2236,7 @@ two spikes at 100.00 ms as well.
 <span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Import Another SpikesTrain object into current file, always in-place.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>other</strong> – Another SpikeTrainsAPI object</p>
 </dd>
 </dl>
@@ -2246,10 +2247,10 @@ two spikes at 100.00 ms as well.
 <span class="sig-name descname"><span class="pre">n_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.n_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.n_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the number of spikes for the given population.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – population name. If none None will use the default population (when possible).</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>unsigned integer, number of spikes.</p>
 </dd>
 </dl>
@@ -2260,10 +2261,10 @@ two spikes at 100.00 ms as well.
 <span class="sig-name descname"><span class="pre">node_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.node_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of (node-ids, population_name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
@@ -2274,7 +2275,7 @@ two spikes at 100.00 ms as well.
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.populations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all available spike population names</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A list of strings</p>
 </dd>
 </dl>
@@ -2301,7 +2302,7 @@ to_dataframe(), but not require as much memory. To use the generator:</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to select specific node_populations. By default all
 populations with spikes data is iterated over</p></li>
@@ -2310,7 +2311,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -2321,7 +2322,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write spikes to csv file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> – </p></li>
 <li><p><strong>mode</strong> – </p></li>
@@ -2329,7 +2330,7 @@ populations with spikes data is iterated over</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -2340,7 +2341,7 @@ populations with spikes data is iterated over</p></li>
 <span class="sig-name descname"><span class="pre">to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_population_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>populations</strong> – string or list of strings, used to only return the dataframes associated with a given
 node population. By default (populations=None) all populations are included</p></li>
@@ -2351,7 +2352,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A pandas dataframe, unindex, with columns ‘node_ids’, ‘timestamps’, and ‘population’ (optional)</p>
 </dd>
 </dl>
@@ -2367,7 +2368,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">to_sonata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.to_sonata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_sonata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write current spike-trains to a sonata hdf5 file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> – </p></li>
 <li><p><strong>mode</strong> – </p></li>
@@ -2375,7 +2376,7 @@ dataframs with only one population). True by default</p></li>
 <li><p><strong>kwargs</strong> – </p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -2386,7 +2387,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.units" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the units used in the timestamps.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2397,13 +2398,13 @@ dataframs with only one population). True by default</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.</span></span><span class="sig-name descname"><span class="pre">SpikeTrainsReadOnlyAPI</span></span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsReadOnlyAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrainsAPI</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI.add_spike">
 <span class="sig-name descname"><span class="pre">add_spike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsReadOnlyAPI.add_spike"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI.add_spike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a single spike</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
@@ -2419,7 +2420,7 @@ dataframs with only one population). True by default</p></li>
 <span class="sig-name descname"><span class="pre">add_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsReadOnlyAPI.add_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI.add_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sequence of spikes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_ids</strong> – list of ints or int. If a list is used, it should be the same lenght as the corresponding
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
@@ -2457,7 +2458,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.spikes_file_writers">
-<span id="bmtk-utils-reports-spike-trains-spikes-file-writers-module"></span><h2>bmtk.utils.reports.spike_trains.spikes_file_writers module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spikes_file_writers" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-spikes-file-writers-module"></span><h2>bmtk.utils.reports.spike_trains.spikes_file_writers module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spikes_file_writers" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.spikes_file_writers.write_csv">
 <span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.spikes_file_writers.</span></span><span class="sig-name descname"><span class="pre">write_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spiketrain_reader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SortOrder.none</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spikes_file_writers.html#write_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spikes_file_writers.write_csv" title="Permalink to this definition">¶</a></dt>
@@ -2480,7 +2481,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains.stats">
-<span id="bmtk-utils-reports-spike-trains-stats-module"></span><h2>bmtk.utils.reports.spike_trains.stats module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.stats" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-utils-reports-spike-trains-stats-module"></span><h2>bmtk.utils.reports.spike_trains.stats module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.stats" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.utils.reports.spike_trains.stats.fr_mean">
 <span class="sig-prename descclassname"><span class="pre">bmtk.utils.reports.spike_trains.stats.</span></span><span class="sig-name descname"><span class="pre">fr_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_trains</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/stats.html#fr_mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.stats.fr_mean" title="Permalink to this definition">¶</a></dt>
@@ -2488,7 +2489,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 
 </section>
 <section id="module-bmtk.utils.reports.spike_trains">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -2554,7 +2555,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

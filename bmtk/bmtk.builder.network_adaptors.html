@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>bmtk.builder.network_adaptors package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -621,16 +622,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-builder-network-adaptors-package">
-<h1>bmtk.builder.network_adaptors package<a class="headerlink" href="#bmtk-builder-network-adaptors-package" title="Permalink to this heading">¶</a></h1>
+<h1>bmtk.builder.network_adaptors package<a class="headerlink" href="#bmtk-builder-network-adaptors-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.builder.network_adaptors.dm_network">
-<span id="bmtk-builder-network-adaptors-dm-network-module"></span><h2>bmtk.builder.network_adaptors.dm_network module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.dm_network" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-dm-network-module"></span><h2>bmtk.builder.network_adaptors.dm_network module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.dm_network" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.dm_network.DenseNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.dm_network.</span></span><span class="sig-name descname"><span class="pre">DenseNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/dm_network.html#DenseNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.dm_network.DenseNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_adaptors.network.Network</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.dm_network.DenseNetwork.edges_iter">
 <span class="sig-name descname"><span class="pre">edges_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trg_gids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/dm_network.html#DenseNetwork.edges_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.dm_network.DenseNetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
@@ -641,14 +642,14 @@ indicate if their is a problem.</p>
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
 it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trg_gids</strong> – list of gids to match with an edge’s target.</p></li>
 <li><p><strong>src_network</strong> – str, only returns edges coming from the specified source network.</p></li>
 <li><p><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>iteration of bmtk.build.edge.Edge objects representing given edge.</p>
 </dd>
 </dl>
@@ -696,11 +697,11 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 
 </section>
 <section id="module-bmtk.builder.network_adaptors.dm_network_orig">
-<span id="bmtk-builder-network-adaptors-dm-network-orig-module"></span><h2>bmtk.builder.network_adaptors.dm_network_orig module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.dm_network_orig" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-dm-network-orig-module"></span><h2>bmtk.builder.network_adaptors.dm_network_orig module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.dm_network_orig" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.dm_network_orig.</span></span><span class="sig-name descname"><span class="pre">DenseNetworkOrig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/dm_network_orig.html#DenseNetworkOrig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_adaptors.network.Network</span></code></a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.EdgeTable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EdgeTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection_map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/dm_network_orig.html#DenseNetworkOrig.EdgeTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.dm_network_orig.DenseNetworkOrig.EdgeTable" title="Permalink to this definition">¶</a></dt>
@@ -753,14 +754,14 @@ indicate if their is a problem.</p>
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
 it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trg_gids</strong> – list of gids to match with an edge’s target.</p></li>
 <li><p><strong>src_network</strong> – str, only returns edges coming from the specified source network.</p></li>
 <li><p><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>iteration of bmtk.build.edge.Edge objects representing given edge.</p>
 </dd>
 </dl>
@@ -808,7 +809,7 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 
 </section>
 <section id="module-bmtk.builder.network_adaptors.edge_props_table">
-<span id="bmtk-builder-network-adaptors-edge-props-table-module"></span><h2>bmtk.builder.network_adaptors.edge_props_table module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.edge_props_table" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-edge-props-table-module"></span><h2>bmtk.builder.network_adaptors.edge_props_table module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.edge_props_table" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.edge_props_table.</span></span><span class="sig-name descname"><span class="pre">EdgeTypesTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/edge_props_table.html#EdgeTypesTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTable" title="Permalink to this definition">¶</a></dt>
@@ -834,7 +835,7 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.edge_props_table.</span></span><span class="sig-name descname"><span class="pre">EdgeTypesTableMPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/edge_props_table.html#EdgeTypesTableMPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory" title="bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory"><code class="xref py py-class docutils literal notranslate"><span class="pre">EdgeTypesTableMemory</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory" title="bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory</span></code></a></p>
 <p>Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules
 are split across different ranks/processors.</p>
 <p>The data tables are saved in temporary files on the disk, so that the rank which is responsible for writing to the
@@ -960,7 +961,7 @@ represented with just one edge it will have n_edges &lt; n_syns.</p>
 
 </section>
 <section id="module-bmtk.builder.network_adaptors.edges_collator">
-<span id="bmtk-builder-network-adaptors-edges-collator-module"></span><h2>bmtk.builder.network_adaptors.edges_collator module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.edges_collator" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-edges-collator-module"></span><h2>bmtk.builder.network_adaptors.edges_collator module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.edges_collator" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.edges_collator.EdgesCollator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.edges_collator.</span></span><span class="sig-name descname"><span class="pre">EdgesCollator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/edges_collator.html#EdgesCollator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.edges_collator.EdgesCollator" title="Permalink to this definition">¶</a></dt>
@@ -1110,7 +1111,7 @@ and needs to be merged together (and possibly sorted) before writing to HDF5 fil
 <span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_group_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/edges_collator.html#EdgesCollatorSingular.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>In memory sort of the dataset</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sort_by</strong> – </p></li>
 <li><p><strong>sort_group_properties</strong> – </p></li>
@@ -1129,7 +1130,7 @@ and needs to be merged together (and possibly sorted) before writing to HDF5 fil
 
 </section>
 <section id="module-bmtk.builder.network_adaptors.network">
-<span id="bmtk-builder-network-adaptors-network-module"></span><h2>bmtk.builder.network_adaptors.network module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.network" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-network-module"></span><h2>bmtk.builder.network_adaptors.network module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.network" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.network.Network">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.network.</span></span><span class="sig-name descname"><span class="pre">Network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/network.html#Network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.network.Network" title="Permalink to this definition">¶</a></dt>
@@ -1278,7 +1279,7 @@ more info.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>source</strong> – A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
 subset of nodes.</p></li>
@@ -1294,7 +1295,7 @@ each target, and ‘all-to-one’ will pass in a list of all possible targets fo
 <li><p><strong>edge_type_properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A ConnectionMap object</p>
 </dd>
 </dl>
@@ -1325,7 +1326,7 @@ columns). For example to have one property ‘positions’ which keeps track of 
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> – number of nodes in this group</p></li>
 <li><p><strong>properties</strong> – Individual and group properties of given nodes</p></li>
@@ -1339,7 +1340,7 @@ columns). For example to have one property ‘positions’ which keeps track of 
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/network.html#Network.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.network.Network.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds nodes and edges.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>force</strong> – set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been
 called before then forcing a rebuild may change gids of each node.</p>
 </dd>
@@ -1369,7 +1370,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>target_nodes</strong> – gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</p></li>
 <li><p><strong>source_nodes</strong> – gid, list of gid, dict or node-pool. Set of source nodes for a given edge.</p></li>
@@ -1378,7 +1379,7 @@ called before then forcing a rebuild may change gids of each node.</p>
 <li><p><strong>properties</strong> – edge-properties used to filter out only certain edges.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>list of bmtk.builder.edge.Edge properties.</p>
 </dd>
 </dl>
@@ -1400,14 +1401,14 @@ indicate if their is a problem.</p>
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
 it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trg_gids</strong> – list of gids to match with an edge’s target.</p></li>
 <li><p><strong>src_network</strong> – str, only returns edges coming from the specified source network.</p></li>
 <li><p><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>iteration of bmtk.build.edge.Edge objects representing given edge.</p>
 </dd>
 </dl>
@@ -1458,10 +1459,10 @@ network.</p>
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>properties</strong> – key-value pair of node attributes to filter returned nodes</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>An iterator of Node objects</p>
 </dd>
 </dl>
@@ -1485,7 +1486,7 @@ network.</p>
 names will be automatically generated based on the network names.</p>
 <p>To have more control over the output and file names use the <strong>save_nodes()</strong> and <strong>save_edges()</strong> methods.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_dir</strong> – string, directory where network files will be generated. Default, current working directory.</p></li>
 <li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
@@ -1499,7 +1500,7 @@ names will be automatically generated based on the network names.</p>
 <span class="sig-name descname"><span class="pre">save_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_build</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/network.html#Network.save_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.network.Network.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the instantiated edges in SONATA format files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edges_file_name</strong> – file-name of hdf5 edges file. By default will use &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</p></li>
 <li><p><strong>edge_types_file_name</strong> – file-name of csv edge-types file. By default will use
@@ -1520,7 +1521,7 @@ names will be automatically generated based on the network names.</p>
 <span class="sig-name descname"><span class="pre">save_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/network.html#Network.save_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.network.Network.save_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the instantiated nodes in SONATA format files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nodes_file_name</strong> – file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</p></li>
 <li><p><strong>node_types_file_name</strong> – file-name of the csv node-types file. By default will use
@@ -1542,11 +1543,11 @@ names will be automatically generated based on the network names.</p>
 
 </section>
 <section id="module-bmtk.builder.network_adaptors.nxnetwork">
-<span id="bmtk-builder-network-adaptors-nxnetwork-module"></span><h2>bmtk.builder.network_adaptors.nxnetwork module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.nxnetwork" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-network-adaptors-nxnetwork-module"></span><h2>bmtk.builder.network_adaptors.nxnetwork module<a class="headerlink" href="#module-bmtk.builder.network_adaptors.nxnetwork" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.nxnetwork.NxNetwork">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.network_adaptors.nxnetwork.</span></span><span class="sig-name descname"><span class="pre">NxNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">network_props</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network_adaptors/nxnetwork.html#NxNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.network_adaptors.nxnetwork.NxNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.network_adaptors.network.Network" title="bmtk.builder.network_adaptors.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network_adaptors.network.Network</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.builder.network_adaptors.nxnetwork.NxNetwork.nedges">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nedges</span></span><a class="headerlink" href="#bmtk.builder.network_adaptors.nxnetwork.NxNetwork.nedges" title="Permalink to this definition">¶</a></dt>
@@ -1563,7 +1564,7 @@ names will be automatically generated based on the network names.</p>
 
 </section>
 <section id="module-bmtk.builder.network_adaptors">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.network_adaptors" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.network_adaptors" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -1629,7 +1630,7 @@ names will be automatically generated based on the network names.</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

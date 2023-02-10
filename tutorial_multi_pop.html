@@ -1,19 +1,20 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Tutorial 4: Multi-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -732,11 +733,10 @@ div.nboutput.container div.prompt > div {
     }
 }
 
-/* disable scrollbars and line breaks on prompts */
+/* disable scrollbars on prompts */
 div.nbinput.container div.prompt pre,
 div.nboutput.container div.prompt pre {
     overflow: hidden;
-    white-space: pre;
 }
 
 /* input/output area */
@@ -833,12 +833,11 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt .copybtn {
+.prompt a.copybtn {
     display: none;
 }
 
 /* Some additional styling taken form the Jupyter notebook CSS */
-.jp-RenderedHTMLCommon table,
 div.rendered_html table {
   border: none;
   border-collapse: collapse;
@@ -847,14 +846,10 @@ div.rendered_html table {
   font-size: 12px;
   table-layout: fixed;
 }
-.jp-RenderedHTMLCommon thead,
 div.rendered_html thead {
   border-bottom: 1px solid black;
   vertical-align: bottom;
 }
-.jp-RenderedHTMLCommon tr,
-.jp-RenderedHTMLCommon th,
-.jp-RenderedHTMLCommon td,
 div.rendered_html tr,
 div.rendered_html th,
 div.rendered_html td {
@@ -866,35 +861,33 @@ div.rendered_html td {
   max-width: none;
   border: none;
 }
-.jp-RenderedHTMLCommon th,
 div.rendered_html th {
   font-weight: bold;
 }
-.jp-RenderedHTMLCommon tbody tr:nth-child(odd),
 div.rendered_html tbody tr:nth-child(odd) {
   background: #f5f5f5;
 }
-.jp-RenderedHTMLCommon tbody tr:hover,
 div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
 <section id="Tutorial-4:-Multi-population-recurrent-network-(with-BioNet)">
-<h1>Tutorial 4: Multi-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Multi-population-recurrent-network-(with-BioNet)" title="Permalink to this heading">¶</a></h1>
+<h1>Tutorial 4: Multi-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Multi-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
 <p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
 <p>As input to drive the simulation, we will also create an external network of “virtual cells” that synapse directly onto our internal cells and provide spike trains stimulus</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter04">sources/chapter04/</a></p>
 <p>requirements: * bmtk * NEURON 7.4+</p>
 <section id="1.-Building-the-network">
-<h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this heading">¶</a></h2>
+<h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
 <section id="Cells">
-<h3>Cells<a class="headerlink" href="#Cells" title="Permalink to this heading">¶</a></h3>
+<h3>Cells<a class="headerlink" href="#Cells" title="Permalink to this headline">¶</a></h3>
 <p>This network will loosely resemble the mouse V1 cortical column. Along the center of the column will be a population of 50 biophysically detailed neurons: 40 excitatory Scnn1a cells and 10 inhibitory PV cells.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
@@ -939,7 +932,8 @@ properties for creating connections and running simulations.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_exc&#39;</span><span class="p">,</span>
     <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
     <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -964,14 +958,15 @@ properties for creating connections and running simulations.</p>
 </div>
 </section>
 <section id="Connections">
-<h3>Connections<a class="headerlink" href="#Connections" title="Permalink to this heading">¶</a></h3>
+<h3>Connections<a class="headerlink" href="#Connections" title="Permalink to this headline">¶</a></h3>
 <p>Now we want to create connections between the cells. Depending on the model type, and whether or not the presynpatic “source” cell is excitory or inhibitory, we will have different synpatic model and parameters. Using the source and target filter parameters, we can create different connection types.</p>
 <p>To determine excitory-to-excitory connection matrix we want to use distance and tuning_angle property. To do this we create a customized function “dist_tuning_connector”</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
 <span class="k">def</span> <span class="nf">dist_tuning_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">d_weight_min</span><span class="p">,</span> <span class="n">d_weight_max</span><span class="p">,</span> <span class="n">d_max</span><span class="p">,</span> <span class="n">t_weight_min</span><span class="p">,</span> <span class="n">t_weight_max</span><span class="p">,</span> <span class="n">nsyn_min</span><span class="p">,</span>
@@ -1028,7 +1023,8 @@ other than source and target, we could just not set connection_params).</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">dist_tuning_connector</span><span class="p">,</span>
     <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;t_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
@@ -1072,7 +1068,8 @@ other than source and target, we could just not set connection_params).</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
 
 <span class="c1">### Generating I-to-I connections</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
@@ -1165,21 +1162,23 @@ other than source and target, we could just not set connection_params).</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <section id="Building-external-network">
-<h4>Building external network<a class="headerlink" href="#Building-external-network" title="Permalink to this heading">¶</a></h4>
+<h4>Building external network<a class="headerlink" href="#Building-external-network" title="Permalink to this headline">¶</a></h4>
 <p>Next we want to create an external network consisting of virtual cells that form a feedforward network onto our V1, which will provide input during the simulation. We will call this LGN, since the LGN is the primary input the layer 4 cells of the V1 (if we wanted to we could also create multiple external networks and run simulations on any number of them).</p>
 <p>First we build our LGN nodes. Then we must import the V1 network nodes, and create connections between LGN –&gt; V1.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
 <span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
@@ -1188,7 +1187,8 @@ other than source and target, we could just not set connection_params).</p>
     <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
     <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span>
 <span class="p">)</span>
-<br/></pre></div>
+
+</pre></div>
 </div>
 </div>
 <p>As before, we will use a customized function to determine the number of connections between each source and target pair, however this time our connection_rule is a bit different</p>
@@ -1207,7 +1207,8 @@ sources and the target.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">select_source_cells</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">nsources_min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nsources_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">nsyns_min</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nsyns_max</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">select_source_cells</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">nsources_min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nsources_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">nsyns_min</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nsyns_max</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
     <span class="n">total_sources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
     <span class="n">nsources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nsources_min</span><span class="p">,</span> <span class="n">nsources_max</span><span class="p">)</span>
     <span class="n">selected_sources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">total_sources</span><span class="p">,</span> <span class="n">nsources</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1277,19 +1278,19 @@ sources and the target.</p>
 </section>
 </section>
 <section id="2.-Setting-up-BioNet">
-<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this heading">¶</a></h2>
+<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
 <section id="File-structure">
-<h3>File structure<a class="headerlink" href="#File-structure" title="Permalink to this heading">¶</a></h3>
+<h3>File structure<a class="headerlink" href="#File-structure" title="Permalink to this headline">¶</a></h3>
 <p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You can copy the files from an existing simuatlion, execute the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.sim_setup<span class="w">  </span><span class="se">\</span>
-<span class="w">   </span>--report-vars<span class="w"> </span>v<span class="w">                </span><span class="se">\</span>
-<span class="w">   </span>--report-nodes<span class="w"> </span><span class="m">10</span>,80<span class="w">           </span><span class="se">\</span>
-<span class="w">   </span>--network<span class="w"> </span>sim_ch04/network<span class="w">     </span><span class="se">\</span>
-<span class="w">   </span>--dt<span class="w"> </span><span class="m">0</span>.1<span class="w">                       </span><span class="se">\</span>
-<span class="w">   </span>--tstop<span class="w"> </span><span class="m">3000</span>.0<span class="w">                 </span><span class="se">\</span>
-<span class="w">   </span>--include-examples<span class="w">             </span><span class="se">\</span>
-<span class="w">   </span>--compile-mechanisms<span class="w">           </span><span class="se">\</span>
-<span class="w">   </span>bionet<span class="w"> </span>sim_ch04
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
+   --report-vars v                <span class="se">\</span>
+   --report-nodes <span class="m">10</span>,80           <span class="se">\</span>
+   --network sim_ch04/network     <span class="se">\</span>
+   --dt <span class="m">0</span>.1                       <span class="se">\</span>
+   --tstop <span class="m">3000</span>.0                 <span class="se">\</span>
+   --include-examples             <span class="se">\</span>
+   --compile-mechanisms           <span class="se">\</span>
+   bionet sim_ch04
 </pre></div>
 </div>
 <p>$ python -m bmtk.utils.sim_setup –report-vars v –report-nodes 0,80,100,300 –network sim_ch04/network –dt 0.1 –tstop 3000.0 –include-examples –compile-mechanisms bionet sim_ch04</p>
@@ -1298,7 +1299,8 @@ sources and the target.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span>
     <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04&#39;</span><span class="p">,</span>
@@ -1431,30 +1433,30 @@ Successfully created x86_64/special
 </ul>
 </section>
 <section id="LGN-Input">
-<h3>LGN Input<a class="headerlink" href="#LGN-Input" title="Permalink to this heading">¶</a></h3>
+<h3>LGN Input<a class="headerlink" href="#LGN-Input" title="Permalink to this headline">¶</a></h3>
 <p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
 <p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexisting one. First download the file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenInstitute/bmtk/blob/develop/examples/spikes_inputs/lgn_spikes.h5?raw<span class="o">=</span><span class="nb">true</span><span class="w"> </span>-O<span class="w"> </span>lgn_spikes.h5
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/blob/develop/examples/spikes_inputs/lgn_spikes.h5?raw<span class="o">=</span><span class="nb">true</span> -O lgn_spikes.h5
 </pre></div>
 </div>
 <p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
 <p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator where to find the spike file and which network to associate it with.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="3.-Running-the-simulation">
-<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this heading">¶</a></h2>
+<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>We are close to running our simulation, however unlike in previous chapters we need a little more programming before we can begin.</p>
 <p>For most of the connections we added the parameter weight_function=‘wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
 <p>However, when creating excitatory-to-excitatory connections we used weight_function=‘gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
@@ -1462,7 +1464,8 @@ Successfully created x86_64/special
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pyfunction_cache</span> <span class="kn">import</span> <span class="n">add_weight_function</span>
 
 <span class="k">def</span> <span class="nf">gaussianLL</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -1484,7 +1487,8 @@ Successfully created x86_64/special
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
 
 <span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch04/config.json&#39;</span><span class="p">)</span>
@@ -1722,13 +1726,14 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 </div>
 </section>
 <section id="4.-Analyzing-results">
-<h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this heading">¶</a></h2>
+<h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
 <p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates_boxplot</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates_boxplot</span>
 
 <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
@@ -1754,7 +1759,8 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1778,7 +1784,8 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">70</span><span class="p">])</span>
 </pre></div>
@@ -1795,7 +1802,8 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
 </pre></div>
 </div>
 </div>
@@ -1864,7 +1872,7 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

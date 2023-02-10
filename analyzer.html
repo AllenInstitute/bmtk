@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Analyzing the Results &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -621,7 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="analyzing-the-results">
-<h1>Analyzing the Results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this heading">¶</a></h1>
+<h1>Analyzing the Results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline">¶</a></h1>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_analyzer_highlight.jpg"><img alt="_images/bmtk_architecture_analyzer_highlight.jpg" src="_images/bmtk_architecture_analyzer_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
 </figure>
@@ -635,7 +636,7 @@ case of PopNet a report of the firing rate dynamics.</p>
 <a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a> can be used to read them. The following consists of a high-level
 overview of these different formats and how you can use BMTK to find the results.</p>
 <section id="spike-trains">
-<h2>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this heading">¶</a></h2>
+<h2>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h2>
 <p>Contains action potentials/spikes for all the nodes within a given population. In the HDF5 the spikes are stored under
 /spikes/_&lt;population_name&gt;_/ and contains two data-sets:</p>
 <ul class="simple">
@@ -648,7 +649,7 @@ overview of these different formats and how you can use BMTK to find the results
 <p>The group may contain an attribute “sorting” with values none, by_id, and by_time to indicate if and how the spikes are
 sorted (default none). There is also an optional attribute “units” for the timestamps, but defaults to milliseconds.</p>
 <section id="reading">
-<h3>Reading<a class="headerlink" href="#reading" title="Permalink to this heading">¶</a></h3>
+<h3>Reading<a class="headerlink" href="#reading" title="Permalink to this headline">¶</a></h3>
 <p>You can use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrains</span></code></a> class to load
 a sonata spikes files (or csv or nwb) into memory:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span>
@@ -679,13 +680,13 @@ all node_ids plus timestamps</p>
 </div>
 </section>
 <section id="plotting">
-<h3>Plotting<a class="headerlink" href="#plotting" title="Permalink to this heading">¶</a></h3>
+<h3>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h3>
 </section>
 <section id="analysis">
-<h3>Analysis<a class="headerlink" href="#analysis" title="Permalink to this heading">¶</a></h3>
+<h3>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h3>
 </section>
 <section id="creating-spike-trains">
-<h3>Creating Spike Trains<a class="headerlink" href="#creating-spike-trains" title="Permalink to this heading">¶</a></h3>
+<h3>Creating Spike Trains<a class="headerlink" href="#creating-spike-trains" title="Permalink to this headline">¶</a></h3>
 <p>Commonly it’s necessary to generate spike-trains to use as inputs for a simulation. One option is to use FilterNet to
 generate inputs from external stimuli. You can also use the output of one simulation as the input to the next. But if
 you need to generate your own spike files, in property SONATA format, BMTK provides two ways of readily doing so. One
@@ -714,7 +715,7 @@ is to use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_
 </section>
 </section>
 <section id="cell-variable-report">
-<h2>Cell Variable Report<a class="headerlink" href="#cell-variable-report" title="Permalink to this heading">¶</a></h2>
+<h2>Cell Variable Report<a class="headerlink" href="#cell-variable-report" title="Permalink to this headline">¶</a></h2>
 <p>Used to record the traces of intracellular and membrane variables throughout the simulation, like membrane
 potential V. In the HDF5 cell reports are stored under /report/&lt;population_name&gt;/ with the most relevant datasets:</p>
 <ul class="simple">
@@ -735,7 +736,7 @@ used:</p>
 <a class="reference internal image-reference" href="_images/segmentation_indexing.jpg"><img alt="_images/segmentation_indexing.jpg" src="_images/segmentation_indexing.jpg" style="width: 712.8000000000001px; height: 256.8px;" /></a>
 </figure>
 <section id="reading-cell-variables">
-<h3>Reading Cell Variables<a class="headerlink" href="#reading-cell-variables" title="Permalink to this heading">¶</a></h3>
+<h3>Reading Cell Variables<a class="headerlink" href="#reading-cell-variables" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.core.CompartmentReaderABC" title="bmtk.utils.reports.compartment.core.CompartmentReaderABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompartmentReport</span></code></a> class should be used to
 pull data from a cell report.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmtk</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">compartment</span> <span class="kn">import</span> <span class="nn">CompartmentReport</span>
@@ -751,21 +752,21 @@ pull data from a cell report.</p>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>v
-<span class="m">0</span>.0,<span class="w"> </span><span class="m">3</span>.0,<span class="w"> </span><span class="m">0</span>.01
-<span class="o">[</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>...<span class="o">]</span>
-<span class="o">[</span><span class="m">0</span>.5,<span class="w"> </span><span class="m">0</span>.5,<span class="w"> </span><span class="m">0</span>.5,<span class="w"> </span><span class="m">05</span>,<span class="w"> </span>...<span class="o">]</span>
-<span class="o">[[</span>-50.010,<span class="w"> </span>-50.911,<span class="w"> </span>-50.995,<span class="w"> </span>-51.000,<span class="w"> </span>...<span class="o">]</span>
-<span class="o">[</span>-49.933,<span class="w"> </span>-49.330,<span class="w"> </span>-50.011,<span class="w"> </span>-50.667,<span class="w"> </span>...<span class="o">]</span>
+<span class="m">0</span>.0, <span class="m">3</span>.0, <span class="m">0</span>.01
+<span class="o">[</span><span class="m">0</span>, <span class="m">1</span>, <span class="m">2</span>, <span class="m">2</span>, ...<span class="o">]</span>
+<span class="o">[</span><span class="m">0</span>.5, <span class="m">0</span>.5, <span class="m">0</span>.5, <span class="m">05</span>, ...<span class="o">]</span>
+<span class="o">[[</span>-50.010, -50.911, -50.995, -51.000, ...<span class="o">]</span>
+<span class="o">[</span>-49.933, -49.330, -50.011, -50.667, ...<span class="o">]</span>
 ...<span class="o">]</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="extracellular-potential">
-<h2>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this heading">¶</a></h2>
+<h2>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="rates">
-<h2>Rates<a class="headerlink" href="#rates" title="Permalink to this heading">¶</a></h2>
+<h2>Rates<a class="headerlink" href="#rates" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -831,7 +832,7 @@ pull data from a cell report.</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

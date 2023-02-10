@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Main Tutorials &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -621,7 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="main-tutorials">
-<h1>Main Tutorials<a class="headerlink" href="#main-tutorials" title="Permalink to this heading">¶</a></h1>
+<h1>Main Tutorials<a class="headerlink" href="#main-tutorials" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
@@ -635,13 +636,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </div>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <section id="running-with-docker">
-<h3>Running with Docker<a class="headerlink" href="#running-with-docker" title="Permalink to this heading">¶</a></h3>
+<h3>Running with Docker<a class="headerlink" href="#running-with-docker" title="Permalink to this headline">¶</a></h3>
 <p>If you have Docker installed on your machine then there is a Docker Image with all the prerequists installed - including
 a jupyter notebook server with the tutorials installed. Just run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span>alleninstitute/bmtk
-$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/path/to/local/directory:/home/shared/workspace<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>alleninstitute/bmtk<span class="w"> </span>jupyter
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ docker pull alleninstitute/bmtk
+$ docker run -v /path/to/local/directory:/home/shared/workspace -p <span class="m">8888</span>:8888 alleninstitute/bmtk jupyter
 </pre></div>
 </div>
 <p>and then open a browser to 127.0.0.1:8888/. The tutorials folder will contain the jupyter notebook tutorials for you to
@@ -651,12 +652,12 @@ folder. The tutorials and examples folder will be deleted once the docker contai
 with docker run alleninstitute/bmtk -v /path/to/local/directory:/home/shared/workspace python &lt;script&gt;.py &lt;opts&gt;</p>
 </section>
 <section id="running-from-source">
-<h3>Running from source<a class="headerlink" href="#running-from-source" title="Permalink to this heading">¶</a></h3>
+<h3>Running from source<a class="headerlink" href="#running-from-source" title="Permalink to this headline">¶</a></h3>
 <p>The bmtk requires at minimum python 2.7 and 3.6+, as well as additional libraries to use features like building networks
 or running analyses. To install the bmtk it is best recommending to pull the latest from github.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/AllenInstitute/bmtk.git
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>bmtk
-$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/AllenInstitute/bmtk.git
+$ <span class="nb">cd</span> bmtk
+$ python setup.py install
 </pre></div>
 </div>
 <p>However, to run a simulation on the network the bmtk uses existing open-source simulatiors, which (at the moment) needs
@@ -732,7 +733,7 @@ filter models of the visual field (FilterNet) - Uses LGNModels</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

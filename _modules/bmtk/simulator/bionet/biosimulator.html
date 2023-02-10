@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +9,9 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -659,7 +660,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="BioSimulator"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator">[docs]</a><span class="k">class</span> <span class="nc">BioSimulator</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Includes methods to run and control the simulation&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Includes methods to run and control the simulation&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">v_init</span><span class="p">,</span> <span class="n">celsius</span><span class="p">,</span> <span class="n">nsteps_block</span><span class="p">,</span> <span class="n">start_from_state</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">network</span>
@@ -793,7 +794,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> hours, </span><span class="si">{}</span><span class="s1"> minutes and </span><span class="si">{:.4}</span><span class="s1"> seconds&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">secs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_init_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up the initial conditions: either read from the h.SaveState or from config[&quot;condidtions&quot;]&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Set up the initial conditions: either read from the h.SaveState or from config[&quot;condidtions&quot;]&quot;&quot;&quot;</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">set_maxstep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
         <span class="n">h</span><span class="o">.</span><span class="n">stdinit</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="o">/</span><span class="n">h</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
@@ -933,7 +934,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">module</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BioSimulator.run"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the simulation:</span>
+        <span class="sd">&quot;&quot;&quot;Run the simulation:</span>
 <span class="sd">        if beginning from a blank state, then will use h.run(),</span>
 <span class="sd">        if continuing from the saved state, then will use h.continuerun() </span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -983,7 +984,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Load balance is </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avgcomp</span><span class="o">/</span><span class="n">maxcomp</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BioSimulator.post_fadvance"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator.post_fadvance">[docs]</a>    <span class="k">def</span> <span class="nf">post_fadvance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs after every execution of fadvance (see advance.hoc)</span>
 <span class="sd">        Called after every time step to perform computation and save data to memory block or to disk.</span>
 <span class="sd">        The initial condition tstep=0 is not being saved </span>
@@ -1249,7 +1250,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

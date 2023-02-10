@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Welcome to the Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -620,7 +621,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="welcome-to-the-brain-modeling-toolkit">
-<h1>Welcome to the Brain Modeling Toolkit<a class="headerlink" href="#welcome-to-the-brain-modeling-toolkit" title="Permalink to this heading">¶</a></h1>
+<h1>Welcome to the Brain Modeling Toolkit<a class="headerlink" href="#welcome-to-the-brain-modeling-toolkit" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 <p>The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
@@ -644,7 +645,7 @@ released under a BSD 3-clause license. We encourage others to use the BMTK for t
 contributions to the BMTK are welcome.</p>
 <p>The latest release, previous releases, and current development can be found at <a class="reference external" href="https://github.com/AllenInstitute/bmtk">https://github.com/AllenInstitute/bmtk</a></p>
 <section id="the-bmtk-workflow-and-architecture">
-<h2>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Permalink to this heading">¶</a></h2>
+<h2>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Permalink to this headline">¶</a></h2>
 <p>BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
 neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
 Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
@@ -677,23 +678,23 @@ another tool to run the model. Or if another model has been built by someone els
 be able to simulate it.</p>
 </section>
 <section id="sonata">
-<h2>SONATA<a class="headerlink" href="#sonata" title="Permalink to this heading">¶</a></h2>
+<h2>SONATA<a class="headerlink" href="#sonata" title="Permalink to this headline">¶</a></h2>
 <p>SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
 simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
 in the documentation and tutorials will be based on SONATA. For more information see the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA github page</a>.</p>
 </section>
 <section id="vnd">
-<h2>VND<a class="headerlink" href="#vnd" title="Permalink to this heading">¶</a></h2>
+<h2>VND<a class="headerlink" href="#vnd" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://www.ks.uiuc.edu/Research/vnd/">Visual Neuronal Dynamics</a> is a software package for 3D visualization of neuronal network models. VND can be used to check and inspect models, such as those created by BMTK, as well as to visualize the activity output. Images and movies made in VND can also be used to showcase or schematize models for presentations and publications. VND is developed in a collaboration between researchers at the University of Illinois at Urbana-Champaign and Allen Institute.</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p>See the paper about BMTK: <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386">link</a>.</p>
 <p>For information on how to cite BMTK, please see: <a class="reference external" href="how_to_cite.html">link</a>.</p>
 </section>
 <section id="acknowledgements">
-<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading">¶</a></h2>
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
 <p>We wish to thank the Allen Institute for Brain Science founder, Paul G. Allen, for their vision, encouragement, and support.</p>
 </section>
 </section>
@@ -760,7 +761,7 @@ in the documentation and tutorials will be based on SONATA. For more information
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

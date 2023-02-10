@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>The Network Builder &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -621,7 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="the-network-builder">
-<h1>The Network Builder<a class="headerlink" href="#the-network-builder" title="Permalink to this heading">¶</a></h1>
+<h1>The Network Builder<a class="headerlink" href="#the-network-builder" title="Permalink to this headline">¶</a></h1>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_builder_highlight.jpg"><img alt="_images/bmtk_architecture_builder_highlight.jpg" src="_images/bmtk_architecture_builder_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
 </figure>
@@ -673,7 +674,7 @@ methods to build and save the model to the file</p></li>
 <a class="reference internal image-reference" href="_images/builder_complete_network.jpg"><img alt="_images/builder_complete_network.jpg" src="_images/builder_complete_network.jpg" style="width: 229.0px; height: 188.0px;" /></a>
 </figure>
 <section id="building-nodes">
-<h2>Building Nodes<a class="headerlink" href="#building-nodes" title="Permalink to this heading">¶</a></h2>
+<h2>Building Nodes<a class="headerlink" href="#building-nodes" title="Permalink to this headline">¶</a></h2>
 <p>In BMTK and SONATA a node usually is synonymous with a cell (although a node can be used to represent a population of
 cells with <a class="reference external" href="./popnet.html">PopNet</a>). To add a group of nodes to a network is to use the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_nodes()</span></code>.</p>
@@ -703,7 +704,7 @@ cell’s position by a range:</p>
 </pre></div>
 </div>
 <section id="node-representation">
-<h3>Node Representation<a class="headerlink" href="#node-representation" title="Permalink to this heading">¶</a></h3>
+<h3>Node Representation<a class="headerlink" href="#node-representation" title="Permalink to this headline">¶</a></h3>
 <p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is called, each node will be given a unique
 <strong>node_id</strong> value, and each type model (eg each call to add_nodes) will also be given a <strong>node_type_id</strong>. It is possible
 to set the <strong>node_id</strong> and <strong>node_type_id</strong> parameter yourself but it’s generally not a good idea.</p>
@@ -717,14 +718,14 @@ their properties accessed like a dictionary. For example to get all biophysicall
 </div>
 </section>
 <section id="useful-node-parameters">
-<h3>Useful Node Parameters<a class="headerlink" href="#useful-node-parameters" title="Permalink to this heading">¶</a></h3>
+<h3>Useful Node Parameters<a class="headerlink" href="#useful-node-parameters" title="Permalink to this headline">¶</a></h3>
 <p>As mentioned above the modeler can use any parameters and values they require to represent their models. The following
 are parameters that will be recognized and used by the BMTK simulator (but not necessarily required). For a complete
 list see <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes">SONATA</a>:</p>
-<table class="docutils align-default">
+<table class="colwidths-given docutils align-default">
 <colgroup>
-<col style="width: 33.3%" />
-<col style="width: 66.7%" />
+<col style="width: 33%" />
+<col style="width: 67%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -758,7 +759,7 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 </section>
 </section>
 <section id="building-edges">
-<h2>Building Edges<a class="headerlink" href="#building-edges" title="Permalink to this heading">¶</a></h2>
+<h2>Building Edges<a class="headerlink" href="#building-edges" title="Permalink to this headline">¶</a></h2>
 <p>To define different types of edges between two subsets of nodes you should use the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_edges()</span></code> method. Then once
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> method is called the the actual connections will
@@ -790,7 +791,7 @@ parameters pre-defined by BMTK and SONATA is described below.</p></li>
 <p>Also, like the nodes, it is possible to have unique values for every individual edge, but it is a little more difficult.
 See the section on ConnectionMap for more info.</p>
 <section id="connection-rules">
-<h3>Connection rules<a class="headerlink" href="#connection-rules" title="Permalink to this heading">¶</a></h3>
+<h3>Connection rules<a class="headerlink" href="#connection-rules" title="Permalink to this headline">¶</a></h3>
 <p>The connection_rule parameter of add_edges() method will usually be a user-defined function (but may also be an integer,
 list-of-lists, or matrix). The function’s first two parameters will be source and target, Node objects whose properties
 can be accessed like a dictionary. It should return an integer N for the number of connections between the source and
@@ -844,7 +845,7 @@ corresponding list of size N</p>
 <p>There is also an <strong>all_to_one</strong> iterator option that will pair each source node with a list of all available target nodes.</p>
 </section>
 <section id="individual-edge-properties-the-connectionmap">
-<h3>Individual Edge Properties (The ConnectionMap)<a class="headerlink" href="#individual-edge-properties-the-connectionmap" title="Permalink to this heading">¶</a></h3>
+<h3>Individual Edge Properties (The ConnectionMap)<a class="headerlink" href="#individual-edge-properties-the-connectionmap" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is necessary for each edge to have unique property values. For example, the individual syn_weight value for
 each synapse may vary depending on the location and type of the pre-and post-synaptic nodes. With nodes,
 you can pass in a list or array of size N for each N node. But when edges are built using a connection_rule function
@@ -893,7 +894,7 @@ and <code class="docutils literal notranslate"><span class="pre">dtypes</span></
 </div>
 </section>
 <section id="intra-network-connections">
-<h3>Intra-Network Connections<a class="headerlink" href="#intra-network-connections" title="Permalink to this heading">¶</a></h3>
+<h3>Intra-Network Connections<a class="headerlink" href="#intra-network-connections" title="Permalink to this headline">¶</a></h3>
 <p>Both BMTK and SONATA support a network to be built piecemeal and combined into one at simulation time. A cortical
 the region will receive inputs from many other regions, and a modeler may want to test the dynamics when different
 combinations of inputs are turned on and off. Instead of building multiple models of the region with different inputs,
@@ -922,19 +923,19 @@ V1’s pyramidal cells</p>
 method can be very useful.</p>
 </section>
 <section id="edge-accessor-methods">
-<h3>Edge Accessor methods<a class="headerlink" href="#edge-accessor-methods" title="Permalink to this heading">¶</a></h3>
+<h3>Edge Accessor methods<a class="headerlink" href="#edge-accessor-methods" title="Permalink to this headline">¶</a></h3>
 <section id="networkbuilder-edges">
-<h4><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code><a class="headerlink" href="#networkbuilder-edges" title="Permalink to this heading">¶</a></h4>
+<h4><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code><a class="headerlink" href="#networkbuilder-edges" title="Permalink to this headline">¶</a></h4>
 <p>The method will return an iterator of edges filtered by edge and/or node properties. Each edge will be
 represented using a <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.edge.Edge" title="bmtk.builder.edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> object</p>
 </section>
 </section>
 <section id="useful-edge-parameters">
-<h3>Useful Edge Parameters<a class="headerlink" href="#useful-edge-parameters" title="Permalink to this heading">¶</a></h3>
-<table class="docutils align-default">
+<h3>Useful Edge Parameters<a class="headerlink" href="#useful-edge-parameters" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-given docutils align-default">
 <colgroup>
-<col style="width: 33.3%" />
-<col style="width: 66.7%" />
+<col style="width: 33%" />
+<col style="width: 67%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -974,7 +975,7 @@ represented using a <a class="reference internal" href="bmtk/bmtk.builder.html#b
 </section>
 </section>
 <section id="saving-and-building">
-<h2>Saving and Building<a class="headerlink" href="#saving-and-building" title="Permalink to this heading">¶</a></h2>
+<h2>Saving and Building<a class="headerlink" href="#saving-and-building" title="Permalink to this headline">¶</a></h2>
 <p>Once all calls to add_nodes and ad_edges have been made, use the build() method to actually complete and fully
 instantiate the network. Certain accessor functions, like
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> and
@@ -989,7 +990,7 @@ different files using the network names to determine the sonata file names. The
 out the nodes or the edges, respectively.</p>
 </section>
 <section id="network-format">
-<h2>Network Format<a class="headerlink" href="#network-format" title="Permalink to this heading">¶</a></h2>
+<h2>Network Format<a class="headerlink" href="#network-format" title="Permalink to this headline">¶</a></h2>
 <p>This is a brief overview of how NetworkBuilder saves the network’s nodes and edges files. As mentioned BMTK uses the
 SONATA format, so more in-depth descriptions may be
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#representing-networks-of-neurons">found here</a>.
@@ -1001,7 +1002,7 @@ Opening the HDF5 file will require a hdf browser like HDFView, or a library like
 </figure>
 </section>
 <section id="advanced-features">
-<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this heading">¶</a></h2>
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -1067,7 +1068,7 @@ Opening the HDF5 file will require a hdf browser like HDFView, or a library like
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

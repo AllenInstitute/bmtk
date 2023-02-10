@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>bmtk.builder.edges_sorter package &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -621,18 +622,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bmtk-builder-edges-sorter-package">
-<h1>bmtk.builder.edges_sorter package<a class="headerlink" href="#bmtk-builder-edges-sorter-package" title="Permalink to this heading">¶</a></h1>
+<h1>bmtk.builder.edges_sorter package<a class="headerlink" href="#bmtk-builder-edges-sorter-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-bmtk.builder.edges_sorter.memory_sorter">
-<span id="bmtk-builder-edges-sorter-memory-sorter-module"></span><h2>bmtk.builder.edges_sorter.memory_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.memory_sorter" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-edges-sorter-memory-sorter-module"></span><h2>bmtk.builder.edges_sorter.memory_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.memory_sorter" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.edges_sorter.memory_sorter.copy_attributes">
 <span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.memory_sorter.</span></span><span class="sig-name descname"><span class="pre">copy_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_grp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/memory_sorter.html#copy_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.memory_sorter.copy_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>in_grp</strong> – hdf5 Group object whose attributes will be copied from.</p></li>
 <li><p><strong>out_grp</strong> – hdf5 Group object that will have it’s attributes updated/copied to.</p></li>
@@ -648,7 +649,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </section>
 <section id="module-bmtk.builder.edges_sorter.merge_sorter">
-<span id="bmtk-builder-edges-sorter-merge-sorter-module"></span><h2>bmtk.builder.edges_sorter.merge_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.merge_sorter" title="Permalink to this heading">¶</a></h2>
+<span id="bmtk-builder-edges-sorter-merge-sorter-module"></span><h2>bmtk.builder.edges_sorter.merge_sorter module<a class="headerlink" href="#module-bmtk.builder.edges_sorter.merge_sorter" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.builder.edges_sorter.merge_sorter.ProgressFile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.merge_sorter.</span></span><span class="sig-name descname"><span class="pre">ProgressFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter/merge_sorter.html#ProgressFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.merge_sorter.ProgressFile" title="Permalink to this definition">¶</a></dt>
@@ -673,7 +674,7 @@ merging in multiple iterations.</p>
 <p>Itermediate sorting results are saved in cache_dir (eg .sort_cache) and if the sorting fails or doesn’t finish in
 max_itrs, running this function again will continue where it last left off.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_edges_path</strong> – path to original edges file</p></li>
 <li><p><strong>output_edges_path</strong> – path name of new file that will be created</p></li>
@@ -691,7 +692,7 @@ time. (default: 12)</p></li>
 
 </section>
 <section id="module-bmtk.builder.edges_sorter">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.edges_sorter" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.edges_sorter" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.edges_sorter.sort_edges">
 <span class="sig-prename descclassname"><span class="pre">bmtk.builder.edges_sorter.</span></span><span class="sig-name descname"><span class="pre">sort_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_edges_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_model_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_on_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">sorter_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edges_sorter.html#sort_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.edges_sorter.sort_edges" title="Permalink to this definition">¶</a></dt>
@@ -762,7 +763,7 @@ time. (default: 12)</p></li>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

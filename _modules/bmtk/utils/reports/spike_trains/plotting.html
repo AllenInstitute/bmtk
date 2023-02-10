@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,8 +9,9 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -654,7 +655,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">__get_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make sure SpikeTrainsAPI object is always returned&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Make sure SpikeTrainsAPI object is always returned&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
         <span class="c1"># Load spikes from file</span>
         <span class="k">return</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
@@ -666,7 +667,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">__get_population</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to figure out which population of nodes to use.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Helper function to figure out which population of nodes to use.&quot;&quot;&quot;</span>
     <span class="n">pops</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">populations</span>
     <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># If only one population exists in spikes object/file select that one</span>
@@ -685,7 +686,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">__get_node_groups</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">node_groups</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for parsing the &#39;node_groups&#39; params&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Helper function for parsing the &#39;node_groups&#39; params&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">node_groups</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># If none are specified by user make a &#39;node_group&#39; consisting of all nodes</span>
         <span class="n">selected_nodes</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
@@ -704,7 +705,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;will create a raster plot (plus optional histogram) from a SpikeTrains object or SONATA Spike-Trains file. Will</span>
+    <span class="sd">&quot;&quot;&quot;will create a raster plot (plus optional histogram) from a SpikeTrains object or SONATA Spike-Trains file. Will</span>
 <span class="sd">    return the figure</span>
 
 <span class="sd">    By default will display all nodes, if you want to only display a subset of nodes and/or group together different</span>
@@ -817,7 +818,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">smoothing_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate and plot the rates of each node in a SpikeTrains object or SONATA Spike-Trains file. If start and stop</span>
+    <span class="sd">&quot;&quot;&quot;Calculate and plot the rates of each node in a SpikeTrains object or SONATA Spike-Trains file. If start and stop</span>
 <span class="sd">    times are not specified from the &quot;times&quot; parameter, will try to parse values from the timestamps data.</span>
 
 <span class="sd">    If you want to only display a subset of nodes and/or group together different nodes (by node_id) by dot colors and</span>
@@ -900,7 +901,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="plot_rates_boxplot"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_rates_boxplot">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_boxplot</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a box plot of the firing rates taken from a SpikeTrains object or SONATA Spike-Trains file. If start</span>
+    <span class="sd">&quot;&quot;&quot;Creates a box plot of the firing rates taken from a SpikeTrains object or SONATA Spike-Trains file. If start</span>
 <span class="sd">    and stop times are not specified from the &quot;times&quot; parameter, will try to parse values from the timestamps data.</span>
 
 <span class="sd">    By default will plot all nodes together. To only display a subset of the nodes and/or create groups of nodes use</span>
@@ -1033,7 +1034,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
