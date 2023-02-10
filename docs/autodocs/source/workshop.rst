@@ -20,7 +20,7 @@ Thank you to the participants of our `inaugural workshop <https://alleninstitute
 
 The :download:`presentation <_static/2022-07-Allen-Institute-Software-Modeling-Workshop.pdf>` and `tutorials <https://github.com/AllenInstitute/bmtk_workshop_2022>`_ from the 2022 workshop are now publicly available. 
 
-Stay tuned in early 2023 for opportunities to apply to our next round of the workshop! 
+Applications for this year's workshop are due February 15th. For more information and to apply, please see `2023 Allen Institute Modeling Software Workshop <https://alleninstitute.org/events/2023-allen-institute-modeling-software-workshop/>`_.
 
 
 
