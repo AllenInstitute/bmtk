@@ -131,11 +131,11 @@ class Kernel2D(object):
     def normalize(self):
         self.kernel /= np.abs(self.kernel.sum())
 
-    def normalize2(self):
+    def normalize2(self, remove_offset=False):
         # Better for kernels that are not all positive
-        self.kernel -= self.kernel.mean()      # Set amplitude offset to 0
+        if remove_offset:
+            self.kernel -= self.kernel.mean()      # Set amplitude offset to 0
         size = np.sum(np.abs(self.kernel))
-
         self.kernel /= size        # Normalize overall size and maximum output
 
     @classmethod

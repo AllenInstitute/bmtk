@@ -27,9 +27,7 @@ class AuditoryInput(object):
         n = int(np.floor(erb.freq2erb(self.hi_lim) - erb.freq2erb(self.low_lim)) - 1)
         human_coch = cgram.human_cochleagram(self.stim_array, self.sr, n=n, sample_factor=self.sample_factor,
                                              downsample=self.downsample, nonlinearity='power', strict=False)
-        human_coch = np.flipud(human_coch)     # Check
 
-        #erb_kwargs = {}  # confirmed with print
         filts, center_freqs, freqs = erb.make_erb_cos_filters_nx(self.stim_array.shape[0],
                                                                  self.sr, n, self.low_lim, self.hi_lim,
                                                                  self.sample_factor, padding_size=None,

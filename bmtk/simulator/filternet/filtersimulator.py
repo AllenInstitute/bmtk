@@ -118,7 +118,12 @@ class FilterSimulator(Simulator):
                 #if params.get('frame_rate'):
                 #    frame_rate = params.get('frame_rate')
                 #else:
-                frame_rate = 1000
+                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
+                                                           't_range'], **params)
+                if 'frame_rate' in init_params.keys():
+                    frame_rate = init_params['frame_rate']
+                else:
+                    frame_rate = 1000
 
                 coch, center_freqs_log, times = aud.get_cochleagram(frame_rate, interp_to_freq=params['interp_to_freq'])
                 coch = coch.T
@@ -136,8 +141,7 @@ class FilterSimulator(Simulator):
 
                 amplitude = 100
                 coch *= amplitude
-                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
-                                                           't_range'], **params)
+                # Note, overwrites these if user supplied, instead taken from cochleagram
                 init_params['row_range'] = center_freqs_log
                 init_params['col_range'] = [0]
                 init_params['t_range'] = times

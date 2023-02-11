@@ -67,12 +67,26 @@ class WaveletFilter(object):
         """
         (y, x) = np.meshgrid(row_range, col_range)
 
-        translate_t = -0.1*self.Lambda*np.cos(self.theta)
-        #translate_t = 0
-        f_t = 1/(self.Lambda*np.cos(self.theta))
-        env = (f_t * (x-translate_t))**(self.order_t - 1) * np.exp(-1*self.b_t * f_t * (x-translate_t))   \
-              * np.exp(-.5 * (y-self.translate)**2/self.sigma_f**2)
-        wave = np.cos(2 * np.pi / self.Lambda * ((x-translate_t) * np.cos(self.theta) + (y-self.translate) * np.sin(self.theta)) + self.psi)
+        if self.theta != np.pi/2:
+            f_t = np.cos(self.theta) / self.Lambda
+            remove_offset = True
+            translate_t = -0.1 * self.Lambda / np.cos(self.theta)
+            env = (f_t * (x - translate_t)) ** (self.order_t - 1) * np.exp(-1 * self.b_t * f_t * (x - translate_t)) \
+                  * np.exp(-.5 * (y - self.translate) ** 2 / self.sigma_f ** 2)
+            wave = np.cos(2 * np.pi / self.Lambda * (
+                        (x - translate_t) * np.cos(self.theta) + (y - self.translate) * np.sin(self.theta)) + self.psi)
+        else:
+            # Special case temporal modulation freq is 0, approximate a fast, mostly positive filter
+            # The step response adapts slightly to a flat steady-state
+            f_t = 5
+            self.b_t = 10
+            remove_offset = False
+            translate_t = 0
+            env = (f_t * (x - translate_t)) ** (self.order_t - 1) * np.exp(-1 * self.b_t * f_t * (x - translate_t)) \
+                  * np.sin(2*np.pi*f_t * (x - translate_t)) \
+                  * np.exp(-.5 * (y - self.translate) ** 2 / self.sigma_f ** 2)
+            wave = np.cos(2 * np.pi / self.Lambda * ((y - self.translate) + self.psi))
+
         filt = env * wave
         filt /= np.max(filt)
         print('max: ', np.max(filt))
@@ -83,7 +97,7 @@ class WaveletFilter(object):
         threshold = 0.05 * np.max(filt)
         kernel = Kernel2D.from_dense(row_range, col_range, filt, threshold=threshold)
         #kernel.apply_threshold(threshold)      # Already applied?
-        kernel.normalize2()     # Scale up large kernels which can hit low float limit when normalized
+        kernel.normalize2(remove_offset)     # Scale up large kernels which can hit low float limit when normalized
         kernel.kernel *= self.amplitude    # How do normalize and amplitude work together? seems like they would counteract each other?
         #kernel.imshow()
 
