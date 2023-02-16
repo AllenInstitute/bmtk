@@ -40,13 +40,16 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
          "input_type": "movie",
          "module": "movie",
          "data_file": "/path/to/my/movie.npy",
-         "frame_rate": 30.0
+         "frame_rate": 1000.0,
+         "normalize": true
       }
    }
 
 * movie: Link to a 3-dimensional (x, y, time) matrix representing a movie
 * frame_rate: frames per second
-
+* normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
+  * If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
+  * If the original movie has a unique range, users can specify the min/max contrast for the original movie ```"normalize": [0.0, 100.0]```
 
 Grating
 +++++++
