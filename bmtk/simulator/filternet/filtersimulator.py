@@ -10,6 +10,8 @@ from bmtk.simulator.filternet import modules as mods
 from bmtk.simulator.filternet.io_tools import io
 from bmtk.utils.io.ioutils import bmtk_world_comm
 from bmtk.simulator.filternet.auditory_processing import AuditoryInput
+import scipy.io as syio
+import os
 
 
 class FilterSimulator(Simulator):
@@ -52,7 +54,7 @@ class FilterSimulator(Simulator):
                         self.io.log_info('Normalizing movie data to (-1.0, 1.0).')
                         m_data = m_data*2.0/(contrast_max - contrast_min) - 1.0
                     else:
-                        self.io.log_info('Movie data range is not normalized to (-1.0, 1.0).')
+                        self.io.log_info('Movie data range ifind_paramss not normalized to (-1.0, 1.0).')
 
                 init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
                                                            't_range'], **params)
@@ -104,50 +106,69 @@ class FilterSimulator(Simulator):
     def add_audio(self, audio_type, params):
         # Create cochleagram "movie" from audio wav file
         audio_type = audio_type.lower() if isinstance(audio_type, string_types) else 'movie'
-        if audio_type == 'wav_file' or not audio_type:
+        if audio_type in ['wav_file', 'mat_file'] or not audio_type:
             if 'data_file' in params:
-                if 'data_file' in params:
-                    aud_file = params['data_file']
+                aud_file = params['data_file']
+                if audio_type == 'mat_file':
+                    n = params['stim_number']
+                    wav_file = os.path.splitext(aud_file)[0] + str(n) + '.wav'
+                    if not os.path.exists(wav_file):
+                        mat = syio.loadmat(params['data_file'])
+                        data = np.squeeze(mat['timit_sents'][0, n])
+                        sr = mat['aud_fs'][0][0]
+                        scaled = np.int16(data / np.max(np.abs(data)) * 32768)
+                        syio.wavfile.write(wav_file, sr, scaled)
+                    else:
+                        io.log_warning('Wav file already exists, please delete to overwrite.')
+                    aud_file = wav_file
+
                 #elif 'data' in params:
                 #    m_data = params['data']
-                else:
-                    raise Exception('Could not find audio "data_file" in config to use as input.')
+            else:
+                raise Exception('Could not find audio "data_file" in config to use as input.')
 
-                aud = AuditoryInput(aud_file)
+            aud = AuditoryInput(aud_file)
 
-                #if params.get('frame_rate'):
-                #    frame_rate = params.get('frame_rate')
-                #else:
-                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
-                                                           't_range'], **params)
-                if 'frame_rate' in init_params.keys():
-                    frame_rate = init_params['frame_rate']
-                else:
-                    frame_rate = 1000
+            #if params.get('frame_rate'):
+            #    frame_rate = params.get('frame_rate')
+            #else:
+            init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
+                                                       't_range', 'padding'], **params)
+            if 'frame_rate' in init_params.keys():
+                frame_rate = init_params['frame_rate']
+            else:
+                frame_rate = 1000
 
-                coch, center_freqs_log, times = aud.get_cochleagram(frame_rate, interp_to_freq=params['interp_to_freq'])
-                coch = coch.T
-                coch = coch[:,:, np.newaxis]
-                # Log step?
-                coch = np.log(coch)
+            coch, center_freqs_log, times = aud.get_cochleagram(frame_rate, interp_to_freq=params['interp_to_freq'])
+            coch = coch.T
+            #coch = np.log(coch)
 
+            normalize_data = params.get('normalize', None)
+            if normalize_data == 'full':
                 contrast_min, contrast_max = coch.min(), coch.max()
-                normalize_data = params.get('normalize', False)
-                if normalize_data:
-                    self.io.log_info('Normalizing auditory input to (-1.0, 1.0).')
-                    coch = (coch-contrast_min)*2.0/(contrast_max - contrast_min) - 1.0
-                else:
-                    self.io.log_info('Auditory input range is not normalized to (-1.0, 1.0).')
+                self.io.log_info('Normalizing auditory input to (-1.0, 1.0).')
+                coch = (coch-contrast_min)*2.0/(contrast_max - contrast_min) - 1.0
+            elif normalize_data == 'relative':
+                self.io.log_info('Auditory input is normalized maintaining relative amplitude')
+                coch = coch*3
+            else:
+                self.io.log_info('Auditory input range is not normalized.')
 
-                amplitude = 100
-                coch *= amplitude
-                # Note, overwrites these if user supplied, instead taken from cochleagram
-                init_params['row_range'] = center_freqs_log
-                init_params['col_range'] = [0]
-                init_params['t_range'] = times
-                #? Frame_rate
-                # Dimensions of time, row, column
-                self._movies.append(Movie(coch, **init_params))
+            amplitude = 100
+            coch *= amplitude
+
+            #pad = np.full((500,coch.shape[1]), coch[0,:])
+            #coch = np.concatenate((pad,coch))
+
+            coch = coch[:,:, np.newaxis]
+
+            # Note, overwrites these if user supplied, instead taken from cochleagram
+            init_params['row_range'] = center_freqs_log
+            init_params['col_range'] = [0]
+            init_params['t_range'] = times
+            #? Frame_rate
+            # Dimensions of time, row, column
+            self._movies.append(Movie(coch, **init_params))
         else:
             raise Exception('Unknown audio type {}'.format(audio_type))
 
@@ -172,6 +193,12 @@ class FilterSimulator(Simulator):
                 if cell_num > 0 and cell_num % ten_percent == 0:
                     io.log_debug(' Processing cell {} of {}{}.'.format(cell_num, n_cells_on_rank, rank_msg))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
+                if movie.padding:
+                    f_rates = f_rates[int((movie.data.shape[0]-movie.data_orig.shape[0])/2) :
+                                      -int((movie.data.shape[0]-movie.data_orig.shape[0])/2)]
+                    ts = ts[int((movie.data.shape[0]-movie.data_orig.shape[0])/2):
+                         -int((movie.data.shape[0]-movie.data_orig.shape[0])/2)]
+                    ts = ts-ts[0]
 
                 for mod in self._sim_mods:
                     mod.save(self, cell, ts, f_rates)

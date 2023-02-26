@@ -17,7 +17,7 @@ class AuditoryInput(object):
         :param hi_lim: float, high end of frequency range (Hz)
         :param sample_factor: int,
         """
-        self.stim_array, self.sr = utils.wav_to_array(aud_fn)
+        self.stim_array, self.sr = utils.wav_to_array(aud_fn)      # Allow relative size of stimulus
         self.sample_factor = sample_factor  # density of sampling, can be 1,2, or 4
         self.low_lim = low_lim
         self.hi_lim = hi_lim
@@ -46,9 +46,10 @@ class AuditoryInput(object):
         inds_keep = np.argwhere((center_freqs >= self.low_lim) & (center_freqs <= self.hi_lim))
         center_freqs = center_freqs[inds_keep]
         human_coch = human_coch[np.squeeze(inds_keep)]
+        minval = np.min(human_coch)
         center_freqs_log = np.log2(center_freqs/np.min(center_freqs))
         human_coch = resample_poly(human_coch, desired_sr, self.sr, axis=1)
+        human_coch[human_coch<=minval] = minval     # resampling sometimes produces very small negative values
         times = np.linspace(0, 1/desired_sr * (human_coch.shape[1]-1), human_coch.shape[1])
-
 
         return human_coch, center_freqs_log, times
