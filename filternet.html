@@ -654,7 +654,8 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">30.0</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;normalize&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
 <span class="w">   </span><span class="p">}</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
@@ -662,6 +663,9 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <ul class="simple">
 <li><p>movie: Link to a 3-dimensional (x, y, time) matrix representing a movie</p></li>
 <li><p>frame_rate: frames per second</p></li>
+<li><p>normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
+* If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
+* If the original movie has a unique range, users can specify the min/max contrast for the original movie <code class="docutils literal notranslate"><span class="pre">`&quot;normalize&quot;:</span> <span class="pre">[0.0,</span> <span class="pre">100.0]`</span></code></p></li>
 </ul>
 </section>
 <section id="grating">

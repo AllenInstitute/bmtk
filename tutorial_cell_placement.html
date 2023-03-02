@@ -959,10 +959,10 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 </section>
-<section id="Generate-random-locations-according-to-a-*.nrrd-file">
-<h2>Generate random locations according to a *.nrrd file<a class="headerlink" href="#Generate-random-locations-according-to-a-*.nrrd-file" title="Permalink to this headline">¶</a></h2>
-<p>We may want to place the units according to a file containing 3D location information, such as the <a class="reference external" href="https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels">Allen Brain Atlas Common Coordinate Frame</a>. You can obtain a structural mask that describes the extent of a structure of interest. Cells will be placed randomly within that structure at a density of max_dens. If the *.nrrd file contains varying cell densities, this function can also be used to place
-cells randomly according to that density raster.</p>
+<section id="Generate-random-locations-according-to-an-Nrrd-file">
+<h2>Generate random locations according to an Nrrd file<a class="headerlink" href="#Generate-random-locations-according-to-an-Nrrd-file" title="Permalink to this headline">¶</a></h2>
+<p>We may want to place the units according to a file containing 3D location information, such as the <a class="reference external" href="https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels">Allen Brain Atlas Common Coordinate Framework</a>. You can obtain a structural mask that describes the extent of a structure of interest. Cells will be placed randomly within that structure at a density of max_dens. If the *.nrrd file contains varying cell densities, this function can also be used to
+place cells randomly according to that density raster.</p>
 <p>You will need to install the <code class="docutils literal notranslate"><span class="pre">pynrrd</span></code> library to use this function.</p>
 <p>Note that the units of cell density are in cells/mm3 while positions are in units of microns.</p>
 <p>If the structure is bilateral and only one half is desired for modeling, you can specify the axis along which to split it.</p>
@@ -972,7 +972,7 @@ cells randomly according to that density raster.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_nrrd</span>
-<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;./sources/nrrd/structure_721.nrrd&#39;</span>
 <span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>       <span class="c1"># Cells per mm^3</span>
 
 <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1033,7 +1033,7 @@ monitor the progress. You may find that in such cases just slightly decreasing t
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">CellLocations</span>
 
-<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;./sources/nrrd/structure_721.nrrd&#39;</span>
 
 <span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>
 
@@ -1054,25 +1054,24 @@ monitor the progress. You may find that in such cases just slightly decreasing t
 <div class="highlight"><pre>
 Density limit:206311.963
 Max density requested:100000.000
-5786/51218 cells placed
-11837/51218 cells placed
-17823/51218 cells placed
-23500/51218 cells placed
-28438/51218 cells placed
-32752/51218 cells placed
-36213/51218 cells placed
-39168/51218 cells placed
-41516/51218 cells placed
-43591/51218 cells placed
-45160/51218 cells placed
-46412/51218 cells placed
-47466/51218 cells placed
-48349/51218 cells placed
-49117/51218 cells placed
-49806/51218 cells placed
-50433/51218 cells placed
-50989/51218 cells placed
-51473/51218 cells placed
+5873/51218 cells placed
+12009/51218 cells placed
+17996/51218 cells placed
+23656/51218 cells placed
+28617/51218 cells placed
+32939/51218 cells placed
+36509/51218 cells placed
+39492/51218 cells placed
+41881/51218 cells placed
+43671/51218 cells placed
+45262/51218 cells placed
+46550/51218 cells placed
+47585/51218 cells placed
+48535/51218 cells placed
+49333/51218 cells placed
+50050/51218 cells placed
+50679/51218 cells placed
+51226/51218 cells placed
 51218 cells
 positions: (51218, 3)
 </pre></div></div>

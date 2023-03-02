@@ -622,6 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">.utilities</span> <span class="kn">import</span> <span class="n">convert_tmin_tmax_framerate_to_trange</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
 
 
 <div class="viewcode-block" id="Movie"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie">[docs]</a><span class="k">class</span> <span class="nc">Movie</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -748,7 +749,58 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                      <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">frame_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_rate</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Movie.normalize_matrix"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.movie.Movie.normalize_matrix">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">normalize_matrix</span><span class="p">(</span><span class="n">m_data</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attempts to take a numpy matrix &quot;movie&quot; and normalize the contrast values to range [-1.0, 1.0].</span>
+
+<span class="sd">        :param m_data: A numpy matrix TxRxC containing an original &quot;movie&quot; data</span>
+<span class="sd">        :param domain: If A tuple of values [min_contrast, max_contrast], will use those values to normalize. Otherwise</span>
+<span class="sd">            will attempt to determine original contrast range from the m_data.</span>
+<span class="sd">        :return: m_data that has been normalized</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">domain</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="c1"># Allow users to specify the contrast range of the original movie [c_min, c_max] that will be</span>
+            <span class="c1"># converted to range [-1.0, +1.0]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Unable to normalize movie; please specify to minimum and maximum contrast for original movie with &#39;</span>
+                    <span class="s1">&#39;list [min_contrast, max_contrast]&#39;</span>
+                <span class="p">)</span>
+            <span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c_min</span> <span class="o">&gt;=</span> <span class="n">c_max</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Unable to normalize movie; original movie range must be defined with min_contrast &lt; max_contrast&#39;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">m_data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">c_min</span> <span class="ow">or</span> <span class="n">m_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">c_max</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;Unable to normalize movie; trying to convert movie from contrast values &#39;</span> <span class="o">+</span>
+                    <span class="s1">&#39;[</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">] --&gt; [-1.0, 1.0], &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span><span class="p">)</span> <span class="o">+</span>
+                    <span class="s1">&#39;but movie contains values outside of original domain.&#39;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use the existing movie to try to best guess the domain the original movie is already in; in most</span>
+            <span class="c1"># cases it will be [0.0, 1.0] or [0, 256]</span>
+            <span class="n">m_min</span><span class="p">,</span> <span class="n">m_max</span> <span class="o">=</span> <span class="n">m_data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">m_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">m_min</span> <span class="o">&gt;=</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">m_max</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span>
+            <span class="k">elif</span> <span class="n">m_min</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">and</span> <span class="n">m_max</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+                <span class="c1"># All values fall between [-1.0, 1.0], likely movie is likely already normalized.</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39;Input movie is already normalized between contrast values [-1.0, 1.0].&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">m_data</span>
+            <span class="k">elif</span> <span class="n">m_min</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">m_max</span> <span class="o">&lt;</span> <span class="mi">256</span><span class="p">:</span>
+                <span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">255.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">c_min</span><span class="p">,</span> <span class="n">c_max</span> <span class="o">=</span> <span class="n">m_min</span><span class="p">,</span> <span class="n">m_max</span>
+
+        <span class="k">if</span> <span class="n">c_min</span> <span class="o">==</span> <span class="n">c_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;Unable to normalize movie; please specify a range for the contrast min and max of the input movie.&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39;Normalizing input movie from contrast range [</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">] --&gt; [-1.0, 1.0].&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">m_data</span> <span class="o">-</span> <span class="n">c_min</span><span class="p">)</span><span class="o">*</span><span class="mf">2.0</span><span class="o">/</span><span class="p">(</span><span class="n">c_max</span> <span class="o">-</span> <span class="n">c_min</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span></div></div>
 
 
 <span class="c1"># TODO: Instead of using subclasses, convert the following movie type to a Factory class/function that returns a Movie</span>

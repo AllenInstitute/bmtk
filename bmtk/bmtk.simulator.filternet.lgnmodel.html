@@ -1328,6 +1328,24 @@ filter is broken up into its components, spatial filter is applied then followed
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.filternet.lgnmodel.movie.Movie.normalize_matrix">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie.normalize_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.normalize_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempts to take a numpy matrix “movie” and normalize the contrast values to range [-1.0, 1.0].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m_data</strong> – A numpy matrix TxRxC containing an original “movie” data</p></li>
+<li><p><strong>domain</strong> – If A tuple of values [min_contrast, max_contrast], will use those values to normalize. Otherwise
+will attempt to determine original contrast range from the m_data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>m_data that has been normalized</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.filternet.lgnmodel.movie.Movie.play">
 <span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playback_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie.play"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.play" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
