@@ -91,7 +91,8 @@ def get_wavelet_params(node, dynamics_params):
     sigma_f = node.sigma_f if node.sigma_f is not None else dynamics_params['sigma_f']
     b_t = node.b_t if node.b_t is not None else dynamics_params['b_t']
     order_t = node.order_t if node.order_t is not None else dynamics_params['order_t']
-    amplitude = node.amplitude if node.amplitude is not None else dynamics_params['amplitude']             # Scale factor on normalized filter
+    amplitude = node.amplitude if node.amplitude is not None else dynamics_params['amplitude']    # Scale factor on normalized filter
+
     if t_mod_freq != 0:
         theta = np.arctan(sp_mod_freq / t_mod_freq)
     else:
@@ -100,6 +101,16 @@ def get_wavelet_params(node, dynamics_params):
         dynamics_params['psi'] = eval(dynamics_params['psi'].replace('pi', 'np.pi'))
     psi = node.psi if node.psi is not None else dynamics_params['psi']
     delay = node.delays if node.delays is not None else dynamics_params['delay']
+    if dynamics_params['direction'] == 'up':
+        dynamics_params['direction'] = 1
+    elif dynamics_params['direction'] == 'down':
+        dynamics_params['direction'] = -1
+    elif dynamics_params['direction'] in [-1,0,1]:
+        pass
+    else:
+        raise Exception("'Direction' filter parameter must be 'up' (or 1) for upward frequency modulation, "
+                        " or 'down' (or -1) for downward modulation, or 0 if not applicable.")
+    direction = node.direction if node.direction is not None else dynamics_params['direction']
 
     '''
     else:
@@ -114,7 +125,7 @@ def get_wavelet_params(node, dynamics_params):
         kpeaks = jitter_fnc(kpeaks) if kpeaks is not None else kpeaks
         delays = jitter_fnc(delays) if delays is not None else delays
     '''
-    return Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude
+    return Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude, direction
 
 
 def default_cell_loader(node, template_name, dynamics_params):
@@ -245,16 +256,16 @@ def default_cell_loader(node, template_name, dynamics_params):
         # Currently tying y to center freq
         translate = (node['y'])
 
-        Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude = get_wavelet_params(node, dynamics_params)
+        Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude, direction = get_wavelet_params(node, dynamics_params)
 
-        spectrotemporal_filter = WaveletFilter(translate, sigma_f, b_t, order_t, theta, Lambda, psi, amplitude)
+        spectrotemporal_filter = WaveletFilter(translate, sigma_f, b_t, order_t, theta, Lambda, psi, amplitude, direction)
 
         if template_name:
             model_name = template_name[1]
         else:
             model_name = node['pop_name']
 
-        if model_name == 'AUD_foo':
+        if model_name == 'AUD_filt':
             # Create the spectro-temporal filter
             pass
             # transfer_function = ScalarTransferFunction('Heaviside(s+{})*(s+{})'.format(spont_fr, spont_fr))

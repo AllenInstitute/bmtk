@@ -33,13 +33,13 @@ class AuditoryInput(object):
                                                                  self.sample_factor, padding_size=None,
                                                                  full_filter=True, strict=False)
         if interp_to_freq:
-            log_freqs = np.geomspace(np.min(center_freqs), np.max(center_freqs), len(center_freqs))
+            log_freqs = np.geomspace(self.low_lim, self.hi_lim, len(center_freqs))
 
             n_t = human_coch.shape[1]
             Ytf = np.empty((len(log_freqs), n_t))
             for i in range(n_t):
-                f = interp1d(np.log2(center_freqs), human_coch[:, i], kind='cubic')
-                Ytf[:, i] = f(np.log2(log_freqs))
+                f = interp1d(np.log2(center_freqs/self.low_lim), human_coch[:, i], kind='cubic')
+                Ytf[:, i] = f(np.log2(log_freqs/self.low_lim))
             human_coch = Ytf
             center_freqs = log_freqs
 
@@ -47,7 +47,7 @@ class AuditoryInput(object):
         center_freqs = center_freqs[inds_keep]
         human_coch = human_coch[np.squeeze(inds_keep)]
         minval = np.min(human_coch)
-        center_freqs_log = np.log2(center_freqs/np.min(center_freqs))
+        center_freqs_log = np.log2(center_freqs/self.low_lim)
         human_coch = resample_poly(human_coch, desired_sr, self.sr, axis=1)
         human_coch[human_coch<=minval] = minval     # resampling sometimes produces very small negative values
         times = np.linspace(0, 1/desired_sr * (human_coch.shape[1]-1), human_coch.shape[1])

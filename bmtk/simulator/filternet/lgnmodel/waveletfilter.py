@@ -8,7 +8,8 @@ from scipy import ndimage
 from .kernel import Kernel2D
 
 class WaveletFilter(object):
-    def __init__(self, translate=4.0, sigma_f=1.0, b_t=1.0, order_t=3, theta=0.0, Lambda=1.0, psi=0.0, amplitude= 1.):
+    def __init__(self, translate=4.0, sigma_f=1.0, b_t=1.0, order_t=3, theta=0.0, Lambda=1.0, psi=0.0, amplitude= 1.,
+                 direction=1):
         """SpectroTemporalFilter
 
         :param translate: float, the center frequency of the gabor
@@ -39,6 +40,7 @@ class WaveletFilter(object):
         self.Lambda = Lambda
         self.psi = psi
         self.amplitude = amplitude
+        self.direction = direction
 
     def imshow(self, row_range, col_range, threshold=0, **kwargs):
         return self.get_kernel(row_range, col_range, threshold).imshow(**kwargs)
@@ -73,7 +75,8 @@ class WaveletFilter(object):
             env = (f_t * (x - translate_t)) ** (self.order_t - 1) * np.exp(-1 * self.b_t * f_t * (x - translate_t)) \
                   * np.exp(-.5 * (y - self.translate) ** 2 / self.sigma_f ** 2)
             wave = np.cos(2 * np.pi / self.Lambda * (
-                        (x - translate_t) * np.cos(self.theta) + (y - self.translate) * np.sin(self.theta)) + self.psi)
+                        (x - translate_t) * np.cos(self.theta) +
+                        self.direction*(y - self.translate) * np.sin(self.theta)) + self.psi)
         else:
             # Special case temporal modulation freq is 0, approximate a fast, mostly positive filter
             # The step response adapts slightly to a flat steady-state

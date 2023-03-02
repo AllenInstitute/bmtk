@@ -144,7 +144,7 @@ class FilterSimulator(Simulator):
             #coch = np.log(coch)
 
             normalize_data = params.get('normalize', None)
-            if normalize_data == 'full':
+            if normalize_data == 'full' or normalize_data == True:
                 contrast_min, contrast_max = coch.min(), coch.max()
                 self.io.log_info('Normalizing auditory input to (-1.0, 1.0).')
                 coch = (coch-contrast_min)*2.0/(contrast_max - contrast_min) - 1.0
@@ -153,12 +153,6 @@ class FilterSimulator(Simulator):
                 coch = coch*3
             else:
                 self.io.log_info('Auditory input range is not normalized.')
-
-            amplitude = 100
-            coch *= amplitude
-
-            #pad = np.full((500,coch.shape[1]), coch[0,:])
-            #coch = np.concatenate((pad,coch))
 
             coch = coch[:,:, np.newaxis]
 
@@ -188,21 +182,21 @@ class FilterSimulator(Simulator):
         ten_percent = int(np.ceil(n_cells_on_rank*0.1))
         rank_msg = '' if bmtk_world_comm.MPI_size < 2 else ' (on rank {})'.format(bmtk_world_comm.MPI_rank)
 
+        max_fr = np.empty(len(cells_on_rank))
         for cell_num, cell in enumerate(cells_on_rank):
             for movie, options in zip(self._movies, self._eval_options):
                 if cell_num > 0 and cell_num % ten_percent == 0:
                     io.log_debug(' Processing cell {} of {}{}.'.format(cell_num, n_cells_on_rank, rank_msg))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
+                max_fr[cell_num] = np.max(f_rates)
                 if movie.padding:
-                    f_rates = f_rates[int((movie.data.shape[0]-movie.data_orig.shape[0])/2) :
-                                      -int((movie.data.shape[0]-movie.data_orig.shape[0])/2)]
-                    ts = ts[int((movie.data.shape[0]-movie.data_orig.shape[0])/2):
-                         -int((movie.data.shape[0]-movie.data_orig.shape[0])/2)]
+                    f_rates = f_rates[int(movie.data.shape[0]-movie.data_orig.shape[0]):]
+                    ts = ts[int(movie.data.shape[0]-movie.data_orig.shape[0]):]
                     ts = ts-ts[0]
 
                 for mod in self._sim_mods:
                     mod.save(self, cell, ts, f_rates)
-
+        io.log_info('Max firing rate: {}'.format(np.max(max_fr)))
         io.log_info('Done.')
         for mod in self._sim_mods:
             mod.finalize(self)

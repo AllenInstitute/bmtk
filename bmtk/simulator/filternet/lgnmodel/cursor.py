@@ -82,7 +82,11 @@ class KernelCursor(object):
             t_inds = t_inds[allowed_inds]
             row_inds = self.kernel.row_inds[allowed_inds]
             col_inds = self.kernel.col_inds[allowed_inds]
-            kernel_vector = self.kernel.kernel[allowed_inds] 
+            kernel_vector = self.kernel.kernel[allowed_inds]
+            #stim = np.reshape(self.movie[t_inds, row_inds, col_inds],
+            #                             (len(np.unique(t_inds)), len(np.unique(row_inds)))))
+            #kern = np.reshape(kernel_vector, (len(np.unique(t_inds)), len(np.unique(row_inds))))
+
             result = np.dot(self.movie[t_inds, row_inds, col_inds], kernel_vector)
             self.cache[ti_offset] = result
             return result
@@ -119,18 +123,15 @@ class LNUnitCursor(KernelCursor):
                 if movie.padding == 'edge':
                     pre_pad = np.full((len(np.unique(kernel.t_inds))-1, movie.data.shape[1]),
                                   movie.data[0, :, 0])
-                    post_pad = np.full((len(np.unique(kernel.t_inds)) - 1, movie.data.shape[1]),
-                                      movie.data[-1, :, 0])
                     pre_pad = pre_pad[:, :, np.newaxis]
-                    post_pad = post_pad[:, :, np.newaxis]
                     movie.data_orig = movie.data
-                    movie.data = np.concatenate((pre_pad, movie.data, post_pad))
+                    movie.data = np.concatenate((pre_pad, movie.data))
                     lower_pad = np.full((movie.data.shape[0], len(np.unique(kernel.row_inds)) - 1, 1),
                                         np.reshape(movie.data[:, 0, 0], (-1, 1, 1)))
                     upper_pad = np.full((movie.data.shape[0], len(np.unique(kernel.row_inds)) - 1, 1),
                                         np.reshape(movie.data[:, -1, 0], (-1, 1, 1)))
                     movie.data = np.hstack((lower_pad, movie.data, upper_pad))
-                    kernel.t_range = np.linspace(kernel.t_range[0] - 2*pre_pad.shape[0] * 1/movie.frame_rate,
+                    kernel.t_range = np.linspace(kernel.t_range[0] - pre_pad.shape[0] * 1/movie.frame_rate,
                                                  0, movie.data.shape[0])
                     movie.t_range_orig = movie.t_range
                     movie.t_range = kernel.t_range - kernel.t_range[0]

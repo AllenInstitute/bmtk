@@ -153,11 +153,14 @@ class Kernel2D(object):
         b = above_thresh[:,::-1]
         end_ind1 = b.shape[1] - np.argmax(np.max(b, axis=0))
         #kernel = kernel_array[inds_to_keep]
-        col_inds, row_inds = [v.flatten() for v in np.meshgrid(range(start_ind0, end_ind0), range(start_ind1, end_ind1), indexing='ij')]
+
+        col_inds, row_inds = [v.flatten() for v in
+                              np.meshgrid(range(start_ind0, end_ind0), range(start_ind1, end_ind1), indexing='ij')]
+
         kernel = kernel_array[col_inds, row_inds]
         if len(np.where(above_thresh)) == 1:
             col_inds, row_inds = np.array([]), np.array([])
-        
+
         return cls(row_range, col_range, row_inds, col_inds,  kernel)
     
     @classmethod
