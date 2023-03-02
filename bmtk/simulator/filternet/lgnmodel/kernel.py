@@ -131,7 +131,7 @@ class Kernel2D(object):
     def normalize(self):
         self.kernel /= np.abs(self.kernel.sum())
 
-    def normalize2(self, remove_offset=False):
+    def normalize2(self, remove_offset=True):
         # Better for kernels that are not all positive
         if remove_offset:
             self.kernel -= self.kernel.mean()      # Set amplitude offset to 0
@@ -153,11 +153,14 @@ class Kernel2D(object):
         b = above_thresh[:,::-1]
         end_ind1 = b.shape[1] - np.argmax(np.max(b, axis=0))
         #kernel = kernel_array[inds_to_keep]
-        col_inds, row_inds = [v.flatten() for v in np.meshgrid(range(start_ind0, end_ind0), range(start_ind1, end_ind1), indexing='ij')]
+
+        col_inds, row_inds = [v.flatten() for v in
+                              np.meshgrid(range(start_ind0, end_ind0), range(start_ind1, end_ind1), indexing='ij')]
+
         kernel = kernel_array[col_inds, row_inds]
         if len(np.where(above_thresh)) == 1:
             col_inds, row_inds = np.array([]), np.array([])
-        
+
         return cls(row_range, col_range, row_inds, col_inds,  kernel)
     
     @classmethod
@@ -207,12 +210,17 @@ class Kernel2D(object):
         self.col_inds = self.col_inds[inds_to_keep]
         self.kernel = self.kernel[inds_to_keep]
 
-    def full(self):
+    def full(self, truncate_col=False):
         data = np.zeros((len(self.row_range), len(self.col_range)))
         data[self.row_inds, self.col_inds] = self.kernel
-        return data
+        if truncate_col:    # For spectrotemporal receptive fields where col is time dimension
+            ind_max = np.max(self.col_inds)
+            return data[:, :ind_max]
+        else:
+            return data
         
-    def imshow(self, ax=None, show=True, save_file_name=None, clim=None, colorbar=True):
+    def imshow(self, ax=None, show=True, save_file_name=None, clim=None, colorbar=True, truncate_col=False, xlabel=None,
+               ylabel=None):
         
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         
@@ -223,14 +231,20 @@ class Kernel2D(object):
             divider = make_axes_locatable(ax)
             cax = divider.append_axes("right", size="5%", pad=0.05)
         
-        data = self.full()
-
-        if clim is not None:
-            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),
-                           origin='lower', clim=clim, interpolation='none')
+        data = self.full(truncate_col=truncate_col)
+        if truncate_col:
+            col_max = self.col_range[np.max(self.col_inds)]
         else:
-            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),
-                           origin='lower', interpolation='none')
+            col_max = self.col_range[-1]
+        if clim is not None:
+            im = ax.imshow(data, extent=(self.col_range[0], col_max, np.squeeze(self.row_range[0]),
+                                         np.squeeze(self.row_range[-1])), origin='lower', clim=clim, interpolation='none')
+        else:
+            im = ax.imshow(data, extent=(self.col_range[0], col_max, np.squeeze(self.row_range[0]),
+                                         np.squeeze(self.row_range[-1])), origin='lower', interpolation='none',
+                                        aspect='auto')
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel(ylabel)
         
         if colorbar:
             plt.colorbar(im, cax=cax)

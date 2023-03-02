@@ -94,6 +94,9 @@ class FilterNode(SonataBaseNode):
     @property
     def amplitude(self):
         return self._prop_adaptor.amplitude(self._node)
+    @property
+    def direction(self):
+        return self._prop_adaptor.direction(self._node)
 class FilterNodeAdaptor(NodeAdaptor):
     def get_node(self, sonata_node):
         return FilterNode(sonata_node, self)
@@ -286,6 +289,8 @@ def find_spectrotemporal_params(node_group, node_adaptor):
         node_adaptor.delay = types.MethodType(lambda self, node: node['delay'], node_adaptor)
     if 'amplitude' in node_group.all_columns:
         node_adaptor.amplitude = types.MethodType(lambda self, node: node['amplitude'], node_adaptor)
+    if 'direction' in node_group.all_columns:
+        node_adaptor.direction = types.MethodType(lambda self, node: node['direction'], node_adaptor)
     else:
         node_adaptor.sigma_f = types.MethodType(return_none, node_adaptor)
         node_adaptor.b_t = types.MethodType(return_none, node_adaptor)
@@ -297,3 +302,4 @@ def find_spectrotemporal_params(node_group, node_adaptor):
             node_adaptor.psi = eval(node_adaptor.psi.replace('pi', 'np.pi'))
         node_adaptor.delay = types.MethodType(return_none, node_adaptor)
         node_adaptor.amplitude = types.MethodType(return_none, node_adaptor)
+        node_adaptor.direction = types.MethodType(return_none, node_adaptor)
