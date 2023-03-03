@@ -209,19 +209,19 @@ class CellLocations(object):
 
             if self._CCF_orientation:
                 plot_positions(x, z, y, ax[0], labels=['X', 'Z', 'Y'], pop_name=pop_name)
-                ax[0].set_title('Side view')
+                ax[0].set_title('Posterior view')
                 ax[0].view_init(elev=10., azim=0)
                 plot_positions(x, z, y, ax[1], labels=['X', 'Z', 'Y'], pop_name=pop_name)
-                ax[1].set_title('Bird\'s eye view')
+                ax[1].set_title('Top view')
                 ax[1].view_init(elev=90., azim=0)
                 ax[1].legend(loc="upper right", markerscale=2, prop={'size': 15})
             else:
                 plot_positions(x, y, z, ax[0], labels=['X','Y','Z'], pop_name=pop_name)
                 ax.view_init(elev=10., azim=0)
                 ax[0].set_title('Side view')
-                ax[0].view_init(elev=10., azim=0)
+                ax[0].view_init(elev=10., azim=-90)
                 plot_positions(x, y, z, ax[1], labels=['X', 'Y', 'Z'], pop_name=pop_name)
-                ax[1].set_title('Bird\'s eye view')
+                ax[1].set_title('Top view')
                 ax[1].view_init(elev=90., azim=0)
                 ax[1].legend(loc="upper right", markerscale=2, prop={'size': 15})
 
@@ -261,11 +261,11 @@ def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0
         fig, ax = plt.subplots(1,2,figsize=(9,12), subplot_kw={'projection':'3d'})
         plot_positions(x, z, y, ax[0], labels=['X','Z','Y'])
         ax[0].set_title('Side view')
-        ax[0].view_init(elev=5., azim=0)
+        ax[0].view_init(elev=5., azim=-90)
 
         plot_positions(x, z, y, ax[1], labels=['X','Z','Y'])
-        ax[1].set_title('Bird\'s eye view')
-        ax[1].view_init(elev=90., azim=0)
+        ax[1].set_title('Top view')
+        ax[1].view_init(elev=90., azim=-90)
 
     return np.column_stack((x, y, z))
 
@@ -290,11 +290,11 @@ def positions_rect_prism(N=1, center=[0.0, 50.0, 0.0], height=20.0, x_length=100
         fig, ax = plt.subplots(1,2,figsize=(9,12), subplot_kw={'projection':'3d'})
         plot_positions(x, z, y, ax[0], labels=['X','Z','Y'])
         ax[0].set_title('Side view')
-        ax[0].view_init(elev=5., azim=0)
+        ax[0].view_init(elev=5., azim=-90)
 
         plot_positions(x, z, y, ax[1], labels=['X','Z','Y'])
-        ax[1].set_title('Bird\'s eye view')
-        ax[1].view_init(elev=90., azim=0)
+        ax[1].set_title('Top view')
+        ax[1].view_init(elev=90., azim=-90)
 
     return np.column_stack((x, y, z))
 
@@ -320,11 +320,11 @@ def positions_ellipsoid (N=1, center=[0.0, 50.0, 0.0], height=50, x_length=100.0
         fig, ax = plt.subplots(1,2,figsize=(9,12), subplot_kw={'projection':'3d'})
         plot_positions(positions[:,0], positions[:,2], positions[:,1], ax[0], labels=['X','Z','Y'])
         ax[0].set_title('Side view')
-        ax[0].view_init(elev=5., azim=0)
+        ax[0].view_init(elev=5., azim=-90)
 
         plot_positions(positions[:,0], positions[:,2], positions[:,1], ax[1], labels=['X','Z','Y'])
-        ax[1].set_title('Bird\'s eye view')
-        ax[1].view_init(elev=90., azim=0)
+        ax[1].set_title('Top view')
+        ax[1].view_init(elev=90., azim=-90)
 
     return positions
 def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100.0, yside_length=100.0, min_dist=20.0,
@@ -358,11 +358,11 @@ def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100
         fig, ax = plt.subplots(1,2,figsize=(9,12), subplot_kw={'projection':'3d'})
         plot_positions(x, y, z, ax[0], labels=['X','Y','Z'])
         ax[0].set_title('Side view')
-        ax[0].view_init(elev=5., azim=0)
+        ax[0].view_init(elev=5., azim=-90)
 
         plot_positions(x, y, z, ax[1], labels=['X','Y','Z'])
-        ax[1].set_title('Bird\'s eye view')
-        ax[1].view_init(elev=90., azim=0)
+        ax[1].set_title('Top view')
+        ax[1].view_init(elev=90., azim=-90)
 
     return np.column_stack((x, y, z))
 
