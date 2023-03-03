@@ -15,6 +15,9 @@ Main Tutorials
    FilterNet: Full-field flashing movie <tutorial_filter_models>
 
 
+Also check out the tutorial series from our `annual workshop <workshop>`_.
+
+
 Prerequisites
 -------------
 
