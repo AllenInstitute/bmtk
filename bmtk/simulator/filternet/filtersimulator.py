@@ -150,7 +150,7 @@ class FilterSimulator(Simulator):
                 coch = (coch-contrast_min)*2.0/(contrast_max - contrast_min) - 1.0
             elif normalize_data == 'relative':
                 self.io.log_info('Auditory input is normalized maintaining relative amplitude')
-                coch = coch*3
+                coch = coch*2.8
             else:
                 self.io.log_info('Auditory input range is not normalized.')
 
