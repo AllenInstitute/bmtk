@@ -25,6 +25,7 @@ class AuditoryInput(object):
 
     def get_cochleagram(self, desired_sr=1000, interp_to_freq=False):
         n = int(np.floor(erb.freq2erb(self.hi_lim) - erb.freq2erb(self.low_lim)) - 1)
+        self.sample_factor = 4
         human_coch = cgram.human_cochleagram(self.stim_array, self.sr, n=n, sample_factor=self.sample_factor,
                                              downsample=self.downsample, nonlinearity='power', strict=False)
 

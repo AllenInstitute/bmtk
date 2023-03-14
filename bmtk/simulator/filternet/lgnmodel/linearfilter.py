@@ -60,7 +60,7 @@ class SpectroTemporalFilter(object):
         self.amplitude = amplitude
 
     def get_spectrotemporal_kernel(self, freq_range, t_range, threshold=0, reverse=False):
-        spectrotemporal_kernel = self.spectrotemporal_filter.get_kernel(freq_range, t_range, threshold=0)
+        spectrotemporal_kernel = self.spectrotemporal_filter.get_kernel(freq_range, t_range, threshold_rel = threshold)
 
         if reverse:
             t_range = -np.array(t_range)[::-1]

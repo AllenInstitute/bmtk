@@ -118,7 +118,7 @@ class LNUnitCursor(KernelCursor):
             kernel = lnunit.get_spatiotemporal_kernel(movie.row_range, movie.col_range, movie.t_range, reverse=True,
                                                   threshold=threshold)
         elif isinstance(self.lnunit.linear_filter, SpectroTemporalFilter):
-            kernel = lnunit.get_spectrotemporal_kernel(movie.row_range, movie.t_range, reverse=True, threshold=threshold)
+            kernel = lnunit.get_spectrotemporal_kernel(movie.row_range, movie.t_range, reverse=True, threshold=0.05)
             if movie.padding:
                 if movie.padding == 'edge':
                     pre_pad = np.full((len(np.unique(kernel.t_inds))-1, movie.data.shape[1]),

@@ -4,7 +4,7 @@ from sympy.abc import y as symbolic_y
 from six import string_types
 
 from bmtk.simulator.filternet.filters import TemporalFilterCosineBump, GaussianSpatialFilter, SpatioTemporalFilter, \
-    WaveletFilter, SpectroTemporalFilter
+    WaveletFilter, SpectroTemporalFilter, GaborFilter
 from bmtk.simulator.filternet.cell_models import TwoSubfieldLinearCell, OnUnit, OffUnit, LGNOnOffCell
 from bmtk.simulator.filternet.transfer_functions import ScalarTransferFunction, MultiTransferFunction
 from bmtk.simulator.filternet.utils import get_data_metrics_for_each_subclass, get_tcross_from_temporal_kernel
@@ -84,6 +84,9 @@ def get_sigma(node, dynamics_params):
 def get_wavelet_params(node, dynamics_params):
     t_mod_freq = node.t_mod_freq if node.t_mod_freq is not None else dynamics_params['t_mod_freq']
     sp_mod_freq = node.sp_mod_freq if node.sp_mod_freq is not None else dynamics_params['sp_mod_freq']
+    if (t_mod_freq < 0) or (sp_mod_freq < 0):
+        raise Exception("Temporal modulation frequency (t_mod_freq) and spectral modulation frequency "
+                        "(sp_mod_freq) must be non-negative.")
     Lambda = 1/np.linalg.norm([t_mod_freq, sp_mod_freq])    # Wavelength of oscillatory component
     #sigma1_ratio = node.sigma1_ratio if node.sigma1_ratio is not None else dynamics_params['sigma1_ratio']
     #sigma1 = Lambda /sigma1_ratio     # Width of Gaussian in direction of oscillation
@@ -258,7 +261,11 @@ def default_cell_loader(node, template_name, dynamics_params):
 
         Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude, direction = get_wavelet_params(node, dynamics_params)
 
-        spectrotemporal_filter = WaveletFilter(translate, sigma_f, b_t, order_t, theta, Lambda, psi, amplitude, direction)
+        spectrotemporal_filter = WaveletFilter(translate, sigma_f, b_t, order_t, theta, Lambda, psi, delay,
+                                               amplitude, direction)
+
+        #spectrotemporal_filter = GaborFilter(translate, sigma_f, Lambda/np.cos(theta)/4, theta, Lambda, psi, amplitude,
+        #                                     direction)
 
         if template_name:
             model_name = template_name[1]
