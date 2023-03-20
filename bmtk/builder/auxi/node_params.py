@@ -29,8 +29,6 @@ from sklearn.neighbors import KDTree
 from types import SimpleNamespace
 
 
-
-
 class CellLocations(object):
     # Added class to facilitate checking of new locations against already placed locations in other populations for
     # the purpose of ensuring a minimum distance.
@@ -46,9 +44,11 @@ class CellLocations(object):
         #self._all_positions = [np.array([]).reshape(0, 3)]
         self._all_positions =[]
         self._all_pop_names = []
+    
     @property
     def dmin(self):
         return self._dmin
+    
     @property
     def CCF_orientation(self):
         return self._CCF_orientation
@@ -59,9 +59,11 @@ class CellLocations(object):
         
         return
     '''
+
     @dmin.setter
     def dmin(self, value):
         self._dmin = value
+    
     @CCF_orientation.setter
     def CCF_orientation(self, value):
         self._CCF_orientation = value
@@ -239,7 +241,6 @@ class CellLocations(object):
             myvars[pop_name].positions = self._all_positions[p]
             myvars[pop_name].N = self._all_positions[p].shape[0]
 
-
 def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, plot=False):
     """Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.
     Height is given as the y (index 1) coordinates.
@@ -327,6 +328,7 @@ def positions_ellipsoid (N=1, center=[0.0, 50.0, 0.0], height=50, x_length=100.0
         ax[1].view_init(elev=90., azim=-90)
 
     return positions
+
 def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100.0, yside_length=100.0, min_dist=20.0,
                      plot = False):
     """This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used
@@ -385,12 +387,14 @@ def positions_list(positions=np.array([(0, 0, 0), (0, 0, 1)])):
 
     return np.column_stack((x, y, z))
 
+
 def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,1]]), origin=np.array([0,0,0]),
                              plot=False, CCF_orientation=False, dmin=0.0, method='prog',
                              existing_positions=np.array([]).reshape(0, 3), verbose=False):
     """This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).
-    The optional position_scale parameter defines a transformation matrix A to physical space such that:
-    [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
+    The optional position_scale parameter defines a transformation matrix A to physical space such that::
+    
+        [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
 
     Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.
 
@@ -479,7 +483,8 @@ def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0],
     """This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of
     densities (cells/mm^3) using progressive sampling.
     The optional position_scale parameter defines a transformation matrix A to physical space such that:
-    [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
+    
+        [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
 
     Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.
 
@@ -606,9 +611,9 @@ def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0],
 def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), N=1, vol_tot=None, dmin=0.0,
                            existing_positions=np.array([]).reshape(0, 3), filter_func=None, verbose=False):
     '''Packing with a minimum distance, starting from a hexagonal close packing lattice
+    
     :param x_box, y_box, z_box: size of each dimension of lattice box to be generated (microns)
     :param N: number of points to be placed
-
     '''
     if (dmin < 0):
         raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
@@ -807,13 +812,14 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), N=1, vol_tot=N
 
 def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin = 0.0, CCF_orientation=True, plot=False, method='prog',
                     existing_positions=np.array([]).reshape(0, 3), verbose=False):
-    '''Generates random cell positions based on a *.nrrd file. Matrix values are interpreted as cell densities
+    '''Generates random cell positions based on a .nrrd file. Matrix values are interpreted as cell densities
     for each voxel. The maximum density is scaled to max_dens_per_mm3 (cells/mm^3).
-    If the *.nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the
+    If the .nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the
     structure geometry.
+    
     By default, only one hemisphere is shown, but this can be disabled by setting bilateral=True.
 
-    :param nrrd_filename: path to *.nrrd file
+    :param nrrd_filename: path to .nrrd file
     :param max_dens_per_mm3: desired density at maximum value of nrrd array (cells/mm^3)
     :param split_bilateral: return only unilateral structure by removing half of the array along the given axis.
             If no splitting is desired, pass in None

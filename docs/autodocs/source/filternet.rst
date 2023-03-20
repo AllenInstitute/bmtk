@@ -45,7 +45,7 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
       }
    }
 
-* movie: Link to a 3-dimensional (x, y, time) matrix representing a movie
+* movie: Link to a 3-dimensional (time, x, y) matrix representing a movie (where time is equal to the number of frames in the movie).
 * frame_rate: frames per second
 * normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
   * If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
