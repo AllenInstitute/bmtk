@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -641,14 +640,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="PopulationWriterv01"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01">[docs]</a><span class="k">class</span> <span class="nc">PopulationWriterv01</span><span class="p">(</span><span class="n">CompartmentWriterABC</span><span class="p">,</span> <span class="n">CompartmentReader</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</span>
 
 <span class="sd">    For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to</span>
 <span class="sd">    combine the results. This is less efficent, but doesn&#39;t require the user to install mpi4py and build h5py in</span>
 <span class="sd">    parallel mode. For better performance use the CellVarRecorderParrallel class instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="PopulationWriterv01.DataTable"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.DataTable">[docs]</a>    <span class="k">class</span> <span class="nc">DataTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A small struct to keep track of different data (and buffer) tables</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A small struct to keep track of different data (and buffer) tables</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_name</span> <span class="o">=</span> <span class="n">var_name</span>
@@ -855,7 +854,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">blk_beg</span><span class="p">,</span> <span class="n">blk_end</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PopulationWriterv01.record_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Record cell parameters.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record cell parameters.</span>
 
 <span class="sd">        :param gid: gid of cell.</span>
 <span class="sd">        :param var_name: name of variable being recorded.</span>
@@ -880,7 +879,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">buffer_block</span><span class="p">[</span><span class="n">update_index</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
 
 <div class="viewcode-block" id="PopulationWriterv01.record_cell_block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell_block">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">beg_step</span><span class="p">,</span> <span class="n">end_step</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save cell parameters one block at a time</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save cell parameters one block at a time</span>
 
 <span class="sd">        :param gid: gid of cell.</span>
 <span class="sd">        :param var_name: name of variable being recorded.</span>
@@ -896,7 +895,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">buffer_block</span><span class="p">[:,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
 
 <div class="viewcode-block" id="PopulationWriterv01.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Move data from memory to dataset&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move data from memory to dataset&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
             <span class="c1"># blk_beg = self._last_save_indx</span>
             <span class="c1"># blk_end = blk_beg + self._buffer_block_size</span>
@@ -1219,7 +1218,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

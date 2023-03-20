@@ -1,20 +1,20 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Chapter 3: Multi-cell, single population network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="_static/nbsphinx-code-cells.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -623,270 +623,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  
-<style>
-/* CSS for nbsphinx extension */
-
-/* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
-    border: none;
-    padding: 0;
-    margin: 0;
-    box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
-}
-
-/* avoid gaps between output lines */
-div.nboutput.container div[class*=highlight] pre {
-    line-height: normal;
-}
-
-/* input/output containers */
-div.nbinput.container,
-div.nboutput.container {
-    display: -webkit-flex;
-    display: flex;
-    align-items: flex-start;
-    margin: 0;
-    width: 100%;
-}
-@media (max-width: 540px) {
-    div.nbinput.container,
-    div.nboutput.container {
-        flex-direction: column;
-    }
-}
-
-/* input container */
-div.nbinput.container {
-    padding-top: 5px;
-}
-
-/* last container */
-div.nblast.container {
-    padding-bottom: 5px;
-}
-
-/* input prompt */
-div.nbinput.container div.prompt pre {
-    color: #307FC1;
-}
-
-/* output prompt */
-div.nboutput.container div.prompt pre {
-    color: #BF5B3D;
-}
-
-/* all prompts */
-div.nbinput.container div.prompt,
-div.nboutput.container div.prompt {
-    width: 4.5ex;
-    padding-top: 5px;
-    position: relative;
-    user-select: none;
-}
-
-div.nbinput.container div.prompt > div,
-div.nboutput.container div.prompt > div {
-    position: absolute;
-    right: 0;
-    margin-right: 0.3ex;
-}
-
-@media (max-width: 540px) {
-    div.nbinput.container div.prompt,
-    div.nboutput.container div.prompt {
-        width: unset;
-        text-align: left;
-        padding: 0.4em;
-    }
-    div.nboutput.container div.prompt.empty {
-        padding: 0;
-    }
-
-    div.nbinput.container div.prompt > div,
-    div.nboutput.container div.prompt > div {
-        position: unset;
-    }
-}
-
-/* disable scrollbars on prompts */
-div.nbinput.container div.prompt pre,
-div.nboutput.container div.prompt pre {
-    overflow: hidden;
-}
-
-/* input/output area */
-div.nbinput.container div.input_area,
-div.nboutput.container div.output_area {
-    -webkit-flex: 1;
-    flex: 1;
-    overflow: auto;
-}
-@media (max-width: 540px) {
-    div.nbinput.container div.input_area,
-    div.nboutput.container div.output_area {
-        width: 100%;
-    }
-}
-
-/* input area */
-div.nbinput.container div.input_area {
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    /*background: #f5f5f5;*/
-}
-
-/* override MathJax center alignment in output cells */
-div.nboutput.container div[class*=MathJax] {
-    text-align: left !important;
-}
-
-/* override sphinx.ext.imgmath center alignment in output cells */
-div.nboutput.container div.math p {
-    text-align: left;
-}
-
-/* standard error */
-div.nboutput.container div.output_area.stderr {
-    background: #fdd;
-}
-
-/* ANSI colors */
-.ansi-black-fg { color: #3E424D; }
-.ansi-black-bg { background-color: #3E424D; }
-.ansi-black-intense-fg { color: #282C36; }
-.ansi-black-intense-bg { background-color: #282C36; }
-.ansi-red-fg { color: #E75C58; }
-.ansi-red-bg { background-color: #E75C58; }
-.ansi-red-intense-fg { color: #B22B31; }
-.ansi-red-intense-bg { background-color: #B22B31; }
-.ansi-green-fg { color: #00A250; }
-.ansi-green-bg { background-color: #00A250; }
-.ansi-green-intense-fg { color: #007427; }
-.ansi-green-intense-bg { background-color: #007427; }
-.ansi-yellow-fg { color: #DDB62B; }
-.ansi-yellow-bg { background-color: #DDB62B; }
-.ansi-yellow-intense-fg { color: #B27D12; }
-.ansi-yellow-intense-bg { background-color: #B27D12; }
-.ansi-blue-fg { color: #208FFB; }
-.ansi-blue-bg { background-color: #208FFB; }
-.ansi-blue-intense-fg { color: #0065CA; }
-.ansi-blue-intense-bg { background-color: #0065CA; }
-.ansi-magenta-fg { color: #D160C4; }
-.ansi-magenta-bg { background-color: #D160C4; }
-.ansi-magenta-intense-fg { color: #A03196; }
-.ansi-magenta-intense-bg { background-color: #A03196; }
-.ansi-cyan-fg { color: #60C6C8; }
-.ansi-cyan-bg { background-color: #60C6C8; }
-.ansi-cyan-intense-fg { color: #258F8F; }
-.ansi-cyan-intense-bg { background-color: #258F8F; }
-.ansi-white-fg { color: #C5C1B4; }
-.ansi-white-bg { background-color: #C5C1B4; }
-.ansi-white-intense-fg { color: #A1A6B2; }
-.ansi-white-intense-bg { background-color: #A1A6B2; }
-
-.ansi-default-inverse-fg { color: #FFFFFF; }
-.ansi-default-inverse-bg { background-color: #000000; }
-
-.ansi-bold { font-weight: bold; }
-.ansi-underline { text-decoration: underline; }
-
-
-div.nbinput.container div.input_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight] > pre,
-div.nboutput.container div.output_area div[class*=highlight].math,
-div.nboutput.container div.output_area.rendered_html,
-div.nboutput.container div.output_area > div.output_javascript,
-div.nboutput.container div.output_area:not(.rendered_html) > img{
-    padding: 5px;
-    margin: 0;
-}
-
-/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
-div.nbinput.container div.input_area > div[class^='highlight'],
-div.nboutput.container div.output_area > div[class^='highlight']{
-    overflow-y: hidden;
-}
-
-/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
-    display: none;
-}
-
-/* Some additional styling taken form the Jupyter notebook CSS */
-div.rendered_html table {
-  border: none;
-  border-collapse: collapse;
-  border-spacing: 0;
-  color: black;
-  font-size: 12px;
-  table-layout: fixed;
-}
-div.rendered_html thead {
-  border-bottom: 1px solid black;
-  vertical-align: bottom;
-}
-div.rendered_html tr,
-div.rendered_html th,
-div.rendered_html td {
-  text-align: right;
-  vertical-align: middle;
-  padding: 0.5em 0.5em;
-  line-height: normal;
-  white-space: normal;
-  max-width: none;
-  border: none;
-}
-div.rendered_html th {
-  font-weight: bold;
-}
-div.rendered_html tbody tr:nth-child(odd) {
-  background: #f5f5f5;
-}
-div.rendered_html tbody tr:hover {
-  background: rgba(66, 165, 245, 0.2);
-}
-</style>
-<section id="Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)">
-<h1>Chapter 3: Multi-cell, single population network (with BioNet)<a class="headerlink" href="#Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
+  <section id="Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)">
+<h1>Chapter 3: Multi-cell, single population network (with BioNet)<a class="headerlink" href="#Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)" title="Permalink to this heading">¶</a></h1>
 <p>In this tutorial, we will create a more complex network that contains multiple biophysical cells, but all of them having the same cell-type (we will cover hetergenous networks in the next tutorial). The network will contain recurrent connections, as well as external input that provide the next with stimululation.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter03">sources/chapter03/</a></p>
 <p>requirements: * bmtk * NEURON 7.4+</p>
 <section id="1.-Building-the-Network">
-<h2>1. Building the Network<a class="headerlink" href="#1.-Building-the-Network" title="Permalink to this headline">¶</a></h2>
+<h2>1. Building the Network<a class="headerlink" href="#1.-Building-the-Network" title="Permalink to this heading">¶</a></h2>
 <p>First we will build our internal network, which consists of 100 different cells. All the cells are of the same type (we’ll show how to build a heterogeneous network in the next tutorial), however they all have a different location and y-axis rotation.</p>
 <section id="nodes">
-<h3>nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h3>
+<h3>nodes<a class="headerlink" href="#nodes" title="Permalink to this heading">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
 
@@ -904,8 +655,7 @@ div.rendered_html tbody tr:hover {
     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
     <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span>
 <span class="p">)</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <p>The parameter N is used to indicate the number of cells in our population. The positions of each cell is defined by the columinar built-in method, which will random place our cells in a column (users can define their own positions as shown here). The rotation_angel_yaxis is similarl defined by a built-in function that will randomly assign each cell a given y angle.</p>
@@ -920,7 +670,7 @@ div.rendered_html tbody tr:hover {
 <p>and in general, it is at the discretion of the modeler to choose what parameters are unqiue to each cell, and what parameters are global to the cell-type.</p>
 </section>
 <section id="edges">
-<h3>edges<a class="headerlink" href="#edges" title="Permalink to this headline">¶</a></h3>
+<h3>edges<a class="headerlink" href="#edges" title="Permalink to this heading">¶</a></h3>
 <p>Next we want to add recurrent edges. To create the connections we will use the built-in distance_connector function, which will assign the number of connections between two cells randomly (between range nsyn_min and nsysn_max) but weighted by distance. The other parameters, including the synaptic model (AMPA_ExcToExc) will be shared by all connections.</p>
 <p>To use this, or even customized, connection functions, we must pass in the name of our connection function using the “connection_rule” parameter, and the function parameters through “connection_params” as a dictionary, which will looks something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection_rule</span><span class="o">=&lt;</span><span class="n">name_of_function</span><span class="o">&gt;</span>
@@ -933,8 +683,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
 
 <span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
@@ -947,9 +696,7 @@ div.rendered_html tbody tr:hover {
     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
     <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span>
 <span class="p">)</span>
-
-
-</pre></div>
+<br/><br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -965,22 +712,20 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">cortex</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <section id="External-network">
-<h4>External network<a class="headerlink" href="#External-network" title="Permalink to this headline">¶</a></h4>
+<h4>External network<a class="headerlink" href="#External-network" title="Permalink to this heading">¶</a></h4>
 <p>After building our internal network, we will build the external thalamic network which will provide input (see previous tutorial for more detail). Our thalamic network will consist of 100 “filter” cells, which aren’t actual cells by just place holders for spike-trains.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
@@ -995,8 +740,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">connect_random</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">connect_random</span>
 
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
@@ -1019,14 +763,13 @@ div.rendered_html tbody tr:hover {
 </section>
 </section>
 <section id="Spike-Trains">
-<h3>Spike Trains<a class="headerlink" href="#Spike-Trains" title="Permalink to this headline">¶</a></h3>
+<h3>Spike Trains<a class="headerlink" href="#Spike-Trains" title="Permalink to this heading">¶</a></h3>
 <p>We next need to create the individual spike trains for our thalamic filter cells. We will use a Poission distrubition to create a random distribution of spikes for our 300 hundred cells each firing at ~ 15 Hz over a 3 second window. Then we can save our spike trains as a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA file</a> under <strong>sim_ch03/inputs</strong> directory.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
 <span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>  <span class="c1"># Have 10 nodes to match mthalamus</span>
@@ -1037,8 +780,7 @@ div.rendered_html tbody tr:hover {
 <span class="c1"># Let&#39;s do a quick check that we have reasonable results. Should see somewhere on the order of 15*3*100 = 4500</span>
 <span class="c1"># spikes</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1107,28 +849,27 @@ div.rendered_html tbody tr:hover {
 </section>
 </section>
 <section id="2.-Setting-up-BioNet">
-<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
+<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this heading">¶</a></h2>
 <section id="file-structure.">
-<h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this headline">¶</a></h3>
+<h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this heading">¶</a></h3>
 <p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You’ve already completed Chapter 02 tutorial you can just copy the files to <strong>sim_ch03</strong> (just make sure not to overwrite the <strong>network</strong> and <strong>inputs</strong> directory).</p>
 <p>Or create them from scracth by either running the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
-   --report-vars v,cai            <span class="se">\</span>
-   --network sim_ch03/network     <span class="se">\</span>
-   --spikes-inputs mthalamus:sim_ch03/inputs/mthalamus_spikes.h5 <span class="se">\</span>
-   --dt <span class="m">0</span>.1             <span class="se">\</span>
-   --tstop <span class="m">3000</span>.0       <span class="se">\</span>
-   --include-examples   <span class="se">\</span>
-   --compile-mechanisms <span class="se">\</span>
-   bionet sim_ch03
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.sim_setup<span class="w">  </span><span class="se">\</span>
+<span class="w">   </span>--report-vars<span class="w"> </span>v,cai<span class="w">            </span><span class="se">\</span>
+<span class="w">   </span>--network<span class="w"> </span>sim_ch03/network<span class="w">     </span><span class="se">\</span>
+<span class="w">   </span>--spikes-inputs<span class="w"> </span>mthalamus:sim_ch03/inputs/mthalamus_spikes.h5<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--dt<span class="w"> </span><span class="m">0</span>.1<span class="w">             </span><span class="se">\</span>
+<span class="w">   </span>--tstop<span class="w"> </span><span class="m">3000</span>.0<span class="w">       </span><span class="se">\</span>
+<span class="w">   </span>--include-examples<span class="w">   </span><span class="se">\</span>
+<span class="w">   </span>--compile-mechanisms<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>bionet<span class="w"> </span>sim_ch03
 </pre></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span>
     <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03&#39;</span><span class="p">,</span>
@@ -1250,25 +991,25 @@ Successfully created x86_64/special
 </pre></div></div>
 </div>
 <p>It’s a good idea to check the configuration files <strong>sim_ch03/circuit_config.json</strong> and <strong>sim_ch03/simulation_config.json</strong>, especially to make sure that bmtk will know to use our generated spikes file (if you don’t see the below section in the simulation_config.json file go ahead and add it).</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;tc_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${BASE_DIR}/mthalamus_spikes.csv&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mthalamus&quot;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;tc_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${BASE_DIR}/mthalamus_spikes.csv&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mthalamus&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="3.-Running-the-simulation">
-<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
+<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this heading">¶</a></h2>
 <p>Once our config file is setup we can run a simulation either through the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch03
-$ python run_bionet.py config.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sim_ch03
+$<span class="w"> </span>python<span class="w"> </span>run_bionet.py<span class="w"> </span>config.json
 </pre></div>
 </div>
 <p>or through the script</p>
@@ -1276,8 +1017,7 @@ $ python run_bionet.py config.json
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
 
 <span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">)</span>
@@ -1515,14 +1255,13 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 </div>
 </section>
 <section id="4.-Analyzing-the-run.">
-<h2>4. Analyzing the run.<a class="headerlink" href="#4.-Analyzing-the-run." title="Permalink to this headline">¶</a></h2>
+<h2>4. Analyzing the run.<a class="headerlink" href="#4.-Analyzing-the-run." title="Permalink to this heading">¶</a></h2>
 <p>If successful, we should have our results in the <strong>output</strong> directory. We can use the analyzer to plot a raster of the spikes over time:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
 
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">)</span>
@@ -1541,8 +1280,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">])</span>
@@ -1573,9 +1311,9 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 </div>
 </section>
 <section id="5.-Modifying-the-network">
-<h2>5. Modifying the network<a class="headerlink" href="#5.-Modifying-the-network" title="Permalink to this headline">¶</a></h2>
+<h2>5. Modifying the network<a class="headerlink" href="#5.-Modifying-the-network" title="Permalink to this heading">¶</a></h2>
 <section id="Customized-node-params">
-<h3>Customized node params<a class="headerlink" href="#Customized-node-params" title="Permalink to this headline">¶</a></h3>
+<h3>Customized node params<a class="headerlink" href="#Customized-node-params" title="Permalink to this heading">¶</a></h3>
 <p>When building our cortex nodes, we used some built-in functions to set certain parameters like positions and y-axis rotations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                  <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
@@ -1589,14 +1327,12 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">cortex_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cortex_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
 <span class="n">n0</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">n1</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 0: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n0</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 1: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
-
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1627,7 +1363,7 @@ cell 1: pop_name: Scnn1a, positions: [ -1.22804411  91.62129377 -11.58852979], a
 <p>We can use the same logic not just for positions and rotation_angle, but for any parameter we choose.</p>
 </section>
 <section id="Customized-connector-functions">
-<h3>Customized connector functions<a class="headerlink" href="#Customized-connector-functions" title="Permalink to this headline">¶</a></h3>
+<h3>Customized connector functions<a class="headerlink" href="#Customized-connector-functions" title="Permalink to this heading">¶</a></h3>
 <p>When creating edges, we used the built-in distance_connector function to help create the connection matrix. There are a number of built-in connection functions, but we also allow modelers to create their own. To do so, the modeler must create a function that takes in a source, target, and a variable number of parameters, and pass back a natural number representing the number of connections.</p>
 <p>The Builder will iterate over that function passing in every source/target node pair (filtered by the source and target parameters in add_edges()). The source and target parameters are essentially dictionaries that can be used to fetch properties of the nodes. A typical example would look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">customized_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">):</span>
@@ -1650,8 +1386,7 @@ cell 1: pop_name: Scnn1a, positions: [ -1.22804411  91.62129377 -11.58852979], a
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -1721,7 +1456,7 @@ cell 1: pop_name: Scnn1a, positions: [ -1.22804411  91.62129377 -11.58852979], a
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

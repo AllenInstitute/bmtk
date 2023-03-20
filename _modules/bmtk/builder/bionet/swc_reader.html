@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -634,7 +633,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
@@ -856,7 +855,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    @soma_position.setter</span>
 <span class="sd">    def soma_position(self, coords):</span>
 <span class="sd">        assert(len(coords) == 3)</span>
@@ -875,7 +874,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section_idx</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SWCReader.fix_axon"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.fix_axon">[docs]</a>    <span class="k">def</span> <span class="nf">fix_axon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes and refixes axon&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes and refixes axon&quot;&quot;&quot;</span>
         <span class="n">axon_diams</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
@@ -913,7 +912,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_axon_deleted</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SWCReader.set_segment_dl"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.set_segment_dl">[docs]</a>    <span class="k">def</span> <span class="nf">set_segment_dl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unable to segment the morphology after coordinates have already been calculated&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="mi">0</span>
@@ -922,7 +921,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total number of segments in the cell</span></div>
 
 <div class="viewcode-block" id="SWCReader.choose_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.choose_sections">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
 <span class="sd">        return less if there aren&#39;t as many sections</span>
 
 <span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
@@ -936,7 +935,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">sec_id</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SWCReader.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
 <span class="sd">        the distance from the soma.</span>
 
 <span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
@@ -1173,7 +1172,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

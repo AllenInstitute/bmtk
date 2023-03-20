@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -655,7 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">class</span> <span class="nc">_LazySegmentProps</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Struct for storing coordinate invariant properties of each segment of a cell.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Struct for storing coordinate invariant properties of each segment of a cell.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">hobj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sec_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -719,7 +718,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">class</span> <span class="nc">_LazySegmentCoords</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Struct for storing properties of each segment of a cell that vary by soma position and rotation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Struct for storing properties of each segment of a cell that vary by soma position and rotation.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">hobj</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="kc">None</span>
@@ -819,7 +818,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
@@ -910,7 +909,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the coordinates of all segments of the cells. Each segment is defined by three values, the beginning</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the coordinates of all segments of the cells. Each segment is defined by three values, the beginning</span>
 <span class="sd">        of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and the end (seg_coords.p1).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
@@ -954,14 +953,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section_idx</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Morphology.set_segment_dl"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.set_segment_dl">[docs]</a>    <span class="k">def</span> <span class="nf">set_segment_dl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dl</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total number of segments in the cell</span></div>
 
 <div class="viewcode-block" id="Morphology.choose_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.choose_sections">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
 <span class="sd">        return less if there aren&#39;t as many sections</span>
 
 <span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
@@ -977,7 +976,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">secs_ix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Morphology.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
 <span class="sd">        the distance from the soma.</span>
 
 <span class="sd">        :param section_names: A list of sections to target, &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
@@ -1119,7 +1118,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Used for comparing two Morphology objects and for storing as dict keys in seg_props_cache.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used for comparing two Morphology objects and for storing as dict keys in seg_props_cache.</span>
 
 <span class="sd">        We assume two Morphologies are the same if they have the same morphology file path + same # of segments. This</span>
 <span class="sd">        is not a good way of determining if two Morphologies are equal and in actuality we would need to compare</span>
@@ -1130,7 +1129,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="Morphology.load"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.load">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">morphology_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_seg_props</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Factory method, perfered way to create a Morphology object</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Factory method, perfered way to create a Morphology object</span>
 
 <span class="sd">        :param hobj:</span>
 <span class="sd">        :param morphology_file:</span>
@@ -1218,7 +1217,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

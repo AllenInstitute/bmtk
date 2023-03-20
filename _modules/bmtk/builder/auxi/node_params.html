@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -650,8 +649,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 
 
-
-
 <div class="viewcode-block" id="CellLocations"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.CellLocations">[docs]</a><span class="k">class</span> <span class="nc">CellLocations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1"># Added class to facilitate checking of new locations against already placed locations in other populations for</span>
     <span class="c1"># the purpose of ensuring a minimum distance.</span>
@@ -667,22 +664,26 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1">#self._all_positions = [np.array([]).reshape(0, 3)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_positions</span> <span class="o">=</span><span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_pop_names</span> <span class="o">=</span> <span class="p">[]</span>
+    
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dmin</span>
+    
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">CCF_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_CCF_orientation</span>
 
-    <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    @property</span>
 <span class="sd">    def pop_positions(self,pop_name):</span>
 <span class="sd">        </span>
 <span class="sd">        return</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+
     <span class="nd">@dmin</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">dmin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dmin</span> <span class="o">=</span> <span class="n">value</span>
+    
     <span class="nd">@CCF_orientation</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">CCF_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_CCF_orientation</span> <span class="o">=</span> <span class="n">value</span>
@@ -798,7 +799,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_dmin_lattice</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">position_scale</span><span class="o">=</span><span class="n">position_scale</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">vol_tot</span><span class="o">=</span><span class="n">vol</span><span class="p">,</span> <span class="n">dmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dmin</span><span class="p">,</span>
                                                <span class="n">existing_positions</span><span class="o">=</span><span class="n">existing_positions</span><span class="p">,</span> <span class="n">filter_func</span><span class="o">=</span><span class="n">filter_func</span><span class="p">)</span>
             <span class="n">positions</span> <span class="o">=</span> <span class="n">positions</span> <span class="o">-</span> <span class="n">box_dims</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">center</span>
-        <span class="sd">&#39;&#39;&#39;   </span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;   </span>
 <span class="sd">        elif method == &#39;lattice&#39;:</span>
 <span class="sd">            box_dims = np.array([2*max_radius, height, 2*max_radius])</span>
 <span class="sd">            position_scale = np.eye(3)*box_dims</span>
@@ -860,9 +861,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">myvars</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_positions</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
             <span class="n">myvars</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_positions</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
 
-
 <div class="viewcode-block" id="positions_columinar"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_columinar">[docs]</a><span class="k">def</span> <span class="nf">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.</span>
 <span class="sd">    Height is given as the y (index 1) coordinates.</span>
 
 <span class="sd">    :param N: Number of points to return</span>
@@ -893,7 +893,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="n">positions_columnar</span> <span class="o">=</span> <span class="n">positions_columinar</span>
 
 <div class="viewcode-block" id="positions_rect_prism"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_rect_prism">[docs]</a><span class="k">def</span> <span class="nf">positions_rect_prism</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">x_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">z_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within a rectangular prism.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within a rectangular prism.</span>
 <span class="sd">    Height is given as the y (index 1) coordinates.</span>
 
 <span class="sd">    :param N: Number of points to return</span>
@@ -920,7 +920,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="positions_ellipsoid"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_ellipsoid">[docs]</a><span class="k">def</span> <span class="nf">positions_ellipsoid</span> <span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">x_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">z_length</span><span class="o">=</span><span class="mf">200.0</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within an ellipsoid. Height is given as the y (index 1) coordinates.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within an ellipsoid. Height is given as the y (index 1) coordinates.</span>
 
 <span class="sd">    :param N: Number of points to return</span>
 <span class="sd">    :param center: center of ellipsoid</span>
@@ -948,9 +948,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mf">90.</span><span class="p">,</span> <span class="n">azim</span><span class="o">=-</span><span class="mi">90</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">positions</span></div>
+
 <div class="viewcode-block" id="positions_cuboid"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_cuboid">[docs]</a><span class="k">def</span> <span class="nf">positions_cuboid</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">xside_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">yside_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
                      <span class="n">plot</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used</span>
 <span class="sd">    assures cells cannot be placed too close to one another (must be &gt; min_dist apart)</span>
 <span class="sd">    WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance cells will be</span>
 <span class="sd">    placed on top of one another. You can use positions_list() to avoid this...</span>
@@ -989,7 +990,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="positions_list"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_list">[docs]</a><span class="k">def</span> <span class="nf">positions_list</span><span class="p">(</span><span class="n">positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])):</span>
-    <span class="sd">&quot;&quot;&quot;This function is designed to be used with an externally supplied array of x,y,z coordinates. It is useful to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function is designed to be used with an externally supplied array of x,y,z coordinates. It is useful to</span>
 <span class="sd">    avoid cell overlap in high density situations or to make some unique geometry. After you create each population,</span>
 <span class="sd">    delete those positions from the &quot;master&quot; list of coordinates. This will assure that no cells are placed on top of</span>
 <span class="sd">    one another.</span>
@@ -1006,12 +1007,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span></div>
 
+
 <div class="viewcode-block" id="positions_density_matrix"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_density_matrix">[docs]</a><span class="k">def</span> <span class="nf">positions_density_matrix</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">position_scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">origin</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span>
                              <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span>
                              <span class="n">existing_positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).</span>
-<span class="sd">    The optional position_scale parameter defines a transformation matrix A to physical space such that:</span>
-<span class="sd">    [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).</span>
+<span class="sd">    The optional position_scale parameter defines a transformation matrix A to physical space such that::</span>
+<span class="sd">    </span>
+<span class="sd">        [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]</span>
 
 <span class="sd">    Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.</span>
 
@@ -1097,10 +1100,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="positions_dmin_prog"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_dmin_prog">[docs]</a><span class="k">def</span> <span class="nf">positions_dmin_prog</span><span class="p">(</span><span class="n">mat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">position_scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]),</span> <span class="n">N</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vol_tot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sampling_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">dmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">existing_positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of</span>
 <span class="sd">    densities (cells/mm^3) using progressive sampling.</span>
 <span class="sd">    The optional position_scale parameter defines a transformation matrix A to physical space such that:</span>
-<span class="sd">    [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]</span>
+<span class="sd">    </span>
+<span class="sd">        [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]</span>
 
 <span class="sd">    Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.</span>
 
@@ -1226,10 +1230,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="positions_dmin_lattice"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_dmin_lattice">[docs]</a><span class="k">def</span> <span class="nf">positions_dmin_lattice</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">position_scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">vol_tot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                            <span class="n">existing_positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">filter_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Packing with a minimum distance, starting from a hexagonal close packing lattice</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Packing with a minimum distance, starting from a hexagonal close packing lattice</span>
+<span class="sd">    </span>
 <span class="sd">    :param x_box, y_box, z_box: size of each dimension of lattice box to be generated (microns)</span>
 <span class="sd">    :param N: number of points to be placed</span>
-
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">dmin</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Minimum distance between cell centers (dmin) must not be negative&#39;</span><span class="p">)</span>
@@ -1428,13 +1432,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="positions_nrrd"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_nrrd">[docs]</a><span class="k">def</span> <span class="nf">positions_nrrd</span> <span class="p">(</span><span class="n">nrrd_filename</span><span class="p">,</span> <span class="n">max_dens_per_mm3</span><span class="p">,</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dmin</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span>
                     <span class="n">existing_positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Generates random cell positions based on a *.nrrd file. Matrix values are interpreted as cell densities</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Generates random cell positions based on a .nrrd file. Matrix values are interpreted as cell densities</span>
 <span class="sd">    for each voxel. The maximum density is scaled to max_dens_per_mm3 (cells/mm^3).</span>
-<span class="sd">    If the *.nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the</span>
+<span class="sd">    If the .nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the</span>
 <span class="sd">    structure geometry.</span>
+<span class="sd">    </span>
 <span class="sd">    By default, only one hemisphere is shown, but this can be disabled by setting bilateral=True.</span>
 
-<span class="sd">    :param nrrd_filename: path to *.nrrd file</span>
+<span class="sd">    :param nrrd_filename: path to .nrrd file</span>
 <span class="sd">    :param max_dens_per_mm3: desired density at maximum value of nrrd array (cells/mm^3)</span>
 <span class="sd">    :param split_bilateral: return only unilateral structure by removing half of the array along the given axis.</span>
 <span class="sd">            If no splitting is desired, pass in None</span>
@@ -1568,7 +1573,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

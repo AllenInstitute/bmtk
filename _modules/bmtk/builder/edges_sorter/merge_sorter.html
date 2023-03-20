@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -635,7 +634,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="ProgressFile"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.ProgressFile">[docs]</a><span class="k">class</span> <span class="nc">ProgressFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for keeping track of the progress of the sorting of the hdf5 edges files. Will write progress to disk, so</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of the progress of the sorting of the hdf5 edges files. Will write progress to disk, so</span>
 <span class="sd">    that if sorting fails we can still continue from where it left off.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">,</span> <span class="n">n_edges</span><span class="p">,</span> <span class="n">n_chunks</span><span class="p">,</span> <span class="n">sort_key</span><span class="p">,</span> <span class="n">root_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -729,7 +728,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_copy_attributes</span><span class="p">(</span><span class="n">in_grp</span><span class="p">,</span> <span class="n">out_grp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp</span>
 
 <span class="sd">    :param in_grp: hdf5 Group object whose attributes will be copied from.</span>
 <span class="sd">    :param out_grp: hdf5 Group object that will have it&#39;s attributes updated/copied to.</span>
@@ -780,7 +779,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_order_model_groups</span><span class="p">(</span><span class="n">input_edges_path</span><span class="p">,</span> <span class="n">output_edges_path</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    :param input_edges_path:</span>
 <span class="sd">    :param output_edges_path:</span>
@@ -885,7 +884,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_initialize_chunks</span><span class="p">(</span><span class="n">edges_file_path</span><span class="p">,</span> <span class="n">progress</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Splits the original hdf5 edges file into n_chunks individual files&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Splits the original hdf5 edges file into n_chunks individual files&quot;&quot;&quot;</span>
     <span class="n">edges_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">edges_root_grp</span> <span class="o">=</span> <span class="n">edges_h5</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">]</span>
 
@@ -949,7 +948,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_sort_chunks</span><span class="p">(</span><span class="n">progress</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Takes the M (usually N or N-1) sorted chunk files, splits and merges them into N new chunk files&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes the M (usually N or N-1) sorted chunk files, splits and merges them into N new chunk files&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Resorting Chunks&#39;</span><span class="p">)</span>
 
     <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">cache_dir</span>
@@ -1031,7 +1030,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_merge</span><span class="p">(</span><span class="n">progress</span><span class="p">,</span> <span class="n">edges_grp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Will merge data from  one or more sorted chunk files into the output file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Will merge data from  one or more sorted chunk files into the output file&quot;&quot;&quot;</span>
 
     <span class="c1"># Create a table of min and max ids in each chunk file and sort. Using this table we can find overlaps, and when</span>
     <span class="c1"># the max/max ids of one file doesn&#39;t overlap with another then it&#39;s safe to push that table to the output h5</span>
@@ -1127,7 +1126,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="external_merge_sort"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.external_merge_sort">[docs]</a><span class="k">def</span> <span class="nf">external_merge_sort</span><span class="p">(</span><span class="n">input_edges_path</span><span class="p">,</span> <span class="n">output_edges_path</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">,</span> <span class="n">sort_model_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="n">n_chunks</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">max_itrs</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s1">&#39;.sort_cache&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network</span>
 <span class="sd">    files where we are not able to load into memory.</span>
 
 <span class="sd">    Will split the original hdf5 into &lt;n_chunks&gt; chunks on the disk in cache_dir, Will sort each individual chunk</span>
@@ -1280,7 +1279,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

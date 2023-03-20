@@ -1,18 +1,17 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Simulating example networks with BioNet &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -620,7 +619,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="simulating-example-networks-with-bionet">
-<h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
+<h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this heading">¶</a></h1>
 <p>To get started with running simulations with BioNet, we recommend running network examples provided in the directory examples/simulators/bionet:</p>
 <ul class="simple">
 <li><p>/14cells : a network of 14 cells receiving an external input.</p></li>
@@ -628,12 +627,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 <p>Working through the sections below, you will learn about the contents of folders in each example and how to use them to run a simulation.</p>
 <section id="configuring-simulation">
-<h2>Configuring simulation<a class="headerlink" href="#configuring-simulation" title="Permalink to this headline">¶</a></h2>
+<h2>Configuring simulation<a class="headerlink" href="#configuring-simulation" title="Permalink to this heading">¶</a></h2>
 <p>All the files listed below describing the network are listed in the configuration file <cite>config.json</cite> to instruct BioNet where to look for files describing the network. Please note that all directory and file names can be adjusted by users as they wish, as long as those names are reflected in the config file. Additionally, the configuration file includes simulation parameters (e.g. duration of simulation and time step, etc).</p>
 <p>Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
 </section>
 <section id="model-description">
-<h2>Model description<a class="headerlink" href="#model-description" title="Permalink to this headline">¶</a></h2>
+<h2>Model description<a class="headerlink" href="#model-description" title="Permalink to this heading">¶</a></h2>
 <p>The directory <cite>network</cite> contains files that describe the parameters of the cells and their connections.</p>
 <p>Cells in modeled networks may be generally categorized as: 1) the simulated cells for which dynamics is explicitly simulated using NEURON and 2) external input cells for which spiking dynamics is not simulated explicitly, but instead loaded from files. The external input cells can influence the simulated cells, but not vice versa.  Thus, such an abstraction is convenient for simulating feedforward inputs.</p>
 <p>The example networks include the simulated cells from the primary mouse visual cortex (V1) receiving external inputs from the Lateral Geniculate Nucleu (LGN) and also background input in a form of a Travelling Wave (TW) as shown in Figure 1 below:</p>
@@ -642,11 +641,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>A network can be viewed as a graph. The description of a graph needs to specify the properties of the nodes (cells) and edges (connections).  In BioNet (and more generally, in BMTK), each node (edge) belongs to a particular node (edge) type, thus possessing all the properties of that type, but also possessing properties specific to that individual node (edge) instance. Thus, the properties of nodes are described using two files: node_file and node_type_file. Similarly, edges are described using two files: edges_file, edge_types_file. For node_type_file and edge_type_file we use csv format, whereas for node_file and edge_file — HDF5 format.</p>
 <p><strong>Nodes files:</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 38%" />
-<col style="width: 27%" />
-<col style="width: 35%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Cells</p></th>
 <th class="head"><p>Nodes</p></th>
@@ -670,11 +664,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </table>
 <p><strong>Edges files:</strong></p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 38%" />
-<col style="width: 27%" />
-<col style="width: 35%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Connections</p></th>
 <th class="head"><p>Edges</p></th>
@@ -702,7 +691,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>The paths to each of these files and directories are specified in the configuration file (see above).</p>
 </section>
 <section id="running-simulation">
-<h2>Running simulation<a class="headerlink" href="#running-simulation" title="Permalink to this headline">¶</a></h2>
+<h2>Running simulation<a class="headerlink" href="#running-simulation" title="Permalink to this heading">¶</a></h2>
 <p>Running simulations requires the following Python scripts</p>
 <p><cite>run_bionet.py</cite> : main python script which calls BioNet to run the simulation</p>
 <p><cite>set_cell_params.py</cite>: module setting properties of cells</p>
@@ -726,7 +715,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>When the simulation is completed you will see a message “Simulation completed”.</p>
 </section>
 <section id="simulation-output">
-<h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this headline">¶</a></h2>
+<h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this heading">¶</a></h2>
 <p>The output directory includes:</p>
 <ul class="simple">
 <li><p>spikes.h5 : HDF5 file containing the spikes of the simulated cells.</p></li>
@@ -747,7 +736,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p><strong>Figure 3.</strong> Spike raster of the simulated (V1) cells.</p>
 </section>
 <section id="simulating-your-network-models">
-<h2>Simulating your network models<a class="headerlink" href="#simulating-your-network-models" title="Permalink to this headline">¶</a></h2>
+<h2>Simulating your network models<a class="headerlink" href="#simulating-your-network-models" title="Permalink to this heading">¶</a></h2>
 <p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your scripts or a third-party tool to build a network. As a start, we suggest modifying the existing network examples as a quick way of customizing network models and then building your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
 <p>When you have your custom model built, you will need to specify in your configuration file the paths to the network, components as well as simulation run parameters.</p>
 <p>Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses, and connection weights are created, as well as the main python script.</p>
@@ -817,7 +806,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
