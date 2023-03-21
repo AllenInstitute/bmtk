@@ -1,6 +1,7 @@
 import os, sys
 
 from bmtk.simulator import pointnet
+from bmtk.analyzer.compartment import plot_traces
 
 
 def run(config_file):
@@ -11,8 +12,14 @@ def run(config_file):
     sim = pointnet.PointSimulator.from_config(configure, network)
     sim.run()
 
+    plot_traces(config_file=config_file, report_name='membrane_potential', population='cortex')
+
 
 if __name__ == '__main__':
     # Find the appropriate config.json file
-    run('config.simulation.json')
+    # run('config.simulation.json')
     # run('config.simulation_perturbations.json')
+    # run('config.simulation_iclamp.json')
+    # run('config.simulation_iclamp.aslist.json')
+    # run('config.simulation_iclamp.csv.json')
+    run('config.simulation_iclamp.nwb.json')
