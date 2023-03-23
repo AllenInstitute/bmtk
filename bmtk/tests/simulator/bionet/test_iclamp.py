@@ -351,9 +351,9 @@ def test_iclamp_nwb():
 ])
 def test_recalc_timestamps(ts, amps, expected_dt, expected_amps):
     tmpfile = create_csv(ts=ts, amps=amps)
-    csv_reader = iclamp.CSVAmpReader(file=tmpfile.name)
+    csv_reader = iclamp.CSVAmpReaderNRN(file=tmpfile.name)
 
-    assert(expected_dt == csv_reader.dt)
+    assert(expected_dt == csv_reader._idt)
     assert(np.allclose(csv_reader.amps, expected_amps))
 
 

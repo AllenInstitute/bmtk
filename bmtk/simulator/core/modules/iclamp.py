@@ -31,7 +31,6 @@ class AmpsReader(object):
 class CSVAmpReader(object):
     def __init__(self, **args):
         self.has_delays = False
-
         try:
             self._csv_path = args['file']
             self._sep = args.get('separator', ' ')
@@ -56,14 +55,13 @@ class CSVAmpReader(object):
                     IClampMod.__name__, cname, pname)
                 )
 
-        self.delays = self._inputs_df[self._ts_col].values
         self.amps = self._inputs_df[self._amps_col].values
+        self.delays = self._inputs_df[self._ts_col].values
 
 
 class NWBReader(object):
     def __init__(self, **args):
         self.has_delays = False 
-
         try:
             self._nwb_path = args['file']
             self._sweep_id = args['sweep_id']
@@ -89,15 +87,16 @@ class NWBReader(object):
 
             # Get timestamps and amplitudes from Allen Cell-Types filefile
             sweep_grp = h5['epochs/{}/stimulus/timeseries'.format(self._sweep_id)]
-            self._idt = 1.0/sweep_grp['starting_time'].attrs['rate']
+            self._idt = 1000.0/sweep_grp['starting_time'].attrs['rate']  # convert rate to ms
             self.amps = sweep_grp['data'][()]*1.0e9
-            self.delays = np.arange(len(self.amps))*self._idt*1000
+            self.delays = np.arange(len(self.amps))*self._idt
 
             # If the "downsample" option is used take every n'th value in the nwb stimulus
             if self._downsample is not None and self._downsample > self._idt:
                 stride = int(np.round(self._downsample/self._idt))
                 self.amps = self.amps[::stride]
                 self.delays = self.delays[::stride]
+                self._idt = self._downsample  # update stimulus dt
 
             # If "sweep_window" filter out stimuli that falls outside the time window
             if self._sweep_window is not None:
@@ -105,8 +104,8 @@ class NWBReader(object):
                     io.log_exception('{}: "sweep_window" parameter must be set to [start_time, stop_time] where 0 <= start_time < stop_time.'.format(
                         IClampMod.__name__
                     ))
-                idx_beg = np.argwhere(self.delays >= self._sweep_window[0])
-                idx_end = np.argwhere(self.delays <= self._sweep_window[1]) + 1
+                idx_beg = np.argwhere(self.delays >= self._sweep_window[0]).flatten()[0]
+                idx_end = np.argwhere(self.delays <= self._sweep_window[1]).flatten()[-1] + 1
                 self.amps = self.amps[idx_beg:idx_end]
                 self.delays = self.delays[idx_beg:idx_end]
 
@@ -131,21 +130,23 @@ class IClampMod(SimulatorMod):
         Specifies if input parameters are passed in directory, or needs to be read from a csv or nwb file.
     node_set: string, list or dictionary
         A filter to determine which subset of nodes/cells that injection current will be applied too.
-    """
-    input2reader_map = {
-        'current_clamp': AmpsReader,
-        'csv': CSVAmpReader,
-        'file': CSVAmpReader,
-        'nwb': NWBReader,
-        'allen': NWBReader
-    }
-
+    """ 
     def __init__(self, input_type, **mod_args):
-        if input_type not in IClampMod.input2reader_map:
+        if input_type not in self.input2reader_map:
             err_msg = '{}: invalid input_type value "{}",'.format(self.__class__.__name__, input_type)
             err_msg += ' unable to parse current clamp parameters.'
             err_msg += ' Valid options: {}'.format(', '.join(list(self.input2reader_map.keys())))
             io.log_exception(err_msg)
 
         self._node_set = mod_args.get('node_set', 'all')       
-        self._amp_reader = IClampMod.input2reader_map[input_type](**mod_args)
+        self._amp_reader = self.input2reader_map[input_type](**mod_args)
+
+    @property
+    def input2reader_map(self):
+        return {
+            'current_clamp': AmpsReader,
+            'csv': CSVAmpReader,
+            'file': CSVAmpReader,
+            'nwb': NWBReader,
+            'allen': NWBReader
+        }

@@ -18,7 +18,10 @@ class IClampMod(iclamp.IClampMod):
             start_time = self._amp_reader.delays[idx]
             if start_time <= sim.dt:
                 # NEST has issues with amplitude_values that occur before the dt.
-                io.log_warning('IClamp Stimulus has onset ("delay") skipping values that occur before "dt"')
+                io.log_warning(
+                    'IClamp Stimulus has onset ("delay") skipping values that occur before "dt"',
+                    display_once=True
+                )
                 continue
 
             # Add a time and amp value for turning on iclamp
