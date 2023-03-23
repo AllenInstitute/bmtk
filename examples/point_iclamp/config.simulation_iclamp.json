@@ -8,19 +8,36 @@
   "target_simulator":"NEST",
 
   "run": {
-    "tstop": 25000.0,
+    "tstop": 4000.0,
     "dt": 0.01
   },
 
   "inputs": {
     "current_clamp_1": {
-      "input_type": "nwb",
+      "input_type": "current_clamp",
       "module": "IClamp",
       "node_set": {"population": "cortex"},
-      "file": "$INPUT_DIR/483111427_ephys.nwb",
-      "sweep_id": 55,
-      "downsample": 0.01
+      "amp": 0.1500,
+      "delay": 500.0,
+      "duration": 500.0
+    },
+    "current_clamp_2": {
+      "input_type": "current_clamp",
+      "module": "IClamp",
+      "node_set": {"population": "cortex"},
+      "amp": 0.1750,
+      "delay": 1500.0,
+      "duration": 500.0
+    },
+    "current_clamp_3": {
+      "input_type": "current_clamp",
+      "module": "IClamp",
+      "node_set": {"population": "cortex"},
+      "amp": 0.2000,
+      "delay": 2500.0,
+      "duration": 500.0
     }
+
   },
 
   "reports": {
@@ -33,10 +50,10 @@
   },
 
   "output": {
-	  "log_file": "log.txt",
-	  "spikes_file": "spikes.h5",
+	"log_file": "log.txt",
+	"spikes_file": "spikes.h5",
     "spikes_file_csv": "spikes.csv",
-	  "output_dir": "$OUTPUT_DIR",
+	"output_dir": "$OUTPUT_DIR",
     "overwrite_output_dir": true,
     "quiet_simulator": true
   },
