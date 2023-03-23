@@ -8,7 +8,7 @@
   },
 
   "run": {
-    "tstop": 4000.0,
+    "tstop": 23000.0,
     "dt": 0.1,
     "dL": 20.0,
     "spike_threshold": -15,
@@ -30,30 +30,12 @@
 
   "inputs": {
  	"current_clamp_1": {
-      "input_type": "current_clamp",
+      "input_type": "nwb",
       "module": "IClamp",
       "node_set": "biophys_cells",
-      "amp": 0.1500,
-      "delay": 500.0,
-      "duration": 500.0
-    },
-    "current_clamp_2": {
-      "input_type": "current_clamp",
-      "module": "IClamp",
-      "node_set": "biophys_cells",
-      "amp": 0.1750,
-      "delay": 1500.0,
-      "duration": 500.0,
-      "enabled": true
-    },
-    "current_clamp_3": {
-      "input_type": "current_clamp",
-      "module": "IClamp",
-      "node_set": "biophys_cells",
-      "amp": 0.2000,
-      "delay": 2500.0,
-      "duration": 500.0,
-      "enabled": true
+      "file": "$INPUT_DIR/483111427_ephys.nwb",
+      "sweep_id": 55,
+      "downsample": 0.1
     }
   },
 

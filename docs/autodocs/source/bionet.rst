@@ -49,8 +49,8 @@ shows some examples of how to generate `spike-train files using bmtk <./analyzer
 
 
 
-Current Clamp
-+++++++++++++
+`Current Clamps <current_clamps.html>`_
++++++++++++++++++++++++++++++++++++++++
 May use one step current clamp-on multiple nodes, or have one node receive multiple current injections. Currently ;)
 only support injections at the soma.
 
@@ -67,11 +67,8 @@ only support injections at the soma.
         }
     }
 
-* module:  Always IClamp
-* `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
-* amp: injection in pA
-* delay: onset of current injection in ms
-* duration: duration of current injection in ms
+See `documentation <current_clamps.html>`_ for more details on using current clamp inputs.
+
 
 Voltage Clamp
 +++++++++++++
