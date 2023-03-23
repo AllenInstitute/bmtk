@@ -40,8 +40,8 @@ pre-recorded series of spikes throughout the simulation. You may use either a
 * `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
 * input_file: path to file contain spike-trains for one or mode node
 
-Current-Clamps
-++++++++++++++
+`Current Clamps <current_clamps.html>`_
++++++++++++++++++++++++++++++++++++++++
 May use one step current clamp on multiple nodes, or have one node receive multiple current injections.
 
 .. code:: json
@@ -57,11 +57,7 @@ May use one step current clamp on multiple nodes, or have one node receive multi
         }
     }
 
-* module:  Always IClamp
-* `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
-* amp: injection in pA
-* delay: onset of current injection in ms
-* duration: duration of current injection in ms
+See `documentation <current_clamps.html>`_ for more details on using current clamp inputs.
 
 
 Outputs

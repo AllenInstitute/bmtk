@@ -1,3 +1,5 @@
+:orphan:
+
 Current Clamp [IClamp] Stimulation
 ==================================
 
@@ -231,6 +233,7 @@ IClamp parameters
 
 
 |
+
 *Parameters applicable only to current_clamp input_type*
 
 **amp \: float**, **list of floats**
@@ -244,6 +247,7 @@ IClamp parameters
 
 
 |
+
 *Parameters applicable only to csv input_type*
 
 **separator [optional] \: string**
@@ -257,6 +261,7 @@ IClamp parameters
 
 
 |
+
 *Parameters applicable only to allen input_type*
 
 **sweep_id \: integer**
