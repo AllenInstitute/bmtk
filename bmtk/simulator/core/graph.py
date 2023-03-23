@@ -220,7 +220,6 @@ class SimGraph(object):
         for pop_name in selected_populations:
             if pop_name not in nodes:
                 # when user wants to simulation only a few populations in the file
-                print('HERE')
                 continue
 
             if pop_name in self.node_populations:
@@ -240,7 +239,7 @@ class SimGraph(object):
                 if model_types:
                     # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
                     self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can '.format(pop_name) +
-                                        'cause memory and build-time inefficency. Consider separating virtual nodes ' +
+                                        'cause memory and build-time inefficiency. Consider separating virtual nodes ' +
                                         'into their own population')
 
             if model_types:

@@ -1,5 +1,5 @@
-Tutorials
-=========
+Main Tutorials
+==============
 
 .. toctree::
    :maxdepth: 2
@@ -13,6 +13,9 @@ Tutorials
    PointNet: Point-neuron modeling <tutorial_pointnet_modeling>
    PopNet: Population-based firing rate models <tutorial_population_modeling>
    FilterNet: Full-field flashing movie <tutorial_filter_models>
+
+
+Also check out the tutorial series from our `annual workshop <workshop>`_.
 
 
 Prerequisites

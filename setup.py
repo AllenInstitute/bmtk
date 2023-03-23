@@ -57,7 +57,8 @@ setup(
         'enum; python_version <= "2.7"',
         'scipy',
         'scikit-image',  # Only required for filternet, consider making optional
-        'sympy'  # For FilterNet
+        'sympy',  # For FilterNet
+        'pynrrd'   # For nrrd reader
     ],
     extras_require={
         'bionet': ['NEURON'],

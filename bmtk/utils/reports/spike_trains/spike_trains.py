@@ -143,6 +143,10 @@ class PoissonSpikeGenerator(SpikeGenerator):
         :param abs_ref: Absolute refractory period (s)
         :param tau_ref: Relative refractory period time constant for exponential recovery (s)
         """
+        if tau_ref < 0:
+            raise ValueError('Refractory period time constant (sec) cannot be negative.')
+        if abs_ref < 0:
+            raise ValueError('Absolute refractory period (sec) cannot be negative.')
         if isinstance(node_ids, string_types):
             # if user passes in path to nodes.h5 file count number of nodes
             node_ids = get_node_ids(node_ids, population)
@@ -153,10 +157,6 @@ class PoissonSpikeGenerator(SpikeGenerator):
             self._build_fixed_fr(node_ids, population, firing_rate, times, abs_ref, tau_ref)
         elif isinstance(firing_rate, (list, np.ndarray)):
             self._build_inhomogeneous_fr(node_ids, population, firing_rate, times, abs_ref, tau_ref)
-        if tau_ref < 0:
-            raise ValueError('Refractory period time constant (sec) cannot be negative.')
-        if abs_ref < 0:
-            raise ValueError('Absolute refractory period (sec) cannot be negative.')
 
     def time_range(self, population=None):
         df = self.to_dataframe(populations=population, with_population_col=False)
@@ -175,6 +175,15 @@ class PoissonSpikeGenerator(SpikeGenerator):
         if fr < 0:
             raise ValueError('Firing rates must not be negative.')
 
+        # If there are refractory properties, correct starting firing rate and check firing limit
+        if abs_ref!=0 or tau_ref!=0:
+            max_fr_lim, p = fr_corr(abs_ref, tau_ref)
+            if fr > max_fr_lim:
+                raise ValueError(f'Cannot achieve firing rate above {max_fr_lim} with these absolute'
+                                 f' and relative refractory properties. Also consider using'
+                                 f' the GammaSpikeGenerator instead.')
+            fr = p(fr)
+
         #rs2 = np.random.RandomState(0)
         count = 0
         for node_id in node_ids:
@@ -186,7 +195,7 @@ class PoissonSpikeGenerator(SpikeGenerator):
                 if c_time > tstop:
                     break
                 if tau_ref != 0:
-                    w = 1 - np.exp(-(c_time-preceding_time-abs_ref)/tau_ref)
+                    w = 1 - np.exp(-(interval-abs_ref)/tau_ref)
                 else:
                     w = 1  # To avoid divide by zero warning
                 if abs_ref != 0:
@@ -195,12 +204,6 @@ class PoissonSpikeGenerator(SpikeGenerator):
                 if (w == 1) or (np.random.uniform() < w):
                     self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
                     count = count+1
-        if (abs_ref != 0) or (tau_ref != 0):
-            fr_actual = count/(tstop-tstart)/len(node_ids)
-            str = (f'When using refractory periods, the actual firing rate ({fr_actual} spk/s) may be less than '
-                   f'the desired firing rate ({fr} spk/s), particularly for high rates, and saturates at 1/abs_ref. '
-                   'See also GammaSpikeGenerator for more exact firing rates with refractory periods.')
-            warnings.warn(str)
 
     def _build_inhomogeneous_fr(self, node_ids, population, fr, times, abs_ref, tau_ref):
         if np.min(fr) < 0:
@@ -209,6 +212,12 @@ class PoissonSpikeGenerator(SpikeGenerator):
             raise ValueError('If using a time series for firing rate, times must be an array of equal length')
 
         max_fr = np.max(fr)
+
+        max_fr_lim, p = fr_corr(abs_ref, tau_ref)
+        if max_fr > max_fr_lim:
+            raise ValueError(f'Cannot achieve firing rate above {max_fr_lim} with these absolute and relative refractory properties')
+
+        fr = p(fr)
 
         times = times
         tstart = times[0]
@@ -225,7 +234,7 @@ class PoissonSpikeGenerator(SpikeGenerator):
                 if c_time > tstop:
                     break
                 if tau_ref != 0:
-                    w = 1 - np.exp(-(c_time-preceding_time-abs_ref)/tau_ref)
+                    w = 1 - np.exp(-(interval-abs_ref)/tau_ref)
                 else:
                     w = 1  # To avoid divide by zero warning
                 if abs_ref != 0:
@@ -241,10 +250,6 @@ class PoissonSpikeGenerator(SpikeGenerator):
                 if not fr_i/max_fr*w < np.random.uniform():
                     self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
 
-        if (abs_ref != 0) or (tau_ref != 0):
-            str = ('When using refractory periods, the actual firing rates may be less than '
-                   'the desired firing rates, particularly for high rates, and saturates at 1/abs_ref.')
-            warnings.warn(str)
 
 class GammaSpikeGenerator(SpikeGenerator):
     """ A Class for generating spike-trains based on a gamma-distributed renewal process.
@@ -304,3 +309,24 @@ class GammaSpikeGenerator(SpikeGenerator):
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
     return fr0 + (fr1 - fr0)*(t - t0)/(t1 - t0)
+
+def fr_corr(abs_ref, tau_ref):
+    # Firing rate correction for lost spikes
+    if tau_ref != 0:
+        def f(fr_before, abs_ref=abs_ref, tau_ref=tau_ref):
+            return (np.exp(-fr_before * abs_ref) - \
+                    fr_before * np.exp(abs_ref / tau_ref) * tau_ref /
+                    (fr_before * tau_ref + 1) * \
+                    (np.exp(-(fr_before + 1 / tau_ref) * abs_ref))) * fr_before
+    else:
+        def f(fr_before, abs_ref=abs_ref):
+            return np.exp(-fr_before * abs_ref) * fr_before
+
+    fr_befores = np.logspace(0, 3, 40)
+    fr_afters = f(fr_befores)
+    max_fr_lim = np.max(fr_afters)
+    max_ind = np.argmax(fr_afters)
+
+    z = np.polyfit(fr_afters[:max_ind], fr_befores[:max_ind], 10)
+    p = np.poly1d(z)
+    return max_fr_lim, p

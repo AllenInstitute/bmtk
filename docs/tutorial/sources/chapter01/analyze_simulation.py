@@ -1,6 +1,4 @@
-from bmtk.analyzer.spike_trains import to_dataframe
-from bmtk.analyzer.cell_vars import plot_report
+from bmtk.analyzer.compartment import plot_traces
 
-config_file = 'simulation_config.json'
-print to_dataframe(config_file=config_file)
-plot_report(config_file=config_file)
+plot_traces(config_file='simulation_config.json', node_ids=[0], report_name='v_report')
+plot_traces(config_file='simulation_config.json', node_ids=[0], report_name='cai_report')
