@@ -5,7 +5,7 @@ import hashlib
 import logging
 import pandas as pd
 
-from ..builder_utils import mpi_rank, mpi_size, barrier
+from ..builder_utils import mpi_rank, mpi_size, barrier, build_time_uuid
 
 
 logger = logging.getLogger(__name__)
@@ -208,7 +208,8 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
 
     @staticmethod
     def get_tmp_table_path(rank=0, name=None):
-        return '.edge_types_table.{}.h5'.format(rank)
+        builder_uuid = build_time_uuid()
+        return '.edge_types_table.{}.{}.h5'.format(rank, builder_uuid)
 
     def _open_tmp_table(self):
         if EdgeTypesTableMPI._tmp_table_handle is None:
