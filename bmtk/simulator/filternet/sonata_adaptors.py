@@ -275,31 +275,47 @@ def find_nondom_delays_params(node_group, node_adaptor):
 def find_spectrotemporal_params(node_group, node_adaptor):
     if 'sigma_f' in node_group.all_columns:
         node_adaptor.sigma_f = types.MethodType(lambda self, node: node['sigma_f'], node_adaptor)
+    else:
+        node_adaptor.sigma_f = types.MethodType(return_none, node_adaptor)
+
     if 'b_t' in node_group.all_columns:
         node_adaptor.b_t = types.MethodType(lambda self, node: node['b_t'], node_adaptor)
+    else:
+        node_adaptor.b_t = types.MethodType(return_none, node_adaptor)
+
     if 'order_t' in node_group.all_columns:
         node_adaptor.order_t = types.MethodType(lambda self, node: node['order_t'], node_adaptor)
+    else:
+        node_adaptor.order_t = types.MethodType(return_none, node_adaptor)
+
     if 't_mod_freq' in node_group.all_columns:
         node_adaptor.t_mod_freq = types.MethodType(lambda self, node: node['t_mod_freq'], node_adaptor)
+    else:
+        node_adaptor.t_mod_freq = types.MethodType(return_none, node_adaptor)
+
     if 'sp_mod_freq' in node_group.all_columns:
         node_adaptor.sp_mod_freq = types.MethodType(lambda self, node: node['sp_mod_freq'], node_adaptor)
+    else:
+        node_adaptor.sp_mod_freq = types.MethodType(return_none, node_adaptor)
+
     if 'psi' in node_group.all_columns:
         node_adaptor.psi = types.MethodType(lambda self, node: node['psi'], node_adaptor)
+        if isinstance(node_adaptor.psi, string_types):
+            node_adaptor.psi = eval(node_adaptor.psi.replace('pi', 'np.pi'))
+    else:
+        node_adaptor.psi = types.MethodType(return_none, node_adaptor)
+
     if 'delay' in node_group.all_columns:
         node_adaptor.delay = types.MethodType(lambda self, node: node['delay'], node_adaptor)
+    else:
+        node_adaptor.delay = types.MethodType(return_none, node_adaptor)
+
     if 'amplitude' in node_group.all_columns:
         node_adaptor.amplitude = types.MethodType(lambda self, node: node['amplitude'], node_adaptor)
+    else:
+        node_adaptor.amplitude = types.MethodType(return_none, node_adaptor)
+
     if 'direction' in node_group.all_columns:
         node_adaptor.direction = types.MethodType(lambda self, node: node['direction'], node_adaptor)
     else:
-        node_adaptor.sigma_f = types.MethodType(return_none, node_adaptor)
-        node_adaptor.b_t = types.MethodType(return_none, node_adaptor)
-        node_adaptor.order_t = types.MethodType(return_none, node_adaptor)
-        node_adaptor.t_mod_freq = types.MethodType(return_none, node_adaptor)
-        node_adaptor.sp_mod_freq = types.MethodType(return_none, node_adaptor)
-        node_adaptor.psi = types.MethodType(return_none, node_adaptor)
-        if isinstance(node_adaptor.psi, string_types):
-            node_adaptor.psi = eval(node_adaptor.psi.replace('pi', 'np.pi'))
-        node_adaptor.delay = types.MethodType(return_none, node_adaptor)
-        node_adaptor.amplitude = types.MethodType(return_none, node_adaptor)
         node_adaptor.direction = types.MethodType(return_none, node_adaptor)
