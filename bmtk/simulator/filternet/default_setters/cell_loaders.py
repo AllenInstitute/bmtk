@@ -82,19 +82,18 @@ def get_sigma(node, dynamics_params):
 
 
 def get_wavelet_params(node, dynamics_params):
+
     t_mod_freq = node.t_mod_freq if node.t_mod_freq is not None else dynamics_params['t_mod_freq']
     sp_mod_freq = node.sp_mod_freq if node.sp_mod_freq is not None else dynamics_params['sp_mod_freq']
+
     if (t_mod_freq < 0) or (sp_mod_freq < 0):
         raise Exception("Temporal modulation frequency (t_mod_freq) and spectral modulation frequency "
                         "(sp_mod_freq) must be non-negative.")
     Lambda = 1/np.linalg.norm([t_mod_freq, sp_mod_freq])    # Wavelength of oscillatory component
-    #sigma1_ratio = node.sigma1_ratio if node.sigma1_ratio is not None else dynamics_params['sigma1_ratio']
-    #sigma1 = Lambda /sigma1_ratio     # Width of Gaussian in direction of oscillation
-    #sigma2 = node.sigma2 if node.sigma2 is not None else dynamics_params['sigma2']
     sigma_f = node.sigma_f if node.sigma_f is not None else dynamics_params['sigma_f']
     b_t = node.b_t if node.b_t is not None else dynamics_params['b_t']
     order_t = node.order_t if node.order_t is not None else dynamics_params['order_t']
-    amplitude = node.amplitude if node.amplitude is not None else dynamics_params['amplitude']    # Scale factor on normalized filter
+    amplitude = node.amplitude if node.amplitude is not None else dynamics_params['amplitude']
 
     if t_mod_freq != 0:
         theta = np.arctan(sp_mod_freq / t_mod_freq)
@@ -115,19 +114,6 @@ def get_wavelet_params(node, dynamics_params):
                         " or 'down' (or -1) for downward modulation, or 0 if not applicable.")
     direction = node.direction if node.direction is not None else dynamics_params['direction']
 
-    '''
-    else:
-        dp = dynamics_params or {}
-        weights = node.weights_non_dom if node.weights_non_dom is not None else dp.get('opt_wts', None)
-        kpeaks = node.kpeaks_non_dom if node.kpeaks_non_dom is not None else dp.get('opt_kpeaks', None)
-        delays = node.delays_non_dom if node.delays_non_dom is not None else dp.get('opt_delays', None)
-    
-    if node.predefined_jitter:
-        jitter_fnc = lambda a: np.array([np.random.uniform(x*node.jitter[0], x*node.jitter[1]) for x in a])
-        weights = jitter_fnc(weights) if weights is not None else weights
-        kpeaks = jitter_fnc(kpeaks) if kpeaks is not None else kpeaks
-        delays = jitter_fnc(delays) if delays is not None else delays
-    '''
     return Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude, direction
 
 

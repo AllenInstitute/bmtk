@@ -42,7 +42,7 @@ models. What BMTK does provide:
 
 * A unified inteferce across different simulators, so that modelers can work with and study their own network models
   across different simulators without having to learn how to use each tool.
-* An easy way to setup and initialize network simulations with little-to-no programming necessacary
+* An easy way to setup and initialize network simulations with little-to-no programming necessary
 * Automatic integration of parallelization when running on HPC.
 * Extra built-in features which the native simulators may not support out-of-the-box.
 

@@ -53,12 +53,13 @@ class WaveletFilter(object):
             'direction': self.direction
         }
         
-    def get_kernel(self, row_range, col_range, threshold_rel=0.05):
+    def get_kernel(self, row_range, col_range, threshold_rel=0.05, show_plot = False, plot_ax=None):
         """Creates a 2D gaussian filter (kernel) for the given dimensions which can be used
 
         :param row_range: array of times
         :param col_range: array of frequency centers
         :param threshold_rel: crop filter to region with amplitudes greater than threshold_rel * max value
+        :param plot_ax: plot handle if plot of filter is desired
         :return: A Kernel2D object
         """
         (y, x) = np.meshgrid(row_range, col_range)
@@ -75,7 +76,7 @@ class WaveletFilter(object):
         else:
             # Special case temporal modulation freq is 0, approximate a fast, mostly positive filter
             # The step response adapts slightly to a flat steady-state
-            f_t = 5
+            f_t = 2.5
             self.b_t = 10
             translate_t = 0 + self.delay/1000
             env = (f_t * (x - translate_t)) ** (self.order_t - 1) * np.exp(-1 * self.b_t * f_t * (x - translate_t)) \
@@ -92,7 +93,7 @@ class WaveletFilter(object):
         kernel.normalize2()     # Scale up large kernels which can hit low float limit when normalized
         kernel.kernel *= self.amplitude    # How do normalize and amplitude work together? seems like they would counteract each other?
 
-        # Uncomment this to visualize the filter
-        #kernel.imshow(truncate_col=True, xlabel='Time(s)', ylabel='log(freq)')
-
+        #kernel.imshow(ax = plot_ax, truncate_col=True, xlabel='Time(s)', ylabel='log(freq)')
+        if show_plot:
+            kernel.imshow(ax=plot_ax, truncate_col=False, colorbar=False, show=False)
         return kernel
