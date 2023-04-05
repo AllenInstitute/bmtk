@@ -3,7 +3,7 @@ import numpy as np
 import logging
 import h5py
 
-from ..builder_utils import mpi_rank, mpi_size, barrier
+from ..builder_utils import mpi_rank, mpi_size, barrier, build_time_uuid
 from .edge_props_table import EdgeTypesTableMPI
 
 
@@ -208,6 +208,11 @@ class EdgesCollatorMPI(object):
 
         self.can_sort = False
 
+    @staticmethod
+    def get_tmp_table_path(rank=0, name=None):
+        builder_uuid = build_time_uuid()
+        return '.edge_types_table.processed.{}.{}.h5'.format(rank, builder_uuid)
+
     def process(self):
         barrier()
 
@@ -304,7 +309,8 @@ class EdgesCollatorMPI(object):
                 'unprocessed': {self._network_name: {}}
             }
 
-        with h5py.File('.edge_types_table.processed.{}.h5'.format(mpi_rank), 'w') as local_h5:
+        # with h5py.File('.edge_types_table.processed.{}.h5'.format(mpi_rank), 'w') as local_h5:
+        with h5py.File(EdgesCollatorMPI.get_tmp_table_path(mpi_rank), 'w') as local_h5:
             # WARNING: Trying to process the data back into the .edge_types_table*h5 being read from will randomly cause
             #          resource unavailble errors.
             local_grp_sizes = {}  # count the size of each property model group for all edge-types on this rank
@@ -396,7 +402,7 @@ class EdgesCollatorMPI(object):
             idx_beg = idx_end
 
     def _get_processed_h5(self, rank):
-        h5_path = '.edge_types_table.processed.{}.h5'.format(rank)
+        h5_path = EdgesCollatorMPI.get_tmp_table_path(rank=rank) #  '.edge_types_table.processed.{}.h5'.format(rank)
         if h5_path in self._proc_fhandles:
             return self._proc_fhandles[h5_path]
         else:
@@ -445,14 +451,14 @@ class EdgesCollatorMPI(object):
 
     def __del__(self):
         # clean up .h5 file that is saved to disk
-        tmp_h5_path = '.edge_types_table.processed.{}.h5'.format(mpi_rank)
+        tmp_h5_path = EdgesCollatorMPI.get_tmp_table_path(mpi_rank) # '.edge_types_table.processed.{}.h5'.format(mpi_rank)
         try:
             if os.path.exists(tmp_h5_path):
                 os.remove(tmp_h5_path)
         except (FileNotFoundError, IOError, Exception) as e:
             logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
 
-
+            
 class EdgesCollator(object):
     def __new__(cls, *args, **kwargs):
         if mpi_size > 1:
