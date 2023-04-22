@@ -187,7 +187,6 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
                         indx_beg = indx
                 # nodes_indices[last_id] = np.arange(indx_beg, indx + 1)
                 nodes_indices[last_id] = slice(indx_beg, indx + 1)  # capture the last node_id
-                
             else:
                 nodes_indices = {int(node_id): [] for node_id in np.unique(node_ids_ds)}
                 for indx, node_id in enumerate(node_ids_ds):
