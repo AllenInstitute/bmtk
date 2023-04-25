@@ -1,3 +1,4 @@
+import os
 import pytest
 import numpy as np
 
@@ -76,7 +77,9 @@ def test_positions_density_matrix():
     
 def test_positions_nrrd():
     np.random.seed(1)
-    nrrd_filename = 'docs/tutorial/sources/nrrd/structure_721.nrrd'
+
+    CURR_DIR = os.path.dirname(os.path.realpath(__file__))
+    nrrd_filename = os.path.join(CURR_DIR, 'structure_721.nrrd')
     points = positions_nrrd(nrrd_filename, 2000)
     assert(points.shape==(2048, 3))
     
