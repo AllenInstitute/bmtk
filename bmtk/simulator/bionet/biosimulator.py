@@ -396,6 +396,9 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
 
+            elif sim_input.module == 'comsol':
+                sim.add_mod(mods.ComsolMod(**sim_input.params))
+
             elif sim_input.module == 'syn_activity':
                 pass
 
