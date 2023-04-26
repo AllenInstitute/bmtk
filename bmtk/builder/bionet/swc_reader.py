@@ -59,11 +59,14 @@ class SWCReader(object):
 
     def _copy(self):
         new_swc = SWCReader(swc_path=self.swc_path, rng_seed=self.rng_seed)
+
         if self._axon_fixed:
             new_swc.fix_axon()
 
         if self._axon_deleted:
             new_swc.delete_axon()
+
+
 
         return new_swc
 
@@ -290,6 +293,8 @@ class SWCReader(object):
 
     def set_segment_dl(self, dl):
         """Define number of segments in a cell"""
+        if self._seg_coords is not None:
+            raise RuntimeError('Unable to segment the morphology after coordinates have already been calculated')
         self._nseg = 0
         for sec in self.hobj.all:
             sec.nseg = 1 + 2 * int(sec.L/(2*dl))
@@ -307,7 +312,7 @@ class SWCReader(object):
         """
         secs, probs = self.find_sections(section_names, distance_range)
         secs_ix = self._prng.choice(secs, n_sections, p=probs)
-        return secs_ix, self.seg_props.x[secs_ix]
+        return self.seg_props.sec_id[secs_ix], self.seg_props.x[secs_ix]
 
     def find_sections(self, section_names, distance_range):
         """Retrieves a list of sections ids and section x's given a section name/type (eg axon, soma, apic, dend) and
@@ -331,6 +336,7 @@ class SWCReader(object):
         # np.maximum(seg_d0,dmin) find the larger of the two start locations
         # np.maximum(0,overlap) is used to return zero when segments do not overlap
         # and then dividing by the segment length
+
         frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
         ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
         ix_labels = np.array([], dtype=np.int)
@@ -387,6 +393,9 @@ class SWCReader(object):
             return self
         else:
             new_swc_reader = self._copy()
+            new_swc_reader._seg_props = self.seg_props
+            new_swc_reader._swc_map = self._swc_map
+            new_swc_reader._nseg = self.nseg
             new_swc_reader._seg_coords = new_seg_coords
             new_swc_reader._soma_pos = new_soma_pos
 
@@ -394,7 +403,9 @@ class SWCReader(object):
 
     def get_coords(self, sec_id, sec_x):
         segs_indices = np.argwhere(self.seg_props.sec_id == sec_id).flatten()
-        return self.seg_coords.p05[:, segs_indices][:, 0]
+        dev = abs(sec_x - self.seg_props.x[segs_indices])     # Find segment closest to x position
+        idx = np.argmin(dev)
+        return self.seg_coords.p05[:, segs_indices][:, idx]
 
     def get_swc_id(self, sec_id, sec_x):
         # use sec type and nameindex to find all rows in the swc that correspond to sec_id
@@ -432,7 +443,7 @@ class SWCReader(object):
 swc_cache = {}
 
 
-def get_swc(cell, morphology_dir=None, use_cache=False):
+def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):
     cell_pop = cell.get('population', 'default')
     cell_node_id = cell['node_id']
     if use_cache and cell_pop in swc_cache and cell_node_id in swc_cache[cell_pop]:
@@ -449,6 +460,8 @@ def get_swc(cell, morphology_dir=None, use_cache=False):
         raise ValueError('File {} does not exists.'.format(swc_path))
 
     swc = SWCReader(swc_path)
+    if dL:
+        swc.set_segment_dl(dL)
 
     if cell.get('model_processing', 'NULL') == 'aibs_perisomatic':
         swc.fix_axon()

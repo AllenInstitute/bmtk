@@ -17,10 +17,13 @@ Welcome to the Brain Modeling Toolkit
    simulators
    analyzer
    tutorials
+   ad_tutorials
    Example Networks <examples>
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
+   workshop
+   registration
    contributors
-   Register <registration>
+   how_to_cite
    Source Documentation <bmtk/bmtk>
    
 
@@ -91,13 +94,17 @@ in the documentation and tutorials will be based on SONATA. For more information
 `SONATA github page <https://github.com/AllenInstitute/sonata>`_.
 
 
+VND
+---
+`Visual Neuronal Dynamics <https://www.ks.uiuc.edu/Research/vnd/>`_ is a software package for 3D visualization of neuronal network models. VND can be used to check and inspect models, such as those created by BMTK, as well as to visualize the activity output. Images and movies made in VND can also be used to showcase or schematize models for presentations and publications. VND is developed in a collaboration between researchers at the University of Illinois at Urbana-Champaign and Allen Institute.  
+
+
 References
 ----------
 See the paper about BMTK: `link <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386>`_.
 
-Please cite BMTK as follows:
+For information on how to cite BMTK, please see: `link <how_to_cite.html>`_.
 
-Dai et al. Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Comput Biol 16(11): e1008386. https://doi.org/10.1371/journal.pcbi.1008386
 
 
 

@@ -4,14 +4,27 @@ A simple non-connected network of 5 neuron (visual cortex mouse models taken fro
 database) network with various inputs including current clamp, external synaptic inputs, and extracellular
 electrode stimulation.
 
-## Building the network.
+## Building the network
 Network files are stored in network/bio_nodes.h5 and network/bio_node_types.csv. In the same directory you'll
 also find network files representing virtual input (virt*). You can rebuild the network by running
 
 ```bash
 $ python build_network.py
 ```
+## Compiling NEURON mechanisms
+The components for the BioNet examples are located in /examples/bio_components. If the NEURON mechanisms have not already been compiled, the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
 
+```bash
+$ cd ../bio_components/mechanisms
+$ nrnivmodl modfiles 
+$ cd -
+```
+Failure to compile the mechanisms results in an error such as:
+```
+**Warning**:  NEURON mechanisms not found in ./../bio_components/mechanisms.
+              [...]
+              ValueError: argument not a density mechanism name
+```
 ## Simulations
 ### Current clamp
 Stimulates the network using a series of current clamps at all the biophysically detailed cell models  

@@ -145,7 +145,7 @@ def build_v1_network():
     v1.add_edges(
         source={'ei': 'e'}, target={'placement': 'outer'},
         connection_rule=n_connections,
-        dynamics_params='instanteneousExc.json',
+        dynamics_params='instantaneousExc.json',
         model_template='static_synapse',
         syn_weight=3.0,
         delay=2.0
@@ -154,7 +154,7 @@ def build_v1_network():
     v1.add_edges(
         source={'ei': 'i'}, target={'placement': 'outer'},
         connection_rule=n_connections,
-        dynamics_params='instanteneousInh.json',
+        dynamics_params='instantaneousInh.json',
         model_template='static_synapse',
         syn_weight=-4.0,
         delay=2.0
@@ -200,7 +200,7 @@ def build_lgn_network(v1):
     lgn.add_edges(
         target=v1.nodes(placement='outer'), source=lgn.nodes(),
         connection_rule=lambda *_: np.random.randint(0, 5),
-        dynamics_params='instanteneousExc.json',
+        dynamics_params='instantaneousExc.json',
         model_template='static_synapse',
         delay=2.0,
         syn_weight=13.0

@@ -1,6 +1,7 @@
 import numpy as np
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
+from bmtk.simulator.filternet.io_tools import io
 
 
 class Movie(object):
@@ -128,6 +129,57 @@ class Movie(object):
 
     def __getitem__(self, *args):
         return self.data.__getitem__(*args)
+
+    @staticmethod
+    def normalize_matrix(m_data, domain=None):
+        """Attempts to take a numpy matrix "movie" and normalize the contrast values to range [-1.0, 1.0].
+
+        :param m_data: A numpy matrix TxRxC containing an original "movie" data
+        :param domain: If A tuple of values [min_contrast, max_contrast], will use those values to normalize. Otherwise
+            will attempt to determine original contrast range from the m_data.
+        :return: m_data that has been normalized
+        """
+        if isinstance(domain, (list, tuple, np.ndarray)):
+            # Allow users to specify the contrast range of the original movie [c_min, c_max] that will be
+            # converted to range [-1.0, +1.0]
+            if len(domain) != 2:
+                raise ValueError(
+                    'Unable to normalize movie; please specify to minimum and maximum contrast for original movie with '
+                    'list [min_contrast, max_contrast]'
+                )
+            c_min, c_max = domain[0], domain[1]
+            if c_min >= c_max:
+                raise ValueError(
+                    'Unable to normalize movie; original movie range must be defined with min_contrast < max_contrast'
+                )
+            elif m_data.min() < c_min or m_data.max() > c_max:
+                raise ValueError(
+                    'Unable to normalize movie; trying to convert movie from contrast values ' +
+                    '[{}, {}] --> [-1.0, 1.0], '.format(c_min, c_max) +
+                    'but movie contains values outside of original domain.'
+                )
+        else:
+            # Use the existing movie to try to best guess the domain the original movie is already in; in most
+            # cases it will be [0.0, 1.0] or [0, 256]
+            m_min, m_max = m_data.min(), m_data.max()
+            if m_min >= 0.0 and m_max <= 1.0:
+                c_min, c_max = 0.0, 1.0
+            elif m_min >= -1.0 and m_max <= 1.0:
+                # All values fall between [-1.0, 1.0], likely movie is likely already normalized.
+                io.log_debug('Input movie is already normalized between contrast values [-1.0, 1.0].')
+                return m_data
+            elif m_min >= 0 and m_max < 256:
+                c_min, c_max = 0.0, 255.0
+            else:
+                c_min, c_max = m_min, m_max
+
+        if c_min == c_max:
+            raise ValueError(
+                'Unable to normalize movie; please specify a range for the contrast min and max of the input movie.'
+            )
+
+        io.log_debug('Normalizing input movie from contrast range [{}, {}] --> [-1.0, 1.0].')
+        return (m_data - c_min)*2.0/(c_max - c_min) - 1.0
 
 
 # TODO: Instead of using subclasses, convert the following movie type to a Factory class/function that returns a Movie

@@ -13,7 +13,7 @@ from bmtk.simulator.bionet.io_tools import io
 
 class XStimMod(SimulatorMod):
     def __init__(self, positions_file, waveform, mesh_files_dir=None, cells=None, set_nrn_mechanisms=True,
-                 node_set=None):
+                 resistance=300.0, node_set=None):
         self._positions_file = positions_file
         self._mesh_files_dir = mesh_files_dir if mesh_files_dir is not None \
             else os.path.dirname(os.path.realpath(self._positions_file))
@@ -25,6 +25,7 @@ class XStimMod(SimulatorMod):
         self._cells = cells
         self._local_gids = []
         self._fih = None
+        self._resistance = resistance
 
     # def __set_extracellular_mechanism(self):
     #     for gid in self._local_gids:
@@ -42,7 +43,7 @@ class XStimMod(SimulatorMod):
             # cell = sim.net.get_local_cell(gid)
             cell = sim.net.get_cell_gid(gid)
             cell.setup_xstim(self._set_nrn_mechanisms)
-            self._electrode.set_transfer_resistance(gid, cell.get_seg_coords())
+            self._electrode.set_transfer_resistance(gid, cell.seg_coords, rho=self._resistance)
 
         def set_pointers():
             for gid in self._local_gids:
@@ -137,9 +138,8 @@ class StimXElectrode(object):
             new_mesh = np.dot(rot_xyz, self.el_mesh[el])
             self.el_mesh[el] = new_mesh
 
-    def set_transfer_resistance(self, gid, seg_coords):
-        rho = 300.0  # ohm cm
-        r05 = seg_coords['p05']
+    def set_transfer_resistance(self, gid, seg_coords, rho=300.0):
+        r05 = seg_coords.p05
         nseg = r05.shape[1]
         cell_map = np.zeros((self.elnsites, nseg))
         for el in six.moves.range(self.elnsites):

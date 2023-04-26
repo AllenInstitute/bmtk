@@ -27,3 +27,5 @@ from .xstim import XStimMod
 from .save_synapses import SaveSynapses
 from .record_netcons import NetconReport
 from .record_clamp import ClampReport
+from .iclamp import IClampMod
+from .comsol import ComsolMod

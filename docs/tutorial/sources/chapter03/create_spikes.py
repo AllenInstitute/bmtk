@@ -1,5 +1,7 @@
-from bmtk.utils.spike_trains import SpikesGenerator
+from bmtk.utils.reports.spike_trains import PoissonSpikeGenerator
 
-sg = SpikesGenerator(nodes='network/mthalamus_nodes.h5', t_max=3.0)
-sg.set_rate(10.0)
-sg.save_csv('thalamus_spikes.csv', in_ms=True)
+psg = PoissonSpikeGenerator(population='mthalamus')
+psg.add(node_ids=range(100),  # Have 100 nodes to match mthalamus
+        firing_rate=15.0,    # 15 Hz, we can also pass in a nonhomogeneous function/array
+        times=(0.0, 3.0))    # Firing starts at 0 s up to 3 s
+psg.to_sonata('inputs/mthalamus_spikes.h5')

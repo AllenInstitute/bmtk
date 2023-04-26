@@ -393,11 +393,12 @@ class EnvBuilder(object):
         if current_param is None:
             return
         logger.info('Adding current clamp')
-
+        if 'node_set' not in current_param.keys():
+            current_param['node_set'] = 'all'
         iclamp_config = {
             "input_type": "current_clamp",
             "module": "IClamp",
-            "node_set": "all",
+            "node_set": current_param['node_set'],
             "gids": current_param.get('gids', 'all'),
             "amp": current_param['amp'],
             "delay": current_param['delay'],

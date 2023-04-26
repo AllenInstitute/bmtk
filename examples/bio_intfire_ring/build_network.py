@@ -85,7 +85,7 @@ def build_virt_cells(net):
     virt_net.add_edges(
         source=virt_net.nodes(), target=net.nodes(model_type='point_neuron'),
         connection_rule=lambda src, trg: 1 if src.node_id == trg.node_id-1 else 0,
-        dynamics_params='instanteneousExc.json',
+        dynamics_params='instantaneousExc.json',
         delay=0.0,
         syn_weight=10.0
     )

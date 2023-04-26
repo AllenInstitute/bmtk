@@ -44,14 +44,10 @@ class FilterSimulator(Simulator):
                 else:
                     raise Exception('Could not find movie "data_file" in config to use as input.')
 
-                contrast_min, contrast_max = m_data.min(), m_data.max()
+                # contrast_min, contrast_max = m_data.min(), m_data.max()
                 normalize_data = params.get('normalize', False)
-                if contrast_min < -1.0 or contrast_max > 1.0:
-                    if normalize_data:
-                        self.io.log_info('Normalizing movie data to (-1.0, 1.0).')
-                        m_data = m_data*2.0/(contrast_max - contrast_min) - 1.0
-                    else:
-                        self.io.log_info('Movie data range is not normalized to (-1.0, 1.0).')
+                if normalize_data:
+                    m_data = Movie.normalize_matrix(m_data, domain=normalize_data)
 
                 init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
                                                            't_range'], **params)

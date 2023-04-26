@@ -181,7 +181,7 @@ def _order_model_groups(input_edges_path, output_edges_path, edges_population, c
         # file if it doesn't exist
         model_grp_tracker = {}
         for h5name, h5obj in in_edges_grp.items():
-            if isinstance(h5obj, h5py.Group) and h5obj.name not in ['indices', 'indicies']:
+            if isinstance(h5obj, h5py.Group) and h5name not in ['indices', 'indicies']:
                 model_grp_tracker[h5name] = {'c_indx': 0, 'cols': []}
                 for col_name, col_ds in h5obj.items():
                     model_grp_tracker[h5name]['cols'].append(col_name)
@@ -392,7 +392,7 @@ def _sort_chunks(progress):
 
         # For each unique id that is being sorted on, keep a list of how many times the id shows up in the current
         # tmp chunk file
-        id_counts = combined_df['edge_type_id'].value_counts().sort_index()
+        id_counts = combined_df[progress.sort_key].value_counts().sort_index()
         id_counts = id_counts.reindex(pd.RangeIndex(max_id+1), fill_value=0)
         new_chunk_h5.create_dataset('id_counts', data=id_counts, dtype=np.uint32)
 
@@ -505,7 +505,7 @@ def _merge(progress, edges_grp):
 
 
 def external_merge_sort(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
-                        n_chunks=12, max_itrs=10, cache_dir='.sort_cache', **kwargs):
+                        n_chunks=12, max_itrs=13, cache_dir='.sort_cache', **kwargs):
     """Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network
     files where we are not able to load into memory.
 
@@ -558,26 +558,31 @@ def external_merge_sort(input_edges_path, output_edges_path, edges_population, s
     output_root_grp.file.flush()
     output_root_grp.file.close()
 
-    if progress.completed and sort_model_properties:
-        # copy over model group, and reorder so edge_group_ids/edge_group_index is ordered
-        logger.debug('Sorting model group columns')
-        chunk_size = np.max((np.ceil(n_edges / n_chunks), 2)).astype(np.uint)
-        _order_model_groups(
-            input_edges_path=input_edges_path,
-            output_edges_path=output_edges_path,
-            edges_population=progress.root_name,
-            chunk_size=chunk_size
-        )
+    if progress.completed:
+        if sort_model_properties:
+            # copy over model group, and reorder so edge_group_ids/edge_group_index is ordered
+            logger.debug('Sorting model group columns')
+            chunk_size = np.max((np.ceil(n_edges / n_chunks), 2)).astype(np.uint)
+            _order_model_groups(
+                input_edges_path=input_edges_path,
+                output_edges_path=output_edges_path,
+                edges_population=progress.root_name,
+                chunk_size=chunk_size
+            )
+        else:
+            # Copy over model group columns without sorting
+            out_h5 = h5py.File(output_edges_path, 'r+')
+            root_grp = out_h5[progress.root_name]
+
+            with h5py.File(input_edges_path, 'r') as in_h5:
+                for h5obj in in_h5[progress.root_name].values():
+                    if isinstance(h5obj, h5py.Group) and h5obj.name not in root_grp and h5obj.name not in ['indices', 'indicies']:
+                        root_grp.copy(h5obj, h5obj.name)
     else:
-        # Copy over model group columns without sorting
-        out_h5 = h5py.File(output_edges_path, 'r+')
-        root_grp = out_h5[progress.root_name]
-
-        with h5py.File(input_edges_path, 'r') as in_h5:
-            for h5obj in in_h5[progress.root_name].values():
-                if isinstance(h5obj, h5py.Group) and h5obj.name not in root_grp and h5obj.name not in ['indices', 'indicies']:
-                    root_grp.copy(h5obj, h5obj.name)
-
+        logger.warning(
+            'Merger Sort reached max iterations ({}), did not complete resorting. Rerun to finish.'.format(max_itrs)
+        )
+    
     logger.debug('Cleaning up cache directory')
     _clean(progress)
 

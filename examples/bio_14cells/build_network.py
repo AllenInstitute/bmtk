@@ -125,7 +125,7 @@ def build_v1_network():
         syn_weight=0.00225,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousInh.json'
+        dynamics_params='instantaneousInh.json'
     )
 
     v1.add_edges(
@@ -146,7 +146,7 @@ def build_v1_network():
         syn_weight=0.009,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousInh.json'
+        dynamics_params='instantaneousInh.json'
     )
 
     v1.add_edges(
@@ -179,7 +179,7 @@ def build_v1_network():
         syn_weight=0.0043,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     v1.add_edges(
@@ -228,7 +228,7 @@ def build_v1_network():
         weight_function='gaussianLL',
         weight_sigma=50.0,
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     v1.build()
@@ -349,7 +349,7 @@ def build_lgn_network(v1, cells_per_type=30):
         syn_weight=0.0045,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     lgn.add_edges(
@@ -360,7 +360,7 @@ def build_lgn_network(v1, cells_per_type=30):
         syn_weight=0.002,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     lgn.build()
@@ -438,7 +438,7 @@ def build_tw_network(v1):
         syn_weight=0.015,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     tw.add_edges(
@@ -447,7 +447,7 @@ def build_tw_network(v1):
         syn_weight=0.05,
         weight_function='wmax',
         delay=2.0,
-        dynamics_params='instanteneousExc.json'
+        dynamics_params='instantaneousExc.json'
     )
 
     tw.build()

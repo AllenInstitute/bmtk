@@ -49,7 +49,7 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_exc'},
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.34, 'd_max': 300.0, 'nsyn_min': 3, 'nsyn_max': 7},
               syn_weight=10.0,
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='static_synapse')
 
 
@@ -67,7 +67,7 @@ net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'pop_name': 'LIF_inh'},
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
               syn_weight=-1.0,
               delay=2.0,
-              dynamics_params='instanteneousInh.json',
+              dynamics_params='instantaneousInh.json',
               model_template='static_synapse')
 
 ### Generating I-to-E connections
@@ -84,7 +84,7 @@ net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'pop_name': 'LIF_exc'},
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
               syn_weight=-15.0,
               delay=2.0,
-              dynamics_params='instanteneousInh.json',
+              dynamics_params='instantaneousInh.json',
               model_template='static_synapse')
 
 ### Generating E-to-I connections
@@ -102,7 +102,7 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_inh'},
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.26, 'd_max': 300.0, 'nsyn_min': 3, 'nsyn_max': 7},
               syn_weight=5.0,
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='static_synapse')
 
 net.build()
@@ -150,7 +150,7 @@ lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_exc'),
               iterator='all_to_one',
               syn_weight=10.0,
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='static_synapse')
 
 lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_inh'),
@@ -159,7 +159,7 @@ lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_inh'),
               iterator='all_to_one',
               syn_weight=10.0,
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='static_synapse')
 
 

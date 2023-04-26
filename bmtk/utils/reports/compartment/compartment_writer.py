@@ -35,6 +35,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
             # filled. If not buffering buffer_block is an hdf5 dataset and data_block is ignored
             self.data_block = None
             self.buffer_block = None
+            self.block_window = (0.0, 10e20)
 
     def __init__(self, parent, population, variable=None, units=None, tstart=0.0, tstop=1.0, dt=0.01, n_steps=None,
                  buffer_size=0, **kwargs):
@@ -65,7 +66,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         self._buffer_size = buffer_size
         self._buffer_data = buffer_size > 0
         self._data_block = self.DataTable(self._variable)
-        self._last_save_indx = 0  # for buffering, used to keep track of last timestep data was saved to disk
+        # self._last_save_indx = 0  # for buffering, used to keep track of last timestep data was saved to disk
 
         self._buffer_block_size = 0
         self._total_steps = 0
@@ -188,6 +189,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
             var_grp[k][self._seg_offset_beg:self._seg_offset_end] = v
 
         self._total_steps = n_steps
+        self._buffer_size = np.min((self._total_steps, self._buffer_size))
         self._buffer_block_size = self._buffer_size
 
         if not self._buffer_data:
@@ -196,7 +198,6 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
             for gid, gid_offset in self._gid_map.items():
                 self._gid_map[gid] = (gid_offset[0] + self._seg_offset_beg, gid_offset[1] + self._seg_offset_beg)
 
-        
         if self._buffer_data:
             # Set up in-memory block to buffer recorded variables before writing to the dataset
             self._data_block.buffer_block = np.zeros((self._buffer_size, self._n_segments_local), dtype=float)
@@ -209,10 +210,16 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
             if self._units is not None:
                 self._data_block.data_block.attrs['units'] = self._units
 
+            self._data_block.block_window = (0, self._buffer_block_size)
+
         else:
             # Since we are not buffering data, we just write directly to the on-disk dataset
-            self._data_block.buffer_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
-                                                               dtype=float, chunks=True)
+            self._data_block.buffer_block = base_grp.create_dataset(
+                'data',
+                shape=(self.n_steps(), self._n_segments_all),
+                dtype=float,
+                chunks=True
+            )
             if self._variable is not None:
                 self._data_block.buffer_block.attrs['variable'] = self._variable
 
@@ -220,6 +227,11 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
                 self._data_block.buffer_block.attrs['units'] = self._units
 
         self._is_initialized = True
+
+    def _reset_buffer_window(self, tstep):
+        blk_beg = int(tstep/self._buffer_size)*self._buffer_size
+        blk_end = blk_beg + self._buffer_size
+        self._data_block.block_window = (blk_beg, blk_end)
 
     def record_cell(self, node_id, vals, tstep, population=None):
         """Record cell parameters.
@@ -232,8 +244,19 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         self.initialize()
         gid_beg, gid_end = self._gid_map[node_id]
         buffer_block = self._data_block.buffer_block
-        update_index = (tstep - self._last_save_indx)
-        buffer_block[update_index, gid_beg:gid_end] = vals
+
+        if not self._buffer_data:
+            buffer_block[tstep, gid_beg:gid_end] = vals
+
+        elif self._data_block.block_window[0] <= tstep < self._data_block.block_window[1]:
+            update_index = tstep - self._data_block.block_window[0]
+            buffer_block[update_index, gid_beg:gid_end] = vals
+
+        else:
+            self.flush()
+            self._reset_buffer_window(tstep)
+            update_index = tstep - self._data_block.block_window[0]
+            buffer_block[update_index, gid_beg:gid_end] = vals
 
     def record_cell_block(self, node_id, vals, beg_step, end_step, population=None):
         """Save cell parameters one block at a time
@@ -247,23 +270,24 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         buffer_block = self._data_block.buffer_block
         if isinstance(vals, list) or vals.ndim == 1:
             buffer_block[:, gid_beg] = vals
-            #buffer_block[beg_step:end_step, gid_beg:gid_end] = vals
+            # buffer_block[beg_step:end_step, gid_beg:gid_end] = vals
         else:
             buffer_block[:, gid_beg:gid_end] = vals
 
     def flush(self):
         """Move data from memory to dataset"""
         if self._buffer_data:
-            blk_beg = self._last_save_indx
-            blk_end = blk_beg + self._buffer_block_size
+            # blk_beg = self._last_save_indx
+            # blk_end = blk_beg + self._buffer_block_size
+            blk_beg = self._data_block.block_window[0]
+            blk_end = self._data_block.block_window[1]
             if blk_end > self._total_steps:
                 # Need to handle the case that simulation doesn't end on a block step
                 blk_end = blk_beg + self._total_steps - blk_beg
 
             block_size = blk_end - blk_beg
-            self._last_save_indx += block_size
-
             self._data_block.data_block[blk_beg:blk_end, :] = self._data_block.buffer_block[:block_size, :]
+            self._reset_buffer_window(blk_end+1)
 
     def close(self):
         # Let the parent take care of this
@@ -299,7 +323,7 @@ class CompartmentWriterv01(CompartmentWriterABC):
         self._final_fpath = file_path  # name of file being writen too.
         self._cache_dir = cache_dir or os.path.dirname(os.path.abspath(file_path))  # used for mulitple ranks
         self._base_name = os.path.basename(file_path)  # make sure file names don't clash if there are multiple reports
-        self._interm_fpath = self._get_iterm_fpath() # In certain cases (parallelized simulation) split the final file by rank.
+        self._interm_fpath = self._get_iterm_fpath()  # In certain cases (parallelized simulation) split the final file by rank.
 
     def _get_iterm_fpath(self):
         if self._mpi_size > 1:
