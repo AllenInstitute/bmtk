@@ -1,16 +1,12 @@
-# 450 cells network
+# 300 cells network
 
-This is a small example network of a 450 cell simulation based on the 45,000 mouse layer 4 network described in
-Arkhipov et. al. 2018. Of the cells 180 are biophysically detailed multicompartment cells downloaded from the
+This is a small example network of a 300 cell simulation based on the 45,000 mouse layer 4 network described in
+Arkhipov et. al. 2018. Of the cells 300 are biophysically detailed multicompartment cells downloaded from the
 Allen Cell-Types database, the remaining are point integrate-and-fire neuron models. The network is driven by
 an external network of virtual nodes/spike-trains.
 
 Uses BioNet simulator and will require NEURON to run.
 
-This example is different from the other bio_450cell example in that:
- * The network synaptic locations are explicity defined.
- * Includes LFP recordings.  NOTE: this will significantly increase the time to complete the simulation and will
- write a large ecp results file in the output.
 
 ## Compiling NEURON mechanisms
 The components for the BioNet examples are located in /examples/bio_components. Running the following should compile the NEURON mechanisms and place them in another folder alongside /modfiles.
