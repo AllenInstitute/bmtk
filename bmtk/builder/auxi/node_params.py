@@ -22,11 +22,16 @@
 #
 import numpy as np
 import math
-import nrrd
+# import nrrd
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from sklearn.neighbors import KDTree
 from types import SimpleNamespace
+
+try:
+    from sklearn.neighbors import KDTree
+    import nrrd
+except ImportError:
+    pass
 
 
 class CellLocations(object):
