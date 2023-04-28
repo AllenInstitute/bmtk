@@ -58,7 +58,7 @@ def copy_attributes(in_grp, out_grp):
 
 
 def quicksort_edges(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
-                    **kwargs):
+                    compression='gzip', **kwargs):
     assert(os.path.exists(input_edges_path))
 
     output_h5 = h5py.File(output_edges_path, 'w')
@@ -76,7 +76,7 @@ def quicksort_edges(input_edges_path, output_edges_path, edges_population, sort_
             col_type = in_pop_grp[col_name].dtype
             col_vals = in_pop_grp[col_name][()]
             sorted_col_vals = col_vals[sort_order]
-            out_pop_grp.create_dataset(col_name, data=sorted_col_vals, dtype=col_type)
+            out_pop_grp.create_dataset(col_name, data=sorted_col_vals, dtype=col_type, compression=compression)
 
         sorted_group_indx = in_pop_grp['edge_group_index'][()][sort_order]
         group_index_dtype = in_pop_grp['edge_group_index'].dtype
@@ -88,9 +88,9 @@ def quicksort_edges(input_edges_path, output_edges_path, edges_population, sort_
             new_index_order = sorted_group_indx[group_id_mask]
             for col_name in model_cols:
                 prop_data = in_pop_grp[str(group_id)][col_name][()][new_index_order]
-                out_model_grp.create_dataset(col_name, data=prop_data)
+                out_model_grp.create_dataset(col_name, data=prop_data, compression=compression)
 
             sorted_group_indx[group_id_mask] = np.arange(0, len(group_id_mask), dtype=group_index_dtype)
 
-        out_pop_grp.create_dataset('edge_group_index', data=sorted_group_indx)
+        out_pop_grp.create_dataset('edge_group_index', data=sorted_group_indx, compression=compression)
         copy_attributes(input_h5['/'], output_h5['/'])

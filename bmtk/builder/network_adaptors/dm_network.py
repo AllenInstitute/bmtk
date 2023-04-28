@@ -62,9 +62,11 @@ class DenseNetwork(Network):
     def edges_table(self):
         return self.__edges_tables
 
-    def _save_nodes(self, nodes_file_name):
+    def _save_nodes(self, nodes_file_name, compression='gzip'):
         if not self._nodes_built:
             self._build_nodes()
+        if compression == 'none':
+            compression = None  # legit option for h5py for no compression
 
         # save the node_types file
         group_indx = 0
@@ -103,20 +105,20 @@ class DenseNetwork(Network):
                 add_hdf5_attrs(hf)
 
                 pop_grp = hf.create_group('/nodes/{}'.format(self.name))
-                pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
-                pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
-                pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
-                pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
+                pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64', compression=compression)
+                pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64', compression=compression)
+                pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32', compression=compression)
+                pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64', compression=compression)
 
                 for grp_id, props in group_props.items():
                     model_grp = pop_grp.create_group('{}'.format(grp_id))
 
                     for key, dataset in props.items():
                         try:
-                            model_grp.create_dataset(key, data=dataset)
+                            model_grp.create_dataset(key, data=dataset, compression=compression)
                         except TypeError:
                             str_list = [str(d) for d in dataset]
-                            hf.create_dataset(key, data=str_list)
+                            hf.create_dataset(key, data=str_list, compression=compression)
         barrier()
 
     def nodes_iter(self, node_ids=None):
@@ -217,11 +219,14 @@ class DenseNetwork(Network):
     def _get_edge_group_id(self, params_hash):
         return int(params_hash)
 
-    def _save_gap_junctions(self, gj_file_name):
+    def _save_gap_junctions(self, gj_file_name, compression='gzip'):
         source_ids = []
         target_ids = []
         src_gap_ids = []
         trg_gap_ids = []
+
+        if compression == 'none':
+            compression = None  # legit option for h5py for no compression
 
         for et in self.__edges_tables:
             try:
@@ -246,14 +251,17 @@ class DenseNetwork(Network):
         if len(source_ids) > 0:
             with h5py.File(gj_file_name, 'w') as f:
                 add_hdf5_attrs(f)
-                f.create_dataset('source_ids', data=np.array(source_ids))
-                f.create_dataset('target_ids', data=np.array(target_ids))
-                f.create_dataset('src_gap_ids', data=np.array(src_gap_ids))
-                f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids))
+                f.create_dataset('source_ids', data=np.array(source_ids), compression=compression)
+                f.create_dataset('target_ids', data=np.array(target_ids), compression=compression)
+                f.create_dataset('src_gap_ids', data=np.array(src_gap_ids), compression=compression)
+                f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids), compression=compression)
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
-                    index_by=('target_node_id', 'source_node_id')):
+                    index_by=('target_node_id', 'source_node_id'), compression='gzip'):
         barrier()
+
+        if compression == 'none':
+            compression = None  # legit option for h5py for no compression
 
         if mpi_rank == 0:
             logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
@@ -301,20 +309,20 @@ class DenseNetwork(Network):
                 add_hdf5_attrs(hf)
                 pop_grp = hf.create_group('/edges/{}'.format(pop_name))
 
-                pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64')
+                pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64', compression=compression)
                 pop_grp['source_node_id'].attrs['node_population'] = src_network
-                pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64')
+                pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64', compression=compression)
                 pop_grp['target_node_id'].attrs['node_population'] = trg_network
-                pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16')
-                pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32')
-                pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32')
+                pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16', compression=compression)
+                pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32', compression=compression)
+                pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32', compression=compression)
 
                 for group_id in merged_edges.group_ids:
                     # different model-groups will have different datasets/properties depending on what edge information
                     # is being saved for each edges
                     model_grp = pop_grp.create_group(str(group_id))
                     for prop_mdata in merged_edges.get_group_metadata(group_id):
-                        model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'])
+                        model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'], compression=compression)
 
                 # Uses the collated edges (eg combined edges across all edge-types) to actually write the data to hdf5,
                 # potentially in multiple chunks. For small networks doing it this way isn't very effiecent, however
@@ -339,6 +347,7 @@ class DenseNetwork(Network):
                     output_edges_path=edges_file_name_final,
                     edges_population='/edges/{}'.format(pop_name),
                     sort_by=sort_by,
+                    compression=compression,
                     # sort_on_disk=True,
                 )
                 try:
