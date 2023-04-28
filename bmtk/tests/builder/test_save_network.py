@@ -354,8 +354,8 @@ def test_compression():
             assert(h5['/edges/test_test/0/nsyns'].compression == test_type)
 
     
-    comp_types = [None, 'none', 'gzip', 'lzf']
-    test_types = [None, None, 'gzip', 'lzf']  # 'none' is converted to None
+    comp_types = [None, 'none', 'gzip', 'lzf', 3]
+    test_types = [None, None, 'gzip', 'lzf', 'gzip']  # 'none' is converted to None
     for i in range(len(comp_types)):
         test_one(comp_types[i], test_types[i])
 
