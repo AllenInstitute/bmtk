@@ -546,7 +546,7 @@ class Network(object):
         else:
             return os.path.join(path_dir, filename)
 
-    def save(self, output_dir='.', force_overwrite=True):
+    def save(self, output_dir='.', force_overwrite=True, compression='gzip'):
         """Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
         names will be automatically generated based on the network names.
 
@@ -555,10 +555,10 @@ class Network(object):
         :param output_dir: string, directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
         """
-        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite)
-        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite)
+        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
+        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
 
-    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
+    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, compression='gzip'):
         """Save the instantiated nodes in SONATA format files.
 
         :param nodes_file_name: file-name of hdf5 nodes file. By default will use <network.name>_nodes.h5.
@@ -583,10 +583,10 @@ class Network(object):
             os.makedirs(ntf_dir)
         barrier()
 
-        self._save_nodes(nodes_file)
+        self._save_nodes(nodes_file, compression=compression)
         self._save_node_types(node_types_file)
 
-    def _save_nodes(self, nodes_file_name):
+    def _save_nodes(self, nodes_file_name, compression='gzip'):
         raise NotImplementedError
 
     def _save_node_types(self, node_types_file_name):
@@ -605,7 +605,7 @@ class Network(object):
         raise NotImplementedError
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
-                   trg_network=None, name=None, force_build=True, force_overwrite=False):
+                   trg_network=None, name=None, force_build=True, force_overwrite=False, compression='gzip'):
         """Save the instantiated edges in SONATA format files.
 
         :param edges_file_name: file-name of hdf5 edges file. By default will use <src_network>_<trg_network>_edges.h5.
@@ -648,14 +648,14 @@ class Network(object):
             os.mkdir(output_dir)
         barrier()
 
-        self._save_gap_junctions(os.path.join(output_dir, self._network_name + '_gap_juncs.h5'))
+        self._save_gap_junctions(os.path.join(output_dir, self._network_name + '_gap_juncs.h5'), compression=compression)
 
         for p in network_params:
             if p[3] is not None:
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
 
             if p[2] is not None:
-                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name)
+                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
         if mpi_rank == 0:

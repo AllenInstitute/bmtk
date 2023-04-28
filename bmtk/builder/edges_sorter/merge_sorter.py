@@ -128,25 +128,25 @@ def _copy_attributes(in_grp, out_grp):
             _copy_attributes(in_h5_obj, out_grp[in_name])
 
 
-def _create_output_h5(input_file, output_file, edges_root, n_edges):
+def _create_output_h5(input_file, output_file, edges_root, n_edges, compression):
     mode = 'r+' if os.path.exists(output_file) else 'w'
     out_h5 = h5py.File(output_file, mode=mode)
     root_grp = out_h5.create_group(edges_root) if edges_root not in out_h5 else out_h5[edges_root]
 
     if 'source_node_id' not in root_grp:
-        root_grp.create_dataset('source_node_id', (n_edges, ), dtype=np.uint32)
+        root_grp.create_dataset('source_node_id', (n_edges, ), dtype=np.uint32, compression=compression)
 
     if 'target_node_id' not in root_grp:
-        root_grp.create_dataset('target_node_id', (n_edges, ), dtype=np.uint32)
+        root_grp.create_dataset('target_node_id', (n_edges, ), dtype=np.uint32, compression=compression)
 
     if 'edge_type_id' not in root_grp:
-        root_grp.create_dataset('edge_type_id', (n_edges, ), dtype=np.uint32)
+        root_grp.create_dataset('edge_type_id', (n_edges, ), dtype=np.uint32, compression=compression)
 
     if 'edge_group_id' not in root_grp:
-        root_grp.create_dataset('edge_group_id', (n_edges, ), dtype=np.uint32)
+        root_grp.create_dataset('edge_group_id', (n_edges, ), dtype=np.uint32, compression=compression)
 
     if 'edge_group_index' not in root_grp:
-        root_grp.create_dataset('edge_group_index', (n_edges, ), dtype=np.uint32)
+        root_grp.create_dataset('edge_group_index', (n_edges, ), dtype=np.uint32, compression=compression)
 
     # with h5py.File(input_file, 'r') as in_h5:
     #     for h5obj in in_h5[edges_root].values():
@@ -505,7 +505,7 @@ def _merge(progress, edges_grp):
 
 
 def external_merge_sort(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
-                        n_chunks=12, max_itrs=13, cache_dir='.sort_cache', **kwargs):
+                        n_chunks=12, max_itrs=13, cache_dir='.sort_cache', compression='gzip', **kwargs):
     """Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network
     files where we are not able to load into memory.
 
@@ -539,7 +539,7 @@ def external_merge_sort(input_edges_path, output_edges_path, edges_population, s
                             sort_key=sort_by)
 
     output_root_grp = _create_output_h5(input_file=input_edges_path, output_file=output_edges_path,
-                                        edges_root=edges_population, n_edges=n_edges)
+                                        edges_root=edges_population, n_edges=n_edges, compression=compression)
 
     # Split the edges files into N chunks.
     if not progress.initialized or not os.path.exists(cache_dir):

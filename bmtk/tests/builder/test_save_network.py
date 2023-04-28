@@ -294,6 +294,73 @@ def test_cross_population_edges():
     barrier()
 
 
+def test_compression():
+    def test_one(comp_type, test_type):
+        # the test network is the same as the test_basic.
+        tmp_dir = make_tmp_dir()
+        nodes_file = make_tmp_file(suffix='.h5')
+        node_types_file = make_tmp_file(suffix='.csv')
+        edges_file = make_tmp_file(suffix='.h5')
+        edge_types_file = make_tmp_file(suffix='.csv')
+
+        net = NetworkBuilder('test')
+        net.add_nodes(N=100, a=np.arange(100), b='B')
+        net.add_edges(
+            source={'a': 0},
+            target=net.nodes(),
+            connection_rule=2,
+            x='X'
+        )
+
+        net.build()
+
+        net.save_nodes(
+            nodes_file_name=nodes_file,
+            node_types_file_name=node_types_file,
+            output_dir=tmp_dir,
+            compression=comp_type
+        )
+        net.save_edges(
+            edges_file_name=edges_file,
+            edge_types_file_name=edge_types_file,
+            output_dir=tmp_dir,
+            name='test_test',
+            compression=comp_type
+        )
+        
+        nodes_h5_path = os.path.join(tmp_dir, nodes_file)
+        assert(os.path.exists(nodes_h5_path))
+        
+        # check if compression is applied
+        with h5py.File(nodes_h5_path, 'r') as h5:
+            assert('/nodes/test' in h5)
+            assert(h5['/nodes/test/node_id'].compression == test_type)
+            assert(h5['/nodes/test/node_type_id'].compression == test_type)
+            assert(h5['/nodes/test/node_group_id'].compression == test_type)
+            assert(h5['/nodes/test/node_group_index'].compression == test_type)
+            assert(h5['/nodes/test/0/a'].compression == test_type)
+
+        
+        edges_h5_path = os.path.join(tmp_dir, edges_file)
+        assert(os.path.exists(edges_h5_path))
+
+        with h5py.File(edges_h5_path, 'r') as h5:
+            assert('/edges/test_test' in h5)
+            assert(h5['/edges/test_test/target_node_id'].compression == test_type)
+            assert(h5['/edges/test_test/source_node_id'].compression == test_type)
+            assert(h5['/edges/test_test/edge_type_id'].compression == test_type)
+            assert(h5['/edges/test_test/edge_group_id'].compression == test_type)
+            assert(h5['/edges/test_test/edge_group_index'].compression == test_type)
+            assert(h5['/edges/test_test/0/nsyns'].compression == test_type)
+
+    
+    comp_types = [None, 'none', 'gzip', 'lzf', 3]
+    test_types = [None, None, 'gzip', 'lzf', 'gzip']  # 'none' is converted to None
+    for i in range(len(comp_types)):
+        test_one(comp_types[i], test_types[i])
+
+    barrier()
+
 if __name__ == '__main__':
     # test_basic()
     # test_multi_node_models()
