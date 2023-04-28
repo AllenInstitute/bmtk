@@ -1,7 +1,6 @@
 # 1 Cell network
 
-A small network of 14 cells - 10 multi-compartment biophysically detailed cells and 4 point integrate-and-fire cells -
-called V1. Recieves input from two networks of virtual cells (spike-trains) - LGN and TW.
+A single excitatory cell that is stimulated by current clamps or virtual synapses
 
 Uses the BioNet simulator (requires NEURON)
 
@@ -22,11 +21,18 @@ Failure to compile the mechanisms results in an error such as:
 
 
 ## Running:
-To run a simulation, install bmtk and run the following:
+To run a simulation using a current clamp, install bmtk and run the following:
+```bash
+$ python run_bionet.py config.simulation_iclamp.json
 ```
-$ python run_bionet.py config.simulation.json
+If successful, will create a *output_iclamp* directory containing log, V1 spike trains and recorded cell variables.
+
+You can also use the "virt" network which will use a virtual cell to stimulate the biophysical cell with synaptic
+stimulation.
+
+```bash
+$ python run_bionet.py config.simulation_syns.json
 ```
-If successful, will create a *output* directory containing log, V1 spike trains and recorded cell variables.
 
 ## The Network:
 The network files have already been built and stored as SONATA files in the *network/* directory. The bmtk Builder

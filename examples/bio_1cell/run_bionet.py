@@ -19,6 +19,6 @@ if __name__ == '__main__':
         config_path = sys.argv[-1]
         run(config_path)
     else:
-        run('config.simulation_syns.json')
-        # run('config.simulation_iclamp.json')
+        # run('config.simulation_syns.json')
+        run('config.simulation_iclamp.json')
 
