@@ -291,7 +291,7 @@ class NetworkBuilder(object):
 
         :param output_dir: string, directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
-        :param compression: Compression algorithm used to save hdf5 files. 'gzip', 'lzf', 'none', or None.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
             you can also specify an integer (1-9) to specify the level of gzip compression.
         """
         self.adaptor.save(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
@@ -304,7 +304,7 @@ class NetworkBuilder(object):
             <network.name>_node_types.csv
         :param output_dir: Directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
-        :param compression: Compression algorithm used to save hdf5 files. 'gzip', 'lzf', 'none', or None.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
             you can also specify an integer (1-9) to specify the level of gzip compression.
         """
         self.adaptor.save_nodes(
@@ -328,7 +328,7 @@ class NetworkBuilder(object):
         :param name: Name of edge populations, eg /edges/<name> in edges.h5 file.
         :param force_build: Force to (re)build the connection matrix if it hasn't already been built.
         :param force_overwrite: Overwrites existing network files.
-        :param compression: Compression algorithm used to save hdf5 files. 'gzip', 'lzf', 'none', or None.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
             you can also specify an integer (1-9) to specify the level of gzip compression.
         """
         self.adaptor.save_edges(
