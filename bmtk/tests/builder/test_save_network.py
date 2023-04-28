@@ -296,6 +296,7 @@ def test_cross_population_edges():
 
 def test_compression():
     def test_one(comp_type, test_type):
+        # the test network is the same as the test_basic.
         tmp_dir = make_tmp_dir()
         nodes_file = make_tmp_file(suffix='.h5')
         node_types_file = make_tmp_file(suffix='.csv')
@@ -313,7 +314,6 @@ def test_compression():
 
         net.build()
 
-        # first round. test compression with the default option
         net.save_nodes(
             nodes_file_name=nodes_file,
             node_types_file_name=node_types_file,
@@ -331,6 +331,7 @@ def test_compression():
         nodes_h5_path = os.path.join(tmp_dir, nodes_file)
         assert(os.path.exists(nodes_h5_path))
         
+        # check if compression is applied
         with h5py.File(nodes_h5_path, 'r') as h5:
             assert('/nodes/test' in h5)
             assert(h5['/nodes/test/node_id'].compression == test_type)
