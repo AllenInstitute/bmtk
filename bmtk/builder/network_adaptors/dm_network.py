@@ -363,7 +363,8 @@ class DenseNetwork(Network):
                     create_index_in_memory(
                         edges_file=edges_file_name_final,
                         edges_population='/edges/{}'.format(pop_name),
-                        index_type=index_type
+                        index_type=index_type,
+                        compression=compression
                     )
 
         barrier()
