@@ -352,6 +352,10 @@ def test_compression():
             assert(h5['/edges/test_test/edge_group_id'].compression == test_type)
             assert(h5['/edges/test_test/edge_group_index'].compression == test_type)
             assert(h5['/edges/test_test/0/nsyns'].compression == test_type)
+            assert(h5['/edges/test_test/indices/source_to_target/node_id_to_range'].compression == test_type)
+            assert(h5['/edges/test_test/indices/source_to_target/range_to_edge_id'].compression == test_type)
+            assert(h5['/edges/test_test/indices/target_to_source/node_id_to_range'].compression == test_type)
+            assert(h5['/edges/test_test/indices/target_to_source/range_to_edge_id'].compression == test_type)
 
     
     comp_types = [None, 'none', 'gzip', 'lzf', 3]

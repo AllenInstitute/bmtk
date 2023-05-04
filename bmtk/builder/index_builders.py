@@ -33,7 +33,7 @@ def remove_index(edges_file, edges_population):
         del edges_pop_grp['indices']
 
 
-def create_index_in_memory(edges_file, edges_population, index_type, force_rebuild=True, **kwargs):
+def create_index_in_memory(edges_file, edges_population, index_type, force_rebuild=True, compression='gzip', **kwargs):
     col_to_index, index_grp_name = _get_names(index_type)
 
     with h5py.File(edges_file, mode='r+') as edges_h5:
@@ -73,7 +73,7 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
         }).sort_values('lu_ids')
 
         index_grp.create_dataset('range_to_edge_id', data=r2e_table_df[['range_beg', 'range_end']].values,
-                                 dtype='uint64') # np.uint64)
+                                 dtype='uint64', compression=compression) # np.uint64)
 
         # create a map to the range_to_edge_id dataset from id --> blocks ranges. The id value is implicitly equal to
         # the index
@@ -94,7 +94,7 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
         i2r_table_df = i2r_table_df.reindex(pd.RangeIndex(i2r_table_df.index.max()+1), fill_value=0)
 
         index_grp.create_dataset('node_id_to_range', data=i2r_table_df[['range_beg', 'range_end']].values,
-                                 dtype=np.uint64)
+                                 dtype=np.uint64, compression=compression)
 
 
 def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild=False, cache_file=None,
