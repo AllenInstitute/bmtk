@@ -17,3 +17,5 @@ print(nwb.units['spike_times'][0])
 print(nwb.units['spike_times'][0:3])
 print(nwb.units['id'][1])
 """
+
+### Reading stimulus table

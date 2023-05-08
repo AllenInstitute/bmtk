@@ -22,8 +22,10 @@
 #
 from neuron import h
 import numpy as np
+import pandas as pd
 
 from bmtk.simulator.bionet.io_tools import io
+from bmtk.utils.reports.spike_trains.spike_trains import SpikeTrains
 
 
 class VirtualCell(object):
@@ -50,7 +52,12 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        spikes = spike_train.get_times(node_id=self.node_id)
+        if isinstance(spike_train, SpikeTrains):
+            spikes = spike_train.get_times(node_id=self.node_id)
+        elif isinstance(spike_train, (list, np.ndarray, pd.Series)):
+            spikes = spike_train
+        elif spike_train is None:
+            spikes = []
 
         if spikes is None:
             spikes = []

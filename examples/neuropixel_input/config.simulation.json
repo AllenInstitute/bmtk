@@ -2,11 +2,13 @@
   "manifest": {
     "$BASE_DIR": ".",
     "$OUTPUT_DIR": "$BASE_DIR/output",
-    "$INPUT_DIR": "$BASE_DIR/inputs"
+    "$INPUT_DIR": "$BASE_DIR/inputs",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../bio_components"
   },
 
   "run": {
-    "tstop": 3000.0,
+    "tstop": 2000.0,
     "dt": 0.1,
     "dL": 20.0,
     "spike_threshold": -15,
@@ -50,13 +52,12 @@
     "spikes_file_csv": "spikes.csv"
   },
 
-  "reports": {
-    "membrane_potential": {
-      "cells": "bio_cells",
-      "variable_name": "v",
-      "module": "membrane_report",
-      "sections": "soma"
-    }
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/morphologies",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates/ctdb",
+    "point_neuron_models_dir": "$COMPONENT_DIR/point_neuron_templates"
   },
 
   "networks": {
@@ -78,7 +79,8 @@
     "edges": [
       {
         "edges_file": "$NETWORK_DIR/VISp_VISp_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/VISp_VISp_edge_types.csv"
+        "edge_types_file": "$NETWORK_DIR/VISp_VISp_edge_types.csv",
+        "enabled": true
       },
       {
         "edges_file": "$NETWORK_DIR/LGN_VISp_edges.h5",
