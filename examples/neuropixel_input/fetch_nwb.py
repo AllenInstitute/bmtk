@@ -39,7 +39,7 @@ visl_sessions = visl_units[['ecephys_session_id']].value_counts()# .rename_axis(
 session_id = visl_sessions.idxmax()[0]
 cache.get_session_data(session_id)
 
-
+"""
 # Download nwb with most units in thalamus area
 units_by_region = units[['ecephys_session_id', 'ecephys_structure_acronym']]
 units_by_region = units_by_region[units_by_region['ecephys_structure_acronym'] != 'grey']
@@ -61,3 +61,6 @@ thalamus_sessions = units_by_area[units_by_area['area'] == 'thalamus']
 print(thalamus_sessions.head())
 session_id = thalamus_sessions.loc[thalamus_sessions['counts'].idxmax()]['ecephys_session_id']
 cache.get_session_data(session_id)
+"""
+
+print(units['ecephys_structure_acronym'].value_counts())
