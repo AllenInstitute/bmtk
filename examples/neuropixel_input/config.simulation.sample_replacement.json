@@ -31,16 +31,19 @@
       "mapping": "csv",
       "parameters": {
         "file_path": "./session_715093703_units_map.csv"
-      }
+      },
+      "enabled": false
     },
+
     "VISal_units": {
       "input_type": "neuropixels",
       "module": "nwb",
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
-      "node_set": "VISal",
+      "node_set": "VISl",
       "mapping": "sample_with_replace",
-      "parameters": {
-        "peak_channel_id": [100, 200, 300]
+      "time_window": [10000.0, 40000.0],
+      "filter": {
+        "location": ["VISl"]
       }
     }
   },
@@ -71,8 +74,8 @@
         "node_types_file": "$NETWORK_DIR/LGN_node_types.csv"
       },
       {
-        "nodes_file": "$NETWORK_DIR/VISal_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/VISal_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/VISl_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/VISl_node_types.csv"
       }
     ],
 
@@ -80,15 +83,15 @@
       {
         "edges_file": "$NETWORK_DIR/VISp_VISp_edges.h5",
         "edge_types_file": "$NETWORK_DIR/VISp_VISp_edge_types.csv",
-        "enabled": true
+        "enabled": false
       },
       {
         "edges_file": "$NETWORK_DIR/LGN_VISp_edges.h5",
         "edge_types_file": "$NETWORK_DIR/LGN_VISp_edge_types.csv"
       },
       {
-        "edges_file": "$NETWORK_DIR/VISal_VISp_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/VISal_VISp_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/VISl_VISp_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/VISl_VISp_edge_types.csv"
       }
     ]
   }

@@ -5,6 +5,9 @@ from bmtk.builder import NetworkBuilder
 from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
 
 
+np.random.seed(100)
+
+
 # List of non-virtual cell models
 bio_models = [
     {
@@ -270,10 +273,10 @@ def build_lgn(visp):
     print('   done.')
 
 
-def build_visal(visp):
+def build_visl(visp):
     # Build a network of 100 virtual cells that will connect to and drive the simulation of the VISp network
-    print('Building VISal network')
-    visal = NetworkBuilder('VISal')
+    print('Building VISl network')
+    visal = NetworkBuilder('VISl')
 
     visal.add_nodes(
         N=70,
@@ -324,4 +327,4 @@ def build_visal(visp):
 if __name__ == '__main__':
     visp = build_visp()
     lgn = build_lgn(visp)
-    visal = build_visal(visp)
+    visal = build_visl(visp)

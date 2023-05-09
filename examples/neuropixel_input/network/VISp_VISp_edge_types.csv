@@ -1,7 +1,7 @@
-edge_type_id target_query source_query delay target_sections distance_range dynamics_params model_template syn_weight
-100 ei=='e'&model_type=='biophysical' ei=='e' 2.0 "['basal', 'apical']" "[30.0, 150.0]" AMPA_ExcToExc.json Exp2Syn 6e-05
-101 ei=='i'&model_type=='biophysical' ei=='e' 2.0 "['somatic', 'basal']" "[0.0, 1e+20]" AMPA_ExcToInh.json Exp2Syn 0.0006
-102 ei=='e'&model_type=='biophysical' ei=='i' 2.0 "['somatic', 'basal', 'apical']" "[0.0, 50.0]" GABA_InhToExc.json Exp2Syn 0.002
-103 ei=='i'&model_type=='biophysical' ei=='i' 2.0 "['somatic', 'basal']" "[0.0, 1e+20]" GABA_InhToInh.json Exp2Syn 0.00015
-104 model_type=='point_neuron' ei=='e' 2.0 NULL NULL instantaneousExc.json NULL 0.0019
-105 model_type=='point_neuron' ei=='i' 2.0 NULL NULL instantaneousInh.json NULL 0.0019
+edge_type_id target_query source_query target_sections distance_range model_template syn_weight dynamics_params delay
+100 ei=='e'&model_type=='biophysical' ei=='e' "['basal', 'apical']" "[30.0, 150.0]" Exp2Syn 6e-05 AMPA_ExcToExc.json 2.0
+101 ei=='i'&model_type=='biophysical' ei=='e' "['somatic', 'basal']" "[0.0, 1e+20]" Exp2Syn 0.0006 AMPA_ExcToInh.json 2.0
+102 ei=='e'&model_type=='biophysical' ei=='i' "['somatic', 'basal', 'apical']" "[0.0, 50.0]" Exp2Syn 0.002 GABA_InhToExc.json 2.0
+103 ei=='i'&model_type=='biophysical' ei=='i' "['somatic', 'basal']" "[0.0, 1e+20]" Exp2Syn 0.00015 GABA_InhToInh.json 2.0
+104 model_type=='point_neuron' ei=='e' NULL NULL NULL 0.0019 instantaneousExc.json 2.0
+105 model_type=='point_neuron' ei=='i' NULL NULL NULL 0.0019 instantaneousInh.json 2.0

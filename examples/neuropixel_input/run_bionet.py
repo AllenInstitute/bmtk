@@ -16,17 +16,9 @@ def run(config_file):
 
 if __name__ == '__main__':
     # Find the appropriate config.json file
-    config_path = None
     if __file__ != sys.argv[-1]:
         config_path = sys.argv[-1]
-        if not os.path.exists(config_path):
-            raise AttributeError('configuration file {} does not exist.'.format(config_path))
+        run(config_path)
     else:
-        for cfg_path in ['config.json', 'config.simulation.json']:
-            if os.path.exists(cfg_path):
-                config_path = cfg_path
-                break
-        else:
-            raise AttributeError('Could not find configuration json file.')
-
-    run(config_path)
+        run('config.simulation.sample_replacement.json')
+    
