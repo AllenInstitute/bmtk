@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 
 from bmtk.builder import NetworkBuilder
 from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
@@ -276,10 +277,13 @@ def build_lgn(visp):
 def build_visl(visp):
     # Build a network of 100 virtual cells that will connect to and drive the simulation of the VISp network
     print('Building VISl network')
-    visal = NetworkBuilder('VISl')
+    visl_units_df = pd.read_csv('unit_ids.VISl.valid_units.csv', sep=' ')
+    # print(visl_units_df)
 
+    visal = NetworkBuilder('VISl')
     visal.add_nodes(
-        N=70,
+        N=len(visl_units_df),
+        node_id=visl_units_df['node_ids'].values,
         model_type='virtual',
         ei='e'
     )
@@ -324,7 +328,61 @@ def build_visl(visp):
     print('   done.')
 
 
+def build_hippocampus(visp):
+    # Build a network of 100 virtual cells that will connect to and drive the simulation of the VISp network
+    print('Building hippocampus network')
+    hippo_units_df = pd.read_csv('unit_ids.hippocampus.valid_units.csv', sep=' ')
+    hippo = NetworkBuilder('hippocampus')
+    hippo.add_nodes(
+        N=len(hippo_units_df),
+        node_id=hippo_units_df['node_ids'].values,
+        model_type='virtual',
+        ei='e'
+    )
+
+    # Targets all biophysical excitatory cells
+    hippo.add_edges(
+        target=visp.nodes(ei='e', model_type='biophysical'), source=hippo.nodes(),
+        connection_rule=lambda *_: np.random.uniform(0, 10),
+        dynamics_params='AMPA_ExcToExc.json',
+        model_template='Exp2Syn',
+        delay=2.0,
+        syn_weight=0.00041,
+        target_sections=['basal', 'apical'],
+        distance_range=[50.0, 1e+20]
+    )
+
+    # Targets all biophysical inhibitory cells
+    hippo.add_edges(
+        target=visp.nodes(ei='i', model_type='biophysical'), source=hippo.nodes(),
+        connection_rule=lambda *_: np.random.uniform(0, 10),
+        dynamics_params='AMPA_ExcToInh.json',
+        model_template='Exp2Syn',
+        delay=2.0,
+        syn_weight=0.00095,
+        target_sections=['basal', 'apical'],
+        distance_range=[50.0, 1e+20]
+    )
+
+    # Targets all intfire1 cells (exc and inh)
+    hippo.add_edges(
+        target=visp.nodes(model_type='point_neuron'), source=hippo.nodes(),
+        connection_rule=lambda *_: np.random.uniform(0, 10),
+        dynamics_params='instantaneousExc.json',
+        delay=2.0,
+        syn_weight=0.045
+    )
+
+    print('   creating connections.')
+    hippo.build()
+    print('   saving network.')
+    hippo.save(output_dir='network')
+    print('   done.')
+
+
+
 if __name__ == '__main__':
     visp = build_visp()
     lgn = build_lgn(visp)
     visal = build_visl(visp)
+    build_hippocampus(visp)
