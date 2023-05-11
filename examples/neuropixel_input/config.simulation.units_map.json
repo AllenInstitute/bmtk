@@ -23,14 +23,16 @@
     },
   
     "inputs": {
-      "hippocampal_units": {
+      "VISl_units": {
         "input_type": "neuropixels",
         "module": "nwb",
         "input_file": "./ecephys_cache_dir/session_798911424/session_798911424.nwb",
-        "node_set": "hippocampus",
-        "mapping": "by_units",
-        "mapping_file": "./hippocampal_unit_ids.csv",
-        "time_window": [10000.0, 40000.0]
+        "node_set": "VISl",
+        "mapping": "units_map",
+        "mapping_file": "unit_ids.VISl.valid_units.csv",
+        "missing_ids": "fail",
+        "time_window": [1000.0, 4000.0],
+        "simulation_onset": 0.0
       }
     },
   

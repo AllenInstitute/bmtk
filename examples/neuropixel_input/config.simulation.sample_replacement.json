@@ -35,15 +35,17 @@
       "enabled": false
     },
 
-    "VISal_units": {
+    "hippo_units": {
       "input_type": "neuropixels",
       "module": "nwb",
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
-      "node_set": "VISl",
-      "mapping": "sample_with_replace",
-      "time_window": [10000.0, 40000.0],
+      "node_set": "hippocampus",
+      "mapping": "sample_with_replacement",
+      "missing_ids": "fail",
+      "simulation_onset": 0.0,
+      "time_window": [1000.0, 4000.0],
       "filter": {
-        "location": ["VISl"]
+        "location": ["CA1", "CA3"]
       }
     }
   },
@@ -74,8 +76,8 @@
         "node_types_file": "$NETWORK_DIR/LGN_node_types.csv"
       },
       {
-        "nodes_file": "$NETWORK_DIR/VISl_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/VISl_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/hippocampus_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/hippocampus_node_types.csv"
       }
     ],
 
@@ -90,8 +92,8 @@
         "edge_types_file": "$NETWORK_DIR/LGN_VISp_edge_types.csv"
       },
       {
-        "edges_file": "$NETWORK_DIR/VISl_VISp_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/VISl_VISp_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/hippocampus_VISp_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/hippocampus_VISp_edge_types.csv"
       }
     ]
   }

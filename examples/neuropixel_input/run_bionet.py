@@ -20,5 +20,7 @@ if __name__ == '__main__':
         config_path = sys.argv[-1]
         run(config_path)
     else:
-        run('config.simulation.sample_replacement.json')
-    
+        # run('config.simulation.units_map.json')
+        # run('config.simulation.sample.json')
+        # run('config.simulation.sample_replacement.json')
+        run('config.simulation.sample_conditional.json')

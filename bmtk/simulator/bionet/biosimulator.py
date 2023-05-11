@@ -414,7 +414,7 @@ class BioSimulator(Simulator):
                 )
 
             elif sim_input.module == 'nwb':
-                sim.add_mod(mods.NeuropixelsNWBReader(**sim_input.params))
+                sim.add_mod(mods.NeuropixelsNWBReader(name=sim_input.name, **sim_input.params))
 
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))
