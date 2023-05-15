@@ -61,6 +61,45 @@ def test_write_sonata(st_cls, write_fnc):
     write_sonata,
     write_sonata_itr
 ])
+def test_write_sonata_compression(st_cls, write_fnc):
+    def do_one_test(comp_type, test_type):
+        st = create_st_buffer(st_cls)
+        st.add_spikes(population='V1', node_ids=0, timestamps=np.linspace(0, 1.0, 100))
+        st.add_spikes(population='V1', node_ids=2, timestamps=np.linspace(2.0, 1.0, 10))
+        st.add_spike(population='V1', node_id=1, timestamp=3.0)
+        st.add_spikes(population='V2', node_ids=[3, 3, 3], timestamps=[0.25, 0.5, 0.75])
+
+        tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
+        write_fnc(tmpfile.name, st, compression=comp_type)
+
+        with h5py.File(tmpfile.name, 'r') as h5:
+            assert(check_magic(h5))
+            assert(get_version(h5) is not None)
+            assert('/spikes/V1' in h5)
+            assert(h5['/spikes/V1/node_ids'].compression == test_type)
+            assert(h5['/spikes/V1/timestamps'].compression == test_type)
+
+            assert('/spikes/V2' in h5)
+            assert(h5['/spikes/V2/node_ids'].compression == test_type)
+            # WARNING: Not all adaptor guarentee order of spikes
+            assert(h5['/spikes/V2/timestamps'].compression == test_type)
+
+    # an integer (0-9) specifies the compression level.
+    comp_types = [None, 0, 'gzip', 3, 'lzf']
+    test_types = [None, 'gzip', 'gzip', 'gzip', 'lzf']
+    for comp_type, test_type in zip(comp_types, test_types):
+        do_one_test(comp_type, test_type)
+    
+
+
+@pytest.mark.parametrize('st_cls', [
+    STMemoryBuffer,
+    STCSVBuffer
+])
+@pytest.mark.parametrize('write_fnc', [
+    write_sonata,
+    write_sonata_itr
+])
 def test_write_sonata_empty(st_cls, write_fnc):
     # Important use case, a valid simulation may run for a long time but not produce any spikes, make sure it doesn't
     # fail trying to write any empty set of spike-trains to h5
