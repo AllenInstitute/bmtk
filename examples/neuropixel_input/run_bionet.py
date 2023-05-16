@@ -23,4 +23,7 @@ if __name__ == '__main__':
         # run('config.simulation.units_map.json')
         # run('config.simulation.sample.json')
         # run('config.simulation.sample_replacement.json')
-        run('config.simulation.sample_conditional.json')
+        # run('config.simulation.sample_conditional.json')
+        run('config.simulation.units_map.with_times.json')
+        # run('config.simulation.sample_multifile.json')
+        # run('config.simulation.stimulus_block.json')

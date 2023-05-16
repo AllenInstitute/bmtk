@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 import numpy as np
 import pandas as pd
 import pynwb
@@ -72,22 +73,130 @@ class NeuropixelsNWBReader(SimulatorMod):
                     raise NotImplementedError()
 
 
+class NWBFileWrapper(object):
+    # TODO: Implement Singleton
+    def __init__(self, nwb_path):
+        self.path = nwb_path
+        self._io = pynwb.NWBHDF5IO(nwb_path, 'r').read()
+        
+    @property
+    def uuid(self):
+        return self.path
+    
+    def __getattr__(self, name):
+        return getattr(self.__dict__['_io'], name)
+
+
+class TimeWindow(object):
+    def __init__(self, defaults=None, nwb_files=None):
+        self._units_lu = None
+        self._default_windows = None
+        self.conversion_factor = 1/1000.0
+
+        # By requestion, the "time_window" option can 
+        #  - None 
+        #  - a single window; "time_window": [100, 200] 
+        #  - A stim_table filter: {stim_name: gratings, ori: 90.0, tf: 2.0, ...}
+        #  - one unique window for each nwb_ids/files; "time_window": [[0, 100], [300, 400], ...]
+        # To handle this we will 1) convert each possible option into a list of 0, 1, or more windows. 2) Check
+        # that the num of time windows makes sense for the number of nwb_ids/files. And 3) Create a map of
+        # defaults for each nwb_ids/file
+        if defaults is not None:
+            time_windows = self._tolist(defaults)
+            n_windows = len(time_windows)
+            if n_windows > 1 and len(nwb_files) != n_windows:
+                # There can be no default time window, or one default for all nwb_files, otherwise the number
+                # of time_windows must correspond to the number of nwb_files
+                io.log_error('NeuropixelsNWBReader: Cannot match each "time_window" with the "input_file"s.')
+        
+            if n_windows == 1:
+                # convert [interal] -> [interval, interval, interval, ...]
+                time_windows = time_windows*n_windows
+            self._default_windows = {nwb.uuid: self._parse_tw(tw, nwb) for tw, nwb in zip(time_windows, nwb_files)}
+
+    @property
+    def units_lu(self):
+        return self._units_lu
+    
+    @units_lu.setter
+    def units_lu(self, units_table):
+        units_table['start_times'] = units_table['start_times']*self.conversion_factor
+        units_table['stop_times'] = units_table['stop_times']*self.conversion_factor
+        self._units_lu = units_table
+        # print(units_table)
+       
+        # exit()
+
+    def _tolist(self, window):
+        if isinstance(window, dict):
+            # Is a stimulus_table filter, ex. {"stimulus_name": "gratings", "ori": 90.0, ...}
+            return [window]
+        elif isinstance(window, (tuple, list)) and len(window) == 0:
+            # Is an empyt list
+            return []
+        elif isinstance(window, (tuple, list)) and isinstance(window[0], (tuple, list)):
+            # is a list of intervals, ex. [[0.0, 100.0], [200.0, 300.0], {stim:gratings} ...]
+            return window
+        else:
+            # assume is a interval, ex. [0.0, 100.0]
+            return [window]
+
+    def _parse_tw(self, interval, nwb_file):
+        if isinstance(interval, dict):
+            filter = interval.copy()
+            stim_name = filter.pop('stimulus_name', None)
+            stim_idx = filter.pop('stimulus_index', 'all')
+
+            if stim_name is None:
+                io.log_error('Stimulus table filter missing "stimulus_name"')
+
+            # stim_name = interval['stimulus_name']
+            if stim_name in nwb_file.intervals.keys():
+                interval_df = nwb_file.intervals[stim_name].to_dataframe()
+            elif stim_name + '_presentations' in nwb_file.intervals.keys():
+                interval_df = nwb_file.intervals[stim_name + '_presentations'].to_dataframe()
+            else:
+                io.log_error('stimulus name "{}" not found in {}'.format(stim_name, nwb_file.uuid))
+
+            interval_df = filter_table(interval_df, filter)
+            if len(interval_df) == 0:
+                return [0.0, np.inf]
+            
+            if stim_idx == 'all':
+                start_time = interval_df['start_time'].min()
+                stop_time = interval_df['stop_time'].max()
+            else:
+                start_time = interval_df.iloc[stim_idx]['start_time']
+                stop_time = interval_df.iloc[stim_idx]['stop_time']
+
+            return [start_time*self.conversion_factor, stop_time*self.conversion_factor]
+
+        else:
+            return [interval[0]*self.conversion_factor, interval[1]*self.conversion_factor]
+
+    def __getitem__(self, unit_info):
+        unit_id, nwb_uuid = unit_info[0], unit_info[1]
+        if (self.units_lu is not None) and (unit_id in self.units_lu.index):
+            return self.units_lu.loc[unit_id].values
+        elif self._default_windows and nwb_uuid in self._default_windows.keys():
+            return self._default_windows[nwb_uuid]
+        else:
+            return None
+
+
 class MappingStrategy(object):
     def __init__(self, **kwargs):
         self._nwb_paths = kwargs['input_file']
-        self._filters = kwargs.get('filter', {})
-        self._time_window = kwargs.get('time_window', None)
-        self._simulation_onset = kwargs.get('simulation_onset', 0.0)
+        self._filters = kwargs.get('filter', {})       
+        self._simulation_onset = kwargs.get('simulation_onset', 0.0)/1000.0
         # self._mapping_path = kwargs.get('mapping_file', None)
         self._missing_ids = kwargs.get('missing_ids', 'fail')
+        self._cache_spike_times = kwargs.get('cache', False)
+        self._spike_times_cache = {}
         
-        
-        # try:
-        #     self._mapping_path = kwargs['mapping_file']
-        # except KeyError:
-        #     io.log_exception('{}: Could not find "mapping_file" csv path for units-to-nodes mapping.'.format(NeuropixelsNWBReader.__name__))
-
-
+        default_window = kwargs.get('time_window', None)
+        self._time_window = TimeWindow(defaults=default_window, nwb_files=self.nwb_files)
+       
         self._units_table = None
         self._units2nodes_map = None
 
@@ -98,8 +207,9 @@ class MappingStrategy(object):
 
         nwb_files = []
         for nwb_path in self._nwb_paths:
-            io = pynwb.NWBHDF5IO(nwb_path, 'r')
-            nwb_files.append(io.read())
+            # io = pynwb.NWBHDF5IO(nwb_path, 'r')
+            # nwb_files.append(io.read())
+            nwb_files.append(NWBFileWrapper(nwb_path))
         return nwb_files
 
 
@@ -112,7 +222,8 @@ class MappingStrategy(object):
                 units_table = self._load_units_table(nwb_file)
                 units_table = self._filter_units_table(units_table)
                 units_table = units_table[['spike_times']]
-                merged_table = units_table if merged_table is None else pd.merge((merged_table, units_table))
+                units_table['nwb_uid'] = nwb_file.uuid
+                merged_table = units_table if merged_table is None else pd.concat((merged_table, units_table))
 
             if merged_table is None or len(merged_table) == 0:
                 io.log_error('NeuropixelsNWBReader: Could not parse units table from nwb_file(s).')
@@ -148,6 +259,9 @@ class MappingStrategy(object):
                     expr = 'units_table["{}"] {} {}'.format(col, op, val)
                     mask &= eval(expr)
 
+                else:
+                    mask &= units_table[col_name] == filter_val
+
             units_table = units_table[mask]
 
         return units_table        
@@ -156,14 +270,20 @@ class MappingStrategy(object):
         raise NotImplementedError()
 
     def get_spike_trains(self, node_id, source_population):
+        # TODO: Is it worth caching spike-trains so we don't have to do a lookup + filtering 
+        # every time?
         unit_id = self._units2nodes_map[node_id]
         spike_times = np.array(self.units_table.loc[unit_id]['spike_times'])
-        if self._time_window:
+        nwb_uid = self.units_table.loc[unit_id]['nwb_uid']
+        time_window = self._time_window[unit_id, nwb_uid]
+        if time_window is not None:
             spike_times = spike_times[
-                (self._time_window[0] <= spike_times) & (spike_times <= self._time_window[1])
+                (time_window[0] <= spike_times) & (spike_times <= time_window[1])
             ]
-            spike_times = spike_times - self._time_window[0] + self._simulation_onset
+            spike_times = spike_times - time_window[0] + self._simulation_onset
 
+        spike_times = spike_times*1000.0  # Convert from seconds to miliseconds
+        # print(node_id, unit_id, time_window, spike_times)
         return spike_times
 
 
@@ -183,8 +303,11 @@ class UnitIdMapStrategy(MappingStrategy):
             # TODO: Include population name
             mapping_file_df = pd.read_csv(self._mapping_path, sep=' ')
             self._units2nodes_map = mapping_file_df[['node_ids', 'unit_ids']].set_index('node_ids').to_dict()['unit_ids']
+            if 'start_times' in mapping_file_df:
+                self._time_window.units_lu = mapping_file_df[['unit_ids', 'start_times', 'stop_times']].set_index('unit_ids')
+
         except (FileNotFoundError, UnicodeDecodeError):
-            io.log_exception('{}: {} should be a space separated file with columns "node_ids", "unit_ids"'.format(NeuropixelsNWBReader.__name__, mapping_path))
+            io.log_exception('{}: {} should be a space separated file with columns "node_ids", "unit_ids"'.format(NeuropixelsNWBReader.__name__, self._mapping_path))
 
 
 class SamplingStrategy(MappingStrategy):
@@ -223,3 +346,30 @@ class SamplingStrategy(MappingStrategy):
             'node_ids': node_ids,
             'unit_ids': shuffled_unit_ids
         }).set_index('node_ids').to_dict()['unit_ids']
+
+
+def filter_table(table_df, filters_dict):
+    if filters_dict:
+        # Filter out only those specified units
+        mask = True
+        for col_name, filter_val in filters_dict.items():
+            if isinstance(filter_val, str):
+                mask &= table_df[col_name] == filter_val
+            
+            elif isinstance(filter_val, (list, np.ndarray, tuple)):
+                mask &= table_df[col_name].isin(filter_val)
+            
+            elif isinstance(filter_val, dict):
+                col = filter_val.get('column', col_name)
+                op = filter_val['operation']
+                val = filter_val['value']
+                val = '"{}"'.format(val) if isinstance(val, str) else val
+                expr = 'table_df["{}"] {} {}'.format(col, op, val)
+                mask &= eval(expr)
+
+            else:
+                mask &= table_df[col_name] == filter_val
+
+        table_df = table_df[mask]
+
+    return table_df

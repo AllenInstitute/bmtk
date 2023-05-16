@@ -126,7 +126,7 @@ def get_area_map(area, valid_units=False):
     }).to_csv('unit_ids.{}.{}.csv'.format(area, 'valid_units' if valid_units else 'all_units'), index=False, sep=' ')
 
 
-def get_structure_map(structure, valid_units=False):
+def get_structure_map(structure, valid_units=False, with_timestamps=False):
     cache = EcephysProjectCache.from_warehouse(manifest=manifest_path)
     filter_params = {} if valid_units else {'isi_violations_maximum': np.inf, 'amplitude_cutoff_maximum': np.inf, 'presence_ratio_minimum': -np.inf}
     units = cache.get_units(**filter_params)
@@ -136,13 +136,27 @@ def get_structure_map(structure, valid_units=False):
     session_id = struct_session.index[0][0]
     cache.get_session_data(session_id)
 
+    output_filename = 'unit_ids.{}.{}{}.csv'.format(
+        structure, 
+        'valid_units' if valid_units else 'all_units',
+        '.with_timestamps' if with_timestamps else ''
+    ) 
+
     filtered_units = units[(units['ecephys_session_id'] == session_id) & (units['ecephys_structure_acronym'] == structure)]
-    pd.DataFrame({
+    map_df = pd.DataFrame({
         'node_ids': range(len(filtered_units)),
         'unit_ids': filtered_units.index.values,
         'session_id': session_id,
         'ecephys_structure_acronym': filtered_units['ecephys_structure_acronym'].values
-    }).to_csv('unit_ids.{}.{}.csv'.format(structure, 'valid_units' if valid_units else 'all_units'), index=False, sep=' ')
+    }) # .to_csv(output_filename, index=False, sep=' ')
+
+    if with_timestamps:
+        start_times = np.random.uniform(0.0, 7000.0, size=len(map_df)).astype(int)
+        map_df['start_times'] = start_times.astype(float)
+        map_df['stop_times'] = start_times.astype(float) + 3000.0
+        map_df = map_df[['node_ids', 'unit_ids', 'start_times', 'stop_times', 'session_id', 'ecephys_structure_acronym']]
+        
+    map_df.to_csv(output_filename, index=False, sep=' ')
 
 
 if __name__ == '__main__':
@@ -153,10 +167,11 @@ if __name__ == '__main__':
 
     # get_area_map('thalamus', valid_units=True)
     # get_area_map('thalamus', valid_units=False)
-    get_area_map('hippocampus', valid_units=True)
-    get_area_map('hippocampus', valid_units=False)
+    # get_area_map('hippocampus', valid_units=True)
+    # get_area_map('hippocampus', valid_units=False)
 
 
     # get_structure_map('VISl', valid_units=True)
     # get_structure_map('VISl', valid_units=False)
+    get_structure_map('VISl', valid_units=True, with_timestamps=True)
 
