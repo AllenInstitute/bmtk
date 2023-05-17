@@ -24,8 +24,8 @@
 
   "inputs": {
     "hippo_units": {
-      "input_type": "neuropixels",
-      "module": "nwb",
+      "input_type": "spikes",
+      "module": "ecephys_probe",
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
       "node_set": "hippocampus",
       "mapping": "sample_with_replacement",
@@ -33,7 +33,7 @@
       "simulation_onset": 0.0,
       "time_window": {
         "stimulus_name": "drifting_gratings",
-        "stimulus_index": "all",
+        "stimulus_index": 0,
         "temporal_frequency": 4.0,
         "orientation": {"operation": ">", "value": 310.0},
         "stimulus_block": 2.0

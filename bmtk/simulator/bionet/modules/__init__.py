@@ -29,4 +29,4 @@ from .record_netcons import NetconReport
 from .record_clamp import ClampReport
 from .iclamp import IClampMod
 from .comsol import ComsolMod
-from .neuropixels import NeuropixelsNWBReader
+from .ecephys_module import BioECEphysUnitsModule

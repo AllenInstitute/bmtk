@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import pynwb
+import numpy as np
 from allensdk.brain_observatory.ecephys.ecephys_session import EcephysSession
 
 
@@ -27,13 +28,28 @@ print(nwb.units['id'][1])
 ### Reading stimulus table
 
 
-# session = EcephysSession.from_nwb_path(nwb_path)
-# # print(session.units.head())
-# # print(session.units['structure_acronym'].value_counts())
+session = EcephysSession.from_nwb_path(nwb_path)
+# print(session.units.head())
+# print(session.units['structure_acronym'].value_counts())
 # print(session.get_stimulus_table())
 
+# print(session.units)
+# print(session.spike_times[950910352])
+stims = session.stimulus_presentations
+dg_stims = stims[
+    (stims['stimulus_name'] == 'drifting_gratings') 
+    & (stims['temporal_frequency'] == 4.0)
+    & (stims['stimulus_block'] == 2.0)
+    & (stims['orientation'].replace('null', np.nan).astype(float) > 310.0)
+]
+# print(stims['orientation'].replace('null', np.nan).astype(float))
+print(dg_stims)
+
+
 # print(nwb.intervals.items())
-for stim_name, interval in nwb.intervals.items():
-    print('--------', stim_name, '-----------')
-    print(interval.to_dataframe())
-    # print(stim_name, interval)
+# for stim_name, interval in nwb.intervals.items():
+#     print('--------', stim_name, '-----------')
+#     print(interval.to_dataframe())
+#     # print(stim_name, interval)
+
+

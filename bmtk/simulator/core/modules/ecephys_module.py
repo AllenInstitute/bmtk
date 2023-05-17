@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 import pynwb
 
-from bmtk.simulator.bionet.io_tools import io
-from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
+from .simulator_module import SimulatorMod
+from bmtk.simulator.core.io_tools import io
 from bmtk.utils import lazy_property
+
 
 try:
     from mpi4py import MPI
@@ -27,7 +28,13 @@ namespace_path = (file_dir/"ndx-aibs-ecephys.namespace.yaml").resolve()
 pynwb.load_namespaces(str(namespace_path))
 
 
-class NeuropixelsNWBReader(SimulatorMod):
+class ECEphysUnitsModule(SimulatorMod):
+    """
+    TODO:
+    - Have option to specify the nwb file units and/or get them from the NWB
+    - Have option to save units-node mapping to output folder
+    - fail/warn if unit is missing from units_map
+    """
     def __init__(self, name, **kwargs):
         self._name = name
         self._node_set = kwargs['node_set']
@@ -47,30 +54,7 @@ class NeuropixelsNWBReader(SimulatorMod):
             io.log_exception('NeuropixelsNWBReader: Invalid "mapping" parameters, options: units_map, sample, sample_with_replacement')
 
     def initialize(self, sim):
-        io.log_info('Building virtual cell stimulations for {}'.format(self._name))
-
-        net = sim.net
-        net._init_connections()
-        node_set = net.get_node_set(self._node_set)
-
-        self._mapping_strategy.build_map(node_set=node_set)
-
-        src_nodes = [node_pop for node_pop in net.node_populations if node_pop.name in node_set.population_names()]
-        for src_node_pop in src_nodes:
-            source_population = src_node_pop.name
-            
-            for edge_pop in net.find_edges(source_nodes=source_population):
-                if edge_pop.virtual_connections:
-                    for trg_nid, trg_cell in net._rank_node_ids[edge_pop.target_nodes].items():
-                        for edge in edge_pop.get_target(trg_nid):
-                            source_node_id = edge.source_node_id
-                            spike_trains = self._mapping_strategy.get_spike_trains(source_node_id, source_population)
-
-                            src_cell = net.get_virtual_cells(source_population, source_node_id, spike_trains)
-                            trg_cell.set_syn_connection(edge, src_cell, src_cell)
-
-                elif edge_pop.mixed_connections:
-                    raise NotImplementedError()
+        raise NotImplementedError()
 
 
 class NWBFileWrapper(object):
@@ -123,9 +107,6 @@ class TimeWindow(object):
         units_table['start_times'] = units_table['start_times']*self.conversion_factor
         units_table['stop_times'] = units_table['stop_times']*self.conversion_factor
         self._units_lu = units_table
-        # print(units_table)
-       
-        # exit()
 
     def _tolist(self, window):
         if isinstance(window, dict):
@@ -169,10 +150,13 @@ class TimeWindow(object):
                 start_time = interval_df.iloc[stim_idx]['start_time']
                 stop_time = interval_df.iloc[stim_idx]['stop_time']
 
-            return [start_time*self.conversion_factor, stop_time*self.conversion_factor]
+            # In the NWB stim_table and units_tables uses seconds, do not convert time-window
+            return [start_time, stop_time]
 
         else:
-            return [interval[0]*self.conversion_factor, interval[1]*self.conversion_factor]
+            # Is an interval [stop, start] that is entered in manually in units of ms, convert 
+            # to seconds so it matches nwb spike_times units (s)
+            return [interval[0]/1000.0, interval[1]/1000.0]
 
     def __getitem__(self, unit_info):
         unit_id, nwb_uuid = unit_info[0], unit_info[1]
@@ -281,9 +265,8 @@ class MappingStrategy(object):
                 (time_window[0] <= spike_times) & (spike_times <= time_window[1])
             ]
             spike_times = spike_times - time_window[0] + self._simulation_onset
-
-        spike_times = spike_times*1000.0  # Convert from seconds to miliseconds
-        # print(node_id, unit_id, time_window, spike_times)
+        
+        spike_times = spike_times*1000.0  # Convert from seconds to miliseconds       
         return spike_times
 
 

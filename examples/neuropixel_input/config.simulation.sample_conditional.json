@@ -24,8 +24,8 @@
 
   "inputs": {
     "LGN_units": {
-      "input_type": "neuropixels",
-      "module": "nwb",
+      "input_type": "spikes",
+      "module": "ecephys_probe",
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
       "node_set": "LGN",
       "mapping": "csv",
@@ -36,14 +36,14 @@
     },
 
     "hippo_units": {
-      "input_type": "neuropixels",
-      "module": "nwb",
+      "input_type": "spikes",
+      "module": "ecephys_probe",
       "input_file": "./ecephys_cache_dir/session_798911424/session_798911424.nwb",
       "node_set": "hippocampus",
       "mapping": "sample_with_replacement",
       "missing_ids": "fail",
       "simulation_onset": 0.0,
-      "time_window": [1000.0, 4000.0],
+      "time_window": [1500000.0, 1700000.0],
       "filter": {
         "location": ["CA1", "CA3", "DG", "SUB", "ProS"],
         "isi_violations": {"operation": "<", "value": 0.5},
