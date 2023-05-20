@@ -22,8 +22,8 @@ Quick Start Guide
 #################
 
 For pre-built examples of network simulations that use in-vivo ecephys probe data there are a number of
-examples in the BTMK **examples/** folder; including ones for `BioNet (NEURON) <INSERT_LINK>`_ and 
-`PointNet (NEST) <INSERT_LINK>`_. Once BMTK is installed on your system just run a simulation using one
+examples in the BTMK **examples/** folder; including ones for `BioNet (NEURON) <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_neuropixels>`_ and 
+`PointNet (NEST) <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_neuropixels>`_. Once BMTK is installed on your system just run a simulation using one
 of the simulation JSON configs:
 
 .. code:: bash

@@ -75,7 +75,15 @@ def get_structure_map(structure, valid_units=False, with_timestamps=False):
     map_df.to_csv(output_filename, index=False, sep=' ')
 
 
+def download_neuropixel_session(session_ids=[715093703, 798911424, 754829445]):
+    cache = EcephysProjectCache.from_warehouse(manifest=manifest_path)
+    
+    for session_id in session_ids:
+        cache.get_session_data(session_id)
+
+
 if __name__ == '__main__':
-    get_area_map('hippocampus', valid_units=False)
-    get_structure_map('VISl', valid_units=True, with_timestamps=True)
+    # get_area_map('hippocampus', valid_units=False)
+    # get_structure_map('VISl', valid_units=True, with_timestamps=True)
+    download_neuropixel_session()
 
