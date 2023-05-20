@@ -9,6 +9,12 @@ from bmtk.simulator.core.modules.ecephys_module import ECEphysUnitsModule
 from bmtk.simulator.core.modules.ecephys_module import TimeWindow, NWBFileWrapper
 from bmtk.simulator.core.modules.ecephys_module import MappingStrategy, UnitIdMapStrategy, SamplingStrategy
 
+try:
+    import pynwb
+    has_pynwb = True
+except ImportError as ie:
+    has_pynwb = False
+
 
 class MockNodeSet(object):
     def __init__(self, node_ids=[0, 1, 2, 3, 4]):
@@ -66,24 +72,25 @@ def build_nwb_file(init_id=99854, save_to_file=False):
         return nwbfile
 
 
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
 def test_basic():
     mod = ECEphysUnitsModule(
         name='test', mapping='units_map', node_set=MockNodeSet(), input_file=build_nwb_file(save_to_file=True), 
-        mapping_file=node_ids_map()
+        units=node_ids_map()
     )
     assert(isinstance(mod._mapping_strategy, UnitIdMapStrategy))
 
     mod = ECEphysUnitsModule(
         name='test', mapping='units_map', node_set=MockNodeSet(), 
         input_file=[build_nwb_file(save_to_file=True), build_nwb_file(save_to_file=True)], 
-        mapping_file=node_ids_map(with_times=False), time_window=[10000.0, 20000.0]
+        units=node_ids_map(with_times=False), interval=[10000.0, 20000.0]
     )
     assert(isinstance(mod._mapping_strategy, UnitIdMapStrategy))
 
     mod = ECEphysUnitsModule(
         name='test', mapping='sample', node_set=MockNodeSet(), 
         input_file=build_nwb_file(save_to_file=True), 
-        filter={'location': 'VISp'}, time_window=[10000.0, 20000.0]
+        filter={'location': 'VISp'}, interval=[10000.0, 20000.0]
     )
     assert(isinstance(mod._mapping_strategy, SamplingStrategy))
     
@@ -91,7 +98,7 @@ def test_basic():
         name='test', mapping='sample', node_set=MockNodeSet(), 
         input_file=build_nwb_file(save_to_file=True), 
         filter={'location': 'VISp'}, 
-        time_window={'stimulus_name': 'drifting_gratings', 'temporal_frequency': 2.0}
+        interval={'interval_name': 'drifting_gratings', 'temporal_frequency': 2.0}
     )
     assert(isinstance(mod._mapping_strategy, SamplingStrategy))
 
@@ -99,7 +106,7 @@ def test_basic():
         name='test', mapping='sample_with_replacement', node_set=MockNodeSet(), 
         input_file=build_nwb_file(save_to_file=True), 
         filter={'location': 'LGd'}, 
-        time_window={'stimulus_name': 'drifting_gratings', 'temporal_frequency': 2.0}
+        interval={'interval_name': 'drifting_gratings', 'temporal_frequency': 2.0}
     )
     assert(isinstance(mod._mapping_strategy, SamplingStrategy))
 
@@ -108,12 +115,13 @@ def test_basic():
             name='test', mapping='not_a_valid_mapping', node_set=MockNodeSet(), 
             input_file=build_nwb_file(save_to_file=True), 
             filter={'location': 'LGd'}, 
-            time_window={'stimulus_name': 'drifting_gratings', 'temporal_frequency': 2.0}
+            interval={'interval_name': 'drifting_gratings', 'temporal_frequency': 2.0}
         )
         # assert(isinstance(mod._mapping_strategy, SamplingStrategy))
 
 
-def test_time_window_defaults():
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
+def test_interval_defaults():
     nwb_file1 = NWBFileWrapper(build_nwb_file(save_to_file=True, init_id=0))
     nwb_file2 = NWBFileWrapper(build_nwb_file(save_to_file=True, init_id=100))
     tw = TimeWindow(None, [nwb_file1])
@@ -132,12 +140,12 @@ def test_time_window_defaults():
     assert(np.allclose(tw[0, nwb_file1.uuid], [0.0, 1.5]))
     assert(np.allclose(tw[100, nwb_file2.uuid], [2.0, 2.3456]))
 
-    tw = TimeWindow({'stimulus_name': 'drifting_gratings', 'stimulus_index': 0}, [nwb_file1])
+    tw = TimeWindow({'interval_name': 'drifting_gratings', 'interval_index': 0}, [nwb_file1])
     assert(np.allclose(tw[0, nwb_file1.uuid], [10.0, 12.0]))
     
     tw = TimeWindow([
-        {'stimulus_name': 'drifting_gratings', 'stimulus_index': 1},
-        {'stimulus_name': 'drifting_gratings_presentations', 'stimulus_index': 'all'}
+        {'interval_name': 'drifting_gratings', 'interval_index': 1},
+        {'interval_name': 'drifting_gratings_presentations', 'interval_index': 'all'}
         ], [nwb_file1, nwb_file2]
     )
     assert(np.allclose(tw[0,  nwb_file1.uuid], [20.0, 22.0]))
@@ -145,9 +153,9 @@ def test_time_window_defaults():
 
     nwb_file3 = NWBFileWrapper(build_nwb_file(save_to_file=True, init_id=0))
     tw = TimeWindow([
-        {'stimulus_name': 'drifting_gratings', 'stimulus_index': 0},
+        {'interval_name': 'drifting_gratings', 'interval_index': 0},
         [0.0, 500.0],
-        {'stimulus_name': 'drifting_gratings_presentations', 'stimulus_index': 'all'}
+        {'interval_name': 'drifting_gratings_presentations', 'interval_index': 'all'}
         ], [nwb_file1, nwb_file2, nwb_file3]
     )
     assert(np.allclose(tw[0, nwb_file1.uuid], [10.0, 12.0]))
@@ -155,7 +163,8 @@ def test_time_window_defaults():
     assert(np.allclose(tw[2, nwb_file3.uuid], [10.0, 32.0]))
     
 
-def test_time_window_lu():
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
+def test_unit_intervals_lu():
     nwb_file = NWBFileWrapper(build_nwb_file(save_to_file=False))
     tw = TimeWindow(defaults=[123.0, 456.0], nwb_files=[nwb_file])
     tw.units_lu = node_ids_map(with_times=True)
@@ -169,6 +178,7 @@ def test_time_window_lu():
     assert(np.allclose(tw[1000, nwb_file.uuid], [0.123, 0.456]))
 
 
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
 def test_load_map_strategy():
     spikes = MappingStrategy(input_file=build_nwb_file(init_id=99854, save_to_file=True))
     assert(len(spikes.units_table) == 5)
@@ -188,53 +198,54 @@ def test_load_map_strategy():
     assert(len(spikes.units_table) == 10)
 
 
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
 def test_filter_units():
     nwbfile = build_nwb_file(init_id=99854, save_to_file=False)
     
     filter = {'location': 'VISp'}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 3)
 
     filter = {'location': 'VISp', 'quality': 'good'}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 2)
 
     filter = {'location': ['VISp', 'VISl']}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 4)
 
     filter = {'firing_rate': 20.0}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 2)
 
     filter = {'y': {'operation': '>=', 'value': 100.0}}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 4)
 
     filter = {
         'y_gt': {'column': 'y', 'operation': '>', 'value': 0.0},
         'y_lt': {'column': 'y', 'operation': '<', 'value': 200.0}
     }
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 3)
 
     filter = {'y': -100.0}
-    spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+    spikes = MappingStrategy(input_file=nwbfile, units=filter)
     assert(len(spikes.units_table) == 0)
 
     with pytest.raises(Exception):
         filter = {'bad_col': 'x'}
-        spikes = MappingStrategy(input_file=nwbfile, filter=filter)
+        spikes = MappingStrategy(input_file=nwbfile, units=filter)
         spikes.units_table
 
 
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
 def test_unit_map_strategy():
     nwbfile = build_nwb_file(save_to_file=False)
 
     spikes = UnitIdMapStrategy(
-        # time_window=[500.0, 1000.0],
         input_file=nwbfile, 
-        mapping_file=node_ids_map(with_times=True)
+        units=node_ids_map(with_times=True)
     )
     
     spikes.build_map(node_set=None)
@@ -243,9 +254,9 @@ def test_unit_map_strategy():
     assert(np.allclose(spikes.get_spike_trains(4, 'test_pop'), [110.0, 990.0]))
 
     spikes = UnitIdMapStrategy(
-        time_window=[500.0, 1000.0],
+        interval=[500.0, 1000.0],
         input_file=nwbfile, 
-        mapping_file=node_ids_map(with_times=False)
+        units=node_ids_map(with_times=False)
     )
     spikes.build_map(node_set=None)
     assert(np.allclose(spikes.get_spike_trains(0, 'test_pop'), []))
@@ -254,7 +265,7 @@ def test_unit_map_strategy():
     spikes = UnitIdMapStrategy(
         missing_ids='warn',
         input_file=nwbfile, 
-        mapping_file=node_ids_map(with_times=False)
+        units=node_ids_map(with_times=False)
     )
     spikes.build_map(node_set=None)
     assert(np.allclose(spikes.get_spike_trains(100, 'test_pop'), []))
@@ -263,12 +274,13 @@ def test_unit_map_strategy():
         spikes = UnitIdMapStrategy(
             missing_ids='fail',
             input_file=nwbfile, 
-            mapping_file=node_ids_map(with_times=False)
+            units=node_ids_map(with_times=False)
         )
         spikes.build_map(node_set=None)
         spikes.get_spike_trains(100, 'test_pop')
 
 
+@pytest.mark.skipif(not has_pynwb, reason='pynwb is not installed')
 def test_sampling_strategy():
     nwbfile = build_nwb_file(save_to_file=False)
 
@@ -310,11 +322,10 @@ def test_sampling_strategy():
 
 if __name__ == '__main__':
     test_basic()
-    # test_time_window_defaults()
-    # test_time_window_lu()
-    # build_nwb_file()
-    # test_load_map_strategy()
-    # test_filter_units()
-    # test_unit_map_strategy()
-    # test_sampling_strategy()
-
+    test_interval_defaults()
+    test_unit_intervals_lu()
+    build_nwb_file()
+    test_load_map_strategy()
+    test_filter_units()
+    test_unit_map_strategy()
+    test_sampling_strategy()

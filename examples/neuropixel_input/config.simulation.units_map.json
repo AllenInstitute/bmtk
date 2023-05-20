@@ -29,9 +29,23 @@
         "input_file": "./ecephys_cache_dir/session_798911424/session_798911424.nwb",
         "node_set": "VISl",
         "mapping": "units_map",
-        "mapping_file": "unit_ids.VISl.valid_units.csv",
+        "units": "units_maps/unit_ids.VISl.session_798911424.csv",
         "missing_ids": "fail",
-        "time_window": [10000.0, 40000.0],
+        "interval": [150000.0, 18000.0],
+        "simulation_onset": 0.0
+      },
+      "hippo_spikes": {
+        "input_type": "spikes",
+        "module": "ecephys_probe",
+        "input_file": "./ecephys_cache_dir/session_798911424/session_798911424.nwb",
+        "node_set": "hippocampus",
+        "mapping": "units_map",
+        "units": "units_maps/unit_ids.hippocampus.session_798911424.csv",
+        "missing_ids": "fail",
+        "interval": {
+          "interval_name": "drifting_gratings",
+          "interval_index": 3
+        },
         "simulation_onset": 0.0
       }
     },
@@ -58,8 +72,8 @@
           "node_types_file": "$NETWORK_DIR/VISp_node_types.csv"
         },
         {
-          "nodes_file": "$NETWORK_DIR/LGN_nodes.h5",
-          "node_types_file": "$NETWORK_DIR/LGN_node_types.csv"
+          "nodes_file": "$NETWORK_DIR/hippocampus_nodes.h5",
+          "node_types_file": "$NETWORK_DIR/hippocampus_node_types.csv"
         },
         {
           "nodes_file": "$NETWORK_DIR/VISl_nodes.h5",
@@ -74,8 +88,8 @@
           "enabled": false
         },
         {
-          "edges_file": "$NETWORK_DIR/LGN_VISp_edges.h5",
-          "edge_types_file": "$NETWORK_DIR/LGN_VISp_edge_types.csv"
+          "edges_file": "$NETWORK_DIR/hippocampus_VISp_edges.h5",
+          "edge_types_file": "$NETWORK_DIR/hippocampus_VISp_edge_types.csv"
         },
         {
           "edges_file": "$NETWORK_DIR/VISl_VISp_edges.h5",

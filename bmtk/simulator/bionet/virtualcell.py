@@ -52,12 +52,14 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        if isinstance(spike_train, SpikeTrains):
+        if isinstance(spike_train, SpikeTrains) or hasattr(spike_train, 'get_times'):
             spikes = spike_train.get_times(node_id=self.node_id)
         elif isinstance(spike_train, (list, np.ndarray, pd.Series)):
             spikes = spike_train
         elif spike_train is None:
             spikes = []
+        else:
+            spikes = None
 
         if spikes is None:
             spikes = []

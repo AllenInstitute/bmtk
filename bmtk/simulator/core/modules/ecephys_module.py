@@ -152,7 +152,7 @@ class TimeWindow(object):
 
     def _tolist(self, window):
         if isinstance(window, dict):
-            # Is a stimulus_table filter, ex. {"stimulus_name": "gratings", "ori": 90.0, ...}
+            # Is a stimulus_table filter, ex. {"interval_name": "gratings", "ori": 90.0, ...}
             return [window]
         elif isinstance(window, (tuple, list)) and len(window) == 0:
             # Is an empyt list
@@ -168,21 +168,21 @@ class TimeWindow(object):
         """Converts intervals, including windows and stim-table filters, into appropiate format [start (s), stop (s)]"""
         if isinstance(interval, dict):
             # If it is a dictionary try to find time interval by filtering on nwb.intervals, eg stimulus_table. The filter
-            # is a dictionary {'stimulus_name': 'flashes', 'col1': val1, 'col2': val2, ...}
+            # is a dictionary {'interval_name': 'flashes', 'col1': val1, 'col2': val2, ...}
             filter = interval.copy()
-            stim_name = filter.pop('stimulus_name', None)
-            stim_idx = filter.pop('stimulus_index', 'all')
+            stim_name = filter.pop('interval_name', None)
+            stim_idx = filter.pop('interval_index', 'all')
 
             # In the NWB there are separate tables for each stimulus, and sometimes they are stored in the
             # nwb as <flashes>_presentations.
             if stim_name is None:
-                io.log_exception('Stimulus table filter missing "stimulus_name"')
+                io.log_exception('Stimulus table filter missing "interval_name"')
             if stim_name in nwb_file.intervals.keys():
                 interval_df = nwb_file.intervals[stim_name].to_dataframe()
             elif stim_name + '_presentations' in nwb_file.intervals.keys():
                 interval_df = nwb_file.intervals[stim_name + '_presentations'].to_dataframe()
             else:
-                io.log_exception('stimulus name "{}" not found in {}'.format(stim_name, nwb_file.uuid))
+                io.log_exception('interval name "{}" not found in {}'.format(stim_name, nwb_file.uuid))
 
             # In most cases 
             interval_df = filter_table(interval_df, filter)
@@ -218,14 +218,13 @@ class TimeWindow(object):
 class MappingStrategy(object):
     def __init__(self, **kwargs):
         self._nwb_paths = kwargs['input_file']
-        self._filters = kwargs.get('filter', {})       
-        self._simulation_onset = kwargs.get('simulation_onset', 0.0)/1000.0
-        # self._mapping_path = kwargs.get('mapping_file', None)
+        self._filters = kwargs.get('units', {})       
+        self._simulation_onset = kwargs.get('interval_offset', 0.0)/1000.0
         self._missing_ids = kwargs.get('missing_ids', 'fail')
         self._cache_spike_times = kwargs.get('cache', False)
         self._spike_times_cache = {}
         
-        default_window = kwargs.get('time_window', None)
+        default_window = kwargs.get('interval', None)
         self._time_window = TimeWindow(defaults=default_window, nwb_files=self.nwb_files)
        
         self._units_table = None
@@ -259,7 +258,7 @@ class MappingStrategy(object):
                 merged_table = units_table if merged_table is None else pd.concat((merged_table, units_table))
 
             # if merged_table is None or len(merged_table) == 0:
-            #     io.log_exception('NeuropixelsNWBReader: Could not parse units table from nwb_file(s).')
+            #     io.log_exception('ECEphysUnitsModule: Could not parse units table from nwb_file(s).')
 
             self._units_table = merged_table
 
@@ -308,9 +307,9 @@ class UnitIdMapStrategy(MappingStrategy):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         try:
-            self._mapping_path = kwargs['mapping_file']
+            self._mapping_path = kwargs['units']
         except KeyError:
-            io.log_exception('ECEphysUnitsModule: Could not find "mapping_file" csv path for units-to-nodes mapping.')
+            io.log_exception('ECEphysUnitsModule: Could not find "units" csv path for units-to-nodes mapping.')
 
     def _filter_units_table(self, units_table):
         return units_table

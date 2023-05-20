@@ -21,10 +21,10 @@
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
       "node_set": "hippocampus",
       "mapping": "sample",
-      "time_window": [1500000.0, 1502000.0],
+      "interval": [1500000.0, 1502000.0],
       "missing_ids": "fail",
-      "simulation_onset": 0.0,
-      "filter": {
+      "interval_onset": 0.0,
+      "units": {
         "location": ["VISl", "VISp"]
       }
     },
@@ -34,15 +34,15 @@
       "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
       "node_set": "LGN",
       "mapping": "sample_with_replacement",
-      "time_window": {
-        "stimulus_name": "drifting_gratings",
-        "stimulus_index": 0,
+      "interval": {
+        "interval_name": "drifting_gratings",
+        "interval_index": 0,
         "temporal_frequency": 4.0,
         "orientation": 90
       },
       "missing_ids": "ignore",
-      "simulation_onset": 0.0,
-      "filter": {
+      "interval_onset": 0.0,
+      "units": {
         "location": "LGd",
         "isi_violations": {"operation": "<", "value": 0.5},
         "amplitude_cutoff": {"operation": "<", "value": 0.1},

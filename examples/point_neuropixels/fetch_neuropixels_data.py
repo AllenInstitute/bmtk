@@ -77,5 +77,5 @@ def get_structure_map(structure, valid_units=False, with_timestamps=False):
 
 if __name__ == '__main__':
     get_area_map('hippocampus', valid_units=False)
-    # get_structure_map('VISl', valid_units=True, with_timestamps=True)
+    get_structure_map('VISl', valid_units=True, with_timestamps=True)
 
