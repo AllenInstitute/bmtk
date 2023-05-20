@@ -29,11 +29,14 @@ except:
     has_mpi = False
 
 
-# The ndx-aibs extensions for nwb are required to load the neuropixel data modules, 
-# warning: can take some time to load
-file_dir = Path(__file__).parent
-namespace_path = (file_dir/"ndx-aibs-ecephys.namespace.yaml").resolve()
-pynwb.load_namespaces(str(namespace_path))
+try:
+    # The ndx-aibs extensions for nwb are required to load the neuropixel data modules, 
+    # warning: can take some time to load
+    file_dir = Path(__file__).parent
+    namespace_path = (file_dir/"ndx-aibs-ecephys.namespace.yaml").resolve()
+    pynwb.load_namespaces(str(namespace_path))
+except:
+    io.log_debug('ECEphysUnitsModule: Unable to load ndx-aibs-ecephys.namespace.yaml')
 
 
 class ECEphysUnitsModule(SimulatorMod):
