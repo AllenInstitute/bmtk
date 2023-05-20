@@ -288,7 +288,7 @@ def build_visl(visp):
         dynamics_params='ExcToExc.json',
         model_template='static_synapse',
         delay=2.0,
-        syn_weight=11.0
+        syn_weight=23.0
     )
 
     # Targets all biophysical inhibitory cells
@@ -298,7 +298,7 @@ def build_visl(visp):
         dynamics_params='ExcToInh.json',
         model_template='static_synapse',
         delay=2.0,
-        syn_weight=11.0
+        syn_weight=23.0
     )
 
     visal.add_edges(
@@ -307,7 +307,7 @@ def build_visl(visp):
         dynamics_params='instantaneousExc.json',
         model_template='static_synapse',
         delay=1.5,
-        syn_weight=6.0
+        syn_weight=15.0
     )
 
     print('   creating connections.')
@@ -336,7 +336,7 @@ def build_hippocampus(visp):
         dynamics_params='ExcToExc.json',
         model_template='static_synapse',
         delay=2.0,
-        syn_weight=5.0
+        syn_weight=3.0
     )
 
     # Targets all biophysical inhibitory cells
@@ -345,16 +345,17 @@ def build_hippocampus(visp):
         connection_rule=lambda *_: np.random.uniform(0, 5),
         dynamics_params='ExcToInh.json',
         model_template='static_synapse',
-        delay=0.8,
-        syn_weight=9.0
+        delay=2.0,
+        syn_weight=3.0
     )
 
     hippo.add_edges(
         target=visp.nodes(placement='outer'), source=hippo.nodes(),
         connection_rule=lambda *_: np.random.uniform(2, 6),
         dynamics_params='instantaneousExc.json',
+        model_template='static_synapse',
         delay=0.8,
-        syn_weight=15.0
+        syn_weight=3.5
     )
 
     print('   creating connections.')

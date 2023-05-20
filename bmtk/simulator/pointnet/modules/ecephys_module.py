@@ -50,13 +50,14 @@ else:
 class PointECEphysUnitsModule(ECEphysUnitsModule):
     def initialize(self, sim):
         net = sim.net
-        # print('HERE')
         sg_params={'precise_times': True}
         node_set = net.get_node_set(self._node_set)
         self._mapping_strategy.build_map(node_set=node_set)
 
         src_nodes = [node_pop for node_pop in net.node_populations if node_pop.name in node_set.population_names()]
         virt_gid_map = net._virtual_gids
+        total_spikes = 0
+        total_firing_neurons = 0
         for node_pop in src_nodes:
             if node_pop.name in net._virtual_ids_map:
                 continue
@@ -70,7 +71,8 @@ class PointECEphysUnitsModule(ECEphysUnitsModule):
                     virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
                     for node_id, nest_obj, nest_id in zip(node.node_ids, nest_objs, nest_ids):
                         spike_trains = self._mapping_strategy.get_spike_trains(node_id, '')
-                        print(spike_trains)
+                        total_spikes += len(spike_trains)
+                        total_firing_neurons += 1 if len(spike_trains) > 0 else 0
 
                         virt_node_map[node_id] = nest_id
                         set_spikes(node_id=node_id, nest_obj=nest_obj, spike_trains=spike_trains)
@@ -86,7 +88,7 @@ class PointECEphysUnitsModule(ECEphysUnitsModule):
                         set_spikes(node_id=node_id, nest_id=nest_id, spike_trains=spike_trains)
 
             net._virtual_ids_map[node_pop.name] = virt_node_map
-        
+
         # Create virtual synaptic connections
         for source_reader in src_nodes:
             for edge_pop in net.find_edges(source_nodes=source_reader.name):

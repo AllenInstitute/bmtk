@@ -14,5 +14,6 @@ def run(config_file):
 
 if __name__ == '__main__':
     # Find the appropriate config.json file
-    run('config.simulation.sample.json')
-    # run('config.simulation_perturbations.json')
+    # run('config.simulation.sample.json')
+    # run('config.simulation.units_map.json')
+    run('config.simulation.multi_sessions.json')

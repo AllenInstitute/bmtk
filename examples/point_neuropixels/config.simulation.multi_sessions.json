@@ -15,33 +15,22 @@
   },
 
   "inputs": {
-    "hippo_spikes": {
-      "input_type": "spikes",
-      "module": "ecephys_probe",
-      "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
-      "node_set": "hippocampus",
-      "mapping": "sample",
-      "time_window": [1500000.0, 1502000.0],
-      "missing_ids": "fail",
-      "simulation_onset": 0.0,
-      "filter": {
-        "location": ["VISl", "VISp"]
-      }
-    },
     "lgn_spikes": {
       "input_type": "spikes",
       "module": "ecephys_probe",
-      "input_file": "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
+      "input_file": [
+        "./ecephys_cache_dir/session_715093703/session_715093703.nwb",
+        "./ecephys_cache_dir/session_798911424/session_798911424.nwb",
+        "./ecephys_cache_dir/session_754829445/session_754829445.nwb"
+      ],
       "node_set": "LGN",
-      "mapping": "sample_with_replacement",
+      "mapping": "sample",
       "time_window": {
         "stimulus_name": "drifting_gratings",
         "stimulus_index": 0,
         "temporal_frequency": 4.0,
         "orientation": 90
       },
-      "missing_ids": "ignore",
-      "simulation_onset": 0.0,
       "filter": {
         "location": "LGd",
         "isi_violations": {"operation": "<", "value": 0.5},
@@ -77,10 +66,6 @@
       {
         "nodes_file": "$NETWORK_DIR/LGN_nodes.h5",
         "node_types_file": "$NETWORK_DIR/LGN_node_types.csv"
-      },
-      {
-        "nodes_file": "$NETWORK_DIR/hippocampus_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/hippocampus_node_types.csv"
       }
     ],
 
@@ -93,10 +78,6 @@
       {
         "edges_file": "$NETWORK_DIR/LGN_VISp_edges.h5",
         "edge_types_file": "$NETWORK_DIR/LGN_VISp_edge_types.csv"
-      },
-      {
-        "edges_file": "$NETWORK_DIR/hippocampus_VISp_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/hippocampus_VISp_edge_types.csv"
       }
     ]
   }
