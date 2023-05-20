@@ -22,8 +22,8 @@ Inputs
 Inputs can be specified in the “inputs” sections of the `simulation config <./simulators.html#configuration-files>`_,
 following the rules specified in the `SONATA Data format <https://github.com/AllenInstitute/sonata>`_.
 
-Spike-Trains
-++++++++++++
+SONATA Spike-Trains
++++++++++++++++++++
 The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have ``model_type`` value ``virtual`` and are not actual cell objects (you can’t record from them). You
 may use either a `SONATA spike file <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file>`_,
@@ -47,6 +47,37 @@ shows some examples of how to generate `spike-train files using bmtk <./analyzer
 
 * input_file: path to file contain spike-trains for one or mode node
 
+
+`Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes <ecephys_probe.html>`_
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+An increasing number of ECEPhys electrode experimental data is being release to the public in NWB format, such as the 
+`Allen Visual Coding - Neuropixels <https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html>`_ dataset or through
+`DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert this data into SONATA spike-trains to 
+encorpate into your simulations, the `ecephys_probe` spikes module can do this automatically; fetching spikes from ECEPhys units
+and converting them to virtual cells for network input into your model.
+
+For example, using a session NWB downloaded using the AllenSDK, the below example wil randomly l map "LGd" cells from the session onto our
+"LGN" population, and filter out only spikes that occur between 10.0 and 12.0 seconds
+
+.. code:: json
+
+    {
+      "inputs": {
+        "LGN_spikes": {
+          "input_type": "spikes",
+          "module": "ecephys_probe",
+          "input_file": "./session_715093703.nwb",
+          "node_set": {"population": "LGN"},
+          "mapping": "sample_with_replacement",
+          "units": {
+            "location": "LGd"
+          },
+          "interval": [10000.0, 12000.0]
+        }
+      }
+    }
+
+See the `documentation <ecephys_probe>`_ for more information and advanced features.
 
 
 `Current Clamps <current_clamps.html>`_
@@ -401,7 +432,7 @@ and the source cells are either "Scnn1a", "Rorb", or "Nr5a1" cell-types.
 You can combine "replay" inputs with virtual inputs, current and voltage clamps. And you can have multiple
 "replay" inputs in the same simulation by adding multiple subsections in the "inputs" sections of the config:
 
-.. code:: json
+.. code:: 
 
     {
       "inputs": {
