@@ -77,7 +77,7 @@ For example, using a session NWB downloaded using the AllenSDK, the below exampl
       }
     }
 
-See the `documentation <ecephys_probe>`_ for more information and advanced features.
+See the `documentation <ecephys_probe.html>`_ for more information and advanced features.
 
 
 `Current Clamps <current_clamps.html>`_
