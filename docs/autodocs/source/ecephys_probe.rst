@@ -129,8 +129,8 @@ Parameters
 * **units** - *string* or *dict* - Used to filter out which units in NWB **input_file** are to be used by module, if empty will use all possible units from file.
 * **missing_ids** - *string* - Determines what happens if a mapping fails or unit_id does not exists. Current options: fail (*default*), warn, ignore. 
 * **save_map** - *string* - A path to a csv file in the output folder where, if specified, will save the units_maps of current simulation. Will overwrite existing file if exists.
-* **interval** - *list[float (ms), float (ms)]* or *dict* or *list[intervals or dict]* - Filters spike-times in the NWB **input** file, using using a [*start*, *stop*] interval (ms), or if a dictionary is used tries to parse interval from the NWB intervals table. By default will shift interval to time-step 0.0 ms in simulation, use **interval_offset** to shift to anther value.
-* **interval_offset** - *float* - When using the **interval** option to filter spike-times, determines offset for simulation. Default value 0.0.
+* **interval** - *list[float (ms), float (ms)]* or *dict* or *list[intervals or dict]* - Filters spike-times in the NWB **input** file, using using a [*start*, *stop*] interval (ms), or if a dictionary is used tries to parse interval from the NWB intervals table. By default will shift interval to time-step 0.0 ms in simulation, use **simulation_offset** to shift to anther value.
+* **simulation_offset** - *float* - When using the **interval** option to filter spike-times, determines offset for simulation. Default value 0.0.
 
 
 Advanced Features
