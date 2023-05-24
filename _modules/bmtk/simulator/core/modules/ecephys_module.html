@@ -1,0 +1,1095 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bmtk.simulator.core.modules.ecephys_module &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.simulator.core.modules.ecephys_module</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.simulator_module</span> <span class="kn">import</span> <span class="n">SimulatorMod</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils</span> <span class="kn">import</span> <span class="n">lazy_property</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pynwb</span>
+    <span class="n">has_pynwb</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ie</span><span class="p">:</span>
+    <span class="n">has_pynwb</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">bcast</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">bcast</span>
+    <span class="n">MPI_rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">MPI_size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="n">has_mpi</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">MPI_rank</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">MPI_size</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">bcast</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">v</span>
+    <span class="n">has_mpi</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># The ndx-aibs extensions for nwb are required to load the neuropixel data modules, </span>
+    <span class="c1"># warning: can take some time to load</span>
+    <span class="n">file_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">namespace_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">file_dir</span><span class="o">/</span><span class="s2">&quot;ndx-aibs-ecephys.namespace.yaml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">pynwb</span><span class="o">.</span><span class="n">load_namespaces</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">namespace_path</span><span class="p">))</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Unable to load ndx-aibs-ecephys.namespace.yaml&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ECEphysUnitsModule"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.ECEphysUnitsModule">[docs]</a><span class="k">class</span> <span class="nc">ECEphysUnitsModule</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO:</span>
+<span class="sd">    - Have option to specify the nwb file units and/or get them from the NWB</span>
+<span class="sd">    - Have option to save units-node mapping to output folder</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_set</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;node_set&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_pynwb</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: pynwb is not installed (pip install pynwb), unable to use module.&#39;</span><span class="p">)</span>
+       
+        <span class="c1"># Load a Strategy for mapping SONATA node_ids to NWB unit_ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">,</span> <span class="s1">&#39;invalid_strategy&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;units_map&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_strategy</span> <span class="o">=</span> <span class="n">UnitIdMapStrategy</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_without_replacement&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_strategy</span> <span class="o">=</span> <span class="n">SamplingStrategy</span><span class="p">(</span><span class="n">with_replacement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;sample_with_replacement&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_strategy</span> <span class="o">=</span> <span class="n">SamplingStrategy</span><span class="p">(</span><span class="n">with_replacement</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Invalid &quot;mapping&quot; parameters, options: units_map, sample, sample_with_replacement&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ECEphysUnitsModule.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.ECEphysUnitsModule.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="NWBFileWrapper"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.NWBFileWrapper">[docs]</a><span class="k">class</span> <span class="nc">NWBFileWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1"># A Simple wrapper class for nwb files, mainly to keep track of file-path which I can&#39;t get from pynwb</span>
+    <span class="c1"># TODO: Implement a Singleton so that the same nwb file isn&#39;t loaded multiple times</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nwb_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">NWBFile</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">nwb_path</span><span class="o">.</span><span class="n">identifier</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">nwb_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">nwb_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span>
+    
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;_io&#39;</span><span class="p">],</span> <span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimeWindow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.TimeWindow">[docs]</a><span class="k">class</span> <span class="nc">TimeWindow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for dealing with different strategies for storing and intrepreting time windows intervals [start, stop], </span>
+<span class="sd">    mainly for use in filtering spike times. Including converting between seconds/miliseconds, parsing an NWB stimulus </span>
+<span class="sd">    table, and look up for individual unit time, and dealing with defaults. To initialize::</span>
+
+<span class="sd">        tw = TimeWindow(defaults=[interval1, interval2, ...], nwb_files=[session1.nwb, session2.nwb, ...])</span>
+
+<span class="sd">    Where interval&lt;i&gt; is a time-window associated with all unit spikes in session&lt;i&gt;.nwb, and can include None (in which</span>
+<span class="sd">    case it will not filter unit spike times).</span>
+
+<span class="sd">    If individual units will have unique time intervals then you can pass in a pandas DataFrame with columns </span>
+<span class="sd">    [unit_ids, start_times, stop_times], with values in ms::</span>
+
+<span class="sd">        tw.units_lu = units_times_table_df</span>
+
+<span class="sd">    And to fetch the time window associated with unit, for example unit_id 9999 in session_0.nwb, then call::</span>
+
+<span class="sd">        window = tw[9999, &#39;session_0.nwb&#39;]</span>
+
+<span class="sd">    If will first check to see if unit 9999 has a special [start_time, stop_time] in units_lu table, and if not then fall</span>
+<span class="sd">    back to the default for &#39;session_0.nwb&#39;, and in seconds. If unit_id/default_session is then it returns a None value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nwb_files</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units_lu</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_windows</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversion_factor</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">1000.0</span>
+
+        <span class="c1"># By requestion, the &quot;time_window&quot; option can </span>
+        <span class="c1">#  - None </span>
+        <span class="c1">#  - a single window; &quot;time_window&quot;: [100, 200] </span>
+        <span class="c1">#  - A stim_table filter: {stim_name: gratings, ori: 90.0, tf: 2.0, ...}</span>
+        <span class="c1">#  - one unique window for each nwb_ids/files; &quot;time_window&quot;: [[0, 100], [300, 400], ...]</span>
+        <span class="c1"># To handle this we will 1) convert each possible option into a list of 0, 1, or more windows. 2) Check</span>
+        <span class="c1"># that the num of time windows makes sense for the number of nwb_ids/files. And 3) Create a map of</span>
+        <span class="c1"># defaults for each nwb_ids/file</span>
+        <span class="k">if</span> <span class="n">defaults</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_windows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tolist</span><span class="p">(</span><span class="n">defaults</span><span class="p">)</span>
+            <span class="n">n_windows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_windows</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n_windows</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">nwb_files</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_windows</span><span class="p">:</span>
+                <span class="c1"># There can be no default time window, or one default for all nwb_files, otherwise the number</span>
+                <span class="c1"># of time_windows must correspond to the number of nwb_files</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Cannot match each &quot;time_window&quot; with the &quot;input_file&quot;s.&#39;</span><span class="p">)</span>
+        
+            <span class="k">if</span> <span class="n">n_windows</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># convert [interal] -&gt; [interval, interval, interval, ...]</span>
+                <span class="n">time_windows</span> <span class="o">=</span> <span class="n">time_windows</span><span class="o">*</span><span class="n">n_windows</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_default_windows</span> <span class="o">=</span> <span class="p">{</span><span class="n">nwb</span><span class="o">.</span><span class="n">uuid</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_tw</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">nwb</span><span class="p">)</span> <span class="k">for</span> <span class="n">tw</span><span class="p">,</span> <span class="n">nwb</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time_windows</span><span class="p">,</span> <span class="n">nwb_files</span><span class="p">)}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units_lu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units_lu</span>
+    
+    <span class="nd">@units_lu</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">units_lu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units_table</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;start_times&#39;</span> <span class="ow">in</span> <span class="n">units_table</span> <span class="ow">and</span> <span class="s1">&#39;stop_times&#39;</span> <span class="ow">in</span> <span class="n">units_table</span><span class="p">:</span>
+            <span class="n">units_table</span><span class="p">[</span><span class="s1">&#39;start_times&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units_table</span><span class="p">[</span><span class="s1">&#39;start_times&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">conversion_factor</span>
+            <span class="n">units_table</span><span class="p">[</span><span class="s1">&#39;stop_times&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units_table</span><span class="p">[</span><span class="s1">&#39;stop_times&#39;</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">conversion_factor</span>
+
+            <span class="k">if</span> <span class="s1">&#39;unit_ids&#39;</span> <span class="ow">in</span> <span class="n">units_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">units_table</span> <span class="o">=</span> <span class="n">units_table</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;unit_ids&#39;</span><span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units_lu</span> <span class="o">=</span> <span class="n">units_table</span>
+
+    <span class="k">def</span> <span class="nf">_tolist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Is a stimulus_table filter, ex. {&quot;interval_name&quot;: &quot;gratings&quot;, &quot;ori&quot;: 90.0, ...}</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">window</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Is an empyt list</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="c1"># is a list of intervals, ex. [[0.0, 100.0], [200.0, 300.0], {stim:gratings} ...]</span>
+            <span class="k">return</span> <span class="n">window</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># assume is a interval, ex. [0.0, 100.0]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">window</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_parse_tw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts intervals, including windows and stim-table filters, into appropiate format [start (s), stop (s)]&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># If it is a dictionary try to find time interval by filtering on nwb.intervals, eg stimulus_table. The filter</span>
+            <span class="c1"># is a dictionary {&#39;interval_name&#39;: &#39;flashes&#39;, &#39;col1&#39;: val1, &#39;col2&#39;: val2, ...}</span>
+            <span class="nb">filter</span> <span class="o">=</span> <span class="n">interval</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">stim_name</span> <span class="o">=</span> <span class="nb">filter</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;interval_name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">stim_idx</span> <span class="o">=</span> <span class="nb">filter</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;interval_index&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+            <span class="c1"># In the NWB there are separate tables for each stimulus, and sometimes they are stored in the</span>
+            <span class="c1"># nwb as &lt;flashes&gt;_presentations.</span>
+            <span class="k">if</span> <span class="n">stim_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Stimulus table filter missing &quot;interval_name&quot;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stim_name</span> <span class="ow">in</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">intervals</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">interval_df</span> <span class="o">=</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">intervals</span><span class="p">[</span><span class="n">stim_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">stim_name</span> <span class="o">+</span> <span class="s1">&#39;_presentations&#39;</span> <span class="ow">in</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">intervals</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">interval_df</span> <span class="o">=</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">intervals</span><span class="p">[</span><span class="n">stim_name</span> <span class="o">+</span> <span class="s1">&#39;_presentations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;interval name &quot;</span><span class="si">{}</span><span class="s1">&quot; not found in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stim_name</span><span class="p">,</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">uuid</span><span class="p">))</span>
+
+            <span class="c1"># In most cases </span>
+            <span class="n">interval_df</span> <span class="o">=</span> <span class="n">filter_table</span><span class="p">(</span><span class="n">interval_df</span><span class="p">,</span> <span class="nb">filter</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">interval_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span>
+            
+            <span class="k">if</span> <span class="n">stim_idx</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">start_time</span> <span class="o">=</span> <span class="n">interval_df</span><span class="p">[</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                <span class="n">stop_time</span> <span class="o">=</span> <span class="n">interval_df</span><span class="p">[</span><span class="s1">&#39;stop_time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">start_time</span> <span class="o">=</span> <span class="n">interval_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">stim_idx</span><span class="p">][</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span>
+                <span class="n">stop_time</span> <span class="o">=</span> <span class="n">interval_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">stim_idx</span><span class="p">][</span><span class="s1">&#39;stop_time&#39;</span><span class="p">]</span>
+
+            <span class="c1"># In the NWB stim_table and units_tables uses seconds, do not convert time-window</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Is an interval [stop, start] that is entered in manually in units of ms, convert </span>
+            <span class="c1"># to seconds so it matches nwb spike_times units (s)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unit_info</span><span class="p">):</span>
+        <span class="n">unit_id</span><span class="p">,</span> <span class="n">nwb_uuid</span> <span class="o">=</span> <span class="n">unit_info</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">unit_info</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units_lu</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">unit_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_lu</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_lu</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">unit_id</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">unit</span><span class="p">[</span><span class="s1">&#39;start_times&#39;</span><span class="p">],</span> <span class="n">unit</span><span class="p">[</span><span class="s1">&#39;stop_times&#39;</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_windows</span> <span class="ow">and</span> <span class="n">nwb_uuid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_windows</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_windows</span><span class="p">[</span><span class="n">nwb_uuid</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="MappingStrategy"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.MappingStrategy">[docs]</a><span class="k">class</span> <span class="nc">MappingStrategy</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_paths</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="p">{})</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_onset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;interval_offset&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_missing_ids</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;missing_ids&#39;</span><span class="p">,</span> <span class="s1">&#39;fail&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_spike_times</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_times_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="n">default_window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;interval&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">defaults</span><span class="o">=</span><span class="n">default_window</span><span class="p">,</span> <span class="n">nwb_files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nwb_files</span><span class="p">)</span>
+       
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units_table</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@lazy_property</span>
+    <span class="k">def</span> <span class="nf">nwb_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_paths</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_paths</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_paths</span><span class="p">]</span> 
+
+        <span class="n">nwb_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nwb_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_paths</span><span class="p">:</span>            
+            <span class="n">nwb_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NWBFileWrapper</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nwb_files</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units2nodes_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">units_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units_table</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Combine the units and channels table from the nwb file</span>
+            <span class="n">merged_table</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">nwb_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nwb_files</span><span class="p">:</span>
+                <span class="n">units_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_units_table</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">)</span>
+                <span class="n">units_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_units_table</span><span class="p">(</span><span class="n">units_table</span><span class="p">)</span>
+                <span class="n">units_table</span> <span class="o">=</span> <span class="n">units_table</span><span class="p">[[</span><span class="s1">&#39;spike_times&#39;</span><span class="p">]]</span>
+                <span class="n">units_table</span><span class="p">[</span><span class="s1">&#39;nwb_uid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">uuid</span>
+                <span class="n">merged_table</span> <span class="o">=</span> <span class="n">units_table</span> <span class="k">if</span> <span class="n">merged_table</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">merged_table</span><span class="p">,</span> <span class="n">units_table</span><span class="p">))</span>
+
+            <span class="c1"># if merged_table is None or len(merged_table) == 0:</span>
+            <span class="c1">#     io.log_exception(&#39;ECEphysUnitsModule: Could not parse units table from nwb_file(s).&#39;)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units_table</span> <span class="o">=</span> <span class="n">merged_table</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units_table</span>
+    
+    <span class="k">def</span> <span class="nf">_load_units_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">):</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;unit_id&#39;</span><span class="p">,</span> <span class="s1">&#39;peak_channel_id&#39;</span><span class="p">:</span> <span class="s1">&#39;channel_id&#39;</span><span class="p">})</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">nwb_file</span><span class="o">.</span><span class="n">electrodes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">channels</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;channel_id&#39;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">units</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;channel_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;unit_id&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_filter_units_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units_table</span><span class="p">):</span>
+        <span class="n">units_table</span> <span class="o">=</span> <span class="n">filter_table</span><span class="p">(</span><span class="n">units_table</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">units_table</span>        
+
+<div class="viewcode-block" id="MappingStrategy.build_map"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.MappingStrategy.build_map">[docs]</a>    <span class="k">def</span> <span class="nf">build_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MappingStrategy.get_spike_trains"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.MappingStrategy.get_spike_trains">[docs]</a>    <span class="k">def</span> <span class="nf">get_spike_trains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">source_population</span><span class="p">):</span>
+        <span class="c1"># TODO: Is it worth caching spike-trains so we don&#39;t have to do a lookup + filtering </span>
+        <span class="c1"># every time?</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;ECEphysUnitsModule: Could not find mapping for node_id </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_ids</span> <span class="o">==</span> <span class="s1">&#39;fail&#39;</span><span class="p">:</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> 
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_ids</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
+               <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+               <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="n">unit_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">unit_id</span><span class="p">][</span><span class="s1">&#39;spike_times&#39;</span><span class="p">])</span>
+        <span class="n">nwb_uid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">unit_id</span><span class="p">][</span><span class="s1">&#39;nwb_uid&#39;</span><span class="p">]</span>
+        <span class="n">time_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">[</span><span class="n">unit_id</span><span class="p">,</span> <span class="n">nwb_uid</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span><span class="p">[</span>
+                <span class="p">(</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">spike_times</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">spike_times</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">]</span>
+            <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span> <span class="o">-</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_onset</span>
+        
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to miliseconds       </span>
+        <span class="k">return</span> <span class="n">spike_times</span></div></div>
+
+
+<div class="viewcode-block" id="UnitIdMapStrategy"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.UnitIdMapStrategy">[docs]</a><span class="k">class</span> <span class="nc">UnitIdMapStrategy</span><span class="p">(</span><span class="n">MappingStrategy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Could not find &quot;units&quot; csv path for units-to-nodes mapping.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_filter_units_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units_table</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">units_table</span>
+
+<div class="viewcode-block" id="UnitIdMapStrategy.build_map"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.UnitIdMapStrategy.build_map">[docs]</a>    <span class="k">def</span> <span class="nf">build_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># TODO: Include population name</span>
+            <span class="n">mapping_file_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_path</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span> <span class="o">=</span> <span class="n">mapping_file_df</span><span class="p">[[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">,</span> <span class="s1">&#39;unit_ids&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s1">&#39;unit_ids&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;start_times&#39;</span> <span class="ow">in</span> <span class="n">mapping_file_df</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="o">.</span><span class="n">units_lu</span> <span class="o">=</span> <span class="n">mapping_file_df</span><span class="p">[[</span><span class="s1">&#39;unit_ids&#39;</span><span class="p">,</span> <span class="s1">&#39;start_times&#39;</span><span class="p">,</span> <span class="s1">&#39;stop_times&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;unit_ids&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">UnicodeDecodeError</span><span class="p">):</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: </span><span class="si">{}</span><span class="s1"> should be a space separated file with columns &quot;node_ids&quot;, &quot;unit_ids&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_path</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="SamplingStrategy"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.SamplingStrategy">[docs]</a><span class="k">class</span> <span class="nc">SamplingStrategy</span><span class="p">(</span><span class="n">MappingStrategy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_replacement</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_with_replacement</span> <span class="o">=</span> <span class="n">with_replacement</span>
+
+<div class="viewcode-block" id="SamplingStrategy.build_map"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.SamplingStrategy.build_map">[docs]</a>    <span class="k">def</span> <span class="nf">build_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
+        <span class="n">node_ids</span> <span class="o">=</span> <span class="n">node_set</span><span class="o">.</span><span class="n">node_ids</span>
+        <span class="n">unit_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_table</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># There is no way to randomly map a subset of possible unit_ids to all possible</span>
+        <span class="c1"># node_ids. Ignore, warn user, or fail depending on config file option</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_with_replacement</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">unit_ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_missing_ids</span> <span class="o">==</span> <span class="s1">&#39;fail&#39;</span><span class="p">:</span>
+                <span class="c1"># Fail application</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Not enough NWB unit_ids to map onto node_set.&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Not all node_ids will have spikes, TODO: Make do this at random?            </span>
+            <span class="n">node_ids</span> <span class="o">=</span> <span class="n">node_ids</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">unit_ids</span><span class="p">)]</span>
+
+        <span class="c1"># When running with MPI, need to make sure the sampling of the unit_id maps is</span>
+        <span class="c1"># consistent across all cores. Shuffle on rank 0 and broadcast the new order to all</span>
+        <span class="c1"># other ranks </span>
+        <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">shuffled_unit_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="n">unit_ids</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">node_ids</span><span class="p">),</span> <span class="n">replace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_with_replacement</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shuffled_unit_ids</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">shuffled_unit_ids</span> <span class="o">=</span> <span class="n">bcast</span><span class="p">(</span><span class="n">shuffled_unit_ids</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Include population name</span>
+        <span class="c1"># Creates an mapping between SONTA node_ids and NWB unit_ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units2nodes_map</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">node_ids</span><span class="p">,</span>
+            <span class="s1">&#39;unit_ids&#39;</span><span class="p">:</span> <span class="n">shuffled_unit_ids</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s1">&#39;unit_ids&#39;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="filter_table"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.filter_table">[docs]</a><span class="k">def</span> <span class="nf">filter_table</span><span class="p">(</span><span class="n">table_df</span><span class="p">,</span> <span class="n">filters_dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">filters_dict</span><span class="p">:</span>
+        <span class="c1"># Filter out only those specified units</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">filter_val</span> <span class="ow">in</span> <span class="n">filters_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">table_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">filter_val</span>
+                
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_val</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">table_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">filter_val</span><span class="p">)</span>
+                
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">col</span> <span class="o">=</span> <span class="n">filter_val</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;column&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">)</span>
+                    <span class="n">op</span> <span class="o">=</span> <span class="n">filter_val</span><span class="p">[</span><span class="s1">&#39;operation&#39;</span><span class="p">]</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">filter_val</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
+                    <span class="n">expr</span> <span class="o">=</span> <span class="s1">&#39;table_df[&quot;</span><span class="si">{}</span><span class="s1">&quot;] </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">table_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">==</span> <span class="n">filter_val</span>
+            
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+                <span class="n">col</span> <span class="o">=</span> <span class="n">filter_val</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;column&#39;</span><span class="p">,</span> <span class="n">col_name</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_val</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">col_name</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;ECEphysUnitsModule: Could not find &quot;</span><span class="si">{}</span><span class="s1">&quot; column in units/electrodes table.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">))</span>
+
+        <span class="n">table_df</span> <span class="o">=</span> <span class="n">table_df</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">table_df</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../how_to_cite.html">How to Cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

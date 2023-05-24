@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -698,7 +697,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="check_magic"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.utils.check_magic">[docs]</a><span class="k">def</span> <span class="nf">check_magic</span><span class="p">(</span><span class="n">hdf5_file</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check the magic attribute exists according to the sonata format&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check the magic attribute exists according to the sonata format&quot;&quot;&quot;</span>
     <span class="n">h5_file_obj</span> <span class="o">=</span> <span class="n">load_h5</span><span class="p">(</span><span class="n">hdf5_file</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">MAGIC_ATTR</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">h5_file_obj</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> missing top-level </span><span class="se">\&quot;</span><span class="si">{}</span><span class="se">\&quot;</span><span class="s1"> attribute.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h5_file_obj</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">MAGIC_ATTR</span><span class="p">))</span>
@@ -805,7 +804,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

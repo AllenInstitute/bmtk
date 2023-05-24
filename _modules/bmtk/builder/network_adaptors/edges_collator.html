@@ -1,17 +1,16 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.builder.network_adaptors.edges_collator &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.builder.network_adaptors.edges_collator &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -624,7 +623,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 
-<span class="kn">from</span> <span class="nn">..builder_utils</span> <span class="kn">import</span> <span class="n">mpi_rank</span><span class="p">,</span> <span class="n">mpi_size</span><span class="p">,</span> <span class="n">barrier</span>
+<span class="kn">from</span> <span class="nn">..builder_utils</span> <span class="kn">import</span> <span class="n">mpi_rank</span><span class="p">,</span> <span class="n">mpi_size</span><span class="p">,</span> <span class="n">barrier</span><span class="p">,</span> <span class="n">build_time_uuid</span>
 <span class="kn">from</span> <span class="nn">.edge_props_table</span> <span class="kn">import</span> <span class="n">EdgeTypesTableMPI</span>
 
 
@@ -632,7 +631,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="EdgesCollatorSingular"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular">[docs]</a><span class="k">class</span> <span class="nc">EdgesCollatorSingular</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process</span>
 <span class="sd">    of saving into a SONATA edges file. All the actual edges may be stored across diffrent edge-type-tables/mpi-ranks</span>
 <span class="sd">    and needs to be merged together (and possibly sorted) before writing to HDF5 file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -760,7 +759,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_data</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">group_name</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="EdgesCollatorSingular.sort"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">,</span> <span class="n">sort_group_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;In memory sort of the dataset</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;In memory sort of the dataset</span>
 
 <span class="sd">        :param sort_by:</span>
 <span class="sd">        :param sort_group_properties:</span>
@@ -807,7 +806,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI">[docs]</a><span class="k">class</span> <span class="nc">EdgesCollatorMPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;For collecting all the different edge-types tables to make writing edges and iterating over the entire network</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;For collecting all the different edge-types tables to make writing edges and iterating over the entire network</span>
 <span class="sd">    easier. Similar to above but for when edge-rules data are split across multiple MPI ranks/processors. Can also</span>
 <span class="sd">    be utlized for single core building when the network is too big to store in memory at once.</span>
 
@@ -828,6 +827,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># reference to open readable hdf5 handles.</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">can_sort</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="EdgesCollatorMPI.get_tmp_table_path"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_tmp_table_path">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">builder_uuid</span> <span class="o">=</span> <span class="n">build_time_uuid</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">&#39;.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">builder_uuid</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EdgesCollatorMPI.process"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">barrier</span><span class="p">()</span>
@@ -925,7 +929,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="s1">&#39;unprocessed&#39;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">:</span> <span class="p">{}}</span>
             <span class="p">}</span>
 
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_h5</span><span class="p">:</span>
+        <span class="c1"># with h5py.File(&#39;.edge_types_table.processed.{}.h5&#39;.format(mpi_rank), &#39;w&#39;) as local_h5:</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_h5</span><span class="p">:</span>
             <span class="c1"># WARNING: Trying to process the data back into the .edge_types_table*h5 being read from will randomly cause</span>
             <span class="c1">#          resource unavailble errors.</span>
             <span class="n">local_grp_sizes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># count the size of each property model group for all edge-types on this rank</span>
@@ -988,7 +993,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to sort edges.&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_group_metadata"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_group_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks.&quot;&quot;&quot;</span>
         <span class="n">ret_props</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">prop_size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># There has to be a better way of doing this</span>
@@ -1017,7 +1022,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">idx_beg</span> <span class="o">=</span> <span class="n">idx_end</span></div>
 
     <span class="k">def</span> <span class="nf">_get_processed_h5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="n">h5_path</span> <span class="o">=</span> <span class="s1">&#39;.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
+        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span> <span class="c1">#  &#39;.edge_types_table.processed.{}.h5&#39;.format(rank)</span>
         <span class="k">if</span> <span class="n">h5_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span><span class="p">[</span><span class="n">h5_path</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -1066,14 +1071,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># clean up .h5 file that is saved to disk</span>
-        <span class="n">tmp_h5_path</span> <span class="o">=</span> <span class="s1">&#39;.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">)</span>
+        <span class="n">tmp_h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">)</span> <span class="c1"># &#39;.edge_types_table.processed.{}.h5&#39;.format(mpi_rank)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to delete temp edges file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">))</span></div>
 
-
+            
 <div class="viewcode-block" id="EdgesCollator"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollator">[docs]</a><span class="k">class</span> <span class="nc">EdgesCollator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1100,12 +1105,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../how_to_cite.html">How to Cite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
@@ -1125,7 +1148,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

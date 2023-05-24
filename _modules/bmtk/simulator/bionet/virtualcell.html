@@ -642,8 +642,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span>
 
 
 <div class="viewcode-block" id="VirtualCell"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.virtualcell.VirtualCell">[docs]</a><span class="k">class</span> <span class="nc">VirtualCell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -670,7 +672,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="VirtualCell.set_stim"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.virtualcell.VirtualCell.set_stim">[docs]</a>    <span class="k">def</span> <span class="nf">set_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim_prop</span><span class="p">,</span> <span class="n">spike_train</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the spike trains for each individual cell.&quot;&quot;&quot;</span>
-        <span class="n">spikes</span> <span class="o">=</span> <span class="n">spike_train</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_train</span><span class="p">,</span> <span class="n">SpikeTrains</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spike_train</span><span class="p">,</span> <span class="s1">&#39;get_times&#39;</span><span class="p">):</span>
+            <span class="n">spikes</span> <span class="o">=</span> <span class="n">spike_train</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_train</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
+            <span class="n">spikes</span> <span class="o">=</span> <span class="n">spike_train</span>
+        <span class="k">elif</span> <span class="n">spike_train</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spikes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spikes</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">spikes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">spikes</span> <span class="o">=</span> <span class="p">[]</span>

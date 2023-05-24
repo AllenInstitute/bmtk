@@ -625,6 +625,75 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
+<section id="module-bmtk.simulator.bionet.modules.comsol">
+<span id="bmtk-simulator-bionet-modules-comsol-module"></span><h2>bmtk.simulator.bionet.modules.comsol module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.comsol" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.comsol.ComsolMod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.comsol.</span></span><span class="sig-name descname"><span class="pre">ComsolMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comsol_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waveform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_nrn_mechanisms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NN'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/comsol.html#ComsolMod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.comsol.ComsolMod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulatorMod</span></code></a></p>
+<p>__init__: COMSOL output .txt file is loaded as pandas dataframe and then used to set up nearest neighbour (NN) interpolation object to create interpolation map
+:param comsol_file: path of .txt file. Coordinates in [um], potentials in [mV], timepoints in [s].
+:param waveform: path of .csv file as created with examples/bio_components/waveform.py</p>
+<blockquote>
+<div><p>If specified, comsol_file should contain output from stationary study and waveform is defined through this parameter.
+If not specified, comsol_file should contain output from time-dependent study.</p>
+</div></blockquote>
+<p>initialise: An interpolation map is defined of every segment and stored in dictionary self._NN, done iteratively for every cell/gid.
+The interpolation map points (the center of) every segment to its NN. It is calculated once here and then used in every step. 
+Next, the COMSOL output is also interpolated in time to match the timesteps in BMTK.</p>
+<p>step: The interpolation map is used to point each segment to its NN and find the corresponding voltage value in the comsol df.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.comsol.ComsolMod.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/comsol.html#ComsolMod.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.comsol.ComsolMod.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim</strong> – Simulation object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.comsol.ComsolMod.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/comsol.html#ComsolMod.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.comsol.ComsolMod.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called on every single time step (dt).</p>
+<p>The step method is used for anything that should be recorded or changed continously. dt is determined during
+the setup, and the sim parameter can be used to access simulation, network and individual cell properties</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sim</strong> – Simulation object.</p></li>
+<li><p><strong>tstep</strong> – The decrete time-step</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bmtk.simulator.bionet.modules.ecephys_module">
+<span id="bmtk-simulator-bionet-modules-ecephys-module-module"></span><h2>bmtk.simulator.bionet.modules.ecephys_module module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.ecephys_module" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.ecephys_module.BioECEphysUnitsModule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.ecephys_module.</span></span><span class="sig-name descname"><span class="pre">BioECEphysUnitsModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecephys_module.html#BioECEphysUnitsModule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecephys_module.BioECEphysUnitsModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.ecephys_module.ECEphysUnitsModule" title="bmtk.simulator.core.modules.ecephys_module.ECEphysUnitsModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">ECEphysUnitsModule</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.ecephys_module.BioECEphysUnitsModule.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecephys_module.html#BioECEphysUnitsModule.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecephys_module.BioECEphysUnitsModule.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim</strong> – Simulation object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-bmtk.simulator.bionet.modules.ecp">
 <span id="bmtk-simulator-bionet-modules-ecp-module"></span><h2>bmtk.simulator.bionet.modules.ecp module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.ecp" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
@@ -708,6 +777,65 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.ecp.RecXElectrode.get_transfer_resistance">
 <span class="sig-name descname"><span class="pre">get_transfer_resistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#RecXElectrode.get_transfer_resistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.RecXElectrode.get_transfer_resistance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bmtk.simulator.bionet.modules.iclamp">
+<span id="bmtk-simulator-bionet-modules-iclamp-module"></span><h2>bmtk.simulator.bionet.modules.iclamp module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.iclamp" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.AmpsReaderNRN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.iclamp.</span></span><span class="sig-name descname"><span class="pre">AmpsReaderNRN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#AmpsReaderNRN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.AmpsReaderNRN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.iclamp.AmpsReader" title="bmtk.simulator.core.modules.iclamp.AmpsReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">AmpsReader</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.AmpsReaderNRN.create_clamps">
+<span class="sig-name descname"><span class="pre">create_clamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#AmpsReaderNRN.create_clamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.AmpsReaderNRN.create_clamps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.CSVAmpReaderNRN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.iclamp.</span></span><span class="sig-name descname"><span class="pre">CSVAmpReaderNRN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#CSVAmpReaderNRN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.CSVAmpReaderNRN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.iclamp.CSVAmpReader" title="bmtk.simulator.core.modules.iclamp.CSVAmpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSVAmpReader</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.CSVAmpReaderNRN.create_clamps">
+<span class="sig-name descname"><span class="pre">create_clamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#CSVAmpReaderNRN.create_clamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.CSVAmpReaderNRN.create_clamps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.IClampMod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.iclamp.</span></span><span class="sig-name descname"><span class="pre">IClampMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">mod_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#IClampMod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.IClampMod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.iclamp.IClampMod" title="bmtk.simulator.core.modules.iclamp.IClampMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">IClampMod</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.IClampMod.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#IClampMod.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.IClampMod.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sim</strong> – Simulation object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.IClampMod.input2reader_map">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input2reader_map</span></span><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.IClampMod.input2reader_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.NWBReaderNRN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.iclamp.</span></span><span class="sig-name descname"><span class="pre">NWBReaderNRN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#NWBReaderNRN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.NWBReaderNRN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.modules.html#bmtk.simulator.core.modules.iclamp.NWBReader" title="bmtk.simulator.core.modules.iclamp.NWBReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">NWBReader</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.iclamp.NWBReaderNRN.create_clamps">
+<span class="sig-name descname"><span class="pre">create_clamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/iclamp.html#NWBReaderNRN.create_clamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.iclamp.NWBReaderNRN.create_clamps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -962,7 +1090,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <span id="bmtk-simulator-bionet-modules-record-spikes-module"></span><h2>bmtk.simulator.bionet.modules.record_spikes module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.record_spikes" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.record_spikes.</span></span><span class="sig-name descname"><span class="pre">SpikesMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file_nwb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.modules.record_spikes.</span></span><span class="sig-name descname"><span class="pre">SpikesMod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file_csv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_file_nwb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_to_disk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spikes_sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'a'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gzip'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulatorMod</span></code></a></p>
 <p>Module use for saving spikes</p>
 <dl class="py method">

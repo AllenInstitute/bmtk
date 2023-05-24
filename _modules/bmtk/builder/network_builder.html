@@ -903,7 +903,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NetworkBuilder.save"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NetworkBuilder.save"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file</span>
 <span class="sd">        names will be automatically generated based on the network names.</span>
 
@@ -911,10 +911,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">        :param output_dir: string, directory where network files will be generated. Default, current working directory.</span>
 <span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        :param compression: Compression algorithm used to save hdf5 files. &#39;gzip&#39; (default), &#39;lzf&#39;, &#39;none&#39;, or None.</span>
+<span class="sd">            you can also specify an integer (1-9) to specify the level of gzip compression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="NetworkBuilder.save_nodes"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="NetworkBuilder.save_nodes"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the instantiated nodes in SONATA format files.</span>
 
 <span class="sd">        :param nodes_file_name: file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</span>
@@ -922,16 +924,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">            &lt;network.name&gt;_node_types.csv</span>
 <span class="sd">        :param output_dir: Directory where network files will be generated. Default, current working directory.</span>
 <span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        :param compression: Compression algorithm used to save hdf5 files. &#39;gzip&#39; (default), &#39;lzf&#39;, &#39;none&#39;, or None.</span>
+<span class="sd">            you can also specify an integer (1-9) to specify the level of gzip compression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span>
             <span class="n">nodes_file_name</span><span class="o">=</span><span class="n">nodes_file_name</span><span class="p">,</span>
             <span class="n">node_types_file_name</span><span class="o">=</span><span class="n">node_types_file_name</span><span class="p">,</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
-            <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span>
+            <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">,</span>
+            <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="NetworkBuilder.save_edges"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                   <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the instantiated edges in SONATA format files.</span>
 
 <span class="sd">        :param edges_file_name: file-name of hdf5 edges file. By default will use &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</span>
@@ -943,6 +948,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param name: Name of edge populations, eg /edges/&lt;name&gt; in edges.h5 file.</span>
 <span class="sd">        :param force_build: Force to (re)build the connection matrix if it hasn&#39;t already been built.</span>
 <span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        :param compression: Compression algorithm used to save hdf5 files. &#39;gzip&#39; (default), &#39;lzf&#39;, &#39;none&#39;, or None.</span>
+<span class="sd">            you can also specify an integer (1-9) to specify the level of gzip compression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span>
             <span class="n">edges_file_name</span><span class="o">=</span><span class="n">edges_file_name</span><span class="p">,</span>
@@ -952,7 +959,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">trg_network</span><span class="o">=</span><span class="n">trg_network</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">force_build</span><span class="o">=</span><span class="n">force_build</span><span class="p">,</span>
-            <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span>
+            <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">,</span>
+            <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="NetworkBuilder.import_nodes"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network_builder.NetworkBuilder.import_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">import_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>

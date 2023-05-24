@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -718,6 +717,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">preprocess_edge_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">edge_population</span><span class="p">):</span>
         <span class="n">edge_types_table</span> <span class="o">=</span> <span class="n">edge_population</span><span class="o">.</span><span class="n">types_table</span>
         <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_population</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
+        <span class="n">cached_dynamics</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">edge_type_ids</span><span class="p">:</span>
             <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
@@ -729,12 +729,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
                 <span class="c1"># see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
                 <span class="c1"># cell_model loader function handle the extension.</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
-                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="c1"># TODO: Check dynamics_params before</span>
-                    <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find edge dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
+                <span class="c1"># Cache the loaded dynamics_params to minimize file access.</span>
+                <span class="k">if</span> <span class="n">params_path</span> <span class="ow">in</span> <span class="n">cached_dynamics</span><span class="p">:</span>
+                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cached_dynamics</span><span class="p">[</span><span class="n">params_path</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                        <span class="n">cached_dynamics</span><span class="p">[</span><span class="n">params_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="c1"># TODO: Check dynamics_params before</span>
+                        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find edge dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
 
             <span class="c1"># Split target_sections</span>
             <span class="k">if</span> <span class="s1">&#39;target_sections&#39;</span> <span class="ow">in</span> <span class="n">edge_type</span><span class="p">:</span>
@@ -903,7 +908,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

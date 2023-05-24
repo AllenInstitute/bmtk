@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
-    <script src="../../../../../_static/jquery.js"></script>
-    <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
@@ -669,7 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="load_sonata_file"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_readers.load_sonata_file">[docs]</a><span class="k">def</span> <span class="nf">load_sonata_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Loads a Sonata file reader, making sure it matches the correct version.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads a Sonata file reader, making sure it matches the correct version.</span>
 
 <span class="sd">    :param path:</span>
 <span class="sd">    :param version:</span>
@@ -795,7 +794,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">pop_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">sort_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_sorting_map</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span>
             <span class="n">nodes_indices</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">node_ids_ds</span> <span class="o">=</span> <span class="n">pop_grp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATASET_node_ids</span><span class="p">]</span>
+            <span class="c1"># loop on h5 is slow, so convert it to np before the loop.</span>
+            <span class="n">node_ids_ds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop_grp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_DATASET_node_ids</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
                 <span class="n">indx_beg</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">last_id</span> <span class="o">=</span> <span class="n">node_ids_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -986,7 +986,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="SonataOldReader"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader">[docs]</a><span class="k">class</span> <span class="nc">SonataOldReader</span><span class="p">(</span><span class="n">SonataSTReader</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Older version of SONATA</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Older version of SONATA</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SonataOldReader.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1012,7 +1012,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="EmptySonataReader"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader">[docs]</a><span class="k">class</span> <span class="nc">EmptySonataReader</span><span class="p">(</span><span class="n">SpikeTrainsReadOnlyAPI</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A Hack that is needed for when a simulation produces a file with no spikes, since there won&#39;t/can&#39;t be</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Hack that is needed for when a simulation produces a file with no spikes, since there won&#39;t/can&#39;t be</span>
 <span class="sd">    &lt;population_name&gt; subgroup and/or gids/timestamps datasets.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1356,7 +1356,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

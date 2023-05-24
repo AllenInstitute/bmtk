@@ -717,7 +717,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">cache_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">cache_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">_get_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
             <span class="c1"># Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR</span>
             <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -745,6 +745,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">gid_col</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">time_col</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">compression</span> <span class="o">=</span> <span class="n">compression</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">sort_order</span><span class="o">.</span><span class="n">none</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spikes_sort_order</span> <span class="k">else</span> <span class="n">sort_order_lu</span><span class="p">[</span><span class="n">spikes_sort_order</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="kc">None</span>
@@ -767,7 +768,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># TODO: reimplement with pandas</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">,</span>
+                                         <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">compression</span><span class="p">)</span>
             <span class="c1"># io.barrier()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

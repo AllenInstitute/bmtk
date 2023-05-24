@@ -1,17 +1,16 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.builder.index_builders &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.builder.index_builders &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -654,7 +653,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">del</span> <span class="n">edges_pop_grp</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="create_index_in_memory"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.index_builders.create_index_in_memory">[docs]</a><span class="k">def</span> <span class="nf">create_index_in_memory</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">index_type</span><span class="p">,</span> <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="create_index_in_memory"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.index_builders.create_index_in_memory">[docs]</a><span class="k">def</span> <span class="nf">create_index_in_memory</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">index_type</span><span class="p">,</span> <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">col_to_index</span><span class="p">,</span> <span class="n">index_grp_name</span> <span class="o">=</span> <span class="n">_get_names</span><span class="p">(</span><span class="n">index_type</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">edges_h5</span><span class="p">:</span>
@@ -694,7 +693,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;lu_ids&#39;</span><span class="p">)</span>
 
         <span class="n">index_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;range_to_edge_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">r2e_table_df</span><span class="p">[[</span><span class="s1">&#39;range_beg&#39;</span><span class="p">,</span> <span class="s1">&#39;range_end&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-                                 <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span> <span class="c1"># np.uint64)</span>
+                                 <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span> <span class="c1"># np.uint64)</span>
 
         <span class="c1"># create a map to the range_to_edge_id dataset from id --&gt; blocks ranges. The id value is implicitly equal to</span>
         <span class="c1"># the index</span>
@@ -715,7 +714,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">i2r_table_df</span> <span class="o">=</span> <span class="n">i2r_table_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="n">i2r_table_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="n">index_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;node_id_to_range&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">i2r_table_df</span><span class="p">[[</span><span class="s1">&#39;range_beg&#39;</span><span class="p">,</span> <span class="s1">&#39;range_end&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-                                 <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span></div>
+                                 <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="create_index_on_disk"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.index_builders.create_index_on_disk">[docs]</a><span class="k">def</span> <span class="nf">create_index_on_disk</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">index_type</span><span class="p">,</span> <span class="n">force_rebuild</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -985,12 +984,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_to_cite.html">How to Cite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
@@ -1010,7 +1027,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

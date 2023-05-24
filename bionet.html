@@ -638,8 +638,8 @@ as custom hoc and NeuroML2 cell and synapse models.</p></li>
 <h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h2>
 <p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>,
 following the rules specified in the <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA Data format</a>.</p>
-<section id="spike-trains">
-<h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this heading">¶</a></h3>
+<section id="sonata-spike-trains">
+<h3>SONATA Spike-Trains<a class="headerlink" href="#sonata-spike-trains" title="Permalink to this heading">¶</a></h3>
 <p>The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> and are not actual cell objects (you can’t record from them). You
 may use either a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA spike file</a>,
@@ -661,8 +661,36 @@ shows some examples of how to generate <a class="reference external" href="./ana
 <li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
 </ul>
 </section>
-<section id="current-clamp">
-<h3>Current Clamp<a class="headerlink" href="#current-clamp" title="Permalink to this heading">¶</a></h3>
+<section id="id1">
+<h3><a class="reference external" href="ecephys_probe.html">Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes</a><a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
+<p>An increasing number of ECEPhys electrode experimental data is being release to the public in NWB format, such as the
+<a class="reference external" href="https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html">Allen Visual Coding - Neuropixels</a> dataset or through
+<a class="reference external" href="https://dandiarchive.org/">DANDI</a>. While it is possible to manually convert this data into SONATA spike-trains to
+encorpate into your simulations, the <cite>ecephys_probe</cite> spikes module can do this automatically; fetching spikes from ECEPhys units
+and converting them to virtual cells for network input into your model.</p>
+<p>For example, using a session NWB downloaded using the AllenSDK, the below example wil randomly l map “LGd” cells from the session onto our
+“LGN” population, and filter out only spikes that occur between 10.0 and 12.0 seconds</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="ecephys_probe.html">documentation</a> for more information and advanced features.</p>
+</section>
+<section id="id2">
+<h3><a class="reference external" href="current_clamps.html">Current Clamps</a><a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <p>May use one step current clamp-on multiple nodes, or have one node receive multiple current injections. Currently ;)
 only support injections at the soma.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -677,13 +705,7 @@ only support injections at the soma.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>module:  Always IClamp</p></li>
-<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
-<li><p>amp: injection in pA</p></li>
-<li><p>delay: onset of current injection in ms</p></li>
-<li><p>duration: duration of current injection in ms</p></li>
-</ul>
+<p>See <a class="reference external" href="current_clamps.html">documentation</a> for more details on using current clamp inputs.</p>
 </section>
 <section id="voltage-clamp">
 <h3>Voltage Clamp<a class="headerlink" href="#voltage-clamp" title="Permalink to this heading">¶</a></h3>
@@ -982,20 +1004,20 @@ and the source cells are either “Scnn1a”, “Rorb”, or “Nr5a1” cell-ty
 <img alt="_images/disconnected_scnn1a.png" src="_images/disconnected_scnn1a.png" />
 <p>You can combine “replay” inputs with virtual inputs, current and voltage clamps. And you can have multiple
 “replay” inputs in the same simulation by adding multiple subsections in the “inputs” sections of the config:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
-  &quot;inputs&quot;: {
-    &quot;replay_1&quot;: {
-      &quot;input_type&quot;: &quot;replay_spikes&quot;,
-      &quot;module&quot;: &quot;replay&quot;,
-      ...
-    },
-    &quot;replay_1&quot;: {
-      &quot;input_type&quot;: &quot;replay_spikes&quot;,
-      &quot;module&quot;: &quot;replay&quot;,
-      ...
-    }
-  }
-}
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;replay_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+      <span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;replay_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+      <span class="o">...</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>See the <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_450cells_replay">examples/bio_450cells_replay/</a>

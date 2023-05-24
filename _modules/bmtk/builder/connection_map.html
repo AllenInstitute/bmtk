@@ -1,17 +1,16 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.builder.connection_map &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.builder.connection_map &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -643,10 +642,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">connector</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">iterator</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
 <div class="viewcode-block" id="ConnectionMap"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap">[docs]</a><span class="k">class</span> <span class="nc">ConnectionMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for keeping track of connection rules. Used for saving unique edge properties in a network</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of connection rules. Used for saving unique edge properties in a network</span>
 
 <span class="sd">    For every connection from source --&gt; target this keeps track of rules (functions, literals, lists) for</span>
 <span class="sd">      1. the number of synapses between source and target</span>
@@ -694,7 +695,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ConnectionMap.ParamsRules"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.ParamsRules">[docs]</a>    <span class="k">class</span> <span class="nc">ParamsRules</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A subclass to store indvidiual synpatic parameter rules&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A subclass to store indvidiual synpatic parameter rules&quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">names</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rule</span> <span class="o">=</span> <span class="n">rule</span>
@@ -790,8 +791,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="ConnectionMap.max_connections"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.max_connections">[docs]</a>    <span class="k">def</span> <span class="nf">max_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ConnectionMap.add_properties"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties">[docs]</a>    <span class="k">def</span> <span class="nf">add_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a synaptic property for an individual edge.</span>
+<div class="viewcode-block" id="ConnectionMap.add_properties"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties">[docs]</a>    <span class="k">def</span> <span class="nf">add_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rule_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a synaptic property for an individual edge.</span>
 
 <span class="sd">        Typically this requires a custom rule that will be used for every source/target pair of nodes and returns</span>
 <span class="sd">        a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build()::</span>
@@ -826,19 +827,41 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">        :param names: list, or single string, of the property</span>
 <span class="sd">        :param rule: function, list or value of property</span>
+<span class="sd">        :param values: A list of values to use for property</span>
 <span class="sd">        :param rule_params: when rule is a function, rule_params will be passed into function when called.</span>
 <span class="sd">        :param dtypes: expected property type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rule</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please specify either the &quot;rule&quot; or &quot;values&quot; parameters&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rule</span> <span class="o">=</span> <span class="n">values</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">rule</span> <span class="o">=</span> <span class="n">ListIterator</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+            <span class="n">rule_params</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ParamsRules</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span> <span class="o">+=</span> <span class="n">names</span></div>
 
 <div class="viewcode-block" id="ConnectionMap.connection_itr"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.connection_itr">[docs]</a>    <span class="k">def</span> <span class="nf">connection_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,</span>
 <span class="sd">        and create a connection rule based on the connector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">conr</span> <span class="o">=</span> <span class="n">connector</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connector</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connector_params</span> <span class="ow">or</span> <span class="p">{}))</span>
         <span class="n">itr</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">conr</span><span class="p">,</span> <span class="o">**</span><span class="p">({}))</span>
         <span class="k">return</span> <span class="n">itr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">conr</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ListIterator"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ListIterator">[docs]</a><span class="k">class</span> <span class="nc">ListIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_list</span> <span class="o">=</span> <span class="n">my_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_list</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_idx</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">val</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -859,12 +882,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../how_to_cite.html">How to Cite</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
@@ -884,7 +925,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

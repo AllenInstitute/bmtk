@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -623,7 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="SimReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport">[docs]</a><span class="k">class</span> <span class="nc">SimReport</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default</span>
 <span class="sd">    values.</span>
 
 <span class="sd">    Use the build() method to convert a &quot;reports&quot; section dictionary to a SimReport object. The SimReport object has</span>
@@ -664,7 +663,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_val</span>
 
     <span class="k">def</span> <span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Should be overwritten by subclass with list of (var_name, default_val) tuples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should be overwritten by subclass with list of (var_name, default_val) tuples.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="SimReport.avail_modules"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport.avail_modules">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -674,7 +673,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SimReport.build"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport.build">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Factory method to get the module subclass, using the params (particularlly the &#39;module&#39; value, which is</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Factory method to get the module subclass, using the params (particularlly the &#39;module&#39; value, which is</span>
 <span class="sd">        required). If there is no registered subclass a generic SimReport object will be returned</span>
 
 <span class="sd">        :param report_name: name of report</span>
@@ -791,6 +790,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">from_output_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;spikes_file&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s1">&#39;compression&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;compression&#39;</span><span class="p">,</span> <span class="s1">&#39;gzip&#39;</span><span class="p">),</span>
             <span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -1017,7 +1017,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>

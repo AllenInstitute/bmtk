@@ -1,0 +1,1005 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Spikes Stimulus with (NWB) Extracellular Electrophysiology Probes &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="spikes-stimulus-with-nwb-extracellular-electrophysiology-probes">
+<h1>Spikes Stimulus with (NWB) Extracellular Electrophysiology Probes<a class="headerlink" href="#spikes-stimulus-with-nwb-extracellular-electrophysiology-probes" title="Permalink to this heading">¶</a></h1>
+<p>The goal of the <cite>ecephys_probe</cite> inputs module is to drive a network simulation using experimental data
+recorded using extracellular electrophysiology (ecephys) multi-channel probes. Typically, BMTK and SONATA
+uses either SONATA Spike-Train files or csv files to create virtual cells to provide synaptic inputs to
+the cells in our model. And while SONATA are can be converted and/or generated based on observed data, the
+<cite>ecephys_probe</cite> module allows us directly incorpate in-vivo spike recordings into our in-silco simulation.</p>
+<p>This module uses <a class="reference external" href="https://pynwb.readthedocs.io/en/stable/tutorials/index.html">NWB 2.0</a> formated files to
+fetch unit spike-times data and convert them into synaptic stimuli. It was mainly designed for use with
+<a class="reference external" href="https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html">Allen Institute Visual Coding</a> and
+<a class="reference external" href="http://portal.brain-map.org/explore/circuits/visual-behavior-neuropixels">Visual Behavior</a> neuropixels data.
+But can be used with external public ecephys session data, like many of those found on
+<a class="reference external" href="https://dandiarchive.org/">DANDI</a> provided they have units with spike-times.</p>
+<section id="quick-start-guide">
+<h2>Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permalink to this heading">¶</a></h2>
+<p>For pre-built examples of network simulations that use in-vivo ecephys probe data there are a number of
+examples in the BTMK <strong>examples/</strong> folder; including ones for <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_neuropixels">BioNet (NEURON)</a> and
+<a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_neuropixels">PointNet (NEST)</a>. Once BMTK is installed on your system just run a simulation using one
+of the simulation JSON configs:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_bmtk.py<span class="w"> </span>config.simulation.x.json
+</pre></div>
+</div>
+<p>Using the <cite>ecephys_probe</cite> module in your simulation is all done through the
+<a class="reference external" href="./simulators.html#configuration-files">simulation simulation config</a> file. Using your preferred text
+editor you can open up the simulation json configuration file, and update the <strong>inputs</strong> section to
+add or modify the <cite>ecephys_probe</cite> modules.</p>
+<p>For example, suppose our network includes virtual thalamic <strong>LGN</strong> cells that synapse onto our cortical cells,
+and we want to use spike trains from Visual Coding Session_715093703.nwb file (See <a class="reference external" href="INSERT_LINK">below</a> on
+tricks for downloading nwb files), then we can add the following section to our json file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>Where</strong></dt><dd><ul class="simple">
+<li><p><strong>LGN_spikes</strong> is the unique arbitary name we give for this particular module block (there can be multiple input blocks in the same simulation).</p></li>
+<li><p>We set <strong>“input”:</strong> <em>spikes</em> and <strong>“module”:</strong> <em>“ecephys_probe”</em> to instruct BMTK (and any other SONATA compliant simulator) to create virtual spike
+trains using NWB ECEPhys Probe data. This value cannot be changed</p></li>
+<li><p><strong>input_file</strong> is the path to our download NWB file.</p></li>
+<li><p><strong>node_set</strong> is used to select the sub-population of cells to use for the LGN spikes inputs, in this case use all cells in the <strong>LGN</strong> cell population (see <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#node-sets-file">the following</a> for more information on SONATA node-sets).</p></li>
+<li><p><strong>mapping</strong> is the method to map the NWB units to our model nodes, in this case indicating we want to randomly assign NWB units to our network cells (with replacement in case there are fewer NWB units than cells).</p></li>
+<li><p><strong>units</strong> let’s us filter out the exact units in our NWB file to use, here we only want the spike trains of units where the location is from the LGd.</p></li>
+<li><p><strong>interval</strong> let’s us filter spike trains in the NWB file based on a given time window in ms, in this case we only want spike trains that occured between 10-12 seconds (which by default will be converted 0-2 seconds in the simulation)</p></li>
+</ul>
+</dd>
+</dl>
+<p>The module also allows you to use multiple NWB files at a time, where the sampling of units in the use of our simulation will be done across all NWB input_file’s</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Or if you have multiple populations that you want to use to drive input into our model, you can just use the module multiple times:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+
+<span class="w">    </span><span class="nt">&quot;hippocampus_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;CA1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CA3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Po&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">135000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">137000.0</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>input_file:</strong> - <em>string</em> or <em>list[String]</em> - A path or list of paths to NWB file(s) contain ECEPhys units spike-time recordings.</p></li>
+<li><p><strong>node_set</strong> - <em>string</em> or <em>dict</em> - A filter for node (sub)population to use when assing NWB units to spikes.</p></li>
+<li><p><strong>mapping</strong> - <em>string</em> - The strategy by which NWB units are assinged to simulation nodes. Current options: units_maps, sample, sample_with_replacement.</p></li>
+<li><p><strong>units</strong> - <em>string</em> or <em>dict</em> - Used to filter out which units in NWB <strong>input_file</strong> are to be used by module, if empty will use all possible units from file.</p></li>
+<li><p><strong>missing_ids</strong> - <em>string</em> - Determines what happens if a mapping fails or unit_id does not exists. Current options: fail (<em>default</em>), warn, ignore.</p></li>
+<li><p><strong>save_map</strong> - <em>string</em> - A path to a csv file in the output folder where, if specified, will save the units_maps of current simulation. Will overwrite existing file if exists.</p></li>
+<li><p><strong>interval</strong> - <em>list[float (ms), float (ms)]</em> or <em>dict</em> or <em>list[intervals or dict]</em> - Filters spike-times in the NWB <strong>input</strong> file, using using a [<em>start</em>, <em>stop</em>] interval (ms), or if a dictionary is used tries to parse interval from the NWB intervals table. By default will shift interval to time-step 0.0 ms in simulation, use <strong>simulation_offset</strong> to shift to anther value.</p></li>
+<li><p><strong>simulation_offset</strong> - <em>float</em> - When using the <strong>interval</strong> option to filter spike-times, determines offset for simulation. Default value 0.0.</p></li>
+</ul>
+</section>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this heading">¶</a></h2>
+<section id="mapping-and-filtering-nwb-units">
+<h3>Mapping and Filtering NWB units<a class="headerlink" href="#mapping-and-filtering-nwb-units" title="Permalink to this heading">¶</a></h3>
+<p>In the simulation each <strong>unit</strong> in NWB must be mapped onto a SONATA <strong>node</strong> for it’s spike trains to be used. The <cite>mapping</cite> and <cite>units</cite> options
+work in conjunction to control how this is done.</p>
+<section id="sample-and-sample-with-replacement">
+<h4>sample and sample_with_replacement<a class="headerlink" href="#sample-and-sample-with-replacement" title="Permalink to this heading">¶</a></h4>
+<p>To randomly assign unit_ids to node_ids you can use values “sample” or “sample_with_replacement” in the <cite>mapping</cite> option. The former is the same
+as sample without replacement, which may cause issues if there are fewer units than nodes.</p>
+<p>By default all units in the NWB file will be used, but you can use the <cite>units</cite> option to filter out only those units which meet a certain critera.
+It must be a dictionary of conditionals that will preform a intersection (eg AND operation). For example to get only units with a “good” value in
+the “quality” column and comes from channel_ids in 850261194-850261196:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;quality&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;good&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;channel_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">850261194</span><span class="p">,</span><span class="w"> </span><span class="mi">850261195</span><span class="p">,</span><span class="w"> </span><span class="mi">850261196</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you need more advanced comparisions you can specify the column query in the format <cite>“query”: {“column”: &lt;col&gt;, “operation”: &lt;operator&gt;, “value”: &lt;value&gt;}</cite>.
+For example to get only VISp units that having “firing_rate” between 5.0 and 10.0 Hz:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;fr_gt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;firing_rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;fr_lt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;firing_rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Note: The options available for filter will vary from NWB file to NWB file.</p>
+</section>
+<section id="units-map">
+<h4>units_map<a class="headerlink" href="#units-map" title="Permalink to this heading">¶</a></h4>
+<p>If you know how each unit should be mapped to each node and stored in a csv file, then you can use the “units_map” value in the <cite>mapping</cite> option.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;units_map&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/units2nodes_map.csv&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <em>units2nodes_map.csv</em> is a space-separated csv file where each row contains a SONATA node identifier (Population + node_id) and a corresponding
+units_id from a NWB file with manditory columns <strong>population</strong>, <strong>node_ids</strong>, <strong>unit_ids</strong></p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">units2nodes_map.csv</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>population</p></th>
+<th class="head"><p>node_ids</p></th>
+<th class="head"><p>unit_ids</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LGN</p></td>
+<td><p>0</p></td>
+<td><p>951090537</p></td>
+</tr>
+<tr class="row-odd"><td><p>LGN</p></td>
+<td><p>1</p></td>
+<td><p>951090804</p></td>
+</tr>
+<tr class="row-even"><td><p>LGN</p></td>
+<td><p>2</p></td>
+<td><p>951091012</p></td>
+</tr>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="filtering-spike-times-by-intervals-and-epochs">
+<h3>Filtering Spike Times by Intervals and Epochs<a class="headerlink" href="#filtering-spike-times-by-intervals-and-epochs" title="Permalink to this heading">¶</a></h3>
+<p>In-vio Session data typically are much longer and contains much more stimuli/epochs than that which is of interest to our own simulations. To simulate
+we can use the <cite>interval</cite> option to only use spikes that occur during a period of interest.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/ecephys_probe_intervals.png"><img alt="_images/ecephys_probe_intervals.png" src="_images/ecephys_probe_intervals.png" style="width: 1163.0px; height: 295.0px;" /></a>
+</figure>
+<p>By default the <cite>ecephys_probe</cite> module will shift it to start at zero. So for example if the time-window is set to between 10 and 20 seconds, then a
+spike that is recorded at 11.5 seconds in the NWB will now occur at time 1.5 seconds in the simulation. You can use the <cite>simulation_offset</cite> option
+to adjust where spikes starts in the simulation.</p>
+<section id="intervals-ranges">
+<h4>intervals ranges<a class="headerlink" href="#intervals-ranges" title="Permalink to this heading">¶</a></h4>
+<p>The easies way to to specify a time-window is to specify a range [<em>start_time</em>, <em>stop_time</em>] in milliseconds. For example if you know the period of
+interest you are interested occurs in the probe data between minutes 30 to 32</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1800000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1920000.0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you have multiple NWB files, each one with a unique period of interest, you can also pass in a list of ranges</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_71509.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_73312.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_89923.nwb&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="mi">10000</span><span class="p">,</span><span class="w"> </span><span class="mi">12000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">15000</span><span class="p">,</span><span class="w"> </span><span class="mi">17000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">24000</span><span class="p">,</span><span class="w"> </span><span class="mi">26000</span><span class="p">]]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="intervals-and-epoch-tables-aka-stimulus-table">
+<h4>Intervals and Epoch Tables (aka Stimulus Table)<a class="headerlink" href="#intervals-and-epoch-tables-aka-stimulus-table" title="Permalink to this heading">¶</a></h4>
+<p>NWB session files can contain intervals/epochs tables that can tell you the exact time during a session a stimulus or condition was being presented
+to the subject. If instead of passing an a time range to <cite>interval</cite>, you pass in a <cite>dictionary</cite>, the <cite>ecephys_probe</cite> module will automatically try
+to create a time-window filter using the columns from the intervals table.</p>
+<p>For example, if you want to get spikes that only occurred when a drifting gratings was presented to subject with a specific a 90 degrees orientation
+and &lt; 5 Hz frequency:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;stimulus_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;temporal_frequency&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span>
+<span class="w">  </span><span class="p">},</span>
+</pre></div>
+</div>
+<p>Only the “stimulus_name” value is required. The rest of the options availble to filter on the interval or epoch will vary from both NWB to NWB and
+from each interval to interval.</p>
+<p>As with interval ranges, when working with multiple NWB files you can pass in a list a interval filters dictionaries.</p>
+<p>One important issue to note is that often a query on the stimulus table will return multiple intervals. For instance drifting gratings with orientation
+90deg and freq &lt; 5 Hz may be presented to subject multiple times over the full session. By default the module will select the first one, but you
+can use special option “interval_index” to get a specific one. For example to get the fifth time a drifting grating is presented:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;interval_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">  </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>By default the value is set to 0 (the first time that particular interval occurs). But you can also pass in options ‘random’ (select one interval at
+random), ‘first’, ‘last’, or ‘full_range’ (returns the minimum start-time and maximum stop-time over all intervals).</p>
+</section>
+<section id="individual-unit-interval">
+<h4>Individual unit interval<a class="headerlink" href="#individual-unit-interval" title="Permalink to this heading">¶</a></h4>
+<p>It is also possible to assign each indivdiual unit_id a unique interval of interest when using the “units_maps” option for in the <cite>mapping</cite> attribute.
+To do so just update the units-to-nodes csv file to include columns <strong>start_times</strong> and <strong>stop_times</strong>, both in units of milliseconds:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">units2nodes_map.csv</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>population</p></th>
+<th class="head"><p>node_ids</p></th>
+<th class="head"><p>unit_ids</p></th>
+<th class="head"><p>start_times</p></th>
+<th class="head"><p>stop_times</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LGN</p></td>
+<td><p>0</p></td>
+<td><p>951090537</p></td>
+<td><p>10034.0</p></td>
+<td><p>13124.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>LGN</p></td>
+<td><p>1</p></td>
+<td><p>951090804</p></td>
+<td><p>11130.5</p></td>
+<td><p>12999.8</p></td>
+</tr>
+<tr class="row-even"><td><p>LGN</p></td>
+<td><p>2</p></td>
+<td><p>951091012</p></td>
+<td><p>500.0</p></td>
+<td><p>2501.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+<td><p>…</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="using-the-allensdk-to-download-neuropixels-data">
+<h2>Using the AllenSDK to download Neuropixels data<a class="headerlink" href="#using-the-allensdk-to-download-neuropixels-data" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Main Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_cite.html">How to Cite</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>
