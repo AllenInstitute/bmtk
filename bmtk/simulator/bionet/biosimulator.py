@@ -194,73 +194,6 @@ class BioSimulator(Simulator):
             pc.spike_record(gid, tvec, gidvec)
             self._spikes[gid] = tvec
 
-    def attach_current_clamp(self, amplitude, delay, duration, gids=None, section_name='soma', section_index=0,
-                             section_dist=0.5):
-        # TODO: Create appropiate module
-        if gids is None or gids=='all':
-            gids = self.biophysical_gids
-
-        if isinstance(gids, int):
-            gids = [gids]
-        elif isinstance(gids, string_types):
-            gids = [int(gids)]
-        elif isinstance(gids, NodeSet):
-            gids = gids.gids()
-
-        gids = list(set(self.local_gids) & set(gids))
-        n_gids = len(gids)
-        
-        if len(gids) != len(amplitude):
-            amplitude = amplitude * n_gids  # len(gids)
-
-        if len(gids) != len(delay):
-            delay = delay * n_gids
-            duration = duration * n_gids
-
-        for idx, gid in enumerate(gids):
-            cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude[idx], delay[idx], duration[idx], section_name, section_index, section_dist)
-            
-            Ic.attach_current(cell)
-            self._iclamps.append(Ic)
-
-    def attach_file_current_clamp(self, input_file):
-        file = h5py.File(input_file,'r')
-
-        if "gids" not in list(file.keys()) or file["gids"].value == 'all':
-            gids = self.biophysical_gids
-        else:
-            gids = file["gids"].value
-
-        if isinstance(gids, int):
-            gids = [gids]
-        elif isinstance(gids, string_types):
-            gids = [int(gids)]
-        elif isinstance(gids, NodeSet):
-            gids = gids.gids()
-
-        gids = list(set(self.local_gids) & set(gids))
-
-        amplitudes = file["amplitudes"].value
-
-        if "dts" not in list(file.keys()):
-            dts = [1 for i in range(len(amplitudes))]#Automatically sets dt to 1 ms if it is not present in the config.
-        else:
-            dts = file["dts"].value
-
-        file.close()
-        
-        for idx,gid in enumerate(gids):
-            cell = self.net.get_cell_gid(gid)
-
-            if len(amplitudes) != 1:
-                Ic = FileIClamp(amplitudes[idx], dts[idx])
-            else:
-                Ic = FileIClamp(amplitudes[0], dts[0])#This makes it so that if there are multiple gids and only one array of amplitudes, that one array is used for all gids.
-
-            Ic.attach_current(cell)
-            self._f_iclamps.append(Ic)
-
     def attach_se_voltage_clamp(self, amplitudes, durations, gids, rs):
         if gids is None or gids=='all':
             gids = self.biophysical_gids
@@ -413,7 +346,7 @@ class BioSimulator(Simulator):
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
-            if sim_input.input_type == 'spikes':
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata']:
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
@@ -421,57 +354,8 @@ class BioSimulator(Simulator):
                 node_set = network.get_node_set(sim_input.node_set)
                 network.add_spike_trains(spikes, node_set)
 
-            elif sim_input.module == "FileIClamp":
-                sim.attach_file_current_clamp(sim_input.params["input_file"])
-
             elif sim_input.module == 'IClamp':
-                # TODO: Parse from csv file
-                node_set = network.get_node_set(sim_input.node_set)
-                try:
-                    len(sim_input.params['amp'])
-                except:
-                    sim_input.params['amp']=[float(sim_input.params['amp'])]
-                if len(sim_input.params['amp'])>1:
-                    sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
-
-                try: 
-                    len(sim_input.params['delay'])
-                except:
-                    sim_input.params['delay']=[float(sim_input.params['delay'])]
-                if len(sim_input.params['delay'])>1:
-                    sim_input.params['delay']=[float(i) for i in sim_input.params['delay']]
-                
-                try: 
-                    len(sim_input.params['duration'])
-                except:
-                    sim_input.params['duration']=[float(sim_input.params['duration'])]
-                if len(sim_input.params['duration'])>1:
-                    sim_input.params['duration']=[float(i) for i in sim_input.params['duration']]
-                    
-                amplitude = sim_input.params['amp']
-                delay = sim_input.params['delay']
-                duration = sim_input.params['duration']
-
-                # specificed for location to place iclamp hobj.<section_name>[<section_index>](<section_dist>). The
-                # default is hobj.soma[0](0.5), the center of the soma
-                section_name = sim_input.params.get('section_name', 'soma')
-                section_index = sim_input.params.get('section_index', 0)
-                section_dist = sim_input.params.get('section_dist', 0.5)
-
-                # section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]
-                # section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]
-                # section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]
-
-                try:
-                    sim_input.params['gids']
-                except:
-                    sim_input.params['gids'] = None
-                if sim_input.params['gids'] is not None:
-                    gids = sim_input.params['gids']
-                else:
-                    gids = list(node_set.gids())
-
-                sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
+                sim.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
             elif sim_input.module == "SEClamp":
                 node_set = network.get_node_set(sim_input.node_set)
@@ -512,6 +396,9 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
 
+            elif sim_input.module == 'comsol':
+                sim.add_mod(mods.ComsolMod(**sim_input.params))
+
             elif sim_input.module == 'syn_activity':
                 pass
 
@@ -525,6 +412,9 @@ class BioSimulator(Simulator):
                     source_node_set=sim_input.params.get('source_node_set', 'all'),
                     target_node_set=sim_input.params.get('target_node_set', 'all')
                 )
+
+            elif sim_input.module == 'ecephys_probe':
+                sim.add_mod(mods.BioECEphysUnitsModule(name=sim_input.name, **sim_input.params))
 
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))

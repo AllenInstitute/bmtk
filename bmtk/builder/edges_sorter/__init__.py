@@ -3,7 +3,7 @@ from .merge_sorter import external_merge_sort
 
 
 def sort_edges(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
-               sort_on_disk=False, **sorter_args):
+               sort_on_disk=False, compression='gzip', **sorter_args):
     if not sort_on_disk:
         quicksort_edges(
             input_edges_path=input_edges_path,
@@ -11,6 +11,7 @@ def sort_edges(input_edges_path, output_edges_path, edges_population, sort_by, s
             edges_population=edges_population,
             sort_by=sort_by,
             sort_model_properties=sort_model_properties,
+            compression=compression,
             **sorter_args
         )
     else:
@@ -20,5 +21,6 @@ def sort_edges(input_edges_path, output_edges_path, edges_population, sort_by, s
             edges_population=edges_population,
             sort_by=sort_by,
             sort_model_properties=sort_model_properties,
+            compression=compression,
             **sorter_args
         )

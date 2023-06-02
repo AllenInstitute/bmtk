@@ -283,7 +283,7 @@ class NetworkBuilder(object):
         """
         self.adaptor.build(force=force)
 
-    def save(self, output_dir='.', force_overwrite=True):
+    def save(self, output_dir='.', force_overwrite=True, compression='gzip'):
         """Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
         names will be automatically generated based on the network names.
 
@@ -291,10 +291,12 @@ class NetworkBuilder(object):
 
         :param output_dir: string, directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
+            you can also specify an integer (1-9) to specify the level of gzip compression.
         """
-        self.adaptor.save(output_dir=output_dir, force_overwrite=force_overwrite)
+        self.adaptor.save(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
 
-    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
+    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, compression='gzip'):
         """Save the instantiated nodes in SONATA format files.
 
         :param nodes_file_name: file-name of hdf5 nodes file. By default will use <network.name>_nodes.h5.
@@ -302,16 +304,19 @@ class NetworkBuilder(object):
             <network.name>_node_types.csv
         :param output_dir: Directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
+            you can also specify an integer (1-9) to specify the level of gzip compression.
         """
         self.adaptor.save_nodes(
             nodes_file_name=nodes_file_name,
             node_types_file_name=node_types_file_name,
             output_dir=output_dir,
-            force_overwrite=force_overwrite
+            force_overwrite=force_overwrite,
+            compression=compression,
         )
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
-                   trg_network=None, name=None, force_build=True, force_overwrite=False):
+                   trg_network=None, name=None, force_build=True, force_overwrite=False, compression='gzip'):
         """Save the instantiated edges in SONATA format files.
 
         :param edges_file_name: file-name of hdf5 edges file. By default will use <src_network>_<trg_network>_edges.h5.
@@ -323,6 +328,8 @@ class NetworkBuilder(object):
         :param name: Name of edge populations, eg /edges/<name> in edges.h5 file.
         :param force_build: Force to (re)build the connection matrix if it hasn't already been built.
         :param force_overwrite: Overwrites existing network files.
+        :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
+            you can also specify an integer (1-9) to specify the level of gzip compression.
         """
         self.adaptor.save_edges(
             edges_file_name=edges_file_name,
@@ -332,7 +339,8 @@ class NetworkBuilder(object):
             trg_network=trg_network,
             name=name,
             force_build=force_build,
-            force_overwrite=force_overwrite
+            force_overwrite=force_overwrite,
+            compression=compression,
         )
 
     def import_nodes(self, nodes_file_name, node_types_file_name):

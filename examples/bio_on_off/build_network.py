@@ -4,6 +4,8 @@ import numpy as np
 from bmtk.builder.networks import NetworkBuilder
 from bmtk.builder.bionet.swc_reader import get_swc
 
+use_nml = True
+
 
 net = NetworkBuilder("v1")
 net.add_nodes(
@@ -18,9 +20,9 @@ net.add_nodes(
     rotation_angle_yaxis=[0.0],
     rotation_angle_zaxis=[3.8291696219999998],
     model_type='biophysical',
-    model_template='ctdb:Biophys1.hoc',
+    model_template='nml:Cell_476126528.cell.nml' if use_nml else 'ctdb:Biophys1.hoc',
     model_processing='aibs_perisomatic',
-    dynamics_params='476126528_fit.json',
+    dynamics_params=None if use_nml else '476126528_fit.json',
     morphology='Scnn1a-Tg3-Cre_Ai14-187849.05.02.01_491119823_m'
 )
 
@@ -36,9 +38,9 @@ net.add_nodes(
     rotation_angle_yaxis=[0.0],
     rotation_angle_zaxis=[3.975017803],
     model_type='biophysical',
-    model_template='ctdb:Biophys1.hoc',
+    model_template='nml:Cell_333604946.cell.nml' if use_nml else 'ctdb:Biophys1.hoc',
     model_processing='aibs_perisomatic',
-    dynamics_params='333604946_fit.json',
+    dynamics_params=None if use_nml else '333604946_fit.json',
     morphology='Pvalb-IRES-Cre_Ai14-176848.03.01.01_491119484_m'
 )
 
@@ -65,7 +67,7 @@ cm = net.add_edges(
 cm.add_properties(
     ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
     rule=set_synapses,
-    dtypes=[np.int, np.float, np.int, np.float]
+    dtypes=[int, float, int, float]
 )
 
 cm = net.add_edges(
@@ -79,7 +81,7 @@ cm = net.add_edges(
 cm.add_properties(
     ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
     rule=set_synapses,
-    dtypes=[np.int, np.float, np.int, np.float]
+    dtypes=[int, float, int, float]
 )
 
 net.build()

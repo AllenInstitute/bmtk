@@ -7,12 +7,12 @@ import h5py
 import tempfile
 
 from bmtk.builder.network_adaptors.dm_network import DenseNetwork
-from bmtk.builder.network_adaptors.dm_network_orig import DenseNetworkOrig
+# from bmtk.builder.network_adaptors.dm_network_orig import DenseNetworkOrig
 
 
 @pytest.mark.parametrize('network_cls', [
     (DenseNetwork),
-    (DenseNetworkOrig)
+    # (DenseNetworkOrig)  # dropped support for original dense network
 ])
 def test_save_nsyn_table(network_cls):
     net = network_cls('NET1')
@@ -85,7 +85,7 @@ def test_save_nsyn_table(network_cls):
 
 @pytest.mark.parametrize('network_cls', [
     (DenseNetwork),
-    (DenseNetworkOrig)
+    # (DenseNetworkOrig)
 ])
 def test_save_weights(network_cls):
     net = network_cls('NET1')
@@ -116,7 +116,7 @@ def test_save_weights(network_cls):
 
 @pytest.mark.parametrize('network_cls', [
     (DenseNetwork),
-    (DenseNetworkOrig)
+    # (DenseNetworkOrig)
 ])
 def test_save_multinetwork(network_cls):
     net1 = DenseNetwork('NET1')

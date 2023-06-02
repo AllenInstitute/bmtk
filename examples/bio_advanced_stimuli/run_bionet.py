@@ -22,6 +22,10 @@ if __name__ == '__main__':
     else:
         # Make sure to run only one at a time
         run('config.simulation_iclamp.json')  # Current clamp stimulation
+        # run('config.simulation_iclamp.aslist.json')
+        # run('config.simulation_iclamp.csv.json')
+        # run('config.simulation_iclamp.nwb.json')
+
         # run('config.simulation_xstim.json')  # Extracellular electrode stimulation
         # run('config.simulation_spikes.json')  # Synaptic stimulation with external virtual cells
         # run('config.simulation_spont_activity.json')  # Spontaneous synaptic activity

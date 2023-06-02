@@ -145,20 +145,7 @@ class PointSimulator(Simulator):
             nest.Connect(pop.keys(), self._spike_detector)
         # exit()
     '''
-
-    def add_step_currents(self, amp_times, amp_values, node_set, input_name):
-        scg = nest.Create("step_current_generator",
-                          params={'amplitude_times': amp_times, 'amplitude_values': amp_values})
-
-        if not isinstance(node_set, NodeSet):
-            node_set = self.net.get_node_set(node_set)
-
-        # Convert node set into list of gids and then look-up the nest-ids
-        for pop_name in node_set.population_names():
-            # nest_ids = self.net.gid_map.get_nestids(pop_name, list(node_set.gids()))
-            nest_ids = node_set.gids()
-            nest.Connect(scg, list(nest_ids), syn_spec={'delay': self.dt})
-
+            
     def run(self, tstop=None):
         if tstop is None:
             tstop = self._tstop
@@ -244,29 +231,20 @@ class PointSimulator(Simulator):
 
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
-            if sim_input.input_type == 'spikes':
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata']:
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
                 #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
                 #                                       input_type=sim_input.input_type, params=sim_input.params)
                 graph.add_spike_trains(spikes, node_set, network.get_spike_generator_params())
+            
+            elif sim_input.module == 'IClamp':
+                network.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
-            elif sim_input.input_type == 'current_clamp':
-                # TODO: Need to make this more robust
-                amp_times = sim_input.params.get('amplitude_times', [])
-                amp_values = sim_input.params.get('amplitude_values', [])
-
-                if 'delay' in sim_input.params:
-                    amp_times.append(sim_input.params['delay'])
-                    amp_values.append(sim_input.params['amp'])
-
-                    if 'duration' in sim_input.params:
-                        amp_times.append(sim_input.params['delay'] + sim_input.params['duration'])
-                        amp_values.append(0.0)
-
-                network.add_step_currents(amp_times, amp_values, node_set, sim_input.name)
-
+            elif sim_input.module == 'ecephys_probe':
+                network.add_mod(mods.PointECEphysUnitsModule(name=sim_input.name, **sim_input.params))
+            
             else:
                 graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
 

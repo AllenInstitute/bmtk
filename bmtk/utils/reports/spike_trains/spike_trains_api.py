@@ -144,16 +144,18 @@ class SpikeTrainsAPI(object):
         """
         raise NotImplementedError()
 
-    def to_sonata(self, path, mode='w', sort_order=SortOrder.none, **kwargs):
+    def to_sonata(self, path, mode='w', sort_order=SortOrder.none, compression='gzip', **kwargs):
         """Write current spike-trains to a sonata hdf5 file
 
         :param path:
         :param mode:
         :param sort_order:
+        :param compression: Compression algorithm for h5py's dataset_create. 'gzip' is default
+                            Only applied to h5 spike data.
         :param kwargs:
         :return:
         """
-        write_sonata(path=path, spiketrain_reader=self, mode=mode, sort_order=sort_order, **kwargs)
+        write_sonata(path=path, spiketrain_reader=self, mode=mode, sort_order=sort_order, compression=compression, **kwargs)
 
     def to_csv(self, path, mode='w', sort_order=SortOrder.none, **kwargs):
         """Write spikes to csv file
