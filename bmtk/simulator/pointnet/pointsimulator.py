@@ -37,7 +37,7 @@ from bmtk.simulator.core.node_sets import NodeSet
 
 
 class PointSimulator(Simulator):
-    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
+    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False, n_thread=1):
         self._tstop = 0.0  # simulation time
         self._dt = dt  # time step
         self._output_dir = './output/'  # directory where log and temporary output will be stored
@@ -71,7 +71,7 @@ class PointSimulator(Simulator):
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
-        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time, "local_num_threads": n_thread})
 
     @property
     def tstart(self):
@@ -176,7 +176,7 @@ class PointSimulator(Simulator):
         self._mods.append(mod)
 
     @classmethod
-    def from_config(cls, configure, graph):
+    def from_config(cls, configure, graph, n_thread=1):
         # load the json file or object
         if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
@@ -186,15 +186,20 @@ class PointSimulator(Simulator):
             raise Exception('Could not convert {} (type "{}") to json.'.format(configure, type(configure)))
 
         if 'run' not in config:
-            raise Exception('Json file is missing "run" entry. Unable to build Bionetwork.')
+            raise Exception('Json file is missing "run" entry. Unable to build PointNetwork.')
         run_dict = config['run']
+        
+        # override the n_thread setting from the config file
+        if 'n_thread' in run_dict:
+            n_thread = run_dict['n_thread']
+
 
         # Get network parameters
         # step time (dt) is set in the kernel and should be passed
         overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
         print_time = run_dict['print_time'] if 'print_time' in run_dict else False
         dt = run_dict['dt']  # TODO: make sure dt exists
-        network = cls(graph, dt=dt, overwrite=overwrite)
+        network = cls(graph, dt=dt, overwrite=overwrite, n_thread=n_thread)
 
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']
