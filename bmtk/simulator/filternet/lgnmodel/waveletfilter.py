@@ -75,9 +75,9 @@ class WaveletFilter(object):
                         self.direction*(y - self.translate) * np.sin(self.theta)) + self.psi)
         else:
             # Special case temporal modulation freq is 0, approximate a fast, mostly positive filter
+            # b_t should be set to ~10 to achieve this fast, mostly positive filter
             # The step response adapts slightly to a flat steady-state
             f_t = 2.5
-            self.b_t = 10
             translate_t = 0 + self.delay/1000
             env = (f_t * (x - translate_t)) ** (self.order_t - 1) * np.exp(-1 * self.b_t * f_t * (x - translate_t)) \
                   * np.sin(2*np.pi*f_t * (x - translate_t)) \
