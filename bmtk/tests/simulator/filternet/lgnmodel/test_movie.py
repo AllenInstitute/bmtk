@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 from bmtk.simulator.filternet.lgnmodel import movie
 
 
@@ -62,6 +63,81 @@ def test_grating():
     assert(mv.col_range[-1] == 240)
 
 
+def test_normalize_array():
+    m_data = np.ones((3, 10, 10), dtype=float)
+    m_data[0, :, :] = 0
+    m_data[1, :, :] = 127.5
+    m_data[2, :, :] = 255
+    n_data = movie.Movie.normalize_matrix(m_data)
+    assert(np.allclose(np.mean(n_data, axis=(1, 2)), [-1.0, 0.0, 1.0]))
+
+    m_data = np.ones((2, 10, 10), dtype=int)
+    m_data[0, :, :] = 25
+    m_data[1, :, :] = 230
+    n_data = movie.Movie.normalize_matrix(m_data)
+    assert(np.allclose(np.mean(n_data, axis=(1, 2)), [-0.8039, 0.8039], atol=1.0e-4))
+
+    m_data = np.ones((3, 10, 10), dtype=int)
+    m_data[:, :, :] = 0
+    n_data = movie.Movie.normalize_matrix(m_data, domain=[0, 255])
+    assert(np.all(n_data == -1.0))
+
+    # Convert movies from [0, 1] --> [-1, 1]
+    m_data = np.ones((3, 10, 10), dtype=float)
+    m_data[0, :, :] = .1
+    m_data[1, :, :] = 0.5
+    m_data[2, :, :] = .9
+    n_data = movie.Movie.normalize_matrix(m_data)
+    assert(np.allclose(np.mean(n_data, axis=(1, 2)), [-0.8, 0.0, .8]))
+
+    m_data = np.ones((2, 10, 10), dtype=float)
+    m_data[:, :, :] = 0.5
+    n_data = movie.Movie.normalize_matrix(m_data)
+    assert(np.all(n_data == 0))
+
+    # Check for unusual ranges
+    m_data = np.ones((2, 10, 10), dtype=float)
+    m_data[0, :, :] = 0.11
+    m_data[1, :, :] = 0.19
+    n_data = movie.Movie.normalize_matrix(m_data, domain=[0.1, 0.2])
+    assert(np.allclose(np.mean(n_data, axis=(1, 2)), [-0.8, .8]))
+
+    m_data = np.ones((3, 10, 10), dtype=float)
+    m_data[0, :, :] = -80
+    m_data[1, :, :] = 0.0
+    m_data[2, :, :] = 80
+    n_data = movie.Movie.normalize_matrix(m_data, domain=[-100, 100])
+    assert(np.allclose(np.mean(n_data, axis=(1, 2)), [-0.8, 0.0, .8]))
+
+
+def test_normalize_array_invalid():
+    m_data = np.ones((3, 10, 10), dtype=float)
+    m_data[0, :, :] = 0
+    m_data[1, :, :] = 127.5
+    m_data[2, :, :] = 255
+
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data, domain=[1.0])
+
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data, domain=[-1.0, 0.0, 1.0])
+
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data, domain=[255, 0])
+
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data, domain=[255, 255])
+
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data, domain=[-100, 100])
+
+    m_data = np.ones((3, 10, 10), dtype=float)
+    m_data[:, :, :] = 1000.0
+    with pytest.raises(ValueError):
+        movie.Movie.normalize_matrix(m_data)
+
+
+
 if __name__ == '__main__':
     # test_movie()
     # test_add_movies()
@@ -71,8 +147,12 @@ if __name__ == '__main__':
     # mv = gm.create_movie()
     # ffm = movie.FullFieldFlashMovie(range(60), range(80), 1.0, 2.0)
     # mv = ffm.full(t_max=2.0)
-    lm = movie.LoomingMovie(120, 240)
-    mv = lm.create_movie()
+    # lm = movie.LoomingMovie(120, 240)
+    # mv = lm.create_movie()
+    #
+    # mv.play()
+    # mv.imshow_summary()
 
-    mv.play()
-    mv.imshow_summary()
+    test_normalize_array()
+    test_normalize_array_invalid()
+

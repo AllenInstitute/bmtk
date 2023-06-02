@@ -63,4 +63,3 @@ class FileIClamp(object):
         self._vect_stim.play(self._stim._ref_amp, self._iclamp_dt)  #Plays the amps to the IClamp amp variable with a given dt.
 
         return self._stim
-

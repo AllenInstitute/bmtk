@@ -9,7 +9,9 @@ Annual Modeling Software Workshop
 | The Allen Institute Modeling Software Workshop provides a hands-on opportunity to learn how to use open-source modeling tools 
 | developed in part at the Allen Institute MindScope Program. 
 |
-| Topics covered include:
+
+
+Topics covered include:
 - Construction of heterogeneous models of brain circuits at a variety of resolutions
 - Simple control and modification of simulation conditions 
 - Use of realistic spiking or visual inputs
@@ -20,7 +22,7 @@ Thank you to the participants of our `inaugural workshop <https://alleninstitute
 
 The :download:`presentation <_static/2022-07-Allen-Institute-Software-Modeling-Workshop.pdf>` and `tutorials <https://github.com/AllenInstitute/bmtk_workshop_2022>`_ from the 2022 workshop are now publicly available. 
 
-Stay tuned in early 2023 for opportunities to apply to our next round of the workshop! 
+For more information and to apply to upcoming workshops, please see `2023 Allen Institute Modeling Software Workshop <https://alleninstitute.org/events/2023-allen-institute-modeling-software-workshop/>`_.
 
 
 

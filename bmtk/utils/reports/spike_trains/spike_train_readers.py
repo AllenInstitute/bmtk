@@ -174,7 +174,8 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
         for pop_name, pop_grp in self._population_map.items():
             sort_order = self._population_sorting_map[pop_name]
             nodes_indices = {}
-            node_ids_ds = pop_grp[self._DATASET_node_ids]
+            # loop on h5 is slow, so convert it to np before the loop.
+            node_ids_ds = np.array(pop_grp[self._DATASET_node_ids])
             if sort_order == SortOrder.by_id:
                 indx_beg = 0
                 last_id = node_ids_ds[0]

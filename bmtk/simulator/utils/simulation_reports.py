@@ -170,6 +170,7 @@ class SpikesReport(SimReport):
     def from_output_dict(cls, output_dict):
         params = {
             'spikes_file': output_dict.get('spikes_file', None),
+            'compression': output_dict.get('compression', 'gzip'),
             'spikes_file_csv': output_dict.get('spikes_file_csv', None),
             'spikes_file_nwb': output_dict.get('spikes_file_nwb', None),
             'spikes_sort_order': output_dict.get('spikes_sort_order', None),

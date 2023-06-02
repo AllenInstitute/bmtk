@@ -31,7 +31,7 @@ To run a network-build or simulation-run bmtk script using the docker container,
 python script and any necessary supporting files:
 
 ```bash
-  $ docker run alleninstitute/bmtk -v $(pwd):/home/shared/workspace python <my_script>.py <opts>
+  $ docker run -v $(pwd):/home/shared/workspace alleninstitute/bmtk python <my_script>.py <opts>
 ```
 
 **NOTE**: All files must be under the directory you are running the command; including network, components, and output

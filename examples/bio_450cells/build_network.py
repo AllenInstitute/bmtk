@@ -7,6 +7,9 @@ from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
 
 build_recurrent_edges = True
 
+np.random.seed(42)
+
+
 # List of non-virtual cell models
 bio_models = [
     {
@@ -91,7 +94,7 @@ def connect_external(src, trgs, dist_cutoff=30.0, max_trgs=10, max_syns=12):
     selected_trgs = np.random.choice(selected_trgs, size=np.min((max_trgs, len(selected_trgs))), replace=False)
     selected_trgs = np.sort(selected_trgs)
 
-    n_syns = np.zeros(len(trgs), dtype=np.int)
+    n_syns = np.zeros(len(trgs), dtype=int)
     n_syns[selected_trgs] = np.random.randint(0, max_syns, size=len(selected_trgs))
     return n_syns
 
@@ -147,12 +150,12 @@ def build_internal_network():
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=6.0e-05, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=6.0e-05, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
         rule_params={'section_names': ['basal', 'apical'], 'distance_range': [30.0, 150.0]},
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     # exc --> inh connections
@@ -163,12 +166,12 @@ def build_internal_network():
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.0006, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.0006, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
         rule_params={'section_names': ['somatic', 'basal'], 'distance_range': [0.0, 1.0e+20]},
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     # inh --> exc connections
@@ -179,12 +182,12 @@ def build_internal_network():
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.002, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.002, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
         rule_params={'section_names': ['somatic', 'basal', 'apical'], 'distance_range': [0.0, 50.0]},
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     # inh --> inh connections
@@ -196,12 +199,12 @@ def build_internal_network():
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.00015, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.00015, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
         rule_params={'section_names': ['somatic', 'basal'], 'distance_range': [0.0, 1.0e+20]},
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     # For connections on point neurons it doesn't make sense to save syanpatic location
@@ -211,7 +214,7 @@ def build_internal_network():
         dynamics_params='instantaneousExc.json',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.0019, dtypes=float)
 
     cm = internal.add_edges(
         source={'ei': 'i'}, target={'model_type': 'point_neuron'},
@@ -219,7 +222,7 @@ def build_internal_network():
         dynamics_params='instantaneousInh.json',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.0019, dtypes=float)
 
     print('   creating connections.')
     internal.build()
@@ -232,6 +235,7 @@ def build_internal_network():
 
 def build_external_network(internal):
     print('Creating external (virtual) connections')
+    np.random.seed(42)
     external = NetworkBuilder("external")
     external.add_nodes(
         N=100,
@@ -249,11 +253,11 @@ def build_external_network(internal):
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.00041, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.00041, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     cm = external.add_edges(
@@ -264,11 +268,11 @@ def build_external_network(internal):
         model_template='Exp2Syn',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.00095, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.00095, dtypes=float)
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[int, float, int, float]
     )
 
     cm = external.add_edges(
@@ -278,7 +282,7 @@ def build_external_network(internal):
         dynamics_params='instantaneousExc.json',
         delay=2.0
     )
-    cm.add_properties('syn_weight', rule=0.045, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.045, dtypes=float)
 
     print('   creating connections.')
     external.build()
