@@ -346,7 +346,7 @@ class BioSimulator(Simulator):
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
-            if sim_input.input_type == 'spikes':
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata']:
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
@@ -412,6 +412,9 @@ class BioSimulator(Simulator):
                     source_node_set=sim_input.params.get('source_node_set', 'all'),
                     target_node_set=sim_input.params.get('target_node_set', 'all')
                 )
+
+            elif sim_input.module == 'ecephys_probe':
+                sim.add_mod(mods.BioECEphysUnitsModule(name=sim_input.name, **sim_input.params))
 
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))

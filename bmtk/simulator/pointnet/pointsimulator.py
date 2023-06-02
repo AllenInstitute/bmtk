@@ -236,7 +236,7 @@ class PointSimulator(Simulator):
 
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
-            if sim_input.input_type == 'spikes':
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata']:
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
@@ -247,6 +247,9 @@ class PointSimulator(Simulator):
             elif sim_input.module == 'IClamp':
                 network.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
+            elif sim_input.module == 'ecephys_probe':
+                network.add_mod(mods.PointECEphysUnitsModule(name=sim_input.name, **sim_input.params))
+            
             else:
                 graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
 
