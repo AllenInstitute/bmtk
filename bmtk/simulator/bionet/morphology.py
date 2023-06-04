@@ -105,6 +105,7 @@ class _LazySegmentCoords(object):
         self.p1 = None
         self.p05 = None
         self.soma_pos = None
+        self.d = None
 
     def get(self):
         if self.p0 is None:
@@ -170,6 +171,9 @@ class _LazySegmentCoords(object):
                 # x1[ix:ix + nseg] = l1
 
                 ix += nseg
+
+            # TODO: keep track of diameter only when minimum_distance='auto' in EcpMod
+            self.d = np.array([seg.diam for sec in self._hobj.all for seg in sec])
 
             # Also calculate the middle of the shifted soma, NOTE: in theory this should be (0, 0, 0), but due to
             # percision the actual soma center might be a little off.
@@ -442,6 +446,7 @@ class Morphology(object):
         new_seg_coords.p05 = new_p05
         new_seg_coords.p1 = new_p1
         new_seg_coords.soma_pos = new_soma_pos
+        new_seg_coords.d = old_seg_coords.d  # diameter won't change in new position
 
         if inplace:
             self._seg_coords = new_seg_coords
