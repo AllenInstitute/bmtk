@@ -80,7 +80,7 @@ cm = virt_net.add_edges(
     delay=2.0,
 )
 
-cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, np.float])
+cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, float])
 
 virt_net.build()
 virt_net.save(output_dir='network')
@@ -109,7 +109,7 @@ cm = activator_net.add_edges(
     syn_weight=3.4e-4,
     delay=2.0,
 )
-cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, np.float])
+cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, float])
 
 cm = activator_net.add_edges(
     target=bio_net.nodes(ei='e'),
@@ -119,7 +119,7 @@ cm = activator_net.add_edges(
     syn_weight=3.4e-4,
     delay=2.0,
 )
-cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, np.float])
+cm.add_properties(['afferent_section_id', 'afferent_section_pos'], rule=set_synapses, dtypes=[np.int, float])
 
 activator_net.build()
 activator_net.save(output_dir='network')
