@@ -239,7 +239,7 @@ class PoissonSpikesGenerator(object):
 
             with h5py.File(file_name, 'w') as h5:
                 h5.create_dataset('/spikes/gids', data=gid_list, dtype=np.uint)
-                h5.create_dataset('/spikes/timestamps', data=times_list, dtype=np.float)
+                h5.create_dataset('/spikes/timestamps', data=times_list, dtype=float)
                 h5['/spikes'].attrs['sorting'] = 'by_gid'
 
         else:

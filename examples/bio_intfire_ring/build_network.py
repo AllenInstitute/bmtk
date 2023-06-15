@@ -70,7 +70,7 @@ def build_network(ring_size=6, ring_radius=50):
     cm.add_properties(
         ['afferent_section_id', 'afferent_section_pos', 'afferent_swc_id', 'afferent_swc_pos'],
         rule=set_synapses,
-        dtypes=[np.int, np.float, np.int, np.float]
+        dtypes=[np.int, float, np.int, float]
     )
 
     net.build()

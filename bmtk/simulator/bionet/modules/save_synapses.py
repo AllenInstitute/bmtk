@@ -133,10 +133,10 @@ class H5Merger(object):
             pop_root.create_dataset('edge_group_index', (n_edges_total,), dtype=np.uint16)
             pop_root.create_dataset('edge_type_id', (n_edges_total, ), dtype=np.uint32)
 
-            pop_root.create_dataset('0/syn_weight', (n_edges_bio, ), dtype=np.float)
+            pop_root.create_dataset('0/syn_weight', (n_edges_bio, ), dtype=float)
             pop_root.create_dataset('0/sec_id', (n_edges_bio, ), dtype=np.uint64)
-            pop_root.create_dataset('0/sec_x', (n_edges_bio, ), dtype=np.float)
-            pop_root.create_dataset('1/syn_weight', (n_edges_point, ), dtype=np.float)
+            pop_root.create_dataset('0/sec_x', (n_edges_bio, ), dtype=float)
+            pop_root.create_dataset('1/syn_weight', (n_edges_point, ), dtype=float)
 
             total_offset = 0
             bio_offset = 0
@@ -234,13 +234,13 @@ class ConnectionWriter(object):
             self._pop_root['target_node_id'].attrs['node_population'] = trg_pop
             self._pop_root.create_dataset('edge_type_id', (self._block_size, ), dtype=np.uint32,
                                           chunks=(self._block_size, ), maxshape=(None, ))
-            self._pop_root.create_dataset('0/syn_weight', (self._block_size, ), dtype=np.float,
+            self._pop_root.create_dataset('0/syn_weight', (self._block_size, ), dtype=float,
                                           chunks=(self._block_size, ), maxshape=(None, ))
             self._pop_root.create_dataset('0/sec_id', (self._block_size, ), dtype=np.uint64,
                                           chunks=(self._block_size, ), maxshape=(None, ))
             self._pop_root.create_dataset('0/sec_x', (self._block_size, ), chunks=(self._block_size, ),
-                                          maxshape=(None, ), dtype=np.float)
-            self._pop_root.create_dataset('1/syn_weight', (self._block_size, ), dtype=np.float,
+                                          maxshape=(None, ), dtype=float)
+            self._pop_root.create_dataset('1/syn_weight', (self._block_size, ), dtype=float,
                                           chunks=(self._block_size, ), maxshape=(None, ))
 
         def _add_conn(self, edge_type_id, src_id, trg_id, grp_id):

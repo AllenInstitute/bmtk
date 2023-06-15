@@ -255,8 +255,8 @@ the connection_map ``rule`` function takes in a source and target node and retur
       return syn_weight
 
    cm = net.add_edges(....)
-   cm.add_properties('syn_weight', rule=set_syn_weight_by_dist, dtypes=np.float)
-   cm.add_properties('delay', rule=lambda *_: np.random.rand(0.01, 0.50), dtypes=np.float)
+   cm.add_properties('syn_weight', rule=set_syn_weight_by_dist, dtypes=float)
+   cm.add_properties('delay', rule=lambda *_: np.random.rand(0.01, 0.50), dtypes=float)
 
 
 If the ``rule`` requires extra arguments we can use the ``rule_params`` option:
@@ -272,7 +272,7 @@ If the ``rule`` requires extra arguments we can use the ``rule_params`` option:
       name='syn_weight',
       rule=set_syn_weight_by_dist,
       rule_params={'min_weight': 1.0e-06, 'max_weight': 1.0e-04},
-      dtypes=np.float
+      dtypes=float
    )
 
 
@@ -289,7 +289,7 @@ and ``dtypes`` parameters take a list, and our rule function now returns two val
    cm.add_properties(
       name=['syn_region', 'syn_dist'],
       rule=set_syn_weight_by_dist,
-      dtypes=[str, np.float]
+      dtypes=[str, float]
    )
 
 
