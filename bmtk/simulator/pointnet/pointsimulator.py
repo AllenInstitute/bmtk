@@ -176,7 +176,7 @@ class PointSimulator(Simulator):
         self._mods.append(mod)
 
     @classmethod
-    def from_config(cls, configure, graph, n_thread=1):
+    def from_config(cls, configure, graph, n_thread=None):
         # load the json file or object
         if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
@@ -191,7 +191,15 @@ class PointSimulator(Simulator):
         
         # override the n_thread setting from the config file
         if 'n_thread' in run_dict:
+            if n_thread is not None and n_thread != run_dict['n_thread']:
+                # give a warinig that the user is overriding the argument.
+                io.log_warning(
+                    f'Overriding n_thread setting in an argument ({n_thread}) with the value in config file ({run_dict["n_thread"]}).'
+                )
             n_thread = run_dict['n_thread']
+        else:
+            if n_thread is None:
+                n_thread = 1  # default to 1 thread if not set in config or argument
 
 
         # Get network parameters
