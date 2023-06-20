@@ -46,7 +46,7 @@ class RecordRates(SimModule):
             self._timestamps = times
 
         if cell.population not in self._firing_rates:
-            self._firing_rates[cell.population] = np.zeros((self._n_nodes, self._n_timesteps), dtype=np.float)
+            self._firing_rates[cell.population] = np.zeros((self._n_nodes, self._n_timesteps), dtype=float)
             self._node_ids[cell.population] = np.zeros(self._n_nodes, dtype=np.uint)
 
         self._firing_rates[cell.population][self._node_counter, :] = rates
@@ -126,7 +126,7 @@ class RecordRates(SimModule):
 
             n_timestamps = len(timestamps)
 
-            self._firing_rates = {pop: np.zeros((n_cells[pop], n_timestamps), dtype=np.float) for pop in n_cells.keys()}
+            self._firing_rates = {pop: np.zeros((n_cells[pop], n_timestamps), dtype=float) for pop in n_cells.keys()}
             self._node_ids = {pop: np.zeros(n_cells[pop], dtype=np.uint32) for pop in n_cells.keys()}
             beg_indices = {pop: 0 for pop in n_cells.keys()}
 
