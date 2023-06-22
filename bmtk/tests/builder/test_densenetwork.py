@@ -71,20 +71,28 @@ def test_save_nsyn_table(network_cls):
     assert(len(edges_h5['/edges/NET1_to_NET1/target_node_id']) == 300)
     assert(len(edges_h5['/edges/NET1_to_NET1/source_node_id']) == 300)
 
-    assert(edges_h5['/edges/NET1_to_NET1/target_node_id'][0] == 0)
-    print(edges_h5['/edges/NET1_to_NET1/source_node_id'][()])
-    print(edges_h5['/edges/NET1_to_NET1/target_node_id'][()])
-    
-    assert(edges_h5['/edges/NET1_to_NET1/source_node_id'][0] == 10)
-    assert(edges_h5['/edges/NET1_to_NET1/edge_group_index'][0] == 0)
-    assert(edges_h5['/edges/NET1_to_NET1/edge_type_id'][0] == 100)
-    assert(edges_h5['/edges/NET1_to_NET1/0/nsyns'][0] == 1)
+    # Check edges and node ids match up
+    # warning, builder may not build edges in sequential order
+    nid_idxs = np.sort(np.argwhere(edges_h5['/edges/NET1_to_NET1/target_node_id'][()] == 0).flatten())
+    trg_ids = edges_h5['/edges/NET1_to_NET1/source_node_id'][nid_idxs]
+    assert(np.all(trg_ids >= 10))
+    assert(np.all(30 > trg_ids))
+    edge_0 = nid_idxs[0]
+    assert(edges_h5['/edges/NET1_to_NET1/edge_type_id'][edge_0] == 100)
+    edge_id = edges_h5['/edges/NET1_to_NET1/edge_group_id'][edge_0]
+    edge_idx = edges_h5['/edges/NET1_to_NET1/edge_group_index'][edge_0]
+    assert(edges_h5['/edges/NET1_to_NET1'][str(edge_id)]['nsyns'][edge_idx] == 1)
 
-    assert(edges_h5['/edges/NET1_to_NET1/target_node_id'][299] == 19)
-    assert(edges_h5['/edges/NET1_to_NET1/source_node_id'][299] == 9)
-    assert(edges_h5['/edges/NET1_to_NET1/edge_group_id'][299] == 0)
-    assert(edges_h5['/edges/NET1_to_NET1/edge_type_id'][299] == 101)
-    assert(edges_h5['/edges/NET1_to_NET1/0/nsyns'][299] == 2)
+    nid_idxs = np.sort(np.argwhere(edges_h5['/edges/NET1_to_NET1/target_node_id'][()] == 19).flatten())
+    trg_ids = edges_h5['/edges/NET1_to_NET1/source_node_id'][nid_idxs]
+    print(trg_ids)
+    assert(np.all(trg_ids >= 0))
+    assert(np.all(10 > trg_ids))
+    edge_0 = nid_idxs[0]
+    assert(edges_h5['/edges/NET1_to_NET1/edge_type_id'][edge_0] == 101)
+    edge_id = edges_h5['/edges/NET1_to_NET1/edge_group_id'][edge_0]
+    edge_idx = edges_h5['/edges/NET1_to_NET1/edge_group_index'][edge_0]
+    assert(edges_h5['/edges/NET1_to_NET1'][str(edge_id)]['nsyns'][edge_idx] == 2)
 
 
 @pytest.mark.parametrize('network_cls', [
