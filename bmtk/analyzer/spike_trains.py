@@ -117,7 +117,7 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
             if group_by in grp.all_columns:
                 grp_df = grp.to_dataframe()
                 grp_df = grp_df[['node_id', group_by]]
-                grouped_df = grp_df if grouped_df is None else pd.concat([grouped_df, grp_df], ignore_index=True) # grouped_df.append(grp_df, ignore_index=True)
+                grouped_df = grp_df if grouped_df is None else pd.concat([grouped_df, grp_df], ignore_index=True)
 
         if grouped_df is None:
             raise ValueError('Could not find any nodes with group_by attribute "{}"'.format(group_by))
