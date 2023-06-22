@@ -15,6 +15,7 @@ from bmtk.builder.network_adaptors.dm_network import DenseNetwork
     # (DenseNetworkOrig)  # dropped support for original dense network
 ])
 def test_save_nsyn_table(network_cls):
+    np.random.seed(100)
     net = network_cls('NET1')
     net.add_nodes(N=10, position=[(0.0, 1.0, -1.0)]*10, cell_type='Scnna1', ei='e')
     net.add_nodes(N=10, position=[(0.0, 1.0, -1.0)]*10, cell_type='PV1', ei='i')
@@ -71,7 +72,8 @@ def test_save_nsyn_table(network_cls):
     assert(len(edges_h5['/edges/NET1_to_NET1/source_node_id']) == 300)
 
     assert(edges_h5['/edges/NET1_to_NET1/target_node_id'][0] == 0)
-    # assert(edges_h5['/edges/NET1_to_NET1/source_node_id'][0] == 10)
+    # print(edges_h5['/edges/NET1_to_NET1/source_node_id'][()])
+    assert(edges_h5['/edges/NET1_to_NET1/source_node_id'][0] == 10)
     assert(edges_h5['/edges/NET1_to_NET1/edge_group_index'][0] == 0)
     assert(edges_h5['/edges/NET1_to_NET1/edge_type_id'][0] == 100)
     assert(edges_h5['/edges/NET1_to_NET1/0/nsyns'][0] == 1)
@@ -178,5 +180,6 @@ def test_save_multinetwork(network_cls):
 
 
 if __name__ == '__main__':
+    test_save_nsyn_table(DenseNetwork)
     # test_save_weights(DenseNetwork)
-    test_save_multinetwork(DenseNetwork)
+    # test_save_multinetwork(DenseNetwork)
