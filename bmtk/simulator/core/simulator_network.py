@@ -2,6 +2,7 @@ from six import string_types
 import numpy as np
 import os
 import h5py
+import pandas as pd
 
 from bmtk.simulator.core.io_tools import io
 from .simulation_config import SimulationConfig
@@ -119,7 +120,7 @@ class SimNetwork(object):
             if all_nodes_df is None:
                 all_nodes_df = node_pop_df
             else:
-                all_nodes_df = all_nodes_df.append(node_pop_df)
+                all_nodes_df = pd.concat([all_nodes_df, node_pop_df])
 
         return all_nodes_df
 
@@ -142,7 +143,7 @@ class SimNetwork(object):
             if all_nodes_df is None:
                 all_nodes_df = node_pop_df
             else:
-                all_nodes_df = all_nodes_df.append(node_pop_df, sort=False)
+                all_nodes_df = pd.concat([all_nodes_df, node_pop_df], sort=False)
 
         return all_nodes_df
 
