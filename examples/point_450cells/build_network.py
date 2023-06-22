@@ -215,5 +215,6 @@ def build_external_network(internal):
 
 
 if __name__ == '__main__':
+    np.random.seed(100)
     internal_net = build_internal_network()
     external_net = build_external_network(internal_net)
