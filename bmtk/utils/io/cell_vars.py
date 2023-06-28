@@ -147,7 +147,7 @@ class CellVarRecorder(object):
         var_grp.create_dataset('gids', shape=(self._n_gids_all,), dtype=np.uint)
         # TODO: element_id --> element_ids
         var_grp.create_dataset('element_id', shape=(self._n_segments_all,), dtype=np.uint)
-        var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
+        var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
         # TODO: Let user determine value
@@ -176,9 +176,9 @@ class CellVarRecorder(object):
             data_grp = self._h5_handle if self._n_vars == 1 else self._h5_handle.create_group('/{}'.format(var_name))
             if self._buffer_data:
                 # Set up in-memory block to buffer recorded variables before writing to the dataset
-                data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
+                data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=float)
                 data_tables.data_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
-                                                                 dtype=np.float, chunks=True)
+                                                                 dtype=float, chunks=True)
                 # TODO: Remove Variable name
                 data_tables.data_block.attrs['variable_name'] = var_name
                 if self._units is not None:
@@ -186,7 +186,7 @@ class CellVarRecorder(object):
             else:
                 # Since we are not buffering data, we just write directly to the on-disk dataset
                 data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
-                                                                   dtype=np.float, chunks=True)
+                                                                   dtype=float, chunks=True)
                 data_tables.buffer_block.attrs['variable_name'] = var_name
                 if self._units is not None:
                     data_tables.buffer_block.attrs['units'] = self._units
@@ -270,7 +270,7 @@ class CellVarRecorder(object):
             if time_ds:
                 mapping_grp.create_dataset('time', data=time_ds)
             element_id_ds = mapping_grp.create_dataset('element_id', shape=(total_seg_count,), dtype=np.uint)
-            el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=np.float)
+            el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=float)
             gids_ds = mapping_grp.create_dataset('gids', shape=(total_gid_count,), dtype=np.uint)
             index_pointer_ds = mapping_grp.create_dataset('index_pointer', shape=(total_gid_count+1,), dtype=np.uint)
             for k, v in self._map_attrs.items():
@@ -298,7 +298,7 @@ class CellVarRecorder(object):
             for var_name in self._variables:
                 data_name = '/data' if self._n_vars == 1 else '/{}/data'.format(var_name)
                 # data_name = '/{}/data'.format(var_name)
-                var_data = h5final.create_dataset(data_name, shape=(self._total_steps, total_seg_count), dtype=np.float)
+                var_data = h5final.create_dataset(data_name, shape=(self._total_steps, total_seg_count), dtype=float)
                 var_data.attrs['variable_name'] = var_name
                 for i, h5_tmp in enumerate(tmp_h5_handles):
                     beg, end = seg_ranges[i]

@@ -605,7 +605,7 @@ class NWBSTReader(SpikeTrainsReadOnlyAPI):
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if self._spikes_df is None:
             self._spikes_df = pd.DataFrame({
-                col_timestamps: pd.Series(dtype=np.float),
+                col_timestamps: pd.Series(dtype=float),
                 col_population: pd.Series(dtype=np.string_),
                 col_node_ids: pd.Series(dtype=np.uint64)
             })

@@ -29,9 +29,14 @@ from types import SimpleNamespace
 
 try:
     from sklearn.neighbors import KDTree
+except ImportError:
+    pass
+
+try: 
     import nrrd
 except ImportError:
     pass
+
 
 
 class CellLocations(object):
