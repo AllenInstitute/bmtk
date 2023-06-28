@@ -102,7 +102,7 @@ def get_wavelet_params(node, dynamics_params):
     psi = node.psi if node.psi is not None else dynamics_params['psi']
     if isinstance(psi, string_types):
         psi = eval(psi.replace('pi', 'np.pi'))
-    delay = node.delays if node.delays is not None else dynamics_params['delay']
+    delay = node.delay if node.delay is not None else dynamics_params['delay']
     direction = node.direction if node.direction is not None else dynamics_params['direction']
 
     if direction == 'up':
