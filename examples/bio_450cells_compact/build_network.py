@@ -96,7 +96,7 @@ def connect_external(src, trgs, dist_cutoff=30.0, max_trgs=10, max_syns=12):
     selected_trgs = np.random.choice(selected_trgs, size=np.min((max_trgs, len(selected_trgs))), replace=False)
     selected_trgs = np.sort(selected_trgs)
 
-    n_syns = np.zeros(len(trgs), dtype=np.int)
+    n_syns = np.zeros(len(trgs), dtype=int)
     n_syns[selected_trgs] = np.random.randint(0, max_syns, size=len(selected_trgs))
     return n_syns
 
