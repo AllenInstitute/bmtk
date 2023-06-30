@@ -82,7 +82,7 @@ class EcpMod(SimulatorMod):
         self._local_gids = []
 
     def _get_tmp_fname(self, rank):
-        return os.path.join(self._tmp_outputdir, 'tmp_{}_ecp.h5'.format(MPI_RANK))
+        return os.path.join(self._tmp_outputdir, 'tmp_{}_{}'.format(MPI_RANK, os.path.basename(self._ecp_output)))
 
     def _create_ecp_file(self, sim):
         dt = sim.dt
