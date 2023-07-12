@@ -91,9 +91,9 @@ RUN cd ${BUILD_DIR}/bmtk; \
     cp -R docs/tutorial ${HOME_DIR}
 
 
-#### Add the tutorial for the 2022 workshop
-RUN cd ${HOME_DIR}/tutorial; \
-    git clone https://github.com/AllenInstitute/bmtk_workshop_2022.git
+# #### Add the tutorial for the 2022 workshop
+# RUN cd ${HOME_DIR}/tutorial; \
+#     git clone https://github.com/AllenInstitute/bmtk_workshop_2022.git
 
 #### Setup components directories for tutorials, including compiling neuron modfiles
 # RUN cd ${HOME_DIR}/tutorial \
@@ -112,6 +112,10 @@ RUN cd ${HOME_DIR}/examples/bio_components/mechanisms \
 RUN cd ${HOME_DIR}/tutorial/modeling_tut_2021/components/mechanisms \
     && nrnivmodl modfiles/
 
+
+#### Add the tutorial for the 2023 workshop
+RUN cd ${HOME_DIR}; \
+    git clone https://github.com/AllenInstitute/bmtk-workshop.git
 
 #### Create an entry point for running the image
 COPY entry_script.sh ${BUILD_DIR}
