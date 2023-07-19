@@ -244,7 +244,7 @@ class PointSimulator(Simulator):
 
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
-            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata']:
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata', 'h5', 'hdf5']:
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
