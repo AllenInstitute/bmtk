@@ -1,4 +1,3 @@
-import bmtk
 import pandas as pd
 import h5py
 import numpy as np
@@ -125,7 +124,6 @@ def __read_sonata(h5_file, csv_file=None):
                 node_populations[ename] = _SonataFP(ename, epop, csv_file)
 
     return node_populations, edge_populations        
-
 
 
 def __read_sonata_files(edge_objs):
@@ -335,8 +333,7 @@ def nconnections_distributions(edge_files, populations=None, edge_props_grouping
     :param populations: string or list of strings. If SONATA file(s) contains multiple edge populations you can specify .
     :param source_props_grouping: str or list[str]. List of columns in source-node file(s) to group results by.
     :param target_props_grouping: str or list[str]. List of columns in target-node file(s) to group results by.
-    """
-    
+    """    
     tmp_edge_props = __to_list(edge_props_grouping) + ['source_node_id', 'target_node_id'] 
     
     edges_df = edge_props_distribution(
@@ -351,9 +348,12 @@ def nconnections_distributions(edge_files, populations=None, edge_props_grouping
     )
     edges_df = edges_df.drop(columns=['_conns_'])
     edges_df = edges_df.drop_duplicates()
-    edges_df = edges_df.drop(columns=['source_node_id', 'target_node_id'])
+    if len(edges_df.columns) > 2:
+        # Drop the source_node_id and target_node_id, but only if some type of edge/node grouping is specified, otherwise just return
+        # list of source_node_id and target_node_id
+        edges_df = edges_df.drop(columns=['source_node_id', 'target_node_id'])
+    
     return edges_df.value_counts().reset_index(name='nconnections')
-
 
 
 def plot_distribution(edges_data, edge_prop, names=None, log_scale=False, ax=None, show=True, **kwopts):
@@ -473,7 +473,6 @@ def kolmogorov_smirnov(edges_orig, edges_new, edge_prop, **kwargs):
 
     results = ks_2samp(data_org, data_new)
     return results.statistic, results.pvalue
-
 
 
 if __name__ == '__main__':
