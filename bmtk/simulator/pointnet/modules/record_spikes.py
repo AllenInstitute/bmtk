@@ -97,7 +97,7 @@ class SpikesMod(object):
     """
 
     def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None,
-                 cache_to_disk=True):
+                 cache_to_disk=True, compression='gzip'):
         def _get_path(file_name):
             # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
             if file_name is None:
@@ -125,6 +125,7 @@ class SpikesMod(object):
         self._spike_writer.delimiter = '\t'
         self._spike_writer.gid_col = 0
         self._spike_writer.time_col = 1
+        self._spike_writer.compression = compression
         self._sort_order = sort_order.none if not spikes_sort_order else sort_order_lu[spikes_sort_order]
 
         self._spike_detector = None
@@ -147,7 +148,8 @@ class SpikesMod(object):
 
         if self._h5_fname is not None:
             # TODO: reimplement with pandas
-            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order,
+                                         compression=self._spike_writer.compression)
             # io.barrier()
 
         if self._nwb_fname is not None:

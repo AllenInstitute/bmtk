@@ -22,6 +22,8 @@
 #
 from . import connector
 from . import iterator
+import numpy as np
+import pandas as pd
 
 
 class ConnectionMap(object):
@@ -169,7 +171,7 @@ class ConnectionMap(object):
     def max_connections(self):
         return len(self._source_nodes) * len(self._target_nodes)
 
-    def add_properties(self, names, rule, rule_params=None, dtypes=None):
+    def add_properties(self, names, rule=None, rule_params=None, values=None, dtypes=None):
         """Add a synaptic property for an individual edge.
 
         Typically this requires a custom rule that will be used for every source/target pair of nodes and returns
@@ -205,9 +207,20 @@ class ConnectionMap(object):
 
         :param names: list, or single string, of the property
         :param rule: function, list or value of property
+        :param values: A list of values to use for property
         :param rule_params: when rule is a function, rule_params will be passed into function when called.
         :param dtypes: expected property type
         """
+        if not (bool(values is not None) != bool(rule is not None)):
+            raise ValueError('Please specify either the "rule" or "values" parameters')
+        
+        if values is not None:
+            rule = values
+
+        if isinstance(rule, list) or isinstance(rule, np.ndarray):
+            rule = ListIterator(rule)
+            rule_params = {}
+
         self._params.append(self.ParamsRules(names, rule, rule_params, dtypes))
         self._param_keys += names
 
@@ -218,3 +231,14 @@ class ConnectionMap(object):
         conr = connector.create(self.connector, **(self.connector_params or {}))
         itr = iterator.create(self.iterator, conr, **({}))
         return itr(self.source_nodes, self.target_nodes, conr)
+
+
+class ListIterator(object):
+    def __init__(self, my_list):
+        self.my_list = my_list
+        self._idx = 0
+
+    def __call__(self, *args, **kwds):
+        val = self.my_list[self._idx]
+        self._idx += 1
+        return val

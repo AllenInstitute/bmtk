@@ -30,7 +30,7 @@ class _PyFunctions(object):
     Will store a set of functions created by the user. Should not access this directly but rather user the
     decorators or setter functions, and use the py_modules class variable to access individual functions. Is divided
     up into
-    synaptic_weight: functions for calcuating synaptic weight.
+    synaptic_weight: functions for calculating synaptic weight.
     cell_model: should return NEURON cell hobj.
     synapse model: should return a NEURON synapse object.
     """

@@ -852,7 +852,7 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
 
             if not with_population_col:
                 df.drop(col_population, axis=1)
-            ret_df = df if ret_df is None else ret_df.append(df)
+            ret_df = df if ret_df is None else pd.concat([ret_df, df])
 
         if ret_df is not None:
             # pandas doesn't always do a good job of reading in the correct dtype for each column

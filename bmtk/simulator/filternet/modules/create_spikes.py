@@ -11,7 +11,7 @@ from bmtk.utils.io.ioutils import bmtk_world_comm
 
 class SpikesGenerator(SimModule):
     def __init__(self, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, tmp_dir='output',
-                 sort_order='node_id'):
+                 sort_order='node_id', compression='gzip'):
         def _get_file_path(file_name):
             if file_name is None or os.path.isabs(file_name):
                 return file_name
@@ -29,6 +29,7 @@ class SpikesGenerator(SimModule):
 
         self._h5_fname = _get_file_path(spikes_file)
         self._save_h5 = spikes_file is not None
+        self._compression = compression
 
         self._nwb_fname = _get_file_path(spikes_file_nwb)
         self._save_nwb = spikes_file_nwb is not None
@@ -57,7 +58,7 @@ class SpikesGenerator(SimModule):
             self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order)
 
         if self._save_h5:
-            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order, compression=self._compression)
 
         if self._save_nwb:
             self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)

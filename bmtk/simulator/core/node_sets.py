@@ -41,6 +41,14 @@ class NodeSet(object):
                 for node in pop.filter(self._filter):
                     yield self._network.gid_pool.get_gid(name=pop.name, node_id=node.node_id)
 
+    @property
+    def node_ids(self):
+        node_ids = []
+        for pop in self._populations:
+            for node in pop.filter(self._filter):
+                node_ids.append(node.node_id)
+        return node_ids
+
     def nodes(self):
         return None
 

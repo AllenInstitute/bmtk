@@ -92,14 +92,14 @@ def stimx_waveform_factory(waveform):
         # if waveform_conf is str or unicode assume to be name of file in stim_dir
         # waveform_conf = str(waveform_conf)   # make consistent
         file_ext = os.path.splitext(waveform)
-        if file_ext == 'csv':
+        if file_ext[-1] == '.csv':
             return WaveformCustom(waveform)
 
-        elif file_ext == 'json':
+        elif file_ext[-1] == '.json':
             with open(waveform, 'r') as f:
                 waveform = json.load(f)
         else:
-            io.log_warning('Unknwon filetype for waveform')
+            io.log_warning('Unknown filetype for waveform')
 
     shape_key = waveform["shape"].lower()
 

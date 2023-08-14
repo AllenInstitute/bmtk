@@ -31,7 +31,12 @@ from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
-                 population_renames=None, **kwargs):
+                 population_renames=None, compression='gzip', **kwargs):
+    
+    # make sure to take care of 'none' or 'None' compression
+    if isinstance(compression, str):
+        if compression.lower() == 'none':
+            compression = None
     path_dir = os.path.dirname(path)
     if MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -60,14 +65,14 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
             if sort_order != SortOrder.unknown:
                 spikes_pop_grp.attrs['sorting'] = sort_order.value
 
-            spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'])
+            spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'], compression=compression)
             spikes_pop_grp['timestamps'].attrs['units'] = spiketrain_reader.units()
-            spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'])
+            spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'], compression=compression)
     comm_barrier()
 
 
 def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms', population_renames=None,
-                     **kwargs):
+                     compression='gzip', **kwargs):
     path_dir = os.path.dirname(path)
     if MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -93,9 +98,9 @@ def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.non
             if sort_order != SortOrder.unknown:
                 spikes_grp.attrs['sorting'] = sort_order.value
 
-            timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
+            timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64, compression=compression)
             timestamps_ds.attrs['units'] = units
-            node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
+            node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64, compression=compression)
 
         for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
             if MPI_rank == 0:

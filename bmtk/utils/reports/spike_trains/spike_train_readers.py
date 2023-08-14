@@ -174,7 +174,8 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
         for pop_name, pop_grp in self._population_map.items():
             sort_order = self._population_sorting_map[pop_name]
             nodes_indices = {}
-            node_ids_ds = pop_grp[self._DATASET_node_ids]
+            # loop on h5 is slow, so convert it to np before the loop.
+            node_ids_ds = np.array(pop_grp[self._DATASET_node_ids])
             if sort_order == SortOrder.by_id:
                 indx_beg = 0
                 last_id = node_ids_ds[0]
@@ -604,7 +605,7 @@ class NWBSTReader(SpikeTrainsReadOnlyAPI):
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if self._spikes_df is None:
             self._spikes_df = pd.DataFrame({
-                col_timestamps: pd.Series(dtype=np.float),
+                col_timestamps: pd.Series(dtype=float),
                 col_population: pd.Series(dtype=np.string_),
                 col_node_ids: pd.Series(dtype=np.uint64)
             })
