@@ -1,0 +1,8 @@
+edge_type_id target_query source_query model_template syn_weight target_sections delay dynamics_params weight_function distance_range
+100 pop_name=='Rorb' * exp2syn 5e-05 "['basal', 'apical']" 2.0 AMPA_ExcToExc.json wmax "[0.0, 150.0]"
+101 pop_name=='Nr5a1' * exp2syn 5e-05 "['basal', 'apical']" 2.0 AMPA_ExcToExc.json wmax "[0.0, 150.0]"
+102 pop_name=='Scnn1a' * exp2syn 4e-05 "['basal', 'apical']" 2.0 AMPA_ExcToExc.json wmax "[0.0, 150.0]"
+103 pop_name=='PV1' * exp2syn 0.0001 "['somatic', 'basal']" 2.0 AMPA_ExcToInh.json wmax "[0.0, 1e+20]"
+104 pop_name=='PV2' * exp2syn 9e-05 "['somatic', 'basal']" 2.0 AMPA_ExcToInh.json wmax "[0.0, 1e+20]"
+105 pop_name=='LIF_exc' * NULL 0.0045 NULL 2.0 instantaneousExc.json wmax NULL
+106 pop_name=='LIF_inh' * NULL 0.002 NULL 2.0 instantaneousExc.json wmax NULL

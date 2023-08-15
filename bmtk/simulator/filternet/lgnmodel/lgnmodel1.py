@@ -60,28 +60,11 @@ def heat_plot(evaluate_result, ax=None, show=True, save_file_name=None, colorbar
             
 
 class LGNModel(object):
-    
     def __init__(self, cell_list):
         self.cell_list = cell_list
         
     def evaluate(self, movie, **kwargs):
         return [cell.evaluate(movie, **kwargs) for cell in self.cell_list]
-        
-#     def plot(self):
-#         if show == True:
-#             plt.show()
-        
-        
-#         show = kwargs.pop('show', False)
-#         data = [cell.evaluate_movie(movie, **kwargs) for cell in self.cell_list]
-#         t_list, y_list, kernel_list = zip(*data)
-        
-#         if show == True:
-#             for y in y_list:
-#                 plt.plot(t_list[0], y)
-#             plt.show()
-#         
-#         return t_list[0], y_list, kernel_list
-    
+
     def __len__(self):
         return len(self.cell_list)

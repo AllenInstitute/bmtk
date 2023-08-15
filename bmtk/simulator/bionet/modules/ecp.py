@@ -38,7 +38,7 @@ N_HOSTS = int(pc.nhost())
 
 class EcpMod(SimulatorMod):
     def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir=None, cells=None, variable_name='v',
-                 electrode_channels=None, cell_bounds=None):
+                 electrode_channels=None, cell_bounds=None, minimum_distance=None):
         self._ecp_output = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
@@ -55,6 +55,12 @@ class EcpMod(SimulatorMod):
             self._cells = cells
         else:
             self._cells = list(np.arange(cell_bounds[0],cell_bounds[1]+1))
+        if minimum_distance and minimum_distance != 'auto':
+            try:
+                minimum_distance = max(float(minimum_distance), 0)
+            except Exception as e:
+                minimum_distance = 0
+        self.minimum_distance = minimum_distance
         self._rel = None
         self._fih1 = None
         self._rel_nsites = 0
@@ -76,7 +82,7 @@ class EcpMod(SimulatorMod):
         self._local_gids = []
 
     def _get_tmp_fname(self, rank):
-        return os.path.join(self._tmp_outputdir, 'tmp_{}_ecp.h5'.format(MPI_RANK))
+        return os.path.join(self._tmp_outputdir, 'tmp_{}_{}'.format(MPI_RANK, os.path.basename(self._ecp_output)))
 
     def _create_ecp_file(self, sim):
         dt = sim.dt
@@ -86,6 +92,7 @@ class EcpMod(SimulatorMod):
         # create file to temporary store ecp data on each rank
         self._tmp_ecp_handle = h5py.File(self._tmp_ecp_file, 'a')
         self._tmp_ecp_handle.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                                            dtype=np.float64,
                                             chunks=True)
 
         # only the primary node will need to save the final ecp
@@ -94,6 +101,7 @@ class EcpMod(SimulatorMod):
                 add_hdf5_magic(f5)
                 add_hdf5_version(f5)
                 f5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                                  dtype=np.float64,
                                   chunks=True)
                 f5['/ecp/data'].attrs['units'] = 'mV'
                 #f5.attrs['dt'] = dt
@@ -119,12 +127,12 @@ class EcpMod(SimulatorMod):
         # self._cell_var_files[gid] = file_h5['ecp']
 
     def _calculate_ecp(self, sim):
-        self._rel = RecXElectrode(self._positions_file)
+        self._rel = RecXElectrode(self._positions_file, self.minimum_distance)
         for gid in self._local_gids:
             cell = sim.net.get_cell_gid(gid)
             #cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]
-            self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
+            self._rel.calc_transfer_resistance(gid, cell.seg_coords)
 
         self._rel_nsites = self._rel.nsites
         sim.h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
@@ -170,6 +178,7 @@ class EcpMod(SimulatorMod):
 
     def _delete_tmp_files(self):
         if os.path.exists(self._tmp_ecp_file):
+            self._tmp_ecp_handle.close()
             os.remove(self._tmp_ecp_file)
 
     def initialize(self, sim):
@@ -236,7 +245,7 @@ class RecXElectrode(object):
 
     """
 
-    def __init__(self, positions):
+    def __init__(self, positions, minimum_distance):
         """Create an array"""
         # self.conf = conf
         electrode_file = positions  # self.conf["recXelectrode"]["positions"]
@@ -248,6 +257,7 @@ class RecXElectrode(object):
         self.nsites = self.pos.shape[1]
         # self.conf['run']['nsites'] = self.nsites  # add to the config
         self.transfer_resistances = {}  # V_e = transfer_resistance*Im
+        self.minimum_distance = minimum_distance
 
     def drift(self):
         # will include function to model electrode drift
@@ -260,8 +270,12 @@ class RecXElectrode(object):
         """Precompute mapping from segment to electrode locations"""
         sigma = 0.3  # mS/mm
 
-        r05 = (seg_coords['p0'] + seg_coords['p1']) / 2
-        dl = seg_coords['p1'] - seg_coords['p0']
+        r05 = (seg_coords.p0 + seg_coords.p1) / 2
+        dl = seg_coords.p1 - seg_coords.p0
+        if self.minimum_distance == 'auto':
+            rm = seg_coords.d / 2  # set minimum distance to the radius of each segment
+        else:
+            rm = self.minimum_distance  # set a common minimum distance
 
         nseg = r05.shape[1]
 
@@ -281,6 +295,10 @@ class RecXElectrode(object):
             rT2 = r2 - rll ** 2  # square of perpendicular component
             up = rll + dlmag / 2
             low = rll - dlmag / 2
+            if self.minimum_distance:
+                # if electrode projection on segment axis is within distance rm to the segment
+                # check perpendicular distance to the segment axis and set lower limit to rm
+                np.fmax(rT2, rm * rm, out=rT2, where=low < rm)
             num = up + np.sqrt(up ** 2 + rT2)
             den = low + np.sqrt(low ** 2 + rT2)
             tr[j, :] = np.log(num / den) / dlmag  # units of (um) use with im_ (total seg current)

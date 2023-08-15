@@ -1,0 +1,50 @@
+{
+  "manifest": {
+	"$BASE_DIR": "${configdir}",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$MODELS_DIR": "$BASE_DIR/../point_components",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/inputs"
+  },
+
+  "run": {
+    "tstop": 3000.0,
+    "dt": 0.001,
+    "block_run": false,
+    "block_size": 1000.0
+  },
+
+  "inputs": {
+    "thalamus_spikes": {
+      "input_type": "spikes",
+      "module": "sonata",
+      "input_file": "$INPUT_DIR/thalamus_spikes.h5",
+      "node_set": "thalamus"
+    }
+  },
+
+  "reports": {
+    "membrane_potential": {
+      "cells": {
+        "population": "cortex",
+        "node_id": [0, 20, 60, 80, 100]
+      },
+      "variable_name": "V_m",
+      "module": "multimeter_report",
+      "sections": "soma"
+    }
+  },
+
+  "output": {
+	"log_file": "log.txt",
+	"spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv",
+	"output_dir": "$OUTPUT_DIR",
+    "overwrite_output_dir": true,
+    "quiet_simulator": true
+  },
+
+  "target_simulator":"NEST",
+
+  "network": "config.circuit.json"
+}

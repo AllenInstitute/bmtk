@@ -1,10 +1,9 @@
-import nest
-
+import os, sys
 from bmtk.simulator import pointnet
-from bmtk.analyzer.visualization.spikes import plot_spikes, plot_rates
+from bmtk.analyzer.spike_trains import plot_raster
+import matplotlib.pyplot as plt
 
-
-def main(config_file):
+def run(config_file):
     configure = pointnet.Config.from_json(config_file)
     configure.build_env()
 
@@ -12,9 +11,23 @@ def main(config_file):
     sim = pointnet.PointSimulator.from_config(configure, network)
     sim.run()
 
-    plot_spikes('network/V1_nodes.h5', 'network/V1_node_types.csv', 'output/spikes.h5')
+    plot_raster(config_file='simulation_config.json', group_by='pop_name')
     # assert (spike_files_equal('output/spikes.csv', 'expected/spikes.csv'))
 
 
 if __name__ == '__main__':
-    main('config.json')
+    # Find the appropriate config.json file
+    config_path = None
+    if __file__ != sys.argv[-1]:
+        config_path = sys.argv[-1]
+        if not os.path.exists(config_path):
+            raise AttributeError('configuration file {} does not exist.'.format(config_path))
+    else:
+        for cfg_path in ['config.json', 'config.simulation.json', 'simulation_config.json']:
+            if os.path.exists(cfg_path):
+                config_path = cfg_path
+                break
+        else:
+            raise AttributeError('Could not find configuration json file.')
+
+    run(config_path)

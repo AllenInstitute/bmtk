@@ -1,63 +1,71 @@
+# Copyright 2020. Allen Institute. All rights reserved
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+# following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
+# disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
+# disclaimer in the documentation and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 import numpy as np
 from six import string_types
 
-from .core import SortOrder as sort_order
-from .core import STBuffer
-from .adaptors import CSVSTReader, write_csv
-from .adaptors import load_sonata_file, write_sonata
-from .adaptors import NWBSTReader
-from .adaptors import find_file_type
-from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer
-
+from .core import find_file_type, MPI_size
+from .spike_train_readers import load_sonata_file, CSVSTReader, NWBSTReader
+from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer, STCSVMPIBufferV2
 from bmtk.utils.sonata.utils import get_node_ids
-from bmtk.utils.io import bmtk_world_comm
-
+from scipy.stats import gamma
+import warnings
 
 class SpikeTrains(object):
-    def __init__(self, adaptor=None, **kwargs):
-        if adaptor is None:
-            if bmtk_world_comm.MPI_size > 1:
-                self._adaptor = STMPIBuffer(**kwargs)
-            else:
-                self._adaptor = STCSVBuffer(**kwargs)
+    """A class for creating and reading spike files.
+
+    """
+    def __init__(self, spikes_adaptor=None, **kwargs):
+        # There are a number of strategies for reading and writing spike trains, depending on memory limitations, if
+        #  MPI is being used, or if there if read-only from disk. I'm using a decorator/adaptor pattern and moving
+        #  the actual functionality to the Buffered/ReadOnly classes that implement SpikeTrainsAPI.
+        if spikes_adaptor is not None:
+            self.adaptor = spikes_adaptor
         else:
-            self._adaptor = adaptor
+            # TODO: Check that comm has gather, reduce, etc methods; if not can't use STMPIBuffer
+            use_mpi = MPI_size > 1
+            cache_to_disk = 'cache_dir' in kwargs and kwargs.get('cache_to_disk', True)
 
-        #self._read_adaptor = self._write_adaptor = self._adaptor
-
-    @property
-    def write_adaptor(self):
-        return self._adaptor
-
-    @property
-    def read_adaptor(self):
-        return self._adaptor
-
-    @property
-    def populations(self):
-        return self.read_adaptor.populations
-
-    @property
-    def units(self):
-        return self.read_adaptor.units
-
-    @units.setter
-    def units(self, v):
-        self.read_adaptor.units = v
+            if use_mpi and cache_to_disk:
+                self.adaptor = STCSVMPIBufferV2(**kwargs)
+            elif cache_to_disk:
+                self.adaptor = STCSVBuffer(**kwargs)
+            elif use_mpi:
+                self.adaptor = STMPIBuffer(**kwargs)
+            else:
+                self.adaptor = STMemoryBuffer(**kwargs)
 
     @classmethod
     def from_csv(cls, path, **kwargs):
-        return cls(adaptor=CSVSTReader(path, **kwargs))
+        return cls(spikes_adaptor=CSVSTReader(path, **kwargs))
 
     @classmethod
     def from_sonata(cls, path, **kwargs):
         sonata_adaptor = load_sonata_file(path, **kwargs)
-        return cls(adaptor=sonata_adaptor)
+        return cls(spikes_adaptor=sonata_adaptor)
 
     @classmethod
     def from_nwb(cls, path, **kwargs):
-        return cls(adaptor=NWBSTReader(path, **kwargs))
-        # return NWBSTReader(path, **kwargs)
+        return cls(spikes_adaptor=NWBSTReader(path, **kwargs))
 
     @classmethod
     def load(cls, path, file_type=None, **kwargs):
@@ -69,139 +77,93 @@ class SpikeTrains(object):
         elif file_type == 'csv':
             return cls.from_csv(path, **kwargs)
 
-    def nodes(self, populations=None):
-        return self.read_adaptor.nodes(populations=populations)
+    def __getattr__(self, item):
+        return getattr(self.adaptor, item)
 
-    def n_spikes(self, population=None):
-        return self.read_adaptor.n_spikes(population=population)
-
-    def time_range(self, populations=None):
-        return self.read_adaptor.time_range(populations=populations)
-
-    def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        return self.read_adaptor.get_times(node_id=node_id, population=population, time_window=time_window, **kwargs)
-
-    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=sort_order.none, **kwargs):
-        return self.read_adaptor.to_dataframe(node_ids=node_ids, populations=populations, time_window=time_window,
-                                              sort_order=sort_order, **kwargs)
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=sort_order.none, **kwargs):
-        return self.read_adaptor.spikes(node_ids=node_ids, populations=populations, time_window=time_window,
-                                        sort_order=sort_order, **kwargs)
-
-    def add_spike(self, node_id, timestamp, population=None, **kwargs):
-        return self.write_adaptor.add_spike(node_id=node_id, timestamp=timestamp, population=population, **kwargs)
-
-    def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
-        return self.write_adaptor.add_spikes(node_ids=node_ids, timestamps=timestamps, population=population, **kwargs)
-
-    def import_spikes(self, obj, **kwargs):
-        raise NotImplementedError()
-
-    def flush(self):
-        self.write_adaptor.flush()
-
-    def close(self):
-        self.write_adaptor.close()
-
-    def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
-        # self._write_adaptor.flush()
-        if bmtk_world_comm.MPI_rank == 0:
-            write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-
-    def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
-        if isinstance(self.write_adaptor, STBuffer):
-            self.write_adaptor.flush()
-        if bmtk_world_comm.MPI_rank == 0:
-            write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        bmtk_world_comm.barrier()
-
-    def is_equal(self, other, populations=None, err=0.00001, time_window=None):
-        if populations is None:
-            # Both must contain the same populations
-            populations = self.populations
-            if set(other.populations) != set(populations):
-                return False
+    def __setattr__(self, key, value):
+        if key == 'adaptor':
+            self.__dict__[key] = value
         else:
-            # Comparing only a subset of the node populations, make sure both files contains them (or both files don't
-            # contain the populations
-            populations = [populations] if np.isscalar(populations) else populations
-            for p in populations:
-                if (p in self.populations) != (p in other.populations):
-                    return False
-
-        for p in populations:
-            if time_window is None:
-                # check that each SpikeTrains contain the same number and ids of nodes so we don't have to iterate
-                # through each spike. This won't always work if the user limits the time-window.
-                self_nodes = sorted([n[1] for n in self.nodes(populations=p)])
-                other_nodes = sorted([n[1] for n in other.nodes(populations=p)])
-                if not np.all(self_nodes == other_nodes):
-                    return False
-            else:
-                # If the time-window being checked is restricted
-                self_nodes = set([n[1] for n in self.nodes(p)]) & set([n[1] for n in other.nodes(p)])
-
-            for node_id in self_nodes:
-                self_ts = self.get_times(node_id=node_id, population=p, time_window=time_window)
-                other_ts = other.get_times(node_id=node_id, population=p, time_window=time_window)
-
-                if len(self_ts) != len(other_ts):
-                    return False
-
-                for t0, t1 in zip(self_ts, other_ts):
-                    if abs(t1 - t0) > err:
-                        return False
-
-        return True
-
-    def to_nwb(self, path, **kwargs):
-        raise NotImplementedError()
+            self.adaptor.__dict__[key] = value
 
     def __len__(self):
-        return len(self.read_adaptor)
+        return self.adaptor.__len__()
 
     def __eq__(self, other):
-        return self.is_equal(other)
+        return self.adaptor.__eq__(other)
+
+    def __lt__(self, other):
+        return self.adaptor.__lt__(other)
+
+    def __le__(self, other):
+        return self.adaptor.__le__(other)
+
+    def __gt__(self, other):
+        return self.adaptor.__gt__(other)
+
+    def __ge__(self, other):
+        return self.adaptor.__ge__(other)
+
+    def __ne__(self, other):
+        return self.adaptor.__ne__(other)
 
 
-class PoissonSpikeGenerator(SpikeTrains):
-    """ A Class for generating spike-trains with a homogeneous and inhomogeneous Poission distribution.
-
-    Uses the methods describe in Dayan and Abbott, 2001.
-    """
-    max_spikes_per_node = 10000000
-
-    def __init__(self, buffer_dir=None, population=None, seed=None, **kwargs):
+class SpikeGenerator(SpikeTrains):
+    def __init__(self, population=None, seed=None, output_units='ms', **kwargs):
+        max_spikes_per_node = 10000000
         if population is not None and 'default_population' not in kwargs:
-            kwargs['default_population'] = population
+            kwargs['default_population']= population
 
         if seed:
             np.random.seed(seed)
 
-        if buffer_dir is not None:
-            adaptor = STCSVBuffer(cache_dir=buffer_dir, **kwargs)
+        super(SpikeGenerator, self).__init__(units=output_units, **kwargs)
+        # self.units = units
+        if output_units.lower() in ['ms', 'millisecond', 'milliseconds']:
+            self._units = 'ms'
+            self.output_conversion = 1000.0
+        elif output_units.lower() in ['s', 'second', 'seconds']:
+            self._units = 's'
+            self.output_conversion = 1.0
         else:
-            adaptor = STMemoryBuffer(**kwargs)
+            raise AttributeError('Unknown output_units value {}'.format(output_units))
 
-        super(PoissonSpikeGenerator, self).__init__(adaptor=adaptor)
-        self.units = 's'
+class PoissonSpikeGenerator(SpikeGenerator):
+    """ A Class for generating spike-trains with a homogeneous and inhomogeneous Poisson distribution.
 
-    def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0)):
-        # TODO: Add refactory period
+    Uses the methods describe in Dayan and Abbott, 2001.
+    """
+    def __init__(self, population=None, seed=None, output_units='ms', **kwargs):
+        super(PoissonSpikeGenerator, self).__init__(population, seed, output_units, **kwargs)
+
+    def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0), abs_ref=0, tau_ref=0):
+        """
+        :param firing_rate: Scalar stationary firing rate or array of values for inhomogeneous (Hz)
+        :param times: Start and end time for spike train (s)
+        :param abs_ref: Absolute refractory period (s)
+        :param tau_ref: Relative refractory period time constant for exponential recovery (s)
+        """
+        if tau_ref < 0:
+            raise ValueError('Refractory period time constant (sec) cannot be negative.')
+        if abs_ref < 0:
+            raise ValueError('Absolute refractory period (sec) cannot be negative.')
         if isinstance(node_ids, string_types):
             # if user passes in path to nodes.h5 file count number of nodes
             node_ids = get_node_ids(node_ids, population)
         if np.isscalar(node_ids):
             # In case user passes in single node_id
             node_ids = [node_ids]
-
         if np.isscalar(firing_rate):
-            self._build_fixed_fr(node_ids, population, firing_rate, times)
+            self._build_fixed_fr(node_ids, population, firing_rate, times, abs_ref, tau_ref)
         elif isinstance(firing_rate, (list, np.ndarray)):
-            self._build_inhomegeous_fr(node_ids, population, firing_rate, times)
+            self._build_inhomogeneous_fr(node_ids, population, firing_rate, times, abs_ref, tau_ref)
 
-    def _build_fixed_fr(self, node_ids, population, fr, times):
+    def time_range(self, population=None):
+        df = self.to_dataframe(populations=population, with_population_col=False)
+        timestamps = df['timestamps']
+        return np.min(timestamps), np.max(timestamps)
+
+    def _build_fixed_fr(self, node_ids, population, fr, times, abs_ref, tau_ref):
         if np.isscalar(times) and times > 0.0:
             tstart = 0.0
             tstop = times
@@ -210,21 +172,52 @@ class PoissonSpikeGenerator(SpikeTrains):
             tstop = times[-1]
             if tstart >= tstop:
                 raise ValueError('Invalid start and stop times.')
+        if fr < 0:
+            raise ValueError('Firing rates must not be negative.')
 
+        # If there are refractory properties, correct starting firing rate and check firing limit
+        if abs_ref!=0 or tau_ref!=0:
+            max_fr_lim, p = fr_corr(abs_ref, tau_ref)
+            if fr > max_fr_lim:
+                raise ValueError(f'Cannot achieve firing rate above {max_fr_lim} with these absolute'
+                                 f' and relative refractory properties. Also consider using'
+                                 f' the GammaSpikeGenerator instead.')
+            fr = p(fr)
+
+        #rs2 = np.random.RandomState(0)
+        count = 0
         for node_id in node_ids:
             c_time = tstart
             while True:
                 interval = -np.log(1.0 - np.random.uniform()) / fr
+                preceding_time = c_time
                 c_time += interval
                 if c_time > tstop:
                     break
+                if tau_ref != 0:
+                    w = 1 - np.exp(-(interval-abs_ref)/tau_ref)
+                else:
+                    w = 1  # To avoid divide by zero warning
+                if abs_ref != 0:
+                    w = w*(interval>abs_ref)
+                #if (w == 1) or (rs2.uniform() < w):
+                if (w == 1) or (np.random.uniform() < w):
+                    self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
+                    count = count+1
 
-                self.add_spike(node_id=node_id, population=population, timestamp=c_time)
+    def _build_inhomogeneous_fr(self, node_ids, population, fr, times, abs_ref, tau_ref):
+        if np.min(fr) < 0:
+            raise ValueError('Firing rates must not be negative')
+        if len(fr) != len(times):
+            raise ValueError('If using a time series for firing rate, times must be an array of equal length')
 
-    def _build_inhomegeous_fr(self, node_ids, population, fr, times):
-        if np.min(fr) <= 0:
-            raise Exception('Firing rates must not be negative')
         max_fr = np.max(fr)
+
+        max_fr_lim, p = fr_corr(abs_ref, tau_ref)
+        if max_fr > max_fr_lim:
+            raise ValueError(f'Cannot achieve firing rate above {max_fr_lim} with these absolute and relative refractory properties')
+
+        fr = p(fr)
 
         times = times
         tstart = times[0]
@@ -234,12 +227,18 @@ class PoissonSpikeGenerator(SpikeTrains):
             c_time = tstart
             time_indx = 0
             while True:
-                # Using the prunning method, see Dayan and Abbott Ch 2
+                # Using the pruning method, see Dayan and Abbott Ch 2
                 interval = -np.log(1.0 - np.random.uniform()) / max_fr
+                preceding_time = c_time
                 c_time += interval
                 if c_time > tstop:
                     break
-
+                if tau_ref != 0:
+                    w = 1 - np.exp(-(interval-abs_ref)/tau_ref)
+                else:
+                    w = 1  # To avoid divide by zero warning
+                if abs_ref != 0:
+                    w = w * (interval > abs_ref)
                 # A spike occurs at t_i, find index j st times[j-1] < t_i < times[j], and interpolate the firing rates
                 # using fr[j-1] and fr[j]
                 while times[time_indx] <= c_time:
@@ -248,10 +247,86 @@ class PoissonSpikeGenerator(SpikeTrains):
                 fr_i = _interpolate_fr(c_time, times[time_indx-1], times[time_indx],
                                        fr[time_indx-1], fr[time_indx])
 
-                if not fr_i/max_fr < np.random.uniform():
-                    self.add_spike(node_id=node_id, population=population, timestamp=c_time)
+                if not fr_i/max_fr*w < np.random.uniform():
+                    self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
 
+
+class GammaSpikeGenerator(SpikeGenerator):
+    """ A Class for generating spike-trains based on a gamma-distributed renewal process.
+    """
+    def __init__(self, population=None, seed=None, output_units='ms', **kwargs):
+        super(GammaSpikeGenerator, self).__init__(population, seed, output_units, **kwargs)
+
+    def add(self, node_ids, firing_rate, a, population=None, times=(0.0, 1.0)):
+        """
+        :param firing_rate: Stationary firing rate (Hz)
+        :param a: Shape parameter (a>0). For a=1, this becomes a Poisson distribution.
+        :param times: Start and end time for spike train (s)
+        """
+        if isinstance(node_ids, string_types):
+            # if user passes in path to nodes.h5 file count number of nodes
+            node_ids = get_node_ids(node_ids, population)
+        if np.isscalar(node_ids):
+            # In case user passes in single node_id
+            node_ids = [node_ids]
+
+        if np.isscalar(firing_rate):
+            self._build_fixed_fr(node_ids, population, firing_rate, a, times)
+        elif isinstance(firing_rate, (list, np.ndarray)):
+            raise Exception('Firing rate must be stationary for GammaSpikeGenerator')
+
+    def time_range(self, population=None):
+        df = self.to_dataframe(populations=population, with_population_col=False)
+        timestamps = df['timestamps']
+        return np.min(timestamps), np.max(timestamps)
+
+    def _build_fixed_fr(self, node_ids, population, fr, a, times):
+        if np.isscalar(times) and times > 0.0:
+            tstart = 0.0
+            tstop = times
+        else:
+            tstart = times[0]
+            tstop = times[-1]
+            if tstart >= tstop:
+                raise ValueError('Invalid start and stop times.')
+        if fr < 0:
+            raise Exception('Firing rates must not be negative.')
+        if a < 0:
+            raise ValueError('Shape parameter `a` cannot be negative.')
+
+        for node_id in node_ids:
+            c_time = tstart
+            n_spikes_avg = (tstop-tstart)*fr
+            intervals = gamma.rvs(a, loc=0, scale=1 / (a * fr), size=round(n_spikes_avg * 1.5))
+
+            for i in range(len(intervals)):
+                preceding_time = c_time
+                c_time += intervals[i]
+                if c_time > tstop:
+                    break
+                self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
 
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
-    return fr0 + (fr1 - fr0)*(t - t0)/t1
+    return fr0 + (fr1 - fr0)*(t - t0)/(t1 - t0)
+
+def fr_corr(abs_ref, tau_ref):
+    # Firing rate correction for lost spikes
+    if tau_ref != 0:
+        def f(fr_before, abs_ref=abs_ref, tau_ref=tau_ref):
+            return (np.exp(-fr_before * abs_ref) - \
+                    fr_before * np.exp(abs_ref / tau_ref) * tau_ref /
+                    (fr_before * tau_ref + 1) * \
+                    (np.exp(-(fr_before + 1 / tau_ref) * abs_ref))) * fr_before
+    else:
+        def f(fr_before, abs_ref=abs_ref):
+            return np.exp(-fr_before * abs_ref) * fr_before
+
+    fr_befores = np.logspace(0, 3, 40)
+    fr_afters = f(fr_befores)
+    max_fr_lim = np.max(fr_afters)
+    max_ind = np.argmax(fr_afters)
+
+    z = np.polyfit(fr_afters[:max_ind], fr_befores[:max_ind], 10)
+    p = np.poly1d(z)
+    return max_fr_lim, p

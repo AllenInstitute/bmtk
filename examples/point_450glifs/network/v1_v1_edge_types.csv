@@ -1,0 +1,7 @@
+edge_type_id target_query source_query model_template syn_weight dynamics_params delay
+100 ei=='e'&placement=='inner' ei=='e' static_synapse 2.5 e2e.json 2.0
+101 ei=='i'&placement=='inner' ei=='e' static_synapse 5.0 e2i.json 2.0
+102 ei=='e'&placement=='inner' ei=='i' static_synapse -6.5 i2e.json 2.0
+103 ei=='i'&placement=='inner' ei=='i' static_synapse -3.0 i2i.json 2.0
+104 placement=='outer' ei=='e' static_synapse 3.0 instantaneousExc.json 2.0
+105 placement=='outer' ei=='i' static_synapse -4.0 instantaneousInh.json 2.0

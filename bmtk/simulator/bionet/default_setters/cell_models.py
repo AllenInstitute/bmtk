@@ -354,20 +354,20 @@ def fix_axon_allactive_directed(hobj):
 
 def get_axon_direction(hobj):
     for sec in hobj.somatic:
-        n3d = int(h.n3d())  # get number of n3d points in each section
-        soma_end = np.asarray([h.x3d(n3d - 1), h.y3d(n3d - 1), h.z3d(n3d - 1)])
+        n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
+        soma_end = np.asarray([h.x3d(n3d - 1, sec=sec), h.y3d(n3d - 1, sec=sec), h.z3d(n3d - 1, sec=sec)])
         mid_point = int(n3d / 2)
-        soma_mid = np.asarray([h.x3d(mid_point), h.y3d(mid_point), h.z3d(mid_point)])
+        soma_mid = np.asarray([h.x3d(mid_point, sec=sec), h.y3d(mid_point, sec=sec), h.z3d(mid_point, sec=sec)])
 
     for sec in hobj.all:
         section_name = sec.name().split(".")[1][:4]
         if section_name == 'axon':
-            n3d = int(h.n3d())  # get number of n3d points in each section
+            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
             axon_p3d = np.zeros((n3d, 3))  # to hold locations of 3D morphology for the current section
             for i in range(n3d):
-                axon_p3d[i, 0] = h.x3d(i)
-                axon_p3d[i, 1] = h.y3d(i)  # shift coordinates such to place soma at the origin.
-                axon_p3d[i, 2] = h.z3d(i)
+                axon_p3d[i, 0] = h.x3d(i, sec=sec)
+                axon_p3d[i, 1] = h.y3d(i, sec=sec)  # shift coordinates such to place soma at the origin.
+                axon_p3d[i, 2] = h.z3d(i, sec=sec)
 
     # Add soma coordinates to the list
     p3d = np.concatenate(([soma_mid], axon_p3d), axis=0)
@@ -467,11 +467,12 @@ def set_extracellular(hobj, cell, dynamics_params):
     return hobj
 
 
-add_cell_model(NMLLoad, directive='hoc', model_type='biophysical')
+add_cell_model(loadHOC, directive='hoc', model_type='biophysical')
 add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
 add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
+add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_neuron', overwrite=False)
 
 
 add_cell_processor(aibs_perisomatic, overwrite=False)

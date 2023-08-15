@@ -1,27 +1,8 @@
-import scipy.io as sio
-import os 
-import matplotlib.pyplot as plt
-import isee_engine.nwb as nwb
-from linearfilter import SpatioTemporalFilter
-import numpy as np 
-from spatialfilter import GaussianSpatialFilter
-from transferfunction import ScalarTransferFunction
-from temporalfilter import TemporalFilterCosineBump
-from cursor import LNUnitCursor, MultiLNUnitCursor
-from movie import Movie    
-from lgnmodel1 import LGNModel, heat_plot
-from cellmodel import LGNOnCell, LGNOffCell,LGNOnOffCell,TwoSubfieldLinearCell
-from transferfunction import MultiTransferFunction, ScalarTransferFunction
-from lnunit import LNUnit, MultiLNUnit    
-from sympy.abc import x as symbolic_x
-from sympy.abc import y as symbolic_y
-from kernel import Kernel3D
-from movie import Movie, FullFieldFlashMovie
-import itertools
+import numpy as np
 import scipy.stats as sps
-from make_cell_list import multi_cell_random_generator, make_single_unit_cell_list, make_on_off_cell_list
-#from lgnmodel.make_cell_list import two_unit_cell_config
-#from make_cell_list import single_unit_cell_config
+
+from .make_cell_list import multi_cell_random_generator, make_single_unit_cell_list, make_on_off_cell_list
+
 
 def make_lattice_unit(lattice_unit_center=None):
     cell_list = []
@@ -46,8 +27,6 @@ def make_tON_cell_list(lattice_unit_center):
     sz = [3,6,9]
     ncells = [5,3,2]
     amp_dist = sps.rv_discrete(values=([20,25], [.5,.5]))
-#    kpeaks_dist =  sps.multivariate_normal(mean=[40., 80.], cov=[[5.0, 0], [0, 5]])
-#    wts = (.4,-.2)
     kpeaks_dist =  sps.multivariate_normal(mean=[15., 35.], cov=[[5.0, 0], [0, 5]])
     wts = (4.,-2.5)
     delays = (0.,0.)
@@ -58,10 +37,8 @@ def make_tON_cell_list(lattice_unit_center):
     for num_cells, sig in zip(ncells,sz):
         single_unit_cell_config['number_of_cells'] = num_cells
         single_unit_cell_config['sigma'] = (sig,sig)
-#         print single_unit_cell_config
-        tON_cell_list += multi_cell_random_generator(make_single_unit_cell_list, **single_unit_cell_config) 
+        tON_cell_list += multi_cell_random_generator(make_single_unit_cell_list, **single_unit_cell_config)
     
-    #print len(tON_cell_list)    
     return tON_cell_list
 
 def make_tOFF_cell_list(lattice_unit_center):
@@ -98,9 +75,7 @@ def make_sON_cell_list(lattice_unit_center):
     single_unit_cell_config['width'] = 5.
     sz = [3,6,9]
     ncells = [5,3,2]
-    amp_dist = sps.rv_discrete(values=([20,25], [.5,.5]))
-#    kpeaks_dist =  sps.multivariate_normal(mean=[100., 160.], cov=[[5.0, 0], [0, 5]])
-#    wts = (.4,-.1)
+    amp_dist = sps.rv_discrete(values=([20,25], [.5, .5]))
     kpeaks_dist =  sps.multivariate_normal(mean=[80., 120.], cov=[[5.0, 0], [0, 5]])
     wts = (4.,-.85)
     delays = (0.,0.)
@@ -113,8 +88,8 @@ def make_sON_cell_list(lattice_unit_center):
         single_unit_cell_config['sigma'] = (sig,sig)
         sON_cell_list += multi_cell_random_generator(make_single_unit_cell_list, **single_unit_cell_config) 
     
-    #print len(sON_cell_list)        
     return sON_cell_list
+
 
 def make_sOFF_cell_list(lattice_unit_center):
     sOFF_cell_list = []
@@ -125,9 +100,7 @@ def make_sOFF_cell_list(lattice_unit_center):
     sz = [3,6,9]
     ncells = [10,5,5]
     amp_dist = sps.rv_discrete(values=([-20,-25], [.5,.5]))
-#    kpeaks_dist =  sps.multivariate_normal(mean=[100., 160.], cov=[[5.0, 0], [0, 5]])
     kpeaks_dist =  sps.multivariate_normal(mean=[80., 120.], cov=[[5.0, 0], [0, 5]])
-#    wts = (.4,-.1)
     wts = (4.,-.85)
     delays = (0.,0.)
     single_unit_cell_config['amplitude'] = amp_dist
@@ -139,8 +112,8 @@ def make_sOFF_cell_list(lattice_unit_center):
         single_unit_cell_config['sigma'] = (sig,sig)
         sOFF_cell_list += multi_cell_random_generator(make_single_unit_cell_list, **single_unit_cell_config) 
     
-    #print len(sOFF_cell_list)        
     return sOFF_cell_list
+
 
 def make_overlapping_onoff_cell_list(lattice_unit_center):
     overlap_onoff_cell_list = []
@@ -154,9 +127,6 @@ def make_overlapping_onoff_cell_list(lattice_unit_center):
     ang_dist = sps.rv_discrete(values=(np.arange(0,180,45), 1./ncells*np.ones(ncells)))
     amp_on_dist = sps.rv_discrete(values=([20,25], [.5,.5]))
     amp_off_dist = sps.rv_discrete(values=([-20,-25], [.5,.5]))
-#     kpeak_on_dist =  sps.multivariate_normal(mean=[40., 80.], cov=[[5.0, 0], [0, 5]])
-#     kpeak_off_dist =  sps.multivariate_normal(mean=[50., 90.], cov=[[5.0, 0], [0, 5]])
-#     wts_on = wts_off = (.4,-.2)
     kpeak_on_dist =  sps.multivariate_normal(mean=[15., 35.], cov=[[5.0, 0], [0, 5]])
     kpeak_off_dist =  sps.multivariate_normal(mean=[20., 40.], cov=[[5.0, 0], [0, 5]])
     wts_on = wts_off = (4.,-2.5)
@@ -180,8 +150,8 @@ def make_overlapping_onoff_cell_list(lattice_unit_center):
     
     overlap_onoff_cell_list += multi_cell_random_generator(make_on_off_cell_list, **two_unit_cell_config)
     
-    #print len(overlap_onoff_cell_list)    
     return overlap_onoff_cell_list
+
 
 def make_separate_onoff_cell_list(lattice_unit_center):
     separate_onoff_cell_list = []
@@ -194,12 +164,7 @@ def make_separate_onoff_cell_list(lattice_unit_center):
     sz = 6
     ang_dist = np.arange(0,360,45)
     subfield_sep = 4.
-    
-#     kpeak_dom_dist =  sps.multivariate_normal(mean=[40., 80.], cov=[[5.0, 0], [0, 5]])
-#     kpeak_nondom_dist =  sps.multivariate_normal(mean=[100., 160.], cov=[[5.0, 0], [0, 5]])
-#     wts_dom = (.4,-.2)
-#     wts_nondom = (.4,-.1)
-    
+
     kpeak_dom_dist =  sps.multivariate_normal(mean=[15., 35.], cov=[[5.0, 0], [0, 5]])
     kpeak_nondom_dist =  sps.multivariate_normal(mean=[80., 120.], cov=[[5.0, 0], [0, 5]])
     wts_dom = (4.,-2.5)

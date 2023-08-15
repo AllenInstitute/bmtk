@@ -22,14 +22,12 @@
 #
 import threading
 import numpy as np
-import six
-
 
 
 class IDGenerator(object):
     """ A simple class for fetching global ids. To get a unqiue global ID class next(), which should be thread-safe. It
     Also has a remove_id(gid) in which case next() will never return the gid. The remove_id function is used for cases
-    when using imported networks and we want to elimnate previously created id.
+    when using imported networks and we want to eliminate previously created id.
 
     TODO:
      * Implement a bit array to keep track of already existing gids
@@ -42,30 +40,34 @@ class IDGenerator(object):
 
     def remove_id(self, gid):
         assert(np.issubdtype(type(gid), np.integer))
-        if gid >= self.__counter:
-            self.__taken.add(gid)
+        self.__taken.add(gid)
 
     def next(self):
         self.__lock.acquire()
         while self.__counter in self.__taken:
-            self.__taken.remove(self.__counter)
             self.__counter += 1
 
-        nid = self.__counter
+        gid = self.__counter
+        self.remove_id(gid)
         self.__counter += 1
         self.__lock.release()
+        return gid
 
-        return nid
+    def get_ids(self, size):
+        return [self.next() for _ in range(size)]
 
     def __contains__(self, gid):
-        return gid < self.__counter
+        return gid in self.__taken
 
     def __call__(self, *args, **kwargs):
+        if len(args) == 0 and len(kwargs) == 0:
+            return self.next()
+
         if len(args) == 1:
-            N = args[0]
-        elif 'N' in 'kwargs':
-            N = args['N']
+            return self.get_ids(size=args[0])
 
-        assert(isinstance(N, (int, long)))
-        return [self.next() for _ in six.moves.range(N)]
+        elif 'N' in kwargs:
+            return self.get_ids(size=kwargs['N'])
 
+        else:
+            raise ValueError('Uknown input to id_generator(): {}'.format(kwargs))

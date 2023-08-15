@@ -57,7 +57,7 @@ class SimulatorMod(object):
 
         Unlike the step method which is called during every time-step, the block method will typically be called only a
         few times over the entire simulation. The block method is preferable for accessing and saving to the disk,
-        summing up existing data, or simular functionality
+        summing up existing data, or similar functionality
 
         :param sim: Simulation object
         :param block_interval: The time interval (tstep_start, tstep_end) for which the block is being called on.

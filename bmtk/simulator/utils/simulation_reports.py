@@ -2,6 +2,19 @@ import os
 
 
 class SimReport(object):
+    """Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default
+    values.
+
+    Use the build() method to convert a "reports" section dictionary to a SimReport object. The SimReport object has
+    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**::
+
+        report = SimReport.build(
+            report_name='my_report',
+            params = {'module': 'my_mod', ...})
+        ...
+        MyReport(**report.params)
+    """
+
     default_dir = '.'
     registry = {}  # Used by factory to keep track of subclasses
 
@@ -157,16 +170,53 @@ class SpikesReport(SimReport):
     def from_output_dict(cls, output_dict):
         params = {
             'spikes_file': output_dict.get('spikes_file', None),
+            'compression': output_dict.get('compression', 'gzip'),
             'spikes_file_csv': output_dict.get('spikes_file_csv', None),
             'spikes_file_nwb': output_dict.get('spikes_file_nwb', None),
             'spikes_sort_order': output_dict.get('spikes_sort_order', None),
-            'tmp_dir': output_dict.get('output_dir', cls.default_dir)
+            'tmp_dir': output_dict.get('output_dir', cls.default_dir),
+            'cache_to_disk': output_dict.get('cache_to_disk', True)
         }
+
         if not (params['spikes_file'] or params['spikes_file_csv'] or params['spikes_file_nwb']):
             # User hasn't specified any spikes file
             params['enabled'] = False
 
         return cls('spikes_report', 'spikes_report', params)
+
+
+@SimReport.register_module
+class ClampReport(SimReport):
+    def __init__(self, report_name, module, params):
+        super(ClampReport, self).__init__(report_name, module, params)
+
+    @staticmethod
+    def avail_modules():
+        return 'clamp_report'
+
+    @property
+    def node_set(self):
+        return 'all'
+
+    def _set_defaults(self):        
+        for var_name, default_val in self._get_defaults():
+            if var_name not in self.params:
+                self.params[var_name] = default_val
+
+    def _get_defaults(self):
+        # directory for saving temporary files created during simulation
+        tmp_dir = self.default_dir
+
+        # Find the report file name. Either look for "file_name" parameter, or else it is <report-name>.h5
+        if 'file_name' in self.params:
+            file_name = self.params['file_name']
+        elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
+                or self.report_name.endswith('.hdf5'):
+            file_name = self.report_name  # Check for case report.h5.h5
+        else:
+            file_name = '{}.h5'.format(self.report_name)
+
+        return [('file_name', file_name), ('tmp_dir', tmp_dir)]
 
 
 @SimReport.register_module
@@ -251,11 +301,15 @@ def from_config(cfg):
     has_spikes_report = False
     for report_name, report_params in cfg.reports.items():
         # Get the Report class from the module_name parameter
+
         if not report_params.get('enabled', True):
             # not a part of the standard but will help skip modules
             continue
 
         report = SimReport.build(report_name, report_params)
+
+        if isinstance(report, SpikesReport):
+            has_spikes_report = True
 
         if isinstance(report, MembraneReport):
             # When possible for membrane reports combine multiple reports into one module if all the parameters

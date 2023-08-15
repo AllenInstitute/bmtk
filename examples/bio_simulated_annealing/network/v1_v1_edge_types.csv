@@ -1,0 +1,12 @@
+edge_type_id target_query source_query model_template syn_weight weight_sigma delay target_sections distance_range weight_function dynamics_params
+100 ei=='i'&model_type=='biophysical' ei=='i' exp2syn 0.0002 NULL 2.0 "['somatic', 'basal']" "[0.0, 1e+20]" NULL GABA_InhToInh.json
+101 ei=='i'&model_type=='point_neuron' ei=='i' NULL 0.00225 NULL 2.0 NULL NULL wmax instantaneousInh.json
+102 ei=='e'&model_type=='biophysical' ei=='i' exp2syn 0.00018 NULL 2.0 "['somatic', 'basal', 'apical']" "[0.0, 50.0]" wmax GABA_InhToExc.json
+103 ei=='e'&model_type=='point_neuron' ei=='i' NULL 0.009 NULL 2.0 NULL NULL wmax instantaneousInh.json
+104 pop_name=='PV1' ei=='e' exp2syn 0.00035 NULL 2.0 "['somatic', 'basal']" "[0.0, 1e+20]" wmax AMPA_ExcToInh.json
+105 pop_name=='PV2' ei=='e' exp2syn 0.00027 NULL 2.0 "['somatic', 'basal']" "[0.0, 1e+20]" wmax AMPA_ExcToInh.json
+106 pop_name=='LIF_inh' ei=='e' NULL 0.0043 NULL 2.0 NULL NULL wmax instantaneousExc.json
+107 pop_name=='Scnn1a' ei=='e' exp2syn 6.4e-05 50.0 2.0 "['basal', 'apical']" "[30.0, 150.0]" gaussianLL AMPA_ExcToExc.json
+108 pop_name=='Rorb' ei=='e' exp2syn 5.5e-05 50.0 2.0 "['basal', 'apical']" "[30.0, 150.0]" gaussianLL AMPA_ExcToExc.json
+109 pop_name=='Nr5a1' ei=='e' exp2syn 7.2e-05 50.0 2.0 "['basal', 'apical']" "[30.0, 150.0]" gaussianLL AMPA_ExcToExc.json
+110 pop_name=='LIF_exc' ei=='e' NULL 0.0019 50.0 2.0 NULL NULL gaussianLL instantaneousExc.json

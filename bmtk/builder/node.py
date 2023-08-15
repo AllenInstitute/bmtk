@@ -20,6 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+
 class Node(dict):
     def __init__(self, node_id, node_params, node_type_properties, params_hash=-1):
         super(Node, self).__init__({})

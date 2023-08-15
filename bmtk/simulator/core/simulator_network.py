@@ -1,8 +1,11 @@
 from six import string_types
+import numpy as np
+import os
+import h5py
+import pandas as pd
 
 from bmtk.simulator.core.io_tools import io
-#from bmtk.simulator.core.config import ConfigDict
-from bmtk.simulator.utils.config import ConfigDict
+from .simulation_config import SimulationConfig
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
 
@@ -20,6 +23,8 @@ class SimNetwork(object):
         self._node_sets = {}
 
         self._edge_populations = []
+
+        self._gap_juncs = {}
 
     @property
     def io(self):
@@ -95,6 +100,66 @@ class SimNetwork(object):
         # Used in inputs/reports when needed to get all gids belonging to a node population
         self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
 
+    def node_properties(self, populations=None):
+        if populations is None:
+            selected_pops = self.node_populations
+
+        elif isinstance(populations, string_types):
+            selected_pops = [pop for pop in self.node_populations if pop.name == populations]
+
+        else:
+            selected_pops = [pop for pop in self.node_populations if pop.name in populations]
+
+        all_nodes_df = None
+        for node_pop in selected_pops:
+            node_pop_df = node_pop.nodes_df()
+            if 'population' not in node_pop_df:
+                node_pop_df['population'] = node_pop.name
+
+            node_pop_df = node_pop_df.set_index(['population', node_pop_df.index.astype(dtype=np.uint64)])
+            if all_nodes_df is None:
+                all_nodes_df = node_pop_df
+            else:
+                all_nodes_df = pd.concat([all_nodes_df, node_pop_df])
+
+        return all_nodes_df
+
+    def get_node_groups(self, populations=None):
+        if populations is None:
+            selected_pops = self.node_populations
+
+        elif isinstance(populations, string_types):
+            selected_pops = [pop for pop in self.node_populations if pop.name == populations]
+
+        else:
+            selected_pops = [pop for pop in self.node_populations if pop.name in populations]
+
+        all_nodes_df = None
+        for node_pop in selected_pops:
+            node_pop_df = node_pop.nodes_df(index_by_id=False)
+            if 'population' not in node_pop_df:
+                node_pop_df['population'] = node_pop.name
+
+            if all_nodes_df is None:
+                all_nodes_df = node_pop_df
+            else:
+                all_nodes_df = pd.concat([all_nodes_df, node_pop_df], sort=False)
+
+        return all_nodes_df
+
+    def get_node_sets(self, populations=None, groupby=None, **filterby):
+        selected_nodes_df = self.node_properties(populations)
+        for k, v in filterby:
+            if isinstance(v, (np.ndarray, list, tuple)):
+                selected_nodes_df = selected_nodes_df[selected_nodes_df[k].isin(v)]
+            else:
+                selected_nodes_df = selected_nodes_df[selected_nodes_df[k].isin(v)]
+
+        if groupby is not None:
+            return {k: v.tolist() for k, v in selected_nodes_df.groupby(groupby).groups.items()}
+        else:
+            return selected_nodes_df.index.tolist()
+
     def add_edges(self, edge_population):
         edge_population.initialize(self)
         pop_name = edge_population.name
@@ -115,6 +180,17 @@ class SimNetwork(object):
                                             trg_pop = self._node_populations[trg_pop_name])
         self._edge_populations.append(edge_population)
 
+    def load_gap_junc_files(self, gj_dic):
+        for p in gj_dic:
+            path = p['gap_juncs_file']
+            f_name = os.path.basename(path)
+            network = f_name[:f_name.find("_gap_juncs.h5")]
+            self._gap_juncs[network] = {}
+
+            with h5py.File(path, 'r') as f:
+                for key in ['source_ids', 'target_ids', 'src_gap_ids', 'trg_gap_ids']:
+                    self._gap_juncs[network][key] = f[key][()]
+
     def build(self):
         self.build_nodes()
         self.build_recurrent_edges()
@@ -122,7 +198,7 @@ class SimNetwork(object):
     def build_nodes(self):
         raise NotImplementedError()
 
-    def build_recurrent_edges(self):
+    def build_recurrent_edges(self, **opts):
         raise NotImplementedError()
 
     def build_virtual_connections(self):
@@ -140,11 +216,11 @@ class SimNetwork(object):
 
         # The simulation run script should create a config-dict since it's likely to vary based on the simulator engine,
         # however in the case the user doesn't we will try a generic conversion from dict/json to ConfigDict
-        if isinstance(conf, ConfigDict):
+        if isinstance(conf, SimulationConfig):
             config = conf
         else:
             try:
-                config = ConfigDict.load(conf)
+                config = SimulationConfig.load(conf)
             except Exception as e:
                 network.io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
 
@@ -180,6 +256,8 @@ class SimNetwork(object):
                                              adaptor=edge_adaptor)
             for edge_pop in edges:
                 network.add_edges(edge_pop)
+
+        network.load_gap_junc_files(config.gap_juncs)
 
         # Add nodeset section
         network.add_node_set('all', NodeSetAll(network))

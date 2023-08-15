@@ -38,6 +38,30 @@ class FilterNode(SonataBaseNode):
     def sf_sep(self):
         return self._node['sf_sep']
 
+    @property
+    def weights(self):
+        return self._prop_adaptor.weights(self._node)
+
+    @property
+    def kpeaks(self):
+        return self._prop_adaptor.kpeaks(self._node)
+
+    @property
+    def delays(self):
+        return self._prop_adaptor.delays(self._node)
+
+    @property
+    def weights_non_dom(self):
+        return self._prop_adaptor.weights_non_dom(self._node)
+
+    @property
+    def kpeaks_non_dom(self):
+        return self._prop_adaptor.kpeaks_non_dom(self._node)
+
+    @property
+    def delays_non_dom(self):
+        return self._prop_adaptor.delays_non_dom(self._node)
+
 
 class FilterNodeAdaptor(NodeAdaptor):
     def get_node(self, sonata_node):
@@ -91,8 +115,15 @@ class FilterNodeAdaptor(NodeAdaptor):
         else:
             node_adaptor.tuning_angle = types.MethodType(tuning_angle_rand, node_adaptor)
 
-        return node_adaptor
+        find_weight_params(node_group, node_adaptor)
+        find_kpeaks_params(node_group, node_adaptor)
+        find_delays_params(node_group, node_adaptor)
 
+        find_nondom_weight_params(node_group, node_adaptor)
+        find_nondom_kpeaks_params(node_group, node_adaptor)
+        find_nondom_delays_params(node_group, node_adaptor)
+
+        return node_adaptor
 
 def non_dom_params(self, node):
     return node['non_dom_params']
@@ -108,3 +139,98 @@ def tuning_angle_preset(self, node):
 
 def tuning_angle_rand(self, node):
     return np.random.uniform(0.0, 360.0)
+
+def weights(self, node):
+    return node['weights']
+
+
+def find_weight_params(node_group, node_adaptor):
+    if 'weights' in node_group.all_columns:
+        node_adaptor.weights = types.MethodType(lambda self, node: node['weights'], node_adaptor)
+
+    elif 'opt_wts' in node_group.all_columns:
+        node_adaptor.weights = types.MethodType(lambda self, node: node['opt_wts'], node_adaptor)
+
+    elif 'weights_dom' in node_group.all_columns:
+        node_adaptor.weights = types.MethodType(lambda self, node: node['weights_dom'], node_adaptor)
+
+    elif 'weight_dom_0' in node_group.all_columns and 'weight_dom_1' in node_group.all_columns:
+        node_adaptor.weights = types.MethodType(lambda self, node: [node['weight_dom_0'], node['weight_dom_1']],
+                                                node_adaptor)
+    else:
+        node_adaptor.weights = types.MethodType(return_none, node_adaptor)
+
+
+def find_kpeaks_params(node_group, node_adaptor):
+    if 'kpeaks' in node_group.all_columns:
+        node_adaptor.kpeaks = types.MethodType(lambda self, node: node['kpeaks'], node_adaptor)
+
+    elif 'opt_kpeaks' in node_group.all_columns:
+        node_adaptor.kpeaks = types.MethodType(lambda self, node: node['opt_kpeaks'], node_adaptor)
+
+    elif 'kpeaks_dom' in node_group.all_columns:
+        node_adaptor.kpeaks = types.MethodType(lambda self, node: node['kpeaks_dom'], node_adaptor)
+
+    elif 'kpeaks_dom_0' in node_group.all_columns and 'kpeaks_dom_1' in node_group.all_columns:
+        node_adaptor.kpeaks = types.MethodType(lambda self, node: [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
+                                                node_adaptor)
+    else:
+        node_adaptor.kpeaks = types.MethodType(return_none, node_adaptor)
+
+
+def find_delays_params(node_group, node_adaptor):
+    if 'delays' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: node['delays'], node_adaptor)
+
+    elif 'opt_delays' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: node['opt_delays'], node_adaptor)
+
+    elif 'delays_dom' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: node['delays_dom'], node_adaptor)
+
+    elif 'delays_dom_0' in node_group.all_columns and 'delays_dom_1' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: [node['delays_dom_0'], node['delays_dom_1']],
+                                                node_adaptor)
+
+    elif 'delay_dom_0' in node_group.all_columns and 'delay_dom_1' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: [node['delay_dom_0'], node['delay_dom_1']],
+                                                node_adaptor)
+
+    else:
+        node_adaptor.delays = types.MethodType(return_none, node_adaptor)
+
+
+def find_nondom_weight_params(node_group, node_adaptor):
+    if 'weights_non_dom' in node_group.all_columns:
+        node_adaptor.weights_non_dom = types.MethodType(lambda self, node: node['weights_non_dom'], node_adaptor)
+
+    elif 'weight_non_dom_0' in node_group.all_columns and 'weight_non_dom_1' in node_group.all_columns:
+        node_adaptor.weights_non_dom = types.MethodType(
+            lambda self, node: [node['weight_non_dom_0'], node['weight_non_dom_1']], node_adaptor
+        )
+    else:
+        node_adaptor.weights_non_dom = types.MethodType(return_none, node_adaptor)
+
+
+def find_nondom_kpeaks_params(node_group, node_adaptor):
+    if 'kpeaks_non_dom' in node_group.all_columns:
+        node_adaptor.kpeaks_non_dom = types.MethodType(lambda self, node: node['kpeaks_non_dom'], node_adaptor)
+
+    elif 'kpeaks_non_dom_0' in node_group.all_columns and 'kpeaks_non_dom_1' in node_group.all_columns:
+        node_adaptor.kpeaks_non_dom = types.MethodType(
+            lambda self, node: [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']], node_adaptor
+        )
+    else:
+        node_adaptor.kpeaks_non_dom = types.MethodType(return_none, node_adaptor)
+
+
+def find_nondom_delays_params(node_group, node_adaptor):
+    if 'delays_non_dom' in node_group.all_columns:
+        node_adaptor.delays_non_dom = types.MethodType(lambda self, node: node['delays_non_dom'], node_adaptor)
+
+    elif 'delay_non_dom_0' in node_group.all_columns and 'delay_non_dom_1' in node_group.all_columns:
+        node_adaptor.delays_non_dom = types.MethodType(
+            lambda self, node: [node['delay_non_dom_0'], node['delay_non_dom_1']], node_adaptor
+        )
+    else:
+        node_adaptor.delays_non_dom = types.MethodType(return_none, node_adaptor)

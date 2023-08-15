@@ -1,5 +1,5 @@
 from six import string_types
-from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.sonata.config import SonataConfig as ConfigDict
 
 
 def load_config(config):

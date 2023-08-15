@@ -2,12 +2,13 @@ import pytest
 import os
 import json
 
-import popnet_virtual_files as pvf
-from bmtk.simulator import popnet
+from . import popnet_virtual_files as pvf
 
 
 @pytest.mark.skip()
 def test_add_nodes():
+    from bmtk.simulator import popnet
+
     nodes = pvf.NodesFile(N=100)
 
     net = popnet.PopNetwork()

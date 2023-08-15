@@ -25,42 +25,16 @@ import json
 
 from neuron import h
 
-#import bmtk.simulator.utils.config as msdk_config
-#from bmtk.utils.sonata.config import SonataConfig
-#from bmtk.simulator.core.config import ConfigDict
-from bmtk.simulator.utils.config import ConfigDict
-from bmtk.simulator.utils.sim_validator import SimConfigValidator
+from bmtk.simulator.core.simulation_config import SimulationConfig
 from bmtk.simulator.bionet.io_tools import io
 from . import nrn
+
 
 pc = h.ParallelContext()    # object to access MPI methods
 MPI_Rank = int(pc.id())
 
 
-# load the configuration schema
-schema_folder = os.path.join(os.path.dirname(__file__), 'schemas')
-config_schema_file = os.path.join(schema_folder, 'config_schema.json')
-
-# json schemas (but not real jsonschema) to describe the various input file formats
-file_formats = [
-    ("csv:nodes_internal", os.path.join(schema_folder, 'csv_nodes_internal.json')),
-    ("csv:node_types_internal", os.path.join(schema_folder, 'csv_node_types_internal.json')),
-    ("csv:edge_types", os.path.join(schema_folder, 'csv_edge_types.json')),
-    ("csv:nodes_external", os.path.join(schema_folder, 'csv_nodes_external.json')),
-    ("csv:node_types_external", os.path.join(schema_folder, 'csv_node_types_external.json'))
-]
-
-# Create a config and input file validator for Bionet
-with open(config_schema_file, 'r') as f:
-    config_schema = json.load(f)
-bionet_validator = SimConfigValidator(config_schema, file_formats=file_formats)
-
-
-class Config(ConfigDict):
-    @staticmethod
-    def get_validator():
-        return bionet_validator
-
+class Config(SimulationConfig):
     def create_output_dir(self):
         io.setup_output_dir(self.output_dir, self.log_file)
 
@@ -68,6 +42,8 @@ class Config(ConfigDict):
         nrn.load_neuron_modules(self.mechanisms_dir, self.templates_dir)
 
     def build_env(self):
+        self.io = io
+        self._set_logging()
         self.create_output_dir()
         self.copy_to_output()
         if io.mpi_size > 1:

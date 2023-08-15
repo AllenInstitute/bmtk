@@ -1,6 +1,10 @@
 PopNet
 ======
 
+.. figure:: _static/images/bmtk_architecture_popnet_highlight.jpg
+   :scale: 40%
+
+
 The PopNet simulation engine uses the `DiPDE simulator <http://alleninstitute.github.io/dipde/>`_ to simulate firing
 rate dynamics of connected population of cells. You can use networks of populations "nodes", or take an existing
 network of individual cell models and PopNet will cluster them into populations.
@@ -44,6 +48,6 @@ tutorials will have the folder prefix *pop_* and to run them in the command-line
 
 Current examples
 ++++++++++++++++
-* `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
-* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
+* `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
+* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
 

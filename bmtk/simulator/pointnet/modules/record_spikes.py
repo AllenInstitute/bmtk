@@ -23,14 +23,72 @@
 import os
 import glob
 import csv
+import pandas as pd
+
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 from bmtk.simulator.pointnet.io_tools import io
+from bmtk.simulator.pointnet.nest_utils import nest_version
 
 import nest
 
 
-MPI_RANK = nest.Rank()
-N_HOSTS = nest.NumProcesses()
+try:
+    MPI_RANK = nest.Rank()
+    N_HOSTS = nest.NumProcesses()
+
+except Exception as e:
+    MPI_RANK = 0
+    N_HOSTS = 1
+
+
+def create_spike_detector_nest2(label):
+    return nest.Create(
+        "spike_detector", 1,
+        {
+            'label': label,
+            'withtime': True,
+            'withgid': True,
+            'to_file': True
+        }
+    )
+
+
+def create_spike_detector_nest3(label):
+    return nest.Create(
+        "spike_recorder", 1,
+        {
+            'label': label,
+            'record_to': 'ascii'
+        }
+    )
+
+
+def read_spikes_file_nest2(spike_trains_writer, gid_map, label):
+    for gdf_path in glob.glob(label + '*.gdf'):
+        with open(gdf_path, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter='\t')
+            for r in csv_reader:
+                p = gid_map.get_pool_id(int(r[0]))
+                spike_trains_writer.add_spike(node_id=p.node_id, timestamp=float(r[1]), population=p.population)
+
+
+def read_spikes_file_nest3(spike_trains_writer, gid_map, label):
+    for dat_path in glob.glob(label + '*.dat'):
+        report_df = pd.read_csv(dat_path, index_col=False, sep='\t', comment='#')
+        for nest_id, spikes_grp in report_df.groupby('sender'):
+            gid = gid_map.get_pool_id(nest_id)
+            timestamps = spikes_grp['time_ms'].values
+            spike_trains_writer.add_spikes(node_ids=gid.node_id, timestamps=timestamps, population=gid.population)
+
+
+if nest_version[0] >= 3:
+    create_spike_detector = create_spike_detector_nest3
+    read_spikes_file = read_spikes_file_nest3
+    NEST_spikes_file_format = 'dat'
+else:
+    create_spike_detector = create_spike_detector_nest2
+    read_spikes_file = read_spikes_file_nest2
+    NEST_spikes_file_format = 'gdf'
 
 
 class SpikesMod(object):
@@ -38,12 +96,22 @@ class SpikesMod(object):
 
     """
 
-    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
+    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None,
+                 cache_to_disk=True, compression='gzip'):
         def _get_path(file_name):
             # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
             if file_name is None:
                 return None
-            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+            if os.path.isabs(file_name):
+                return file_name
+            else:
+                abs_tmp = os.path.abspath(tmp_dir)
+                abs_fname = os.path.abspath(file_name)
+                if not abs_fname.startswith(abs_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
 
         self._csv_fname = _get_path(spikes_file_csv)
         self._h5_fname = _get_path(spikes_file)
@@ -53,32 +121,25 @@ class SpikesMod(object):
         self._tmp_file_base = 'tmp_spike_times'
         self._spike_labels = os.path.join(self._tmp_dir, self._tmp_file_base)
 
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
-        # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_to_disk=cache_to_disk)
         self._spike_writer.delimiter = '\t'
         self._spike_writer.gid_col = 0
         self._spike_writer.time_col = 1
+        self._spike_writer.compression = compression
         self._sort_order = sort_order.none if not spikes_sort_order else sort_order_lu[spikes_sort_order]
 
         self._spike_detector = None
 
     def initialize(self, sim):
-        self._spike_detector = nest.Create("spike_detector", 1, {'label': self._spike_labels, 'withtime': True,
-                                                                 'withgid': True, 'to_file': True})
-
+        self._spike_detector = create_spike_detector(self._spike_labels)
         nest.Connect(sim.net.gid_map.gids, self._spike_detector)
-        #print(sim.net.gid_map.gids)
-        #exit()
-        #for pop_name, pop in sim._graph._nestid2nodeid_map.items():
-        #    nest.Connect(list(pop.keys()), self._spike_detector)
 
     def finalize(self, sim):
         # convert NEST gdf files into SONATA spikes/ format
         # TODO: Create a gdf_adaptor in bmtk/utils/reports/spike_trains to improve conversion speed.
         if MPI_RANK == 0:
-            for gdf_file in glob.glob(self._spike_labels + '*.gdf'):
-                self.__parse_gdf(gdf_file, sim.net.gid_map)
-                # self._spike_writer.add_spikes_file(gdf_file)
+            gid_map = sim.net.gid_map
+            read_spikes_file(spike_trains_writer=self._spike_writer, gid_map=gid_map, label=self._spike_labels)
         io.barrier()
 
         if self._csv_fname is not None:
@@ -87,7 +148,8 @@ class SpikesMod(object):
 
         if self._h5_fname is not None:
             # TODO: reimplement with pandas
-            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order,
+                                         compression=self._spike_writer.compression)
             # io.barrier()
 
         if self._nwb_fname is not None:
@@ -95,18 +157,9 @@ class SpikesMod(object):
             # io.barrier()
 
         self._spike_writer.close()
-        self.__clean_gdf_files()
+        self._clean_files()
 
-    def __parse_gdf(self, gdf_path, gid_map):
-        with open(gdf_path, 'r') as csv_file:
-            #print(gdf_path)
-            csv_reader = csv.reader(csv_file, delimiter='\t')
-            for r in csv_reader:
-                #print(r)
-                p = gid_map.get_pool_id(int(r[0]))
-                self._spike_writer.add_spike(node_id=p.node_id, timestamp=float(r[1]), population=p.population)
-
-    def __clean_gdf_files(self):
+    def _clean_files(self):
         if MPI_RANK == 0:
-            for gdf_file in glob.glob(self._spike_labels + '*.gdf'):
-                os.remove(gdf_file)
+            for nest_file in glob.glob(self._spike_labels + '*.' + NEST_spikes_file_format):
+                os.remove(nest_file)

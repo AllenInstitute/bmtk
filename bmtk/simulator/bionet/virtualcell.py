@@ -21,6 +21,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from neuron import h
+import numpy as np
+import pandas as pd
+
+from bmtk.simulator.bionet.io_tools import io
+from bmtk.utils.reports.spike_trains.spike_trains import SpikeTrains
 
 
 class VirtualCell(object):
@@ -30,6 +35,7 @@ class VirtualCell(object):
         # VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that
         # just don't apply to a virtual cell. May want to make bionet.Cell more generic in the future.
         self._node_id = node.node_id
+        self._node = node
         self._population = population
         self._hobj = None
         self._spike_train_dataset = spike_train_dataset
@@ -46,7 +52,30 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        self._train_vec = h.Vector(spike_train.get_times(node_id=self.node_id)) #, population=self._population))
+        if isinstance(spike_train, SpikeTrains) or hasattr(spike_train, 'get_times'):
+            spikes = spike_train.get_times(node_id=self.node_id)
+        elif isinstance(spike_train, (list, np.ndarray, pd.Series)):
+            spikes = spike_train
+        elif spike_train is None:
+            spikes = []
+        else:
+            spikes = None
+
+        if spikes is None:
+            spikes = []
+
+        if np.any(np.array(spikes) < 0.0):
+            # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
+            io.log_exception('spike train {} contains negative number, unable to run virtual cell in NEURON'.format(
+                spikes
+            ))
+
+        spikes = np.sort(spikes)  # sort the spikes for NEURON, will throw a segfault if not sorted
+
+        self._train_vec = h.Vector(spikes)
         vecstim = h.VecStim()
         vecstim.play(self._train_vec)
         self._hobj = vecstim
+
+    def __getitem__(self, item):
+        return self._node[item]

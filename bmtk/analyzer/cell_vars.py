@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from .io_tools import load_config
 from .utils import listify
 # from bmtk.utils.cell_vars import CellVarsFile
-from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.sonata.config import SonataConfig as ConfigDict
 from bmtk.utils.reports import CompartmentReport
 
 # In the case reports are missing units, try to guess based on
@@ -38,10 +38,11 @@ def _get_cell_report(config_file, report_name):
 
 
 def load_reports(config_file):
+    """"""
     cfg = ConfigDict.from_json(config_file)
     reports = []
     for report_name, report in cfg.reports.items():
-        if report['module'] != 'membrane_report':
+        if report['module'] not in  ['membrane_report', 'multimeter_report']:
             continue
         report_file = report['file_name'] if 'file_name' in report else '{}.h5'.format(report_name)
         report_file = report_file if os.path.isabs(report_file) else os.path.join(cfg.output_dir, report_file)

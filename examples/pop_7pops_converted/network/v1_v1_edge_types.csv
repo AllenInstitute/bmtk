@@ -1,0 +1,12 @@
+edge_type_id target_query source_query syn_weight weight_function weight_sigma distance_range target_sections delay dynamics_params model_template
+0 level_of_detail=='biophysical'&ei=='i' ei=='i' 0.0002 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 InhToInh.json exp2syn
+1 level_of_detail=='intfire'&ei=='i' ei=='i' 0.00225 wmax NONE NONE NONE 2.0 instantaneousInh.json NONE
+2 level_of_detail=='biophysical'&ei=='e' ei=='i' 0.00018 wmax NONE "[0.0, 50.0]" "['somatic', 'basal', 'apical']" 2.0 InhToExc.json exp2syn
+3 level_of_detail=='intfire'&ei=='e' ei=='i' 0.009 wmax NONE NONE NONE 2.0 instantaneousInh.json NONE
+4 pop_name=='PV1' ei=='e' 0.00035 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 ExcToInh.json exp2syn
+5 pop_name=='PV2' ei=='e' 0.00027 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 ExcToInh.json exp2syn
+6 pop_name=='LIF_inh' ei=='e' 0.0043 wmax NONE NONE NONE 2.0 instantaneousExc.json NONE
+7 pop_name=='Scnn1a' ei=='e' 6.4e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 ExcToExc.json exp2syn
+8 pop_name=='Rorb' ei=='e' 5.5e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 ExcToExc.json exp2syn
+9 pop_name=='Nr5a1' ei=='e' 7.2e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 ExcToExc.json exp2syn
+10 pop_name=='LIF_exc' ei=='e' 0.0019 gaussianLL 50.0 NONE NONE 2.0 instantaneousExc.json NONE

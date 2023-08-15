@@ -22,10 +22,12 @@
 #
 from . import connector
 from . import iterator
+import numpy as np
+import pandas as pd
 
 
 class ConnectionMap(object):
-    """Class for keeping track of connection rules.
+    """Class for keeping track of connection rules. Used for saving unique edge properties in a network
 
     For every connection from source --> target this keeps track of rules (functions, literals, lists) for
       1. the number of synapses between source and target
@@ -33,6 +35,43 @@ class ConnectionMap(object):
 
     The number of synapses rule (1) is stored as a connector. Individual synaptic parameters, if they exists, are stored
     as ParamsRules.
+
+    Usage:
+        Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder's
+        add_edges() method is called.
+
+        For example, The following will create a set of edges where there is between 1 to 16 synapatic connections
+        between each source and target node. Properties 'dynamics_params' and 'model_template' will be global
+        properties::
+
+            cm = net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'},
+                               connection_rule=lambda *_: np.random.randn(1, 16),
+                               dynamics_params='ExcToInh.json',
+                               model_template='Exp2Syn',
+                               ...)
+
+        If we want all edges to have a unique 'syn_weight' value calculated from source/target locations, we create a
+        function that takes in source and target (Node object) and returns the syn weight. This function will be called
+        for every individual connection::
+
+            def syn_weight_by_loc(source, target):
+                src_loc, trg_loc = source['loc'], target['loc']
+                ...
+                return syn_weight
+
+            cm.add_properties('syn_weight', rule=syn_weight_by_loc, dtypes=np.float)
+
+        We can also add multiple properties at the same time::
+
+            def get_target_loc_and_dist(source, target):
+                ...
+                return trg_loc, trg_dist
+
+            cm.add_properties(['syn_location', 'syn_distance'],
+                          rule=get_target_loc_and_dist,
+                          dtypes=[string, np.float])
+
+        Once NetworkBuilder.build() is called the 'connection_rule' will be called.
     """
 
     class ParamsRules(object):
@@ -129,18 +168,59 @@ class ConnectionMap(object):
         ordered_keys = sorted(self.property_names)
         return str(ordered_keys)
 
-
     def max_connections(self):
         return len(self._source_nodes) * len(self._target_nodes)
 
-    def add_properties(self, names, rule, rule_params=None, dtypes=None):
-        """A a synaptic property
+    def add_properties(self, names, rule=None, rule_params=None, values=None, dtypes=None):
+        """Add a synaptic property for an individual edge.
+
+        Typically this requires a custom rule that will be used for every source/target pair of nodes and returns
+        a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build()::
+
+            def syn_weight_by_loc(source, target):
+                ...
+                return syn_weight
+
+            cm.add_properties('syn_weight', rule=syn_weight_by_loc, dtypes=np.float)
+
+        If the connection_rule function requires additional parameters use the rule_params option::
+
+            def syn_weight_by_loc(source, target, min_weight, max_weight):
+                ...
+                return syn_weight
+
+            cm.add_properties('syn_weight',
+                              rule=syn_weight_by_loc,
+                              rule_params={'min_weigth':1.0e-7, 'max_weight': 5.0e-6},
+                              dtypes=np.float)
+
+        You may also have the rule define multiple connection parameters at one time::
+
+            def conn_rule(source, target, min_weight, max_weight):
+                ...
+                return syn_weight, syn_location, delay
+
+            cm.add_properties(['syn_weight', 'syn_loc', 'delay'],
+                              rule=syn_weight_by_loc,
+                              rule_params={'min_weigth':1.0e-7, 'max_weight': 5.0e-6},
+                              dtypes=[np.float, str, np.float])
 
         :param names: list, or single string, of the property
         :param rule: function, list or value of property
+        :param values: A list of values to use for property
         :param rule_params: when rule is a function, rule_params will be passed into function when called.
         :param dtypes: expected property type
         """
+        if not (bool(values is not None) != bool(rule is not None)):
+            raise ValueError('Please specify either the "rule" or "values" parameters')
+        
+        if values is not None:
+            rule = values
+
+        if isinstance(rule, list) or isinstance(rule, np.ndarray):
+            rule = ListIterator(rule)
+            rule_params = {}
+
         self._params.append(self.ParamsRules(names, rule, rule_params, dtypes))
         self._param_keys += names
 
@@ -151,3 +231,14 @@ class ConnectionMap(object):
         conr = connector.create(self.connector, **(self.connector_params or {}))
         itr = iterator.create(self.iterator, conr, **({}))
         return itr(self.source_nodes, self.target_nodes, conr)
+
+
+class ListIterator(object):
+    def __init__(self, my_list):
+        self.my_list = my_list
+        self._idx = 0
+
+    def __call__(self, *args, **kwds):
+        val = self.my_list[self._idx]
+        self._idx += 1
+        return val

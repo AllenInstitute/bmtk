@@ -149,6 +149,7 @@ class EnvBuilder(object):
         logger.info('Parsing {} for SONATA network files'.format(network_dir))
         net_nodes = {}
         net_edges = {}
+        net_gaps = {}
         for root, dirs, files in os.walk(network_dir):
             for f in files:
                 if not os.path.isfile(os.path.join(network_dir, f)) or f.startswith('.'):
@@ -181,7 +182,14 @@ class EnvBuilder(object):
                     edges_dict['edge_types_file'] = os.path.abspath(os.path.join(root, f))
                     net_edges[net_name] = edges_dict
                     logger.info('  Adding edge types file: {}'.format(edges_dict['edge_types_file']))
-
+                
+                elif '_gap_juncs' in f:
+                    net_name = f[:f.find('_gap_juncs')]
+                    gaps_dict = net_gaps.get(net_name, {})
+                    gaps_dict['gap_juncs_file'] = os.path.abspath(os.path.join(root, f))
+                    net_gaps[net_name] = gaps_dict
+                    logger.info('  Adding gap junctions file: {}'.format(gaps_dict['gap_juncs_file']))
+                    
                 else:
                     logger.info(
                         '  Skipping file (could not categorize): {}'.format(os.path.abspath(os.path.join(root, f))))
@@ -189,12 +197,15 @@ class EnvBuilder(object):
         if not (net_nodes or net_edges):
             logger.info('  Could not find any sonata nodes or edges file(s).')
 
-        network_config = {'nodes': [], 'edges': []}
+        network_config = {'nodes': [], 'edges': [], 'gap_juncs': []}
         for _, sect in net_nodes.items():
             network_config['nodes'].append(sect)
 
         for _, sect in net_edges.items():
             network_config['edges'].append(sect)
+
+        for _, sect in net_gaps.items():
+            network_config['gap_juncs'].append(sect)
 
         self._circuit_config['networks'] = network_config
 
@@ -362,6 +373,24 @@ class EnvBuilder(object):
 
         self._simulation_config['reports'].update(report_config)
 
+    def _add_clamp_reports(self, clamp_reports):
+        if isinstance(clamp_reports, six.string_types):
+            clamp_reports = [clamp_reports]
+
+        for c in clamp_reports:
+            logger.info("Adding clamp report for {} clamp.".format(c))
+
+        report_config = {
+            '{}_clamp_report'.format(c): {
+                'variable_name': c,
+                'module': 'clamp_report'
+            } for c in clamp_reports}
+
+        if 'reports' not in self._simulation_config:
+            self._simulation_config['reports'] = {}
+
+        self._simulation_config['reports'].update(report_config)
+
     def _add_output_section(self):
         output_section = {
             'log_file': 'log.txt',
@@ -376,19 +405,62 @@ class EnvBuilder(object):
             return
 
         logger.info('Adding current clamp')
+
+
         iclamp_config = {
             "input_type": "current_clamp",
             "module": "IClamp",
             "node_set": "all",
-            "amp": float(current_param['amp']),
-            "delay": float(current_param['delay']),
-            "duration": float(current_param['duration'])
+            "gids": current_param['gids'],
+            "amp": current_param['amp'],
+            "delay": current_param['delay'],
+            "duration": current_param['duration']
         }
 
         if 'inputs' not in self._simulation_config:
             self._simulation_config['inputs'] = {}
 
         self._simulation_config['inputs']['current_clamp'] = iclamp_config
+
+    def _add_file_current_clamp(self, current_param):
+        if current_param is None:
+            return
+
+        amp_file = os.path.abspath(current_param["input_file"])
+
+        f_iclamp_config = {
+            "input_type": "current_clamp",
+            "module": "FileIClamp",
+            "node_set": "all",
+            "input_file": amp_file
+        }
+
+        if 'inputs' not in self._simulation_config:
+            self._simulation_config['inputs'] = {}
+
+        self._simulation_config['inputs']['file_current_clamp'] = f_iclamp_config
+
+    def _add_se_voltage_clamp(self, clamp_param):
+        seclamp_config = {
+            "input_type": "voltage_clamp",
+            "module": "SEClamp",
+            "node_set": "all",
+            "gids": clamp_param['gids'],
+            "amps": clamp_param['amps'],
+            "durations": clamp_param["durations"]
+        }
+
+        if "rs" in clamp_param.keys():
+            seclamp_config["rs"] = clamp_param["rs"]
+
+        if 'inputs' not in self._simulation_config:
+            self._simulation_config['inputs'] = {}
+
+        name = 'se_voltage_clamp'
+        if 'name' in clamp_param.keys():
+            name = clamp_param['name']
+
+        self._simulation_config['inputs'][name] = seclamp_config
 
     def _add_spikes_inputs(self, spikes_inputs):
         inputs_dict = {}
@@ -423,28 +495,69 @@ class EnvBuilder(object):
         shutil.copy(os.path.join(self.examples_dir, run_script), os.path.join(self.base_dir, run_script))
 
     def build(self, include_examples=False, use_relative_paths=True, report_vars=[],
-              report_nodes=None, current_clamp=None, spikes_inputs=None, **run_args):
+              report_nodes=None, clamp_reports=[], current_clamp=None, file_current_clamp=None,
+              se_voltage_clamp=None,
+              spikes_inputs=None, config_file='config.json', overwrite_config=False, **run_args):
+
+        config_path = config_file if os.path.isabs(config_file) else os.path.join(self._base_dir, config_file)
+        config_filename = os.path.splitext(os.path.basename(config_file))[0]
+        base_config = {
+            'network': os.path.join(self._base_dir, 'circuit_' + config_filename + '.json'),
+            'simulation': os.path.join(self._base_dir, 'simulation_' + config_filename + '.json')
+        }
+        if os.path.exists(config_path) and not overwrite_config:
+            logging.warning(f'Configuration file {config_path} already exists, skipping. Please delete existing file, ' 
+                            f'use a different name, or use overwrite_config=True.')
+        else:
+            self._save_config(base_config, config_path)
+
         self._parse_network_dir(self.network_dir)
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
             self._add_manifest(self._circuit_config, network_dir=self.network_dir, components_dir=self.components_dir)
-        self._save_config(self._circuit_config, 'circuit_config.json')
+        if os.path.exists(base_config['network']) and not overwrite_config:
+            logging.warning(f'Configuration file {base_config["network"]} already exists, skipping. '
+                            f'Please delete existing file, use a different name, or use overwrite_config=True.')
+        else:
+            self._save_config(self._circuit_config, os.path.join(self._base_dir, 'circuit_'+config_filename+'.json'))
 
         selected_ns = self._create_node_sets_file(report_nodes)
         self._add_reports(report_vars, selected_ns)
+        self._add_clamp_reports(clamp_reports)
         self._add_output_section()
         self._simulation_config['target_simulator'] = self.target_simulator
-        self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
+
+        if current_clamp is not None:
+            try:
+                current_clamp['gids']
+            except:
+                current_clamp['gids']='all'
+
         self._add_current_clamp(current_clamp)
+
+        if file_current_clamp is not None:
+            self._add_file_current_clamp(file_current_clamp)
+
+        if se_voltage_clamp is not None:
+            try:
+                se_voltage_clamp['gids']
+            except:
+                se_voltage_clamp['gids'] = 'all'
+
+            self._add_se_voltage_clamp(se_voltage_clamp)
+
         if spikes_inputs!=None:
             self._add_spikes_inputs(spikes_inputs)
         if use_relative_paths:
             self._add_manifest(self._simulation_config, output_dir=self.output_dir)
-        self._save_config(self._simulation_config, 'simulation_config.json')
+        if os.path.exists(base_config['simulation']) and not overwrite_config:
+            logging.warning(f'Configuration file {base_config["simulation"]} already exists, skipping. '
+                            f'Please delete existing file, use a different name, or use overwrite_config=True.')
+        else:
+            self._save_config(self._simulation_config, os.path.join(self._base_dir, 'simulation_'+config_filename+'.json'))
 
         self._copy_run_script()
-
 
 
 class BioNetEnvBuilder(EnvBuilder):
@@ -508,22 +621,66 @@ class PointNetEnvBuilder(EnvBuilder):
         self._simulation_config['output']['quiet_simulator'] = True
 
 
+class FilterNetEnvBuilder(EnvBuilder):
+    @property
+    def examples_dir(self):
+        return os.path.join(self.scripts_root, 'filternet')
+
+    @property
+    def target_simulator(self):
+        return 'LGNModel'
+
+    @property
+    def bmtk_simulator(self):
+        return 'filternet'
+
+    def _add_output_section(self):
+        super(FilterNetEnvBuilder, self)._add_output_section()
+        self._simulation_config['output']['rates_file_csv'] = 'rates.csv'
+        self._simulation_config['output']['spikes_file_csv'] = 'spikes.csv'
+        self._simulation_config['output']['spikes_file_h5'] = 'spikes.h5'
+
+
+class PopNetEnvBuilder(EnvBuilder):
+    @property
+    def examples_dir(self):
+        return os.path.join(self.scripts_root, 'popnet')
+
+    @property
+    def target_simulator(self):
+        return 'DiPDE'
+
+    @property
+    def bmtk_simulator(self):
+        return 'popnet'
+
+    def _add_output_section(self):
+        super(PopNetEnvBuilder, self)._add_output_section()
+        self._simulation_config['output']['rates_file'] = "firing_rates.csv"
+
+
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
-                     tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
-                     v_init=-80.0, celsius=34.0,
+                     overwrite_config=False, tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0,
+                     nsteps_block=5000, v_init=-80.0, celsius=34.0,
                      report_vars=[], report_nodes=None,
+                     clamp_reports=[],
                      current_clamp=None,
+                     file_current_clamp=None,
+                     se_voltage_clamp=None,
                      spikes_inputs=None,
                      compile_mechanisms=False,
-                     use_relative_paths=True):
+                     use_relative_paths=True,
+                     config_file=None):
     env_builder = BioNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                    node_sets_file=node_sets_file)
 
     env_builder.build(include_examples=include_examples, use_relative_paths=use_relative_paths,
-                      report_vars=report_vars, report_nodes=report_nodes, current_clamp=current_clamp,
-                      spikes_inputs=spikes_inputs,
+                      report_vars=report_vars, report_nodes=report_nodes, clamp_reports=clamp_reports,
+                      current_clamp=current_clamp,
+                      file_current_clamp=file_current_clamp, se_voltage_clamp=se_voltage_clamp, spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
-                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
+                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius, config_file=config_file,
+                      overwrite_config=overwrite_config)
 
     if compile_mechanisms:
         env_builder.compile_mechanisms()
@@ -534,7 +691,8 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                        v_init=-80.0, celsius=34.0,
                        report_vars=[], report_nodes=None, current_clamp=None,
                        spikes_inputs=None,
-                       use_relative_paths=True):
+                       use_relative_paths=True,
+                       config_file=None):
     env_builder = PointNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
@@ -545,38 +703,58 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                       nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
 
 
-def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples=True, tstop=1000.0, dt=0.001, **args):
-    simulator='popnet'
-    target_simulator='DiPDE'
-    components_dir='pop_components'
+def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
+                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0, config_file='config.json'):
+    env_builder = FilterNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+                                     node_sets_file=node_sets_file)
 
-    # Copy run script
-    copy_run_script(base_dir=base_dir, simulator=simulator, run_script='run_{}.py'.format(simulator))
+    env_builder.build(include_examples=include_examples,
+                      base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
+                      tstop=tstop, config_file=config_file)
 
-    # Build circuit_config and componenets directory
-    circuit_config = build_circuit_env(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
-                                       simulator=simulator, with_examples=with_examples)
-    circuit_config['components']['population_models_dir'] = '$COMPONENTS_DIR/population_models'
-    # population_models_dir = os.path.join(base_dir, components_dir, 'population_models')
-    if with_examples:
-        models_dir =  os.path.join(base_dir, components_dir, 'population_models')
-        if os.path.exists(models_dir):
-            shutil.rmtree(models_dir)
-        shutil.copytree(os.path.join(scripts_path, simulator, 'population_models'), models_dir)
 
-    copy_config(base_dir, circuit_config, 'circuit_config.json')
+def build_env_popnet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, reports=None,
+                     include_examples=True, config_file=None, tstart=0.0, tstop=1000.0, dt=0.001, **args):
+    # raise NotImplementedError()
 
-    # Build simulation config
-    simulation_config = build_simulation_env(base_dir=base_dir, target_simulator=target_simulator, tstop=tstop, dt=dt,
-                                             reports=reports)
-    # PopNet doesn't produce spike files so instead need to replace them with rates files
-    for output_key in simulation_config['output'].keys():
-        if output_key.startswith('spikes'):
-            del simulation_config['output'][output_key]
-    # simulation_config['output']['rates_file_csv'] = 'firing_rates.csv'
-    simulation_config['output']['rates_file'] = 'firing_rates.csv'
+    env_builder = PopNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+                                     node_sets_file=node_sets_file)
 
-    copy_config(base_dir, simulation_config, 'simulation_config.json')
+    env_builder.build(include_examples=include_examples,
+                      base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
+                      tstop=tstop, config_file=config_file)
+
+    # simulator='popnet'
+    # target_simulator='DiPDE'
+    # components_dir='pop_components'
+    #
+    # # Copy run script
+    # copy_run_script(base_dir=base_dir, simulator=simulator, run_script='run_{}.py'.format(simulator))
+    #
+    # # Build circuit_config and componenets directory
+    # circuit_config = build_circuit_env(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+    #                                    simulator=simulator, with_examples=with_examples)
+    # circuit_config['components']['population_models_dir'] = '$COMPONENTS_DIR/population_models'
+    # # population_models_dir = os.path.join(base_dir, components_dir, 'population_models')
+    # if with_examples:
+    #     models_dir =  os.path.join(base_dir, components_dir, 'population_models')
+    #     if os.path.exists(models_dir):
+    #         shutil.rmtree(models_dir)
+    #     shutil.copytree(os.path.join(scripts_path, simulator, 'population_models'), models_dir)
+    #
+    # copy_config(base_dir, circuit_config, 'circuit_config.json')
+    #
+    # # Build simulation config
+    # simulation_config = build_simulation_env(base_dir=base_dir, target_simulator=target_simulator, tstop=tstop, dt=dt,
+    #                                          reports=reports)
+    # # PopNet doesn't produce spike files so instead need to replace them with rates files
+    # for output_key in simulation_config['output'].keys():
+    #     if output_key.startswith('spikes'):
+    #         del simulation_config['output'][output_key]
+    # # simulation_config['output']['rates_file_csv'] = 'firing_rates.csv'
+    # simulation_config['output']['rates_file'] = 'firing_rates.csv'
+    #
+    # copy_config(base_dir, simulation_config, 'simulation_config.json')
 
 
 if __name__ == '__main__':
@@ -614,7 +792,8 @@ if __name__ == '__main__':
                       help='Copies component files used by examples and tutorials.')
     parser.add_option('--compile-mechanisms', dest='compile_mechanisms', action='store_true', default=False,
                       help='Will try to compile the NEURON mechanisms (BioNet only).')
-
+    parser.add_option('--config-file', dest='config_file', type='string', default='config.json',
+                      help='Name of configuration json file.')
 
     options, args = parser.parse_args()
 
@@ -626,7 +805,7 @@ if __name__ == '__main__':
         parser.error('Unrecognized arguments {}'.format(args[2:]))
     else:
         target_sim = args[0].lower()
-        if target_sim not in ['bionet', 'popnet', 'pointnet', 'mintnet']:
+        if target_sim not in ['bionet', 'popnet', 'pointnet', 'filternet']:
             parser.error('Must specify one target simulator. options: "bionet", pointnet", "popnet", "filternet"')
         base_dir = args[1]
 
@@ -635,7 +814,7 @@ if __name__ == '__main__':
         if len(cc_args) != 3:
             parser.error('Invalid arguments for current clamp, requires three floating point numbers '
                          '<ampage>,<delay>,<duration> (nA, ms, ms)')
-        iclamp_args = {'amp': cc_args[0], 'delay': cc_args[1], 'duration': cc_args[2]}
+        iclamp_args = {'amp': float(cc_args[0]), 'delay': float(cc_args[1]), 'duration': float(cc_args[2])}
     else:
         iclamp_args = None
 
@@ -656,7 +835,9 @@ if __name__ == '__main__':
                          dt=options.dt, report_vars=options.mem_rep_vars, report_nodes=options.mem_rep_cells,
                          current_clamp=iclamp_args, include_examples=options.include_examples,
                          spikes_inputs=spikes_inputs,
-                         compile_mechanisms=options.compile_mechanisms)
+                         compile_mechanisms=options.compile_mechanisms,
+                         config_file=options.config_file
+                         )
 
     if target_sim == 'pointnet':
         build_env_pointnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
@@ -666,4 +847,9 @@ if __name__ == '__main__':
 
     elif target_sim == 'popnet':
         build_env_popnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
-                           dt=options.dt, reports=reports)
+                           dt=options.dt, config_file=options.config_file)
+
+    elif target_sim == 'filternet':
+        build_env_filternet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
+                            include_examples=options.include_examples,
+                            config_file=options.config_file)

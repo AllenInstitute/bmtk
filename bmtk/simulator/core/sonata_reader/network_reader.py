@@ -36,8 +36,8 @@ class SonataNodes(NodesReader):
     def n_nodes(self):
         return len(self._node_pop)
 
-    def nodes_df(self):
-        return self._node_pop.to_dataframe()
+    def nodes_df(self, **params):
+        return self._node_pop.to_dataframe(**params)
 
     def initialize(self, network):
         # Determine the various mode-types available in the Node Population, whether or not a population of nodes
@@ -178,6 +178,10 @@ class SonataEdges(EdgesReader):
 
     def get_target(self, node_id):
         for edge in self._edge_pop.get_target(node_id):
+            yield self._edge_adaptors[edge.group_id].get_edge(edge)
+
+    def get_source(self, node_id):
+        for edge in self._edge_pop.get_source(node_id):
             yield self._edge_adaptors[edge.group_id].get_edge(edge)
 
     def get_edges(self):

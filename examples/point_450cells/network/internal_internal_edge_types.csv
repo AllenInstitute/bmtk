@@ -1,0 +1,7 @@
+edge_type_id target_query source_query delay dynamics_params model_template syn_weight
+100 ei=='e'&orig_model=='biophysical' ei=='e' 2.0 ExcToExc.json static_synapse 2.5
+101 ei=='i'&orig_model=='biophysical' ei=='e' 2.0 ExcToInh.json static_synapse 5.0
+102 ei=='e'&orig_model=='biophysical' ei=='i' 2.0 InhToExc.json static_synapse -6.5
+103 ei=='i'&orig_model=='biophysical' ei=='i' 2.0 InhToInh.json static_synapse -3.0
+104 orig_model=='intfire' ei=='e' 2.0 instantaneousExc.json static_synapse 3.0
+105 orig_model=='intfire' ei=='i' 2.0 instantaneousInh.json static_synapse -4.0

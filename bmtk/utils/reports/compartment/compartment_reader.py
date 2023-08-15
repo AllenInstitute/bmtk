@@ -9,6 +9,7 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
     sonata_columns = ['element_ids', 'element_pos', 'index_pointer', 'node_ids', 'time']
 
     def __init__(self, pop_grp, pop_name):
+        self._pop_grp = pop_grp
         self._data_grp = pop_grp['data']
         self._mapping = pop_grp['mapping']
         self._population = pop_name
@@ -23,15 +24,20 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
             self._gid2data_table[gid] = slice(index_pointer_ds[indx], index_pointer_ds[indx+1])
 
         time_ds = self._mapping['time']
-        self._t_start = np.float(time_ds[0])
-        self._t_stop = np.float(time_ds[1])
-        self._dt = np.float(time_ds[2])
+        self._t_start = float(time_ds[0])
+        self._t_stop = float(time_ds[1])
+        self._dt = float(time_ds[2])
         self._n_steps = int((self._t_stop - self._t_start) / self._dt)
 
         self._custom_cols = {col: grp for col, grp in self._mapping.items() if
                              col not in self.sonata_columns and isinstance(grp, h5py.Dataset)}
 
     def _get_index(self, node_id):
+        if node_id not in self._gid2data_table:
+            raise KeyError('node_id {} not found in {}/mapping/node_ids in file {}'.format(
+                node_id, self._pop_grp.name, self._pop_grp.file.filename
+            ))
+
         return self._gid2data_table[node_id]
 
     @property
@@ -51,11 +57,11 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
 
     def units(self, population=None):
         return get_attribute_h5(self.data_ds, 'units', None)
-        #return self.data_ds.attrs.get('units', None)
+        # return self.data_ds.attrs.get('units', None)
 
     def variable(self, population=None):
         return get_attribute_h5(self.data_ds, 'variable', None)
-        #return self.data_ds.attrs.get('variable', None)
+        # return self.data_ds.attrs.get('variable', None)
 
     def tstart(self, population=None):
         return self._t_start
@@ -91,8 +97,8 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         if node_id is None:
             return self._mapping['element_ids'][()]
         else:
-            #indx_beg, indx_end = self._get_index(node_id)
-            #return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
+            # indx_beg, indx_end = self._get_index(node_id)
+            # return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
             return self._mapping['element_ids'][self._get_index(node_id)]
 
     def n_elements(self, node_id=None, population=None):
@@ -124,12 +130,11 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
                 raise Exception('Invalid time_window, expecting tuple [being, end].')
 
             window_beg = max(int((time_window[0] - self.tstart()) / self.dt()), 0)
-            window_end = min(int((time_window[1] - self.tstart()) / self.dt()), self._n_steps / self.dt())
+            window_end = min(int((time_window[1] - self.tstart()) / self.dt()), self._n_steps)
             time_slice = slice(window_beg, window_end)
 
         filtered_data = np.array(self._data_grp[time_slice, gid_slice])
         return filtered_data if multi_compartments else filtered_data[:]
-
 
     def custom_columns(self, population=None):
         return {k: v[()] for k,v in self._custom_cols.items()}
@@ -161,8 +166,8 @@ class _CompartmentPopulationReaderVer00(_CompartmentPopulationReaderVer01):
         if node_id is None:
             return self._mapping['element_id'][()]
         else:
-            #indx_beg, indx_end = self._get_index(node_id)
-            #return self._mapping['element_id'][self._get_index(node_id)]#[indx_beg:indx_end]
+            # indx_beg, indx_end = self._get_index(node_id)
+            # return self._mapping['element_id'][self._get_index(node_id)]#[indx_beg:indx_end]
             return self._mapping['element_id'][self._get_index(node_id)]  # [indx_beg:indx_end]
 
 

@@ -171,7 +171,56 @@ class BioEdge(SonataBaseEdge):
         synapse_fnc = nrn.py_modules.synapse_model(self.model_template)
         return synapse_fnc(self.dynamics_params, section_x, section_id)
 
+    @property
+    def afferent_section_id(self):
+        return self._prop_adaptor.aff_sec_id(self._edge)
+
+    @property
+    def afferent_section_pos(self):
+        return self._prop_adaptor.aff_sec_pos(self._edge)
+
+
 
 class BioEdgeAdaptor(EdgeAdaptor):
     def get_edge(self, sonata_edge):
         return BioEdge(sonata_edge, self)
+
+    @classmethod
+    def patch_adaptor(cls, adaptor, edge_group):
+        edge_adaptor = EdgeAdaptor.patch_adaptor(adaptor, edge_group)
+
+        if 'sec_id' in edge_group.all_columns:
+            edge_adaptor.aff_sec_id = types.MethodType(aff_sec_id_old, adaptor)
+        elif 'afferent_section_id' in edge_group.all_columns:
+            edge_adaptor.aff_sec_id = types.MethodType(aff_sec_id, adaptor)
+        else:
+            edge_adaptor.aff_sec_id = types.MethodType(ret_none_function, adaptor)
+
+        if 'sec_x' in edge_group.all_columns:
+            edge_adaptor.aff_sec_pos = types.MethodType(aff_sec_pos_old, adaptor)
+        elif 'afferent_section_pos' in edge_group.all_columns:
+            edge_adaptor.aff_sec_pos = types.MethodType(aff_sec_pos, adaptor)
+        else:
+            edge_adaptor.aff_sec_pos = types.MethodType(ret_none_function, adaptor)
+
+        return edge_adaptor
+
+
+def ret_none_function(self, edge):
+    return None
+
+
+def aff_sec_id(self, edge):
+    return edge['afferent_section_id']
+
+
+def aff_sec_id_old(self, edge):
+    return edge['sec_id']
+
+
+def aff_sec_pos(self, edge):
+    return edge['afferent_section_pos']
+
+
+def aff_sec_pos_old(self, edge):
+    return edge['sec_x']

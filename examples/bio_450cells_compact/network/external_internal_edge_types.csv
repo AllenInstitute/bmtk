@@ -1,0 +1,4 @@
+edge_type_id target_query source_query model_template syn_weight distance_range dynamics_params target_sections delay
+100 ei=='e'&model_type=='biophysical' * Exp2Syn 0.00041 "[0.0, 50.0]" AMPA_ExcToExc.json "['basal', 'apical', 'somatic']" 2.0
+101 ei=='i'&model_type=='biophysical' * Exp2Syn 0.00095 "[0.0, 1e+20]" AMPA_ExcToInh.json "['basal', 'apical', 'somatic']" 2.0
+102 model_type=='point_neuron' * NULL 0.045 NULL instantaneousExc.json NULL 2.0

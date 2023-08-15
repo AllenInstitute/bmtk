@@ -52,6 +52,13 @@ class SonataBaseEdge(object):
         return self._edge['distance_range']
 
     @property
+    def is_gap_junction(self):
+        try:
+            return self._edge['is_gap_junction']
+        except:
+            return False
+
+    @property
     def edge_type_id(self):
         return self._edge.edge_type_id
 
@@ -90,10 +97,11 @@ class EdgeAdaptor(object):
     def preprocess_edge_types(network, edge_population):
         edge_types_table = edge_population.types_table
         edge_type_ids = np.unique(edge_population.type_ids)
+        cached_dynamics = {}
 
         for et_id in edge_type_ids:
             edge_type = edge_types_table[et_id]
-            if 'dynamics_params' in edge_types_table.columns:
+            if 'dynamics_params' in edge_types_table.columns and edge_type['dynamics_params'] != None:
                 dynamics_params = edge_type['dynamics_params']
                 params_dir = network.get_component('synaptic_models_dir')
 
@@ -101,12 +109,17 @@ class EdgeAdaptor(object):
 
                 # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
                 # cell_model loader function handle the extension.
-                try:
-                    params_val = json.load(open(params_path, 'r'))
-                    edge_type['dynamics_params'] = params_val
-                except Exception:
-                    # TODO: Check dynamics_params before
-                    network.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
+                # Cache the loaded dynamics_params to minimize file access.
+                if params_path in cached_dynamics:
+                    edge_type['dynamics_params'] = cached_dynamics[params_path]
+                else:
+                    try:
+                        params_val = json.load(open(params_path, 'r'))
+                        edge_type['dynamics_params'] = params_val
+                        cached_dynamics[params_path] = params_val
+                    except Exception:
+                        # TODO: Check dynamics_params before
+                        network.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
 
             # Split target_sections
             if 'target_sections' in edge_type:
@@ -158,7 +171,7 @@ class EdgeAdaptor(object):
             raise Exception('Could not find syn_weight or weight_function properties. Cannot create connections.')
 
         # For determining the synapse placement
-        if 'sec_id' in edge_group.all_columns:
+        if 'sec_id' in edge_group.all_columns or 'afferent_section_id' in edge_group.all_columns:
             adaptor.preselected_targets = True
             adaptor.nsyns = types.MethodType(no_nsyns, adaptor)
         elif 'nsyns' in edge_group.all_columns:

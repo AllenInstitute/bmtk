@@ -25,81 +25,21 @@ import json
 import ast
 import numpy as np
 
-from bmtk.simulator.core.config import ConfigDict
-#import config as cfg
-from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
+# from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.core.simulation_config import SimulationConfig as ConfigDict
+### from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
 from bmtk.simulator.core.io_tools import io
 
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 
 
-"""Creates a graph of nodes and edges from multiple network files for all simulators.
+"""
+Creates a graph of nodes and edges from multiple network files for all simulators.
 
 Consists of edges and nodes. All classes are abstract and should be reimplemented by a specific simulator. Also
 contains base factor methods for building a network from a config file (or other).
 """
-
-
-class SimEdge(object):
-    def __init__(self, original_params, dynamics_params):
-        self._orig_params = original_params
-        self._dynamics_params = dynamics_params
-        self._updated_params = {'dynamics_params': self._dynamics_params}
-
-    @property
-    def edge_type_id(self):
-        return self._orig_params['edge_type_id']
-
-    def __getitem__(self, item):
-        if item in self._updated_params:
-            return self._updated_params[item]
-        else:
-            return self._orig_params[item]
-
-
-class SimNode(object):
-    def __init__(self, node_id, graph, network, params):
-        self._node_id = node_id
-        self._graph = graph
-        self._graph_params = params
-        self._node_type_id = params['node_type_id']
-        self._network = network
-        self._updated_params = {}
-
-        self._model_params = {}
-
-    @property
-    def node_id(self):
-        return self._node_id
-
-    @property
-    def node_type_id(self):
-        return self._node_type_id
-
-    @property
-    def network(self):
-        """Name of network node belongs too."""
-        return self._network
-
-    @property
-    def model_params(self):
-        """Parameters (json file, nml, dictionary) that describe a specific node"""
-        return self._model_params
-
-    @model_params.setter
-    def model_params(self, value):
-        self._model_params = value
-
-    def __contains__(self, item):
-        return item in self._updated_params or item in self._graph_params
-
-    def __getitem__(self, item):
-        if item in self._updated_params:
-            return self._updated_params[item]
-        else:
-            return self._graph_params[item]
-
 
 class SimGraph(object):
     model_type_col = 'model_type'
@@ -107,9 +47,6 @@ class SimGraph(object):
     def __init__(self):
         self._components = {}  # components table, i.e. paths to model files.
         self._io = io
-
-        self._node_property_maps = {}
-        self._edge_property_maps = {}
 
         self._node_populations = {}
         self._internal_populations_map = {}
@@ -126,12 +63,6 @@ class SimGraph(object):
     @property
     def io(self):
         return self._io
-
-    '''
-    @property
-    def internal_pop_names(self):
-        return self
-    '''
 
     @property
     def node_populations(self):
@@ -169,20 +100,9 @@ class SimGraph(object):
         """
         self._components[key] = value
 
-    '''
-    def _from_json(self, file_name):
-        return cfg.from_json(file_name)
-    '''
-
     def _validate_components(self):
         """Make sure various components (i.e. paths) exists before attempting to build the graph."""
         return True
-
-    def _create_nodes_prop_map(self, grp):
-        return NodePropertyMap()
-
-    def _create_edges_prop_map(self, grp):
-        return EdgePropertyMap()
 
     def __avail_model_types(self, population):
         model_types = set()
@@ -318,16 +238,14 @@ class SimGraph(object):
                 model_types -= set(['virtual'])
                 if model_types:
                     # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
-                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can ' +
-                                        'cause memory and build-time inefficency. Consider separating virtual nodes ' +
-                                        'into their own population'.format(pop_name))
+                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can '.format(pop_name) +
+                                        'cause memory and build-time inefficiency. Consider separating virtual nodes ' +
+                                        'into their own population')
 
             if model_types:
                 self._internal_populations_map[pop_name] = node_pop
 
             self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
-            self._node_property_maps[pop_name] = {grp.group_id: self._create_nodes_prop_map(grp)
-                                                  for grp in node_pop.groups}
 
     def build_nodes(self):
         raise NotImplementedError
@@ -378,9 +296,6 @@ class SimGraph(object):
                 if trg_pop not in self._external_edges:
                     self._external_edges[(src_pop, trg_pop)] = []
                 self._external_edges[(src_pop, trg_pop)].append(edge_pop)
-
-            self._edge_property_maps[pop_name] = {grp.group_id: self._create_edges_prop_map(grp)
-                                                  for grp in edge_pop.groups}
 
     @classmethod
     def from_config(cls, conf, **properties):

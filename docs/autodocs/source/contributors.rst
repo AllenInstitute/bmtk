@@ -23,6 +23,8 @@ Ram Iyer `@ramakrishnaniyer <http://github.com/ramakrishnaniyer>`__
 
 Jung Hoon Lee
 
+Xiao-Ping Liu `@xpliu16 <http://github.com/xpliu16>`__
+
 Stefan Mihalas
 
 Catalin Mitelut
@@ -32,3 +34,7 @@ Yina Wei
 Richard Xu
 
 Tyler Banks `@tjbanks <http://github.com/tjbanks>`__
+
+Ben Latimer `@latimerb <https://github.com/latimerb>`__
+
+Nils Van Rompaey `@nilsvanrompaey <https://github.com/nilsvanrompaey>`__

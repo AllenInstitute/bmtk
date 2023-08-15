@@ -37,18 +37,32 @@ class SpikesMod(SimulatorMod):
 
     """
 
-    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
+    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, cache_to_disk=True,
+                 spikes_sort_order=None, mode='a', compression='gzip'):
         # TODO: Have option to turn off caching spikes to csv.
         def _file_path(file_name):
             if file_name is None:
                 return None
-            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+            if os.path.isabs(file_name):
+                return file_name
+
+            else:
+                rel_tmp = os.path.realpath(tmp_dir)
+                rel_fname = os.path.realpath(file_name)
+                if not rel_fname.startswith(rel_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
+
+            # return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
 
         self._csv_fname = _file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None
 
         self._h5_fname = _file_path(spikes_file)
         self._save_h5 = spikes_file is not None
+        self._mode = mode
 
         self._nwb_fname = _file_path(spikes_file_nwb)
         self._save_nwb = spikes_file_nwb is not None
@@ -56,7 +70,10 @@ class SpikesMod(SimulatorMod):
         self._tmpdir = tmp_dir
         self._sort_order = sort_order_lu.get(spikes_sort_order, sort_order.none)
 
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        cache_name = os.path.basename(self._h5_fname or self._csv_fname or self._nwb_fname)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_name=cache_name, cache_to_disk=cache_to_disk)
+        self._spike_writer.compression = compression
+
         self._gid_map = None
 
     def initialize(self, sim):
@@ -76,6 +93,7 @@ class SpikesMod(SimulatorMod):
         sim.set_spikes_recording()  # reset recording vector
 
     def finalize(self, sim):
+        # TODO: Get ride of flush/barrier calls, spike_trains should take care of it
         self._spike_writer.flush()
         pc.barrier()
 
@@ -84,7 +102,8 @@ class SpikesMod(SimulatorMod):
             pc.barrier()
 
         if self._save_h5:
-            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order, mode=self._mode,
+                                         compression=self._spike_writer.compression)
             pc.barrier()
 
         if self._save_nwb:

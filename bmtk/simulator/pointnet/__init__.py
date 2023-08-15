@@ -24,3 +24,4 @@ from . import default_setters
 from .config import Config
 from .pointnetwork import PointNetwork
 from .pointsimulator import PointSimulator
+from .pyfunction_cache import synapse_model, synaptic_weight, cell_model

@@ -7,20 +7,19 @@ from bmtk.builder.node import Node
 
 
 @pytest.fixture
-def network():
+def net():
     net = NetworkBuilder('NET1')
     net.add_nodes(N=100, x=range(100), ei='i')
     net.add_nodes(N=50, x=range(50), y='y', ei='e')
     return net
 
 
-def test_one2one_fnc():
+def test_one2one_fnc(net):
     def connector_fnc(s, t):
         assert(s['ei'] == 'i')
         assert(t['ei'] == 'e')
         return '100'
 
-    net = network()
     conr = connector.create(connector_fnc)
     itr = iterator.create('one_to_one', conr)
     count = 0
@@ -33,14 +32,13 @@ def test_one2one_fnc():
     assert(count == 100*50)
 
 
-def test_one2all_fnc():
+def test_one2all_fnc(net):
     def connector_fnc(s, ts):
         assert(isinstance(s, Node))
         assert(s['ei'] == 'i')
         assert(len(ts) == 50)
         return [100]*50
 
-    net = network()
     conr = connector.create(connector_fnc)
     itr = iterator.create('one_to_all', conr)
     count = 0
@@ -53,14 +51,13 @@ def test_one2all_fnc():
     assert(count == 5000)
 
 
-def test_all2one_fnc():
+def test_all2one_fnc(net):
     def connector_fnc(ss, t):
         assert(isinstance(t, Node))
         assert(t['ei'] == 'e')
         assert(len(ss) == 100)
         return [100]*100
 
-    net = network()
     conr = connector.create(connector_fnc)
     itr = iterator.create('all_to_one', conr)
     count = 0
@@ -73,8 +70,7 @@ def test_all2one_fnc():
     assert(count == 5000)
 
 
-def test_literal():
-    net = network()
+def test_literal(net):
     conr = connector.create(100)
     itr = iterator.create('one_to_one', conr)
     count = 0
@@ -88,8 +84,7 @@ def test_literal():
     assert(count == 5000)
 
 
-def test_dict():
-    net = network()
+def test_dict(net):
     conr = connector.create({'nsyn': 10, 'target': 'axon'})
     itr = iterator.create('one_to_one', conr)
     count = 0
@@ -104,8 +99,7 @@ def test_dict():
     assert (count == 5000)
 
 
-def test_one2one_list():
-    net = network()
+def test_one2one_list(net):
     vals = [s.node_id*t.node_id for s,t in itertools.product(net.nodes(ei='i'), net.nodes(ei='e'))]
     conr = connector.create(vals)
     itr = iterator.create('one_to_one', conr)
@@ -114,8 +108,7 @@ def test_one2one_list():
         assert(src_id*trg_id == val)
 
 
-def test_one2all_list():
-    net = network()
+def test_one2all_list(net):
     vals = [v.node_id for v in net.nodes(ei='e')]
     conr = connector.create(vals)
     itr = iterator.create('one_to_all', conr)
@@ -124,8 +117,7 @@ def test_one2all_list():
         assert(trg_id == val)
 
 
-def test_all2one_list():
-    net = network()
+def test_all2one_list(net):
     vals = [v.node_id for v in net.nodes(ei='i')]
     conr = connector.create(vals)
     itr = iterator.create('all_to_one', conr)

@@ -20,7 +20,23 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from bmtk.simulator.utils.graph import SimEdge
+
+
+class SimEdge(object):
+    def __init__(self, original_params, dynamics_params):
+        self._orig_params = original_params
+        self._dynamics_params = dynamics_params
+        self._updated_params = {'dynamics_params': self._dynamics_params}
+
+    @property
+    def edge_type_id(self):
+        return self._orig_params['edge_type_id']
+
+    def __getitem__(self, item):
+        if item in self._updated_params:
+            return self._updated_params[item]
+        else:
+            return self._orig_params[item]
 
 
 class PopEdge(SimEdge):

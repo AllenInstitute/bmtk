@@ -22,20 +22,47 @@
 #
 from neuron import h
 import six
+import numpy as np
+
 from bmtk.simulator.bionet.cell import Cell
 
 
 pc = h.ParallelContext()    # object to access MPI methods
 
 
+class ConnectionStruct(object):
+    def __init__(self, edge_prop, src_node, nc, is_virtual=False):
+        self._src_node = src_node
+        self._edge_prop = edge_prop
+        self._nc = nc
+        self._is_virtual = is_virtual
+
+    @property
+    def is_virtual(self):
+        return self._is_virtual
+
+    @property
+    def source_node(self):
+        return self._src_node
+
+    @property
+    def syn_weight(self):
+        return self._nc.weight[0]
+
+    @syn_weight.setter
+    def syn_weight(self, val):
+        self._nc.weight[0] = val
+
+
 class PointProcessCell(Cell):
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
-    def __init__(self, node, bionetwork):
-        super(PointProcessCell, self).__init__(node)
+    def __init__(self, node, population_name, bionetwork):
+        super(PointProcessCell, self).__init__(node, population_name=population_name, network=bionetwork)
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
         self._edge_type_ids = []
+        self._connections = []
 
     def set_spike_detector(self):
         nc = h.NetCon(self.hobj, None)
@@ -56,9 +83,11 @@ class PointProcessCell(Cell):
 
         if stim is not None:
             src_gid = -1
+            #src_gid = src_node.node_id
             nc = h.NetCon(stim.hobj, self.hobj)
         else:
-            src_gid = src_node.node_id
+            # src_gid = src_node.node_id
+            src_gid = self._network.gid_pool.get_gid(name=src_node.population_name, node_id=src_node.node_id)
             nc = pc.gid_connect(src_gid, self.hobj)
 
         weight = syn_weight
@@ -68,7 +97,13 @@ class PointProcessCell(Cell):
         self._src_gids.append(src_gid)
         self._src_nets.append(-1)
         self._edge_type_ids.append(edge_prop.edge_type_id)
+        self._edge_props.append(edge_prop)
+        self._connections.append(ConnectionStruct(edge_prop, src_node, nc, stim is not None))
+
         return nsyns
+
+    def connections(self):
+        return self._connections
 
     def get_connection_info(self):
         # TODO: There should be a more effecient and robust way to return synapse information.
@@ -83,3 +118,62 @@ class PointProcessCell(Cell):
                                                    self.netcons[i].delay)
 
         return rstr
+
+
+class PointProcessCellSpontSyns(PointProcessCell):
+    """Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.
+    """
+    def __init__(self, node, population_name, bionetwork):
+        super(PointProcessCellSpontSyns, self).__init__(node, population_name=population_name, bionetwork=bionetwork)
+
+        self._syn_timestamps = bionetwork.spont_syns_times
+        self._syn_timestamps = [self._syn_timestamps] if np.isscalar(self._syn_timestamps) else self._syn_timestamps
+        self._spike_trains = h.Vector(self._syn_timestamps)
+        self._vecstim = h.VecStim()
+        self._vecstim.play(self._spike_trains)
+
+        self._precell_filter = bionetwork.spont_syns_filter
+        assert(isinstance(self._precell_filter, dict))
+
+    def _matches_filter(self, src_node):
+        for k, v in self._precell_filter.items():
+            if isinstance(v, (list, tuple)):
+                if src_node[k] not in v:
+                    return False
+            else:
+                if src_node[k] != v:
+                    return False
+        return True
+
+    def set_syn_connection(self, edge_prop, src_node, stim=None):
+        syn_params = edge_prop.dynamics_params
+        nsyns = edge_prop.nsyns
+        delay = edge_prop.delay
+
+        syn_weight = edge_prop.syn_weight(src_node, self._node)
+        if not edge_prop.preselected_targets:
+            # TODO: this is not very robust, need some other way
+            syn_weight *= syn_params['sign'] * nsyns
+
+        src_gid = src_node.node_id
+
+        if stim is not None:
+            src_gid = -1
+            nc = h.NetCon(stim.hobj, self.hobj)
+
+        elif self._matches_filter(src_node):
+            nc = h.NetCon(self._vecstim, self.hobj)
+
+        else:
+            nc = pc.gid_connect(src_gid, self.hobj)
+            syn_weight = 0.0
+
+        weight = syn_weight
+        nc.weight[0] = weight
+        nc.delay = delay
+        self._netcons.append(nc)
+        self._src_gids.append(src_gid)
+        self._src_nets.append(-1)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
+        self._edge_props.append(edge_prop)
+        self._connections.append(ConnectionStruct(edge_prop, src_node, nc, stim is not None))
