@@ -230,21 +230,19 @@ class DenseNetwork(Network):
 
         for et in self.__edges_tables:
             try:
-                is_gap = et['edge_types']['is_gap_junction']
+                is_gap = et.edge_type_properties['is_gap_junction']
             except:
                 continue
             if is_gap:
-                if et['source_network'] != et['target_network']:
+                if et.source_network != et.target_network:
                     raise Exception("All gap junctions must be two cells in the same network builder.")
-
-                table = et['syn_table']
-                junc_table = table.nsyn_table
-                locs = np.where(junc_table > 0)
-                for i in range(len(locs[0])):
-                    source_ids.append(table.source_ids[locs[0][i]])
-                    target_ids.append(table.target_ids[locs[1][i]])
-                    src_gap_ids.append(self._gj_id_gen.next())
-                    trg_gap_ids.append(self._gj_id_gen.next())
+                table = et.to_dataframe()
+                for index, row in table.iterrows():
+                    for _ in range(row["nsyns"]):
+                        source_ids.append(row["source_node_id"])
+                        target_ids.append(row["target_node_id"])
+                        src_gap_ids.append(self._gj_id_gen.next())
+                        trg_gap_ids.append(self._gj_id_gen.next())
             else:
                 continue
 
