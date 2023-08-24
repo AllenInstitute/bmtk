@@ -8,20 +8,17 @@ from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
 from bio_components.hdf5 import HDF5
 from bmtk.builder.auxi.edge_connectors import distance_connector
 
-# from mpi4py import MPI
-# comm = MPI.COMM_WORLD
-
 import logging
 logger = logging.getLogger(__name__)
 
 np.random.seed(10)
-n_nodes = 200
+n_nodes = 100
 
 column = NetworkBuilder('column')
 column.add_nodes(
     N=n_nodes,
     pop_name='Scnn1a',
-    positions=positions_columinar(N=n_nodes, center=[0, 250, 0], min_radius = 1, max_radius=100, height=200, plot=True),
+    positions=positions_columinar(N=n_nodes, center=[0, 0, 0], min_radius = 1, max_radius=100, height=100, plot=True),
     rotation_angle_yaxis=xiter_random(N=n_nodes, min_x=0.0, max_x=2*np.pi),
     potental='exc',
     model_type='biophysical',
@@ -30,19 +27,6 @@ column.add_nodes(
     dynamics_params='472363762_fit.json',
     morphology='Scnn1a_473845048_m.swc'
 )
-
-# column.add_nodes(
-#     N=n_nodes,
-#     pop_name='Scnn1a',
-#     positions=positions_columinar(N=n_nodes, center=[0, 250, 0], min_radius = 1, max_radius=50, height=200, plot=True),
-#     rotation_angle_yaxis=xiter_random(N=n_nodes, min_x=0.0, max_x=2*np.pi),
-#     potental='exc',
-#     model_type='biophysical',
-#     model_template='ctdb:Biophys1.hoc',
-#     model_processing='aibs_perisomatic',
-#     dynamics_params='472363762_fit.json',
-#     morphology='Scnn1a_473845048_m.swc'
-# )
 
 column.add_edges(
     source={'pop_name': 'Scnn1a'}, target={'pop_name': 'Scnn1a'},
