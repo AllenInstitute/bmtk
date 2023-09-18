@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.file_helper &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">toolbox.file_helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for toolbox.file_helper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<div class="viewcode-block" id="create_configs">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.create_configs.html#toolbox.file_helper.create_configs">[docs]</a>
+<span class="k">def</span> <span class="nf">create_configs</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create config files according to specified stimulation parameters. </span>
+<span class="sd">    All input parameters will automatically be converted to &lt;parameter&gt;_&lt;name&gt;.</span>
+
+<span class="sd">    :param template: Template config.json that is modified to generate all other files. </span>
+<span class="sd">        For each experiment, it is generally a good idea to manually configure one config.json file.</span>
+<span class="sd">        If that works, this function will then do the rest. </span>
+<span class="sd">    :param exp: Experiment name. int/str.</span>
+<span class="sd">    :param patterns: Pattern names. int/str or list thereof.</span>
+<span class="sd">    :param amplitudes: Amplitudes in uA. int/str or list thereof.</span>
+<span class="sd">    :param mice: Mouse names. int/str or list thereof.</span>
+<span class="sd">    :param overwrite: Overwrite existing files if True. defaults to False.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    </span>
+<span class="sd">    | Example:</span>
+<span class="sd">    | Passing arguments 1, &#39;1&#39;, [1], [&#39;1&#39;], &#39;pattern1&#39;, [&#39;pattern1&#39;], &#39;pattern_1&#39;, [&#39;pattern_1&#39;] will all be formatted to [&#39;pattern_1&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert all parameters into [name]_[value] format</span>
+    <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span> <span class="o">=</span> <span class="n">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">)</span>
+
+    <span class="c1"># Load template config.json</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">read_file</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">read_file</span><span class="p">)</span>
+
+    <span class="c1"># Nested loop over all specified parameters (converted to str)</span>
+    <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+        
+        <span class="c1"># Get pattern parameters from pattern.csv</span>
+        <span class="n">stim_params</span> <span class="o">=</span> <span class="n">get_stim_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+        <span class="c1"># Set paths to comsol.txt and waveform.csv files in config.json</span>
+        <span class="n">comsol_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;$STIM_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;comsol&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">stim_params</span><span class="p">[</span><span class="s1">&#39;comsol_files&#39;</span><span class="p">]]</span>
+        <span class="n">waveforms</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;$STIM_DIR&#39;</span><span class="p">,</span> <span class="s1">&#39;waveforms&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">stim_params</span><span class="p">[</span><span class="s1">&#39;waveforms&#39;</span><span class="p">]]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="s1">&#39;Extracellular_Stim&#39;</span><span class="p">][</span><span class="s1">&#39;comsol_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comsol_files</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="s1">&#39;Extracellular_Stim&#39;</span><span class="p">][</span><span class="s1">&#39;waveforms&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">waveforms</span>
+
+        <span class="k">for</span> <span class="n">amplitude</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">:</span>
+            
+            <span class="c1"># Set amplitude in config.json</span>
+            <span class="n">amplitude_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">amplitude</span><span class="p">[</span><span class="mi">10</span><span class="p">:])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stim_params</span><span class="p">[</span><span class="s1">&#39;amplitudes&#39;</span><span class="p">]]</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="s1">&#39;Extracellular_Stim&#39;</span><span class="p">][</span><span class="s1">&#39;amplitudes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amplitude_values</span>
+
+            <span class="k">for</span> <span class="n">mouse</span> <span class="ow">in</span> <span class="n">mice</span><span class="p">:</span>
+                
+                <span class="c1"># Set mouse dir in config.json</span>
+                <span class="n">network_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s1">&#39;$NETWORK_DIR&#39;</span><span class="p">]),</span> <span class="n">mouse</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s1">&#39;$NETWORK_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_dir</span>
+                                            
+                <span class="c1"># Set output dir in config.json</span>
+                <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">,</span> <span class="n">exp</span> <span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">mouse</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_dir</span>
+
+                <span class="c1"># Get path for config.json and create directory if it does not exist</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+                <span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_dir</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_dir</span><span class="p">)</span>
+                
+                <span class="c1"># Save config.json unless it already exists and overwrite is False</span>
+                <span class="n">file_name</span> <span class="o">=</span>  <span class="s1">&#39;config.&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">exp</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">pattern</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="n">amplitude</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">amplitude</span><span class="p">[</span><span class="mi">9</span><span class="p">:],</span> <span class="n">mouse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">mouse</span><span class="p">[</span><span class="mi">5</span><span class="p">:]))</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">overwrite</span> <span class="o">==</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))):</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">write_file</span><span class="p">:</span>
+                        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">write_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;created file: &#39;</span><span class="p">,</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="n">file_dir</span><span class="p">)</span>
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="delete_configs">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.delete_configs.html#toolbox.file_helper.delete_configs">[docs]</a>
+<span class="k">def</span> <span class="nf">delete_configs</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">amplitudes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mice</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete config files according to specified stimulation parameters. Also deletes empty folders.</span>
+<span class="sd">    All input parameters will automatically be converted to &lt;parameter&gt;_&lt;name&gt;.</span>
+<span class="sd">    </span>
+<span class="sd">    :param exp: Experiment name. int/str.</span>
+<span class="sd">    :param patterns: Pattern names. int/str or list thereof.</span>
+<span class="sd">    :param amplitudes: Amplitudes in uA. int/str or list thereof.</span>
+<span class="sd">    :param mice: Mouse names. int/str or list thereof.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    </span>
+<span class="sd">    Example::</span>
+<span class="sd">    </span>
+<span class="sd">        Passing arguments 1, &#39;1&#39;, [1], [&#39;1&#39;], &#39;pattern1&#39;, [&#39;pattern1&#39;], &#39;pattern_1&#39;, [&#39;pattern_1&#39;] will all be formatted to [&#39;pattern_1&#39;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert all parameters into [name]_[value] format</span>
+    <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span> <span class="o">=</span> <span class="n">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">)</span>
+
+    <span class="c1"># Get directory where all exp_? folders are</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span> 
+
+    <span class="c1"># If any of the input arguments is None, skip this statement and just remove empty directories</span>
+    <span class="k">if</span> <span class="n">patterns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">amplitudes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Nested loop over all specified parameters (converted to strings)</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">amplitude</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">mouse</span> <span class="ow">in</span> <span class="n">mice</span><span class="p">:</span>
+                    
+                    <span class="c1"># Get file name and path </span>
+                    <span class="n">file_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">)</span>
+                    <span class="n">file_name</span> <span class="o">=</span>  <span class="s1">&#39;config.&#39;</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">exp</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">pattern</span><span class="p">[</span><span class="mi">7</span><span class="p">:],</span> <span class="n">amplitude</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">amplitude</span><span class="p">[</span><span class="mi">9</span><span class="p">:],</span> <span class="n">mouse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">mouse</span><span class="p">[</span><span class="mi">5</span><span class="p">:]))</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
+                    
+                    <span class="c1"># Remove file if it exists</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)):</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed file: &#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+    <span class="c1"># Remove empty directories</span>
+    <span class="n">walk</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">exp</span><span class="p">,</span><span class="s1">&#39;config&#39;</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">walk</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed folder: &#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># Delete exp folder is empty if empty</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">exp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">rmdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;removed folder: &#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="get_stim_params">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.get_stim_params.html#toolbox.file_helper.get_stim_params">[docs]</a>
+<span class="k">def</span> <span class="nf">get_stim_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets extracellular stimulation parameters from the specified pattern.csv in ./stimulation/patterns/exp/.</span>
+<span class="sd">    These are used to write in the inputs/Extracellular_Stim section of config.json. </span>
+
+<span class="sd">    :param exp: Experiment name. </span>
+<span class="sd">    :param pattern: Pattern name. </span>
+<span class="sd">    :return: Dictionary containing all stimulation parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">pattern</span><span class="p">)[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">!=</span> <span class="s1">&#39;.csv&#39;</span> <span class="k">else</span> <span class="n">pattern</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;patterns&#39;</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">)</span>
+    
+    <span class="n">comsol_files</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;comsol&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">waveforms</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;waveform&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">comsol_files</span><span class="o">=</span><span class="n">comsol_files</span><span class="p">,</span> <span class="n">waveforms</span><span class="o">=</span><span class="n">waveforms</span><span class="p">,</span> <span class="n">amplitudes</span><span class="o">=</span><span class="n">amplitudes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="format_params">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.format_params.html#toolbox.file_helper.format_params">[docs]</a>
+<span class="k">def</span> <span class="nf">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standardise parameters to &lt;parameter&gt;_&lt;name&gt;.</span>
+<span class="sd">    Example:: 1, &#39;1&#39;, [1], [&#39;1&#39;], &#39;pattern1&#39;, [&#39;pattern1&#39;], &#39;pattern_1&#39;, [&#39;pattern_1&#39;] will all be formatted to [&#39;pattern_1&#39;]</span>
+
+<span class="sd">    :param exp: Experiment name. int/str.</span>
+<span class="sd">    :param patterns: Pattern names. int/str or list thereof.</span>
+<span class="sd">    :param amplitudes: Amplitudes in uA. int/str or list thereof.</span>
+<span class="sd">    :param mice: Mouse names. int/str or list thereof.</span>
+<span class="sd">    :return: standardised parameter names</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">exp</span> <span class="o">=</span> <span class="p">[</span><span class="n">exp</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">exp</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="p">[</span><span class="n">format_param</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;exp&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">exp</span><span class="p">]</span>
+    <span class="n">exp</span> <span class="o">=</span> <span class="n">exp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">exp</span>
+
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">patterns</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">patterns</span>
+    <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">format_param</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;pattern&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">]</span>
+
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">[</span><span class="n">amplitudes</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">amplitudes</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">[</span><span class="n">format_param</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">]</span>
+
+    <span class="n">mice</span> <span class="o">=</span> <span class="p">[</span><span class="n">mice</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mice</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">mice</span>
+    <span class="n">mice</span> <span class="o">=</span> <span class="p">[</span><span class="n">format_param</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s1">&#39;mouse&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mice</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span></div>
+
+
+<div class="viewcode-block" id="format_param">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.format_param.html#toolbox.file_helper.format_param">[docs]</a>
+<span class="k">def</span> <span class="nf">format_param</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format parameter to &lt;parameter&gt;_&lt;name&gt;.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        &#39;1&#39;, &#39;pattern1&#39;, &#39;pattern_1&#39;, will all be formatted to &#39;pattern_1&#39;</span>
+
+<span class="sd">    :param input: _description_</span>
+<span class="sd">    :param name: _description_</span>
+<span class="sd">    :return: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">input</span><span class="p">[:</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">input</span>
+    <span class="k">elif</span> <span class="nb">input</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">input</span><span class="p">[</span><span class="n">n</span><span class="p">:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">input</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="get_dirs">
+<a class="viewcode-back" href="../../_autosummary/toolbox.file_helper.get_dirs.html#toolbox.file_helper.get_dirs">[docs]</a>
+<span class="k">def</span> <span class="nf">get_dirs</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the directories to the nodes.h5, spikes.csv, spikes_bkg.csv, pattern.csv, and electrodes.csv files.</span>
+<span class="sd">    This function does this for all combinations of the input arguments and returns them in lists.</span>
+
+<span class="sd">    :param exp: Experiment name. int/str.</span>
+<span class="sd">    :param patterns: Pattern names. int/str or list thereof.</span>
+<span class="sd">    :param amplitudes: Amplitudes in uA. int/str or list thereof.</span>
+<span class="sd">    :param mice: Mouse names. int/str or list thereof.</span>
+<span class="sd">    :return: Dictionary containing where the values are lists containing the dirs corresponding the key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># Initialisation</span>
+    <span class="n">nodes_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">spikes_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">spikes_bkg_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pattern_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">electrodes_dirs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Format params</span>
+    <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span> <span class="o">=</span> <span class="n">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">)</span> 
+
+    <span class="c1"># Radius</span>
+    <span class="n">radius</span> <span class="o">=</span> <span class="mi">400</span>
+
+    <span class="c1"># Iterate over all parameters and get paths for each combination</span>
+    <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">amplitude</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mouse</span> <span class="ow">in</span> <span class="n">mice</span><span class="p">:</span>
+                <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+
+                <span class="n">nodes_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;networks&#39;</span><span class="p">,</span> <span class="n">mouse</span><span class="p">,</span> <span class="s1">&#39;v1_nodes.h5&#39;</span><span class="p">))</span>
+                <span class="n">spikes_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span>  <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">mouse</span><span class="p">,</span> <span class="s1">&#39;spikes.csv&#39;</span><span class="p">))</span>
+                <span class="n">spikes_bkg_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span>  <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;bkg&#39;</span><span class="p">,</span> <span class="n">mouse</span><span class="p">,</span> <span class="s1">&#39;spikes.csv&#39;</span><span class="p">))</span>
+                <span class="n">pattern_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;components&#39;</span><span class="p">,</span> <span class="s1">&#39;stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;patterns&#39;</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">))</span>
+                <span class="n">electrodes_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;components&#39;</span><span class="p">,</span> <span class="s1">&#39;stimulation&#39;</span><span class="p">,</span> <span class="s1">&#39;electrodes&#39;</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="s1">&#39;electrodes.csv&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nodes_dirs</span><span class="o">=</span><span class="n">nodes_dirs</span><span class="p">,</span> <span class="n">spikes_dirs</span><span class="o">=</span><span class="n">spikes_dirs</span><span class="p">,</span> <span class="n">spikes_bkg_dirs</span><span class="o">=</span><span class="n">spikes_bkg_dirs</span><span class="p">,</span> <span class="n">pattern_dirs</span><span class="o">=</span><span class="n">pattern_dirs</span><span class="p">,</span> <span class="n">electrodes_dirs</span><span class="o">=</span><span class="n">electrodes_dirs</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">v1</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def print_args(names=False, **kwargs):</span>
+<span class="sd">    print(kwargs)</span>
+<span class="sd">    length = 1</span>
+<span class="sd">    for key, value in kwargs.items():</span>
+<span class="sd">        length *= len(value)</span>
+<span class="sd">    res = [&#39;&#39;]*length</span>
+<span class="sd">    period = length</span>
+<span class="sd">    for key, value in kwargs.items():</span>
+<span class="sd">        period /= len(value)</span>
+<span class="sd">        iters = length/period</span>
+<span class="sd">        for i in range(length):</span>
+<span class="sd">            value_i = (i // period) % len(value)</span>
+<span class="sd">            value_i = int(value_i)</span>
+<span class="sd">            if names:</span>
+<span class="sd">                res[i] += key + str(value[value_i]) + &#39;_&#39;</span>
+<span class="sd">            else:</span>
+<span class="sd">                res[i] += str(value[value_i]) + &#39;_&#39;</span>
+<span class="sd">    for i in range(length):</span>
+<span class="sd">        res[i] = res[i][:-1]</span>
+
+<span class="sd">    print(res)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># [print(key, &#39;: &#39;, value) for key, value in get_dirs(1,1,10,[0]).items()]</span>
+    <span class="n">create_configs</span><span class="p">(</span><span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;v1_Anke/exp_1/template.json&#39;</span><span class="p">,</span>
+                <span class="n">exp</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">,</span> 
+                <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="n">mice</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">],</span> 
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

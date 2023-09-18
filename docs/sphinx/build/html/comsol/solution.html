@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculating extracellular potentials with COMSOL &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BMTK" href="../bmtk.html" />
+    <link rel="prev" title="COMSOL" href="../comsol.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../comsol.html">COMSOL</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Calculating extracellular potentials with COMSOL</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#study-types">Study types</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#one-time-dependent-study">1. One time-dependent study</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#one-stationary-study">2. One stationary study</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-stationary-studies">3. Multiple stationary studies</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../comsol.html">COMSOL</a></li>
+      <li class="breadcrumb-item active">Calculating extracellular potentials with COMSOL</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="calculating-extracellular-potentials-with-comsol">
+<h1>Calculating extracellular potentials with COMSOL<a class="headerlink" href="#calculating-extracellular-potentials-with-comsol" title="Link to this heading">¶</a></h1>
+<p>In order to calculate the extracellular potentials inside the tissue
+that arise from electrical stimulation, we require a FEM model of tissue
+on which the right boundary conditions are imposed. The whole process of
+creating the model geometry, generating a mesh, assigning materials,
+choosing physics, imposing boundary conditions… can be done in COMSOL.</p>
+<section id="study-types">
+<h2>Study types<a class="headerlink" href="#study-types" title="Link to this heading">¶</a></h2>
+<p>The two most general study types in COMSOL are the Stationary study and
+the Time Dependent study. As their names suggest, a stationary study
+solves steady-state equations, while a time dependent study solves more
+general, time-dependent equations over a certain duration of time.</p>
+<section id="one-time-dependent-study">
+<h3>1. One time-dependent study<a class="headerlink" href="#one-time-dependent-study" title="Link to this heading">¶</a></h3>
+<p>We are interested in both the spatial and the temporal behaviour of the
+extracellular potentials in response to the imposed current injections.
+While the potentials vary in time as a function of the injected current,
+the quasi-static approximation allows us to consider the solution at
+each point in time to be stationary. In the most general case, we need
+to calculate the potentials for every time step using a Time Dependent
+study. Although the final solution is time-dependent, it actually solves
+time-independent equations in this case. We could represent the space-
+and time-dependent solution <span class="math notranslate nohighlight">\(V_{X_i,t_j}\)</span> in a matrix. There are
+<span class="math notranslate nohighlight">\(N\)</span> rows representing the FEM mesh nodes, and <span class="math notranslate nohighlight">\(T\)</span> columns
+representing the timestamps. Let’s call this matrix <span class="math notranslate nohighlight">\(\bf{S}\)</span> for
+solution.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} \bf{S} =
+\begin{bmatrix}
+V_{X_1,t_1} &amp; V_{X_1,t_2} &amp; \cdots &amp; V_{X_1,t_T} \\
+V_{X_2,t_1} &amp; V_{X_2,t_2} &amp; \cdots &amp; V_{X_2,t_T} \\
+\vdots      &amp; \vdots      &amp; \ddots &amp; \vdots          \\
+V_{X_N,t_1} &amp; V_{X_N,t_2} &amp; \cdots &amp; V_{X_N,t_T} \\
+\end{bmatrix}\end{split}\]</div>
+<p>This general case requires long COMSOL computations and offers little
+flexibility when it comes to changing stimulation parameters (apart from
+rerunning the COMSOL calculations). As a result, the two methods
+described below are probably prefered over this one in most use cases.
+Nevertheless, the output of a Time Dependent study in COMSOL can be
+passed to BMTK.</p>
+</section>
+<section id="one-stationary-study">
+<h3>2. One stationary study<a class="headerlink" href="#one-stationary-study" title="Link to this heading">¶</a></h3>
+<p>Thanks to the quasi-static approximation, the FEM solution is linear
+w.r.t. the injected current(s). In cases that are not too complex,
+i.e. where the same current profile (but with possibly different
+amplitudes) is used for all electrodes, the FEM solution only varies as
+a function of the current profile, meaning the solutions at different
+timestamps are linearly dependent. Such a matrix S is of rank 1 and can
+be written as the outer product of two vectors.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split} \bf{S} =
+\begin{bmatrix}
+V_{X_1,t_1} &amp; V_{X_1,t_2} &amp; \cdots &amp; V_{X_1,t_T} \\
+V_{X_2,t_1} &amp; V_{X_2,t_2} &amp; \cdots &amp; V_{X_2,t_T} \\
+\vdots      &amp; \vdots      &amp; \ddots &amp; \vdots          \\
+V_{X_N,t_1} &amp; V_{X_N,t_2} &amp; \cdots &amp; V_{X_N,t_T} \\
+\end{bmatrix}
+= \begin{bmatrix}
+V_{X_1}A_{t_1} &amp; V_{X_1}A_{t_2} &amp; \cdots &amp; V_{X_1}A_{t_T} \\
+V_{X_2}A_{t_1} &amp; V_{X_2}A_{t_2} &amp; \cdots &amp; V_{X_2}A_{t_T} \\
+\vdots      &amp; \vdots      &amp; \ddots &amp; \vdots          \\
+V_{X_N}A_{t_1} &amp; V_{X_N}A_{t_2} &amp; \cdots &amp; V_{X_N}A_{t_T} \\
+\end{bmatrix}
+= \vec{V}_X \otimes \vec{A}_t\end{split}\]</div>
+<p>Here, the full solution can be described by the FEM solution at one time point (<span class="math notranslate nohighlight">\(\vec{V_X}\)</span>) and a time-dependent scaling factor (i.e. the current profile <span class="math notranslate nohighlight">\(\vec{A_t}\)</span>, which we will create in a next step).
+If possible, this is the easiest way to define extracellular potentials.</p>
+</section>
+<section id="multiple-stationary-studies">
+<h3>3. Multiple stationary studies<a class="headerlink" href="#multiple-stationary-studies" title="Link to this heading">¶</a></h3>
+<p>Because of the linearity of the solutions, the full solution
+<span class="math notranslate nohighlight">\(\bf{S}\)</span> can also be defined as the superposition (i.e. linear
+combination) of the solutions <span class="math notranslate nohighlight">\(\bf{S}_i\)</span> where each electrode is
+active by itself.</p>
+<div class="math notranslate nohighlight">
+\[\bf{S} = \sum_i \bf{S}_i = \sum_i \vec{V}\_{X,i} {\otimes} \vec{A}\_{t,i}\]</div>
+<p>When only one electrode is active, the solution can always be decomposed
+into a spatial component and a temporal component as in the paragraph
+above. Doing this decomposition for each electrode separately and
+linearly combining the solutions, only requires the FEM to be solved
+once for each electrode. In most complex cases, this should be easier
+than the first method.</p>
+</section>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<p>After a solution has been calculated, it can be exported with
+Results&gt;Export&gt;Data.</p>
+<ul class="simple">
+<li><p>File type: Text</p></li>
+<li><p>Points to evaluate in: Take from dataset</p></li>
+<li><p>Data format: Spreadsheet</p></li>
+</ul>
+<p>This will generate a .txt file with a bunch of header rows (starting
+with %), and then at least 4 space-separated columns. The first three
+columns are the x-, y-, and -coordinate, where every row defines the
+3D-coordinates of one of the mesh nodes.</p>
+<p>Depending on whether simulation was stationary or time-dependent, there
+will be either one or multiple extra columns. - Stationary: The 4th
+column describes the potential at each point. This column is essentially
+$  $. - Time-dependent: Every column from the 4th
+on contains the voltage profile at one timepoint T, similar to a vector
+<span class="math notranslate nohighlight">\(\begin{bmatrix} V_{X_0,t_T} &amp; V_{X_1,t_T} &amp; \cdots &amp; V_{X_N,t_T}\end{bmatrix}^T\)</span>
+that corresponds to a column of matrix <span class="math notranslate nohighlight">\(S\)</span>.</p>
+<p>Once the comsol.txt files have been obtained, they can be passed to
+<a class="reference internal" href="../bmtk.html#bmtk"><span class="std std-ref">BMTK</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../comsol.html" class="btn btn-neutral float-left" title="COMSOL" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../bmtk.html" class="btn btn-neutral float-right" title="BMTK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

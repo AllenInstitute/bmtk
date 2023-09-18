@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulating the neural response with BMTK &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="toolbox" href="../_autosummary/toolbox.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../bmtk.html">BMTK</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Simulating the neural response with BMTK</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-a-network">Building a network</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-waveform-csv-only-for-stationary-comsol-study-studies">Generating waveform.csv (only for stationary COMSOL study/studies)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-a-simulation">Running a simulation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#one-time-dependent-study">One time-dependent study</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#one-stationary-study">One stationary study</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-stationary-studies">Multiple stationary studies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/toolbox.html">toolbox</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../bmtk.html">BMTK</a></li>
+      <li class="breadcrumb-item active">Simulating the neural response with BMTK</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simulating-the-neural-response-with-bmtk">
+<h1>Simulating the neural response with BMTK<a class="headerlink" href="#simulating-the-neural-response-with-bmtk" title="Link to this heading">¶</a></h1>
+<p>In order to simulate the neural activation of the tissue in response to the extracellular potentials, we need two things:</p>
+<ul class="simple">
+<li><p>The extracellular potentials which were calculated in COMSOL.</p></li>
+<li><p>A computational model of the neural tissue in BMTK.</p></li>
+</ul>
+<p>Then, we can use the comsol module in BMTK’s BioNet to import the COMSOL output and simulate the behaviour of the neural network in response to the imposed extracellular potentials.</p>
+<section id="building-a-network">
+<h2>Building a network<a class="headerlink" href="#building-a-network" title="Link to this heading">¶</a></h2>
+<p>Thanks to the work of <a class="reference external" href="https://doi.org/10.1016/j.neuron.2020.01.040">Billeh et al.</a>, a model of the mouse V1 already exists.
+However, it is possible to adapt certain parameters (e.g. the size or shape of the patch of tissue) to fit the specific needs of an experiment.
+Changing neuron models or synaptic connections is also possible, but obviously it is a lot more complex and might disrupt the proper functioning of the model.</p>
+<p>In the context of ReVision’s computational experiments, we will create multiple network models –each with a different random seed– in order to perform the same experiment multiple times on different virtual ‘animals’.
+While the neuron types are constrained to a certain layer of V1 and the general connection rules between and within layers are set, the random seed determines the positions of the neurons within their respective layer, as well as the exact synaptic connections that are made between individual neurons.</p>
+<p>Building a network uses several components/scripts that are found in the v1 folder.
+- v1/build_files/
+- v1/components/
+- v1/build_network.py
+Simple model tweaks can probably be made here.</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">build_network.py</span></code> in the terminal or with a bash/job script (with a few optional arguments) will actually build the network including any possible changes you might have made.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python build_network.py -o [output] --fraction [fraction] --rng-seed [seed]
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>[output] - Output directory. Defaults to networks_rebuilt/network.</p></li>
+<li><p>[fraction] - Fraction of the total neurons the model should include. Defaults to 1.</p></li>
+<li><p>[seed] - Random seed to build the network, changing this will allow the creation of different virtual ‘animals’. Defaults to 100.</p></li>
+</ul>
+<p>For parallel computing, add <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">[np]</span></code> before the command above.</p>
+<ul class="simple">
+<li><p>[np] - number of cores to use.</p></li>
+</ul>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">build_network.py</span></code> multiple times with different random seeds (make sure to also set a different output directory!) will instantiate several networks that represent the different virtual ‘animals’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">12</span> <span class="n">python</span> <span class="n">build_network</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">fraction</span> <span class="mi">1</span> <span class="o">-</span><span class="n">o</span> <span class="n">networks_25</span><span class="o">/</span><span class="n">network0</span> <span class="o">--</span><span class="n">rng</span><span class="o">-</span><span class="n">seed</span> <span class="mi">100</span>
+<span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">12</span> <span class="n">python</span> <span class="n">build_network</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">fraction</span> <span class="mi">1</span> <span class="o">-</span><span class="n">o</span> <span class="n">networks_25</span><span class="o">/</span><span class="n">network1</span> <span class="o">--</span><span class="n">rng</span><span class="o">-</span><span class="n">seed</span> <span class="mi">101</span>
+<span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">12</span> <span class="n">python</span> <span class="n">build_network</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="n">fraction</span> <span class="mi">1</span> <span class="o">-</span><span class="n">o</span> <span class="n">networks_25</span><span class="o">/</span><span class="n">network2</span> <span class="o">--</span><span class="n">rng</span><span class="o">-</span><span class="n">seed</span> <span class="mi">102</span>
+</pre></div>
+</div>
+</section>
+<section id="generating-waveform-csv-only-for-stationary-comsol-study-studies">
+<h2>Generating waveform.csv (only for stationary COMSOL study/studies)<a class="headerlink" href="#generating-waveform-csv-only-for-stationary-comsol-study-studies" title="Link to this heading">¶</a></h2>
+<p>Generating the <code class="docutils literal notranslate"><span class="pre">waveform.csv</span></code> file is done with <code class="xref py py-mod docutils literal notranslate"><span class="pre">waveform</span></code>.
+The main class is called <a class="reference internal" href="../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform" title="toolbox.waveform.CreateWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">toolbox.waveform.CreateWaveform</span></code></a> and constructs the waveform from a piecewise description.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CreateWaveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">piecewise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.025</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/waveform.html#CreateWaveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Class to create a voltage waveform and write it to a .csv file.
+This file can be used for BioNet’s xstim and comsol modules.
+To provide the comsol module with a periodic pulse train, it suffices to generate a single period of the pulse train.
+The comsol module will then automatically repeat the waveform for the duration of the simulation.</p>
+<p>Main function when calling CreateVoltageWaveform(). It</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>piecewise</strong> (<em>ndarray</em>) – piecewise description of waveform. Each row defines a piece [t_stop, lambda(t)]. t_start of the piece is 0 or t_stop of the previous piece, the lambda expression defines the function as a function of time t.</p></li>
+<li><p><strong>amplitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – If specified, normalise waveform to [-amplitude, amplitude]. Defaults to None.</p></li>
+<li><p><strong>amplitude</strong> – If specified, normalise waveform to [-amplitude, amplitude]. Defaults to None.</p></li>
+<li><p><strong>dt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><em>float</em></a><em>, </em><em>optional</em>) – timestep in ms, defaults to 0.025</p></li>
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em> or </em><em>None</em><em>, </em><em>optional</em>) – if not None, path to the file where the waveform values are saved. Defaults to None.</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if true, the waveform shape is plotted. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p>There is an additional function <a class="reference internal" href="../_autosummary/toolbox.waveform.CreateBlockWaveform.html#toolbox.waveform.CreateBlockWaveform" title="toolbox.waveform.CreateBlockWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">toolbox.waveform.CreateBlockWaveform</span></code></a> that can be used to more easily construct a waveform consisting of rectangular pulses.</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">CreateBlockWaveform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_pulses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_1_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_1_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_1_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_2_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_2_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_2_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/waveform.html#CreateBlockWaveform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Creates a block waveform using the CreateWaveform class. Except for n_pulses, all arguments should be lambda expressions of n (units: ms).
+Example:: Constant phase_1 (0.1ms): phase_1_expr = lambda n:0.1
+Example:: For phase_1 that starts at 0.1 ms and gets 0.01 ms longer after each pulse: phase_1_expr = lambda n:0.1+n/10</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_pulses</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><em>int</em></a>) – number of pulses that the waveform will be made up of</p></li>
+<li><p><strong>phase_1_expr</strong> (<em>lambda</em>) – duration of first phase of pulse in ms</p></li>
+<li><p><strong>phase_1_expr</strong> – duration of first phase of pulse in ms</p></li>
+<li><p><strong>amp_1_expr</strong> (<em>lambda</em>) – amplitude of first phase of pulse in µA</p></li>
+<li><p><strong>T_1_expr</strong> (<em>lambda</em>) – time between end of first phase and start of second phase in ms</p></li>
+<li><p><strong>phase_2_expr</strong> (<em>lambda</em>) – duration of second phase of pulse in ms</p></li>
+<li><p><strong>amp_2_expr</strong> (<em>lambda</em>) – amplitude of second phase of pulse in µA</p></li>
+<li><p><strong>T_2_expr</strong> (<em>lambda</em>) – time between end of one pulse and start of next pulse in ms</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A piecewise description of the waveform that can be passed to CreateVoltageWaveform(). (2 x 4*n_pulses) array whose rows look like [t_stop, lambda].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Running <code class="xref py py-mod docutils literal notranslate"><span class="pre">waveform</span></code> will execute the lines below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    If you run the file itself instead of calling if from another file, this part will run.</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="running-a-simulation">
+<h2>Running a simulation<a class="headerlink" href="#running-a-simulation" title="Link to this heading">¶</a></h2>
+<p>Once you have built one or several networks, you can run simulations
+with the previously built network(s). This also requires extracellular
+potentials that were calculated in COMSOL.
+Depending on the stimulation parameters, the COMSOL output should be
+either stationary or time-dependent.</p>
+<p>Depending on the type of COMSOL study/studies you chose, configuring the
+comsol input for BMTK in the config.json file, will look slightly
+different.</p>
+<section id="one-time-dependent-study">
+<h3>One time-dependent study<a class="headerlink" href="#one-time-dependent-study" title="Link to this heading">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;comsol&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;comsol_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/comsol.txt&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;amplitudes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="one-stationary-study">
+<h3>One stationary study<a class="headerlink" href="#one-stationary-study" title="Link to this heading">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;comsol&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;comsol_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/comsol.txt&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;waveforms&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/waveform.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;amplitudes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="multiple-stationary-studies">
+<h3>Multiple stationary studies<a class="headerlink" href="#multiple-stationary-studies" title="Link to this heading">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;comsol&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;comsol_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;$STIM_DIR/comsol_1.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/comsol_2.txt&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;waveforms&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;$STIM_DIR/waveform_1.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/waveform_2.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;amplitudes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>You should probably never change the first three arguments:</p>
+<ul class="simple">
+<li><p>input_type: Has to be “lfp”.</p></li>
+<li><p>node_set: Used to filter which cells receive the input, but here it probably does not make sense to use anything besides “all”.</p></li>
+<li><p>module: Has to be “comsol”.</p></li>
+</ul>
+<p>You should probably change the other arguments:</p>
+<ul class="simple">
+<li><p>comsol_files</p>
+<ul>
+<li><p>One study: (path) “/path/to/comsol.txt”</p></li>
+<li><p>Multiple stationary studies: (list) List of paths.</p></li>
+</ul>
+</li>
+<li><p>waveforms</p>
+<ul>
+<li><p>One time dependent study: Remove <code class="docutils literal notranslate"><span class="pre">&quot;waveforms&quot;:</span> <span class="pre">...</span></code> line from config.json.</p></li>
+<li><p>One stationary study: (path) “/path/to/waveform.csv”.</p></li>
+<li><p>Multiple stationary studies: (list) List of paths to the different waveform.csv files.</p></li>
+</ul>
+</li>
+<li><p>amplitudes: Scaling factor for waveform.</p>
+<ul>
+<li><p>E.g. if the amplitudes in waveform.csv are normalised to [-1;1], this can be used to set the current amplitude. Defaults to 1.</p></li>
+<li><p>One study: (float)</p></li>
+<li><p>Multiple studies: (list or float) List of waveform amplitudes. Float can be used if all amplitudes are identical.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_autosummary/toolbox.html" class="btn btn-neutral float-right" title="toolbox" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

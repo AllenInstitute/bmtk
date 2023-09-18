@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<p>Start by downloading any release from the <a class="reference external" href="https://www.ks.uiuc.edu/Research/vnd/vnd-1.9.4/files/alpha/">VND download page</a>. The instructions below are based on the <a class="reference external" href="https://www.ks.uiuc.edu/Research/vnd/current/ig-alt.html">original VND installation guide</a>.</p>
+<p>Use whatever vnd-[…].tar.gz version you downloaded instead of “vnd-1.9.4a53p7b.LINUXAMD64.opengl.tar.gz”.</p>
+<p>You can use any location you have read/write access to. This guide uses $VSC_DATA (e.g. /data/leuven/338/vsc33895) as an example.</p>
+<p>Type what is after $ in your terminal prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mkdir $VSC_DATA/vnd
+$ cd $VSC_DATA/vnd
+$ mkdir lib
+$ mkdir bin
+$ mkdir ../my-temp
+$ cd ../my-temp
+$ mkdir vnd-installer
+$ cd vnd-installer
+$ mv ~/Downloads/vnd-1.9.4a53p7b.LINUXAMD64.opengl.tar.gz $VSC_DATA/my-temp/vnd-installer
+$ cd $VSC_DATA/my-temp/vnd-installer
+$ gunzip vnd-1.9.4a53p7b.LINUXAMD64.opengl.tar.gz
+$ tar xvf vnd-1.9.4a53p7b.LINUXAMD64.opengl.tar
+$ cd vnd-1.9.4a53
+</pre></div>
+</div>
+<p>Edit the following two lines (use the full path instead of $VSC_DATA) in ./configure in the terminal with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">vi</span> <span class="pre">configure</span></code> or use any text editor:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">install_bin_dir</span><span class="o">=</span><span class="s2">&quot;/data/leuven/338/vsc33895/vnd/bin&quot;</span><span class="p">;</span>
+
+<span class="n">install_library_dir</span><span class="o">=</span><span class="s2">&quot;/data/leuven/338/vsc33895/vnd/lib/$install_name&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Check you are still in $VSC_DATA/my-temp/vnd-installer/vnd-1.9.4a53 with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pwd</span></code>, then continue the installation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./configure
+$ cd src
+$ make install
+</pre></div>
+</div>
+<p>Optionally, you can add the binary directory ($VSC_DATA/vnd/bin) to your PATH variable.
+A bash user might instead add this line to ~/.bashrc:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s2">&quot;$</span><span class="si">{VSC_DATA}</span><span class="s2">/vnd/bin:$PATH&quot;</span>
+</pre></div>
+</div>
+<p>In a new terminal window, type <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">which</span> <span class="pre">vnd</span></code> to check where vnd is installed or type <code class="docutils literal notranslate"><span class="pre">vnd</span></code> ro run VND.</p>
+<p>If the last step doesn’t seem to work, a possible workaround installation is to explicitly point to the binary directory first:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ $VSC_DATA/vnd/bin/vnd
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

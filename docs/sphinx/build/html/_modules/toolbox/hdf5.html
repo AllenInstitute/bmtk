@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.hdf5 &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">toolbox.hdf5</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for toolbox.hdf5</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<div class="viewcode-block" id="HDF5">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5">[docs]</a>
+<span class="k">class</span> <span class="nc">HDF5</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to extract data from .h5 files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">v1</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read .h5 file and call main functions.</span>
+
+<span class="sd">        :param dir: path to .h5 file.</span>
+<span class="sd">        :type dir: path</span>
+<span class="sd">        :param v1: set to True if nodes.h5 represents V1 column, defaults to False.</span>
+<span class="sd">        :type v1: bool, optional</span>
+<span class="sd">        :param plot: if True, show plot of node positions. defaults to False.</span>
+<span class="sd">        :type plot: bool, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="nb">dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="n">v1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rotations</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">rot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_positions</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span>
+        
+<div class="viewcode-block" id="HDF5.get_positions">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5.get_positions">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node positions.</span>
+
+<span class="sd">        :param v1: if True, interpret nodes.h5 as V1 column. defaults to False.</span>
+<span class="sd">        :type v1: bool, optional</span>
+<span class="sd">        :return: node positions</span>
+<span class="sd">        :rtype: ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">][:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">][:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">][:])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;positions&#39;</span><span class="p">][:,:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[:,:]</span></div>
+
+
+<div class="viewcode-block" id="HDF5.get_rotations">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5.get_rotations">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_rotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get node rotations.</span>
+
+<span class="sd">        :return: node rotations</span>
+<span class="sd">        :rtype: ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Initialise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_rot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y_rot</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_rot</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">### If rotation angles exist, set as attributes</span>
+        <span class="k">if</span> <span class="s1">&#39;rotation_angle_xaxis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_angle_xaxis&#39;</span><span class="p">][:]</span>
+        <span class="k">if</span> <span class="s1">&#39;rotation_angle_yaxis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">][:]</span>
+        <span class="k">if</span> <span class="s1">&#39;rotation_angle_zaxis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z_rot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;rotation_angle_zaxis&#39;</span><span class="p">][:]</span>
+        
+        <span class="c1">### Create dictionary of present rotation angles {&#39;axis_rot&#39;:self.axis_rot}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;x_rot&#39;</span><span class="p">,</span> <span class="s1">&#39;y_rot&#39;</span><span class="p">,</span> <span class="s1">&#39;z_rot&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">a</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span></div>
+
+
+<div class="viewcode-block" id="HDF5.plot_positions">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5.plot_positions">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot node positions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Create 1x2 subplot    </span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span><span class="s1">&#39;3d&#39;</span><span class="p">})</span>
+        
+        <span class="c1">### Plot first perspective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;YZ&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1">### Plot second perspective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;XY&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="n">elev</span><span class="o">=</span><span class="mf">90.</span><span class="p">,</span> <span class="n">azim</span><span class="o">=</span><span class="mi">270</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="HDF5.subplot">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5.subplot">[docs]</a>
+    <span class="k">def</span> <span class="nf">subplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function for plot_position()</span>
+
+<span class="sd">        :param ax: matplotlib axes object.</span>
+<span class="sd">        :type ax: matplotlib.axes object</span>
+<span class="sd">        :param title: subplot title.</span>
+<span class="sd">        :type title: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Set attributes</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HDF5.convert_pos_to_v1">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.HDF5.html#toolbox.hdf5.HDF5.convert_pos_to_v1">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert_pos_to_v1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert &#39;positions&#39; dataset into three datasets &#39;x&#39;, &#39;y&#39;, &#39;z&#39; in nodes/name/0 for use in VND.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### If nodes are already in v1 format, do nothing</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="c1">### Else, try creating new datasets &#39;x&#39;, &#39;y&#39;, &#39;z&#39; or overwrite if they already exist</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;/0/x&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;/0/y&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;/0/z&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_pos</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;y&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_pos</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;0&#39;</span><span class="p">][</span><span class="s1">&#39;z&#39;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+        <span class="k">return</span></div>
+</div>
+
+    
+
+<div class="viewcode-block" id="SpikeScaler">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.SpikeScaler.html#toolbox.hdf5.SpikeScaler">[docs]</a>
+<span class="k">class</span> <span class="nc">SpikeScaler</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale spike timings for use in VND.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read .h5 file and call main function.</span>
+
+<span class="sd">        :param path: Path to .h5 file.</span>
+<span class="sd">        :type path: path</span>
+<span class="sd">        :param scale: Scale factor for the spike timings. The time axis is multiplied by this scale factor.</span>
+<span class="sd">        :type scale: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Set attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/../../../&#39;</span> <span class="o">+</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;/spikes_scaled.h5&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale_spike_timings</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SpikeScaler.scale_spike_timings">
+<a class="viewcode-back" href="../../_autosummary/toolbox.hdf5.SpikeScaler.html#toolbox.hdf5.SpikeScaler.scale_spike_timings">[docs]</a>
+    <span class="k">def</span> <span class="nf">scale_spike_timings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Copies the original spikes.h5 and changes the time scale in the copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Copy original file into scaled file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orig_file</span><span class="p">[</span><span class="s1">&#39;spikes&#39;</span><span class="p">],</span> <span class="s1">&#39;spikes&#39;</span><span class="p">)</span>
+        
+        <span class="c1">### Scale timestamps </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="p">[</span><span class="s1">&#39;spikes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="p">[</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">][:]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="p">[</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">timestamps</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="p">[</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">timestamps</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_file</span><span class="p">[</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="p">[</span><span class="s1">&#39;spikes/&#39;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s1">&#39;/timestamps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+
+        <span class="c1">### Close both files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaled_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        
+        <span class="k">return</span></div>
+</div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))))</span>
+    <span class="n">hf</span> <span class="o">=</span> <span class="n">HDF5</span><span class="p">(</span><span class="n">root</span> <span class="o">+</span> <span class="s1">&#39;/examples/comsol/network/column_nodes.h5&#39;</span><span class="p">)</span>
+    <span class="n">hf</span><span class="o">.</span><span class="n">convert_pos_to_v1</span><span class="p">()</span>
+
+    <span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeScaler</span><span class="p">(</span><span class="s1">&#39;/examples/comsol/outputs/output_stat/spikes.h5&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

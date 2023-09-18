@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.plotter_helper &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">toolbox.plotter_helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for toolbox.plotter_helper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">gaussian_filter</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">file_helper</span> <span class="kn">import</span> <span class="n">format_params</span><span class="p">,</span> <span class="n">get_dirs</span>
+<span class="kn">from</span> <span class="nn">spikes_helper</span> <span class="kn">import</span> <span class="n">get_grid</span><span class="p">,</span> <span class="n">get_spikes</span><span class="p">,</span> <span class="n">get_centroid_cov</span>
+
+<div class="viewcode-block" id="SubPlotter">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter">[docs]</a>
+<span class="k">class</span> <span class="nc">SubPlotter</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The SubPlotter class can be used together with the Plotter class to modify individual subplots. </span>
+<span class="sd">    In most cases, it is probably easier to use Plotter&#39;s plot_all(), which automatically calls this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">mice</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">centroid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">electrodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set attributes and call main functions</span>
+
+<span class="sd">        :param ax: (maplotlib Axes object) Axes of the subplot.</span>
+<span class="sd">        :param exp: (int/str) Experiment name.</span>
+<span class="sd">        :param patterns: (int/str or list thereof) Pattern names. </span>
+<span class="sd">        :param amplitudes: (int/str or list thereof) Amplitudes in uA. </span>
+<span class="sd">        :param mice: (int/str or list thereof) Mouse names. </span>
+<span class="sd">        :param depth: (tuple or list with 2 elements) If not None, only include spikes of neurons that are in the layer between depth[0] and depth[1]. Defaults to None</span>
+<span class="sd">        :param sigma: (int) Standard deviation of the Gaussian smoother. Defaults to 10.</span>
+<span class="sd">        :param centroid: (bool) If True, plot centroid. Defaults to True.</span>
+<span class="sd">        :param electrodes: (bool) If True, plot electrodes. Defaults to True.</span>
+<span class="sd">        :param ticks: (bool) If True, set ticks to default value. Defaults to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="c1">### Setting attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">mice</span> <span class="o">=</span> <span class="n">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">mice</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp</span> <span class="o">=</span> <span class="n">exp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="n">amplitude</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mice</span> <span class="o">=</span> <span class="n">mice</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+
+        <span class="c1">### Main functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_dirs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_image</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_image</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">centroid</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_centroid</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">electrodes</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_electrodes</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ticks</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SubPlotter.set_dirs">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.set_dirs">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set directories as class attributes&quot;&quot;&quot;</span> 
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">get_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mice</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="SubPlotter.get_image">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.get_image">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an intensity map of neural activity based on the number of spikes.</span>
+<span class="sd">        Spikes are binned into 1 um^2 pixels and smoothed with a Gaussian filter.</span>
+<span class="sd">        The area of the square plot outside of the neural column is set to NaN.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Initalisation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
+        <span class="c1">### Get the node positions and corresponding spike count of each neuron</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_spikes</span> <span class="o">=</span> <span class="n">get_spikes</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+        <span class="c1">### Get grid based on spikes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+        <span class="c1">### Gaussian smoothing of the grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">gaussian_filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span> <span class="n">truncate</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes_dirs</span><span class="p">)</span>
+
+        <span class="c1">### Set colour outside circle to NaN</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mf">.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mf">.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;NaN&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="SubPlotter.plot_image">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.plot_image">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the intensity map of neural activity created by get_image().</span>
+<span class="sd">        The intensities are converted to an image with a green color map.</span>
+<span class="sd">        Inactive background is set to black and the NaN values are set to white.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="c1">### Generate green color map with black background that also maps masked valued to white </span>
+        <span class="n">cdict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;red&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;green&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span>  <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span>  <span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">0.4</span><span class="p">,</span>  <span class="mf">0.66</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span>  <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>   
+                <span class="p">(</span><span class="mf">0.8</span><span class="p">,</span>  <span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>  <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;blue&#39;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+                <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>  <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">LinearSegmentedColormap</span><span class="p">(</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">cdict</span><span class="p">)</span>
+        <span class="n">cmap</span><span class="o">.</span><span class="n">set_bad</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+        <span class="c1">### Create image mask from NaN values (outside circle) and plot the resulting masked image</span>
+        <span class="n">masked_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">masked_array</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">],</span> <span class="n">origin</span> <span class="o">=</span> <span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="SubPlotter.plot_electrodes">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.plot_electrodes">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_electrodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the electrode locations as specified in pattern.csv.</span>
+<span class="sd">        Electrodes with positive and negative amplitudes are plotted in a different colour.</span>
+
+<span class="sd">        :param \**kwargs: Passed to ax.scatter().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1">### Get electrode names from pattern.csv</span>
+        <span class="n">pattern_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pattern_dir</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">)</span>
+        <span class="n">electrode_names</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="s1">&#39;electrode&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="c1">### Get electrode positions from electrodes.csv</span>
+        <span class="n">electrodes_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrodes_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">electrodes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">electrodes_dir</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">)</span>
+        <span class="n">electrodes</span> <span class="o">=</span> <span class="n">electrodes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">electrodes</span><span class="p">[</span><span class="s1">&#39;electrode&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">electrode_names</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">electrode_pos</span> <span class="o">=</span> <span class="n">electrodes</span><span class="p">[[</span><span class="s1">&#39;pos_x&#39;</span><span class="p">,</span><span class="s1">&#39;pos_y&#39;</span><span class="p">,</span><span class="s1">&#39;pos_z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+        <span class="c1">### Get amplitudes from pattern.csv</span>
+        <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="n">elec_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrode_pos</span><span class="p">[</span><span class="n">amplitudes</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">elec_neg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrode_pos</span><span class="p">[</span><span class="n">amplitudes</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+        <span class="c1">### Plotting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">elec_pos</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">elec_pos</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;stimulating</span><span class="se">\n</span><span class="s1">electrode&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">elec_neg</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">elec_neg</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;return</span><span class="se">\n</span><span class="s1">electrode&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="SubPlotter.plot_centroid">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.plot_centroid">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the centroid location and plot it. </span>
+<span class="sd">        </span>
+<span class="sd">        :param \**kwargs: Passed to ax.scatter().</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="c1">### Get centroid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="n">get_centroid_cov</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">)</span>
+
+        <span class="c1">### Plotting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lime&#39;</span><span class="p">,</span> <span class="n">edgecolors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;centroid&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span>    </div>
+
+    
+
+<div class="viewcode-block" id="SubPlotter.show_ratio">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.show_ratio">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show the ratio between the centroid-to-electrode distances.</span>
+<span class="sd">        Only makes sense in cases where two electrodes stimulate with opposite polarity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>    
+        <span class="c1">### Show centroid-to-electrode distance ratio |centroid-&gt;electrode0|/(|centroid-&gt;electrode0| + |centroid-&gt;electrode1|)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">electrode_pos</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">electrode_pos</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">c</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">c</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">c</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="o">-</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;centroid ratio = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span><span class="mi">2</span><span class="p">)))</span>
+
+        <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="SubPlotter.set_ticks">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.SubPlotter.html#toolbox.plotter_helper.SubPlotter.set_ticks">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_ticks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xticks</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">182</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">182</span><span class="p">],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">182</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">182</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set axes ticks. Defaults to the 3x3 electrode grid locations</span>
+
+<span class="sd">        :param xticks: Passed to ax.set_xticks(). Defaults to [-182,0,182].</span>
+<span class="sd">        :param yticks: Passed to ax.set_yticks(). Defaults to [-182,0,182].</span>
+<span class="sd">        :param \**kwargs: Passed to ax.tick_params().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s1">&#39;inout&#39;</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+</div>
+
+    
+
+<div class="viewcode-block" id="Plotter">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.Plotter.html#toolbox.plotter_helper.Plotter">[docs]</a>
+<span class="k">class</span> <span class="nc">Plotter</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main plotter class that creates a figure consisting of a number of subplots.</span>
+<span class="sd">    Each subplot is generated and modified with the SubPlotter class.</span>
+<span class="sd">    However, plot_all() and set_all() can be used to generate or modify all subplots at once.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_rows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_cols</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set attributes and create a fig and axs object for the subplots</span>
+
+<span class="sd">        :param n_rows: (int) Number of rows of the subplot grid. Defaults to 1.</span>
+<span class="sd">        :param n_cols: (int) Number of columns of the subplot grid. Defaults to 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>   
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span> <span class="o">=</span> <span class="n">n_rows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span> <span class="o">=</span> <span class="n">n_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_cols</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">n_cols</span><span class="p">,</span><span class="mi">5</span><span class="o">*</span><span class="n">n_rows</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Plotter.plot_all">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.Plotter.html#toolbox.plotter_helper.Plotter.plot_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">,</span> <span class="n">row_param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">col_param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">centroid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">electrodes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iteratively populate all subplots. For more control over each specific subplot, use SubPlotter explicitly.</span>
+<span class="sd">        All parameters (exp, patterns, amplitudes, mice) can be varied between subplot rows and columns.</span>
+<span class="sd">        When there is only one row/column, row_param/col_param should be None.</span>
+<span class="sd">        If row_param/col_param is not &#39;mice&#39;, the images of all specified mice are combined in all subplots.</span>
+
+<span class="sd">        :Example: Create a 3x2 grid of plots where each plot shows the results of (exp[col], pattern[row], amplitude, mice[:])</span>
+<span class="sd">            ::</span>
+<span class="sd">            </span>
+<span class="sd">                plot = Plotter(n_rows=3, n_cols=2)</span>
+<span class="sd">                plot.plot_all(exp=[1,2], patterns=[0,1,2], amplitudes=20, mice=[0,1,2], row_param=&#39;patterns&#39;, col_param=&#39;exp&#39;)</span>
+
+<span class="sd">        :Example: Create a 1x3 grid of plots where each plot shows the results of (exp, pattern, amplitude, mice[col])</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                plot = Plotter(n_rows=1, n_cols=3)</span>
+<span class="sd">                plot.plot_all(exp=1, patterns=1, amplitudes=10, mice=[0,1,2], row_param=None, col_param=&#39;mice&#39;)</span>
+
+<span class="sd">        :param exp: (int/str) Experiment name.</span>
+<span class="sd">        :param patterns: (int/str or list thereof) Pattern names. </span>
+<span class="sd">        :param amplitudes: (int/str or list thereof) Amplitudes in uA. </span>
+<span class="sd">        :param mice: (int/str or list thereof) Mouse names.</span>
+<span class="sd">        :param row_param: (str or None) If not None, specifies the parameter that is varied between subplot rows. Else, n_rows should be 1. Defaults to None.</span>
+<span class="sd">        :param col_param: (str or None) Idem but for subplot columns.</span>
+<span class="sd">        :param depth: (tuple or list) If not None, only include spikes of neurons that are in the layer between depth[0] and depth[1]. Defaults to None</span>
+<span class="sd">        :param sigma: (int) Standard deviation of the Gaussian smoother. Defaults to 10.</span>
+<span class="sd">        :param centroid: (bool) If True, plot centroid. Defaults to True.</span>
+<span class="sd">        :param electrodes: (bool) If True, plot electrodes. Defaults to True.</span>
+<span class="sd">        :param ticks: (bool) If True, set ticks to default value. Defaults to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span> <span class="o">=</span> <span class="n">format_params</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">mice</span><span class="p">)</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp</span> <span class="o">=</span> <span class="n">exp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span> <span class="o">=</span> <span class="n">patterns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span> <span class="o">=</span> <span class="n">amplitudes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mice</span> <span class="o">=</span> <span class="n">mice</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_param</span><span class="p">)</span> <span class="k">if</span> <span class="n">row_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_param</span><span class="p">)</span> <span class="k">if</span> <span class="n">col_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subplots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_rows</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cols</span>
+
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">row_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">col_value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">row_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_param</span><span class="p">,</span> <span class="n">row_value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">col_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_param</span><span class="p">,</span> <span class="n">col_value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axs</span>
+                <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="o">+</span><span class="n">col</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axs</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">subplots</span><span class="p">[</span><span class="n">row</span><span class="p">,</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">SubPlotter</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patterns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mice</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span> <span class="n">centroid</span><span class="o">=</span><span class="n">centroid</span><span class="p">,</span> <span class="n">electrodes</span><span class="o">=</span><span class="n">electrodes</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">)</span>
+    
+        <span class="k">return</span></div>
+
+    
+
+<div class="viewcode-block" id="Plotter.set_all">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.Plotter.html#toolbox.plotter_helper.Plotter.set_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calls a function from the SubPlotter class for every SubPlotter object.</span>
+<span class="sd">        Example::</span>
+
+<span class="sd">            :param func: (str) Name of the SubPlotter class function.</span>
+<span class="sd">            :param \**kwargs: Passed to SubPlotter.func(\**kwargs)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subplots</span><span class="o">.</span><span class="n">flatten</span><span class="p">())):</span>
+            <span class="n">subplot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subplots</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">subplot</span><span class="p">,</span> <span class="n">func</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                
+        <span class="k">return</span></div>
+
+    
+<div class="viewcode-block" id="Plotter.legend">
+<a class="viewcode-back" href="../../_autosummary/toolbox.plotter_helper.Plotter.html#toolbox.plotter_helper.Plotter.legend">[docs]</a>
+    <span class="k">def</span> <span class="nf">legend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the legend in the figure.</span>
+<span class="sd">        First collects the handles and labels of all elements in any subplot.</span>
+<span class="sd">        Then removes elements with duplicate label. </span>
+<span class="sd">        </span>
+<span class="sd">        :param \**kwargs: Passed to self.fig.legend(\**kwargs)      </span>
+
+<span class="sd">        :Example: Plot</span>
+<span class="sd">            ::</span>
+
+<span class="sd">                fig = Plotter(1,2)</span>
+<span class="sd">                fig.plot_all(0,0,30,[1,2],&#39;patterns&#39;,&#39;mice&#39;, False, False, False)</span>
+<span class="sd">                fig.set_all(func=&#39;set_ticks&#39;)</span>
+<span class="sd">                fig.set_all(func=&#39;plot_centroid&#39;)</span>
+<span class="sd">                fig.set_all(func=&#39;plot_electrodes&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axs</span><span class="p">])</span>
+        <span class="n">handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">handles</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">[:</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">handles</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">i</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;legend.fontsize&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">:</span><span class="mi">30</span><span class="p">})</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.family&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Times New Roman&#39;</span>
+    <span class="n">mfont</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fontname&#39;</span><span class="p">:</span><span class="s1">&#39;Times New Roman&#39;</span><span class="p">}</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">plot_all</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">30</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;patterns&#39;</span><span class="p">,</span><span class="s1">&#39;mice&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="s1">&#39;set_ticks&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="s1">&#39;plot_centroid&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">set_all</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="s1">&#39;plot_electrodes&#39;</span><span class="p">)</span>
+
+    <span class="c1"># fig.legend()</span>
+
+    <span class="c1"># fig = Plotter(2,2)</span>
+    <span class="c1"># test = SubPlotter(fig.axs[0,0], 0, 0, 30, [1,2])</span>
+    <span class="c1"># test = SubPlotter(fig.axs[0,1], 0, 0, 30, 2)</span>
+    <span class="c1"># test = SubPlotter(fig.axs[1,0], 0, 0, 30, 1)</span>
+    <span class="c1"># test = SubPlotter(fig.axs[1,1], 0, 0, 30, [1,2])</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
