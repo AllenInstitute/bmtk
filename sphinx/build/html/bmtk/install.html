@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulating the neural response with BMTK" href="simulation.html" />
+    <link rel="prev" title="BMTK" href="../bmtk.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../bmtk.html">BMTK</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#neuron">NEURON</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#list-of-standard-dependencies">List of standard dependencies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installing-dependencies">Installing dependencies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="simulation.html">Simulating the neural response with BMTK</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../bmtk.html">BMTK</a></li>
+      <li class="breadcrumb-item active">Installation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a class="reference external" href="https://alleninstitute.github.io/bmtk/installation.html">Installation guide</a></p>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<p>BMTK requires Python 2.7 or 3.5+, plus <a class="reference internal" href="#dependencies"><span class="std std-ref">additional python
+dependencies</span></a> (i.e. python packages that are required
+for BMTK to function properly). There are three ways to install BMTK
+with base requirements from a command-line:</p>
+<ul>
+<li><p>Using your favourite python package manager (pip or conda)</p>
+<ul>
+<li><table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pip (Linux)</p></th>
+<th class="head"><p>Conda (Linux)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">bmtk</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">kaeldai</span> <span class="pre">bmtk</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p>Both pip and conda should automatcally download the necessary
+python <a class="reference internal" href="#dependencies"><span class="std std-ref">dependencies</span></a>.</p></li>
+<li><p>However, you will have to download any tutorials, examples,
+documentation… separately from the <a class="reference external" href="https://github.com/AllenInstitute/bmtk">GitHub
+repo</a>.</p></li>
+</ul>
+</li>
+<li><p>Installing from the source</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/AllenInstitute/bmtk.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>bmtk
+$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This method will create a copy of the github repo on your
+computer, giving you access to all tutorials (in docs/tutorials/),
+examples (in examples/), documentation…</p></li>
+<li><p>You will probably need to install python
+<a class="reference internal" href="#dependencies"><span class="std std-ref">dependencies</span></a> manually.</p></li>
+</ul>
+</li>
+<li><p>Some of the tutorials or examples engines may require additional
+requirements to run.</p></li>
+<li><p>Additionally, if you want to take advantage of parallel computing on
+an HPC cluster, you also need the mpi4py python package.</p></li>
+</ul>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<section id="neuron">
+<h3>NEURON<a class="headerlink" href="#neuron" title="Link to this heading">¶</a></h3>
+<p>On Linux, you can treat NEURON like any other package and install it
+with <code class="docutils literal notranslate"><span class="pre">pip3/conda</span> <span class="pre">install</span></code>. On Windows, you need to download an
+installer.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pip (Linux)</p></th>
+<th class="head"><p>Conda (Linux)</p></th>
+<th class="head"><p>Windows</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">neuron</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">neuron</span></code></p></td>
+<td><p><a class="reference external" href="https://nrn.readthedocs.io/en/latest/install/install_instructions.html">Installation guide</a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="list-of-standard-dependencies">
+<h3>List of standard dependencies<a class="headerlink" href="#list-of-standard-dependencies" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>numpy</p></li>
+<li><p>h5py</p></li>
+<li><p>pandas</p></li>
+<li><p>matplotlib</p></li>
+<li><p>jsonschema</p></li>
+<li><p>(pytest: optional for running unit tests)</p></li>
+<li><p>(<strong>mpi4py</strong>: if you want to take advantage of parallel computing on
+an HPC cluster)</p></li>
+</ul>
+</section>
+<section id="installing-dependencies">
+<h3><a class="reference external" href="../background/packages.md">Installing dependencies</a><a class="headerlink" href="#installing-dependencies" title="Link to this heading">¶</a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pip</p></th>
+<th class="head"><p>Conda</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">pip3</span> <span class="pre">in</span> <span class="pre">stall</span> <span class="pre">[package1]</span> <span class="pre">[package2]</span> <span class="pre">...</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">conda</span> <span class="pre">install</span> <span class="pre">[package1]</span> <span class="pre">[package2]</span> <span class="pre">...</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../bmtk.html" class="btn btn-neutral float-left" title="BMTK" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulation.html" class="btn btn-neutral float-right" title="Simulating the neural response with BMTK" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESAT server &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Git" href="git.html" />
+    <link rel="prev" title="VSC" href="vsc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../general.html">General</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="terminal.html">Using the terminal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages.html">Python package management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vsc.html">VSC</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ESAT server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accesing-an-esat-server-through-the-command-line">Accesing an ESAT server through the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#starting-a-vm">Starting a VM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accessing-a-vm">Accessing a VM</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#in-the-browser">In the browser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#with-virt-viewer">With virt-viewer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#closing-a-vm">Closing a VM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="git.html">Git</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../general.html">General</a></li>
+      <li class="breadcrumb-item active">ESAT server</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="esat-server">
+<h1>ESAT server<a class="headerlink" href="#esat-server" title="Link to this heading">¶</a></h1>
+<p>You can access any ESAT server with a Virtual Machine (VM) running
+either Linux or Windows using oVirt. The VM will provide you with a
+graphical interface to work on the ESAT server. You can also access the
+server through the command line of your own computer. In either case,
+make sure you are connected to a KUL network or use the
+<a class="reference external" href="https://admin.kuleuven.be/icts/services/extranet/ssl-vpn-PulseIvanti-client-en">VPN</a>.</p>
+<section id="accesing-an-esat-server-through-the-command-line">
+<h2>Accesing an ESAT server through the command line<a class="headerlink" href="#accesing-an-esat-server-through-the-command-line" title="Link to this heading">¶</a></h2>
+<p>Open a terminal window and type</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ssh -J [r-number]@ssh.esat.kuleuven.be [r-number]@[server].esat.kuleuven.be
+</pre></div>
+</div>
+<p><a class="reference external" href="https://wiki.esat.kuleuven.be/it/StudentServers">List of accessible student
+servers</a></p>
+</section>
+<section id="starting-a-vm">
+<h2>Starting a VM<a class="headerlink" href="#starting-a-vm" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Go to <a class="reference external" href="https://vdi-portal.esat.kuleuven.be/">https://vdi-portal.esat.kuleuven.be/</a> (Or go to
+<a class="reference external" href="https://wiki.esat.kuleuven.be/it/FrontPage">https://wiki.esat.kuleuven.be/it/FrontPage</a> –you will need to log in
+with your ESAT credentials– and click <em>Virtual Desktop Portal</em>).</p></li>
+<li><p>Log in with your ESAT <em>Username</em> and <em>Password</em></p></li>
+<li><p>Click <em>Take a Virtual Machine</em> (Linux: stud-r8-? / Windows:
+stud-w10-?)</p></li>
+<li><p>Refreshing the page after a couple of seconds will allow you to open
+the VM either in the browser or with virt-viewer.</p></li>
+</ol>
+</section>
+<section id="accessing-a-vm">
+<h2>Accessing a VM<a class="headerlink" href="#accessing-a-vm" title="Link to this heading">¶</a></h2>
+<section id="in-the-browser">
+<h3>In the browser<a class="headerlink" href="#in-the-browser" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Click the arrow next to <em>SPICE Console</em>. Select <em>VNC Console
+(Browser)</em> from the drop-down menu. This opens the VM in the same
+tab.</p></li>
+</ol>
+</section>
+<section id="with-virt-viewer">
+<h3>With virt-viewer<a class="headerlink" href="#with-virt-viewer" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>If not already installed, get virt-viewer from
+<a class="reference external" href="https://virt-manager.org/download">https://virt-manager.org/download</a> (Win x64 MSI (gpg) for Windows).</p></li>
+<li><p>In oVirt, click <em>SPICE Console</em>. This will download a tiny file
+called <em>console.vv</em>.</p></li>
+<li><p>Opening <em>console.vv</em> will start a session of the VM in virt-viewer.</p></li>
+<li><p>If you open a terminal on the VM, it will be connected to ESAT’s
+login node. Make sure to switch to a suitable server when running any
+computationally intensive jobs. when you are already connected to any
+ESAT server, you can use a shorter command than described
+<a class="reference internal" href="#accesing-an-esat-server-through-the-command-line"><span class="std std-ref">above</span></a>.
+<code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">ssh</span> <span class="pre">[server]</span></code> <a class="reference external" href="https://wiki.esat.kuleuven.be/it/StudentServers">List of accessible student
+servers</a></p></li>
+</ol>
+</section>
+</section>
+<section id="closing-a-vm">
+<h2>Closing a VM<a class="headerlink" href="#closing-a-vm" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Exiting the session without shutting it down will leave the VM
+running such that you can continue your work the next time you open
+the VM. However, inactive VMs are automatically shut down after 48
+hours (you will receive a reminder after 24 hours via email).</p></li>
+<li><p>You can manually shut down a session by selecting <em>Shutdown</em> from the
+drop-down menu (arrow next to <em>SPICE Console</em>).</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="vsc.html" class="btn btn-neutral float-left" title="VSC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="git.html" class="btn btn-neutral float-right" title="Git" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

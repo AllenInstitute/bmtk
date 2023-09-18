@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.spikes_helper &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">toolbox.spikes_helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for toolbox.spikes_helper</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">hdf5</span> <span class="kn">import</span> <span class="n">HDF5</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="get_spikes">
+<a class="viewcode-back" href="../../_autosummary/toolbox.spikes_helper.get_spikes.html#toolbox.spikes_helper.get_spikes">[docs]</a>
+<span class="k">def</span> <span class="nf">get_spikes</span><span class="p">(</span><span class="n">nodes_dirs</span><span class="p">,</span> <span class="n">spikes_dirs</span><span class="p">,</span> <span class="n">spikes_bkg_dirs</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v1</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get spikes and node positions from network and output files.</span>
+
+<span class="sd">    :param nodes_dirs: directories that point to network/nodes.h5</span>
+<span class="sd">    :type nodes_dirs: path or list thereof</span>
+<span class="sd">    :param spikes_dirs: directories that point to output/spikes.csv</span>
+<span class="sd">    :type spikes_dirs: path or list thereof</span>
+<span class="sd">    :param spikes_bkg_dirs: directories that point to output/bkg/spikes.csv</span>
+<span class="sd">    :type spikes_bkg_dirs: path or list thereof</span>
+<span class="sd">    :param radius: defaults to None.</span>
+<span class="sd">    :type radius: int, optional</span>
+<span class="sd">    :param depth: defaults to None.</span>
+<span class="sd">    :type depth: int, optional</span>
+<span class="sd">    :param v1: defaults to True.</span>
+<span class="sd">    :type v1: bool, optional</span>
+<span class="sd">    :return: node positions</span>
+<span class="sd">    :rtype: ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+        
+    <span class="n">nodes_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes_dirs</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes_dirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">nodes_dirs</span>
+    <span class="n">spikes_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">spikes_dirs</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spikes_dirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">spikes_dirs</span>
+    <span class="n">spikes_bkg_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">spikes_bkg_dirs</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spikes_bkg_dirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">spikes_bkg_dirs</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dirs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_dirs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_bkg_dirs</span><span class="p">)</span>
+
+    <span class="n">node_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">n_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> 
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes_dirs</span><span class="p">)):</span>
+
+        <span class="n">nodes_dir</span> <span class="o">=</span> <span class="n">nodes_dirs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">spikes_dir</span> <span class="o">=</span> <span class="n">spikes_dirs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">spikes_bkg_dir</span> <span class="o">=</span> <span class="n">spikes_bkg_dirs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">node_pos_temp</span> <span class="o">=</span> <span class="n">HDF5</span><span class="p">(</span><span class="n">nodes_dir</span><span class="p">,</span> <span class="n">v1</span><span class="o">=</span><span class="n">v1</span><span class="p">)</span><span class="o">.</span><span class="n">positions</span>
+
+        <span class="n">n_spikes_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">node_pos_temp</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">spikes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">spikes_dir</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">spikes</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">spikes</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="n">n_spikes_temp</span><span class="p">[</span><span class="n">spikes</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">spikes_bkg_dirs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spikes_bkg_dir</span> <span class="o">=</span> <span class="n">spikes_bkg_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spikes_bkg_dirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">spikes_bkg_dirs</span> 
+            <span class="n">spikes_bkg</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">spikes_bkg_dir</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">spikes_bkg</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spikes_bkg</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+                    <span class="n">n_spikes_temp</span><span class="p">[</span><span class="n">spikes_bkg</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_spikes_temp</span><span class="p">[</span><span class="n">spikes_bkg</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">][</span><span class="n">ind</span><span class="p">]]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">node_pos_temp</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">node_pos_temp</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="n">radius</span><span class="o">**</span><span class="mi">2</span>
+            <span class="n">node_pos_temp</span> <span class="o">=</span> <span class="n">node_pos_temp</span><span class="p">[</span><span class="n">circle</span><span class="p">,:]</span>
+            <span class="n">n_spikes_temp</span> <span class="o">=</span> <span class="n">n_spikes_temp</span><span class="p">[</span><span class="n">circle</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_pos_temp</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">depth</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">node_pos_temp</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">depth</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>  
+            <span class="n">node_pos_temp</span> <span class="o">=</span> <span class="n">node_pos_temp</span><span class="p">[</span><span class="n">layer</span><span class="p">,:]</span>
+            <span class="n">n_spikes_temp</span> <span class="o">=</span> <span class="n">n_spikes_temp</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span>
+
+        <span class="n">node_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">node_pos</span><span class="p">,</span> <span class="n">node_pos_temp</span><span class="p">))</span>
+        <span class="n">n_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_spikes</span><span class="p">,</span> <span class="n">n_spikes_temp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">node_pos</span><span class="p">,</span> <span class="n">n_spikes</span></div>
+
+
+<div class="viewcode-block" id="get_grid">
+<a class="viewcode-back" href="../../_autosummary/toolbox.spikes_helper.get_grid.html#toolbox.spikes_helper.get_grid">[docs]</a>
+<span class="k">def</span> <span class="nf">get_grid</span><span class="p">(</span><span class="n">node_pos</span><span class="p">,</span> <span class="n">n_spikes</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get grid from spikes and node positions.</span>
+
+<span class="sd">    :param node_pos: node positions</span>
+<span class="sd">    :type node_pos: np.ndarray</span>
+<span class="sd">    :param n_spikes: number of spikes</span>
+<span class="sd">    :type n_spikes: np.ndarray</span>
+<span class="sd">    :param radius: radius of the cylinder</span>
+<span class="sd">    :type radius: int</span>
+<span class="sd">    :return: grid</span>
+<span class="sd">    :rtype: np.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">radius</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">radius</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">node_pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">grid_el</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">node_pos</span><span class="p">[</span><span class="n">node</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span> <span class="o">+</span> <span class="n">radius</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">grid</span><span class="p">[</span><span class="n">grid_el</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">grid_el</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">n_spikes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">grid</span></div>
+
+
+<div class="viewcode-block" id="get_centroid_cov">
+<a class="viewcode-back" href="../../_autosummary/toolbox.spikes_helper.get_centroid_cov.html#toolbox.spikes_helper.get_centroid_cov">[docs]</a>
+<span class="k">def</span> <span class="nf">get_centroid_cov</span><span class="p">(</span><span class="n">node_pos</span><span class="p">,</span> <span class="n">n_spikes</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get centroid and covariance matrix from spikes and node positions.</span>
+
+<span class="sd">    :param node_pos: node positions</span>
+<span class="sd">    :type node_pos: np.ndarray</span>
+<span class="sd">    :param n_spikes: number of spikes</span>
+<span class="sd">    :type n_spikes: np.ndarray</span>
+<span class="sd">    :return: centroid, covariance matrix</span>
+<span class="sd">    :rtype: np.ndarray, np.ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get centroid and cov matrix from spikes+locations from previous step</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">node_pos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">n_spikes</span><span class="p">)</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">node_pos</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">fweights</span><span class="o">=</span><span class="n">n_spikes</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">cov</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__file__&#39;</span><span class="p">:</span>
+    <span class="kc">None</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

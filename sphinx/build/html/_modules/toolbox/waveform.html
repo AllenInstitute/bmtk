@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.waveform &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bmtk.html">BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/toolbox.html">code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">toolbox.waveform</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for toolbox.waveform</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="c1">### Imports</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<div class="viewcode-block" id="CreateWaveform">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform">[docs]</a>
+<span class="k">class</span> <span class="nc">CreateWaveform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to create a voltage waveform and write it to a .csv file.</span>
+<span class="sd">    This file can be used for BioNet&#39;s xstim and comsol modules.</span>
+<span class="sd">    To provide the comsol module with a periodic pulse train, it suffices to generate a single period of the pulse train.</span>
+<span class="sd">    The comsol module will then automatically repeat the waveform for the duration of the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piecewise</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.025</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Main function when calling CreateVoltageWaveform(). It </span>
+
+<span class="sd">        :param piecewise: piecewise description of waveform. Each row defines a piece [t_stop, lambda(t)]. t_start of the piece is 0 or t_stop of the previous piece, the lambda expression defines the function as a function of time t. </span>
+<span class="sd">        :type piecewise: ndarray</span>
+<span class="sd">        :param amplitude: If specified, normalise waveform to [-amplitude, amplitude]. Defaults to None.</span>
+<span class="sd">        :type amplitude: int or None, optional</span>
+<span class="sd">        :param amplitude: If specified, normalise waveform to [-amplitude, amplitude]. Defaults to None.</span>
+<span class="sd">        :type amplitude: int or None, optional</span>
+<span class="sd">        :param dt: timestep in ms, defaults to 0.025</span>
+<span class="sd">        :type dt: float, optional</span>
+<span class="sd">        :param path: if not None, path to the file where the waveform values are saved. Defaults to None.</span>
+<span class="sd">        :type path: str or None, optional</span>
+<span class="sd">        :param plot: if true, the waveform shape is plotted. Defaults to False.</span>
+<span class="sd">        :type plot: bool, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    	
+        <span class="bp">self</span><span class="o">.</span><span class="n">piecewise</span> <span class="o">=</span> <span class="n">piecewise</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="o">=</span> <span class="n">plot</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_waveform</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_to_csv</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_waveform</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="CreateWaveform.create_waveform">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform.create_waveform">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Stores list of timepoints in self.times and calculates corresponding amplitudes, storing them in self.amplitudes. &quot;&quot;&quot;</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">piecewise</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">piece</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_stop</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CreateWaveform.normalise">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform.normalise">[docs]</a>
+    <span class="k">def</span> <span class="nf">normalise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Scale the waveform such that the absolute value of the largest peak is equal to self.max &quot;&quot;&quot;</span>          
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="o">=</span> <span class="nb">max</span> <span class="k">if</span> <span class="nb">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">max</span></div>
+
+
+<div class="viewcode-block" id="CreateWaveform.write_to_csv">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform.write_to_csv">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Write self.times and self.amplitudes to the .csv specified in self.path. &quot;&quot;&quot;</span>             
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="c1">#assert os.path.exists(os.path.dirname(self.path))</span>
+        
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">})</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="CreateWaveform.plot_waveform">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateWaveform.html#toolbox.waveform.CreateWaveform.plot_waveform">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_waveform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Plot the waveform stored in self.times and self.amplitudes. &quot;&quot;&quot;</span>             
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">times</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitudes</span><span class="p">))</span> <span class="c1"># Have the line start in (0,0) for visualisation purposes</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time [ms]&#39;</span><span class="p">)</span>                         
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;amplitude [µA]&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">return</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CreateBlockWaveform">
+<a class="viewcode-back" href="../../_autosummary/toolbox.waveform.CreateBlockWaveform.html#toolbox.waveform.CreateBlockWaveform">[docs]</a>
+<span class="k">def</span> <span class="nf">CreateBlockWaveform</span><span class="p">(</span><span class="n">n_pulses</span><span class="p">,</span> <span class="n">phase_1_expr</span><span class="p">,</span> <span class="n">amp_1_expr</span><span class="p">,</span> <span class="n">T_1_expr</span><span class="p">,</span> <span class="n">phase_2_expr</span><span class="p">,</span> <span class="n">amp_2_expr</span><span class="p">,</span> <span class="n">T_2_expr</span><span class="p">,</span> <span class="n">save_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a block waveform using the CreateWaveform class. Except for n_pulses, all arguments should be lambda expressions of n (units: ms).</span>
+<span class="sd">    Example:: Constant phase_1 (0.1ms): phase_1_expr = lambda n:0.1</span>
+<span class="sd">    Example:: For phase_1 that starts at 0.1 ms and gets 0.01 ms longer after each pulse: phase_1_expr = lambda n:0.1+n/10</span>
+
+<span class="sd">    :param n_pulses: number of pulses that the waveform will be made up of </span>
+<span class="sd">    :type n_pulses: int</span>
+<span class="sd">    :param phase_1_expr: duration of first phase of pulse in ms</span>
+<span class="sd">    :param phase_1_expr: duration of first phase of pulse in ms</span>
+<span class="sd">    :type phase_1_expr: lambda</span>
+<span class="sd">    :param amp_1_expr: amplitude of first phase of pulse in µA</span>
+<span class="sd">    :type amp_1_expr: lambda</span>
+<span class="sd">    :param T_1_expr: time between end of first phase and start of second phase in ms</span>
+<span class="sd">    :type T_1_expr: lambda</span>
+<span class="sd">    :param phase_2_expr: duration of second phase of pulse in ms</span>
+<span class="sd">    :type phase_2_expr: lambda</span>
+<span class="sd">    :param amp_2_expr: amplitude of second phase of pulse in µA</span>
+<span class="sd">    :type amp_2_expr: lambda</span>
+<span class="sd">    :param T_2_expr: time between end of one pulse and start of next pulse in ms</span>
+<span class="sd">    :type T_2_expr: lambda</span>
+<span class="sd">    :return: A piecewise description of the waveform that can be passed to CreateVoltageWaveform(). (2 x 4*n_pulses) array whose rows look like [t_stop, lambda].</span>
+<span class="sd">    :rtype: ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Initialisation</span>
+    <span class="n">piecewise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="o">*</span><span class="n">n_pulses</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">t_start</span> <span class="o">=</span> <span class="mi">0</span> 
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_pulses</span><span class="p">):</span>
+        
+        <span class="c1"># Get pulse parameters for pulse i </span>
+        <span class="n">phase_1</span> <span class="o">=</span> <span class="n">phase_1_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">amp_1</span> <span class="o">=</span>  <span class="n">amp_1_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">T_1</span> <span class="o">=</span>  <span class="n">T_1_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">phase_2</span> <span class="o">=</span> <span class="n">phase_2_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">amp_2</span> <span class="o">=</span> <span class="n">amp_2_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">T_2</span> <span class="o">=</span> <span class="n">T_2_expr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># Construct piecewise definition of pulse i</span>
+        <span class="n">piecewise_temp1</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_start</span><span class="o">+</span><span class="n">phase_1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">amp_1</span><span class="o">=</span><span class="n">amp_1</span><span class="p">:</span><span class="n">amp_1</span><span class="p">]</span>
+        <span class="n">piecewise_temp2</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_start</span><span class="o">+</span><span class="n">phase_1</span><span class="o">+</span><span class="n">T_1</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">piecewise_temp3</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_start</span><span class="o">+</span><span class="n">phase_1</span><span class="o">+</span><span class="n">T_1</span><span class="o">+</span><span class="n">phase_2</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">amp_2</span><span class="o">=</span><span class="n">amp_2</span><span class="p">:</span><span class="n">amp_2</span><span class="p">]</span>
+        <span class="n">piecewise_temp4</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_start</span><span class="o">+</span><span class="n">phase_1</span><span class="o">+</span><span class="n">T_1</span><span class="o">+</span><span class="n">phase_2</span><span class="o">+</span><span class="n">T_2</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">piecewise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">piecewise</span><span class="p">,</span> <span class="n">piecewise_temp1</span><span class="p">,</span> <span class="n">piecewise_temp2</span><span class="p">,</span> <span class="n">piecewise_temp3</span><span class="p">,</span> <span class="n">piecewise_temp4</span><span class="p">))</span>  <span class="c1"># Add pulse i</span>
+        
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">t_start</span><span class="o">+</span><span class="n">phase_1</span><span class="o">+</span><span class="n">T_1</span><span class="o">+</span><span class="n">phase_2</span><span class="o">+</span><span class="n">T_2</span>   <span class="c1"># Update t_start</span>
+
+    <span class="c1"># Construct path and pass piecewise to CreateWaveform() </span>
+    <span class="n">dir_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>                                  <span class="c1"># Directory of this file: waveform.py           </span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">dir_path</span> <span class="o">+</span> <span class="n">save_name</span> <span class="k">if</span> <span class="n">save_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>      <span class="c1"># Save .csv file in /.../stimulations/</span>
+    <span class="n">CreateWaveform</span><span class="p">(</span><span class="n">piecewise</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">piecewise</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    If you run the file voltage_waveform.py instead of calling if from another file, this part will run.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">CreateBlockWaveform</span><span class="p">(</span>
+        <span class="n">n_pulses</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">phase_1_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">amp_1_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">T_1_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">phase_2_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">amp_2_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">T_2_expr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">save_name</span> <span class="o">=</span> <span class="s2">&quot;/stimulation/waveforms/waveform.csv&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

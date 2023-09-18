@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.hdf5.HDF5 &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="toolbox.hdf5.SpikeScaler" href="toolbox.hdf5.SpikeScaler.html" />
+    <link rel="prev" title="toolbox.hdf5" href="toolbox.hdf5.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">BMTK</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="toolbox.html">code</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="toolbox.animate.html">toolbox.animate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.file_helper.html">toolbox.file_helper</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="toolbox.hdf5.html">toolbox.hdf5</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">toolbox.hdf5.HDF5</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toolbox.hdf5.HDF5"><code class="docutils literal notranslate"><span class="pre">HDF5</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="toolbox.hdf5.SpikeScaler.html">toolbox.hdf5.SpikeScaler</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.plotter.html">toolbox.plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.plotter_helper.html">toolbox.plotter_helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.spikes_helper.html">toolbox.spikes_helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.statistics.html">toolbox.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.waveform.html">toolbox.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="toolbox.html">toolbox</a></li>
+          <li class="breadcrumb-item"><a href="toolbox.hdf5.html">toolbox.hdf5</a></li>
+      <li class="breadcrumb-item active">toolbox.hdf5.HDF5</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="toolbox-hdf5-hdf5">
+<h1>toolbox.hdf5.HDF5<a class="headerlink" href="#toolbox-hdf5-hdf5" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HDF5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Helper class to extract data from .h5 files.</p>
+<p>Read .h5 file and call main functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dir</strong> (<em>path</em>) – path to .h5 file.</p></li>
+<li><p><strong>v1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – set to True if nodes.h5 represents V1 column, defaults to False.</p></li>
+<li><p><strong>plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, show plot of node positions. defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.hdf5.HDF5.convert_pos_to_v1" title="toolbox.hdf5.HDF5.convert_pos_to_v1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_pos_to_v1</span></code></a></p></td>
+<td><p>Convert 'positions' dataset into three datasets 'x', 'y', 'z' in nodes/name/0 for use in VND.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.hdf5.HDF5.get_positions" title="toolbox.hdf5.HDF5.get_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_positions</span></code></a></p></td>
+<td><p>Get node positions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.hdf5.HDF5.get_rotations" title="toolbox.hdf5.HDF5.get_rotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rotations</span></code></a></p></td>
+<td><p>Get node rotations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.hdf5.HDF5.plot_positions" title="toolbox.hdf5.HDF5.plot_positions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_positions</span></code></a></p></td>
+<td><p>Plot node positions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.hdf5.HDF5.subplot" title="toolbox.hdf5.HDF5.subplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subplot</span></code></a></p></td>
+<td><p>Helper function for plot_position()</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5.convert_pos_to_v1">
+<span class="sig-name descname"><span class="pre">convert_pos_to_v1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5.convert_pos_to_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5.convert_pos_to_v1" title="Link to this definition">¶</a></dt>
+<dd><p>Convert ‘positions’ dataset into three datasets ‘x’, ‘y’, ‘z’ in nodes/name/0 for use in VND.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5.get_positions">
+<span class="sig-name descname"><span class="pre">get_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5.get_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5.get_positions" title="Link to this definition">¶</a></dt>
+<dd><p>Get node positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><em>bool</em></a><em>, </em><em>optional</em>) – if True, interpret nodes.h5 as V1 column. defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>node positions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5.get_rotations">
+<span class="sig-name descname"><span class="pre">get_rotations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5.get_rotations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5.get_rotations" title="Link to this definition">¶</a></dt>
+<dd><p>Get node rotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>node rotations</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5.plot_positions">
+<span class="sig-name descname"><span class="pre">plot_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5.plot_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5.plot_positions" title="Link to this definition">¶</a></dt>
+<dd><p>Plot node positions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.hdf5.HDF5.subplot">
+<span class="sig-name descname"><span class="pre">subplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/hdf5.html#HDF5.subplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.hdf5.HDF5.subplot" title="Link to this definition">¶</a></dt>
+<dd><p>Helper function for plot_position()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes object</em>) – matplotlib axes object.</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a>) – subplot title.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="toolbox.hdf5.html" class="btn btn-neutral float-left" title="toolbox.hdf5" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="toolbox.hdf5.SpikeScaler.html" class="btn btn-neutral float-right" title="toolbox.hdf5.SpikeScaler" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

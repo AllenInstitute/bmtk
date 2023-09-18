@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>toolbox.animate.Player &mdash; Hybrid Modelling 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/my_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="toolbox.file_helper" href="toolbox.file_helper.html" />
+    <link rel="prev" title="toolbox.animate" href="toolbox.animate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Hybrid Modelling
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../general.html">General</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../comsol.html">COMSOL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">BMTK</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="toolbox.html">code</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="toolbox.animate.html">toolbox.animate</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">toolbox.animate.Player</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#toolbox.animate.Player"><code class="docutils literal notranslate"><span class="pre">Player</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.file_helper.html">toolbox.file_helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.hdf5.html">toolbox.hdf5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.plotter.html">toolbox.plotter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.plotter_helper.html">toolbox.plotter_helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.spikes_helper.html">toolbox.spikes_helper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.statistics.html">toolbox.statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.waveform.html">toolbox.waveform</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../vnd.html">VND</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Hybrid Modelling</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="toolbox.html">toolbox</a></li>
+          <li class="breadcrumb-item"><a href="toolbox.animate.html">toolbox.animate</a></li>
+      <li class="breadcrumb-item active">toolbox.animate.Player</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="toolbox-animate-player">
+<h1>toolbox.animate.Player<a class="headerlink" href="#toolbox-animate-player" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="toolbox.animate.Player">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.125,</span> <span class="pre">0.92)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/toolbox/animate.html#Player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toolbox.animate.Player" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FuncAnimation</span></code></p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backward</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.animate.Player.new_frame_seq" title="toolbox.animate.Player.new_frame_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_frame_seq</span></code></a></p></td>
+<td><p>Return a new sequence of frame information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.animate.Player.new_saved_frame_seq" title="toolbox.animate.Player.new_saved_frame_seq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_saved_frame_seq</span></code></a></p></td>
+<td><p>Return a new sequence of saved/cached frame information.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">onebackward</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">oneforward</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">onestep</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.animate.Player.pause" title="toolbox.animate.Player.pause"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pause</span></code></a></p></td>
+<td><p>Pause the animation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">play</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.animate.Player.resume" title="toolbox.animate.Player.resume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resume</span></code></a></p></td>
+<td><p>Resume the animation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.animate.Player.save" title="toolbox.animate.Player.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a></p></td>
+<td><p>Save the animation as a movie file by drawing every frame.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_pos</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">start</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#toolbox.animate.Player.to_html5_video" title="toolbox.animate.Player.to_html5_video"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_html5_video</span></code></a></p></td>
+<td><p>Convert the animation to an HTML5 <code class="docutils literal notranslate"><span class="pre">&lt;video&gt;</span></code> tag.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#toolbox.animate.Player.to_jshtml" title="toolbox.animate.Player.to_jshtml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_jshtml</span></code></a></p></td>
+<td><p>Generate HTML representation of the animation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_count</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.new_frame_seq">
+<span class="sig-name descname"><span class="pre">new_frame_seq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.new_frame_seq" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new sequence of frame information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.new_saved_frame_seq">
+<span class="sig-name descname"><span class="pre">new_saved_frame_seq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.new_saved_frame_seq" title="Link to this definition">¶</a></dt>
+<dd><p>Return a new sequence of saved/cached frame information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.pause">
+<span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.pause" title="Link to this definition">¶</a></dt>
+<dd><p>Pause the animation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.resume">
+<span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.resume" title="Link to this definition">¶</a></dt>
+<dd><p>Resume the animation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">codec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bitrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_anim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savefig_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.save" title="Link to this definition">¶</a></dt>
+<dd><p>Save the animation as a movie file by drawing every frame.</p>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<dl>
+<dt>filename<span class="classifier">str</span></dt><dd><p>The output filename, e.g., <code class="file docutils literal notranslate"><span class="pre">mymovie.mp4</span></code>.</p>
+</dd>
+<dt>writer<span class="classifier"><cite>MovieWriter</cite> or str, default: <a href="#id1"><span class="problematic" id="id2">:rc:`animation.writer`</span></a></span></dt><dd><p>A <cite>MovieWriter</cite> instance to use or a key that identifies a
+class to use, such as ‘ffmpeg’.</p>
+</dd>
+<dt>fps<span class="classifier">int, optional</span></dt><dd><p>Movie frame rate (per second).  If not set, the frame rate from the
+animation’s frame interval.</p>
+</dd>
+<dt>dpi<span class="classifier">float, default: <a href="#id3"><span class="problematic" id="id4">:rc:`savefig.dpi`</span></a></span></dt><dd><p>Controls the dots per inch for the movie frames.  Together with
+the figure’s size in inches, this controls the size of the movie.</p>
+</dd>
+<dt>codec<span class="classifier">str, default: <a href="#id5"><span class="problematic" id="id6">:rc:`animation.codec`</span></a>.</span></dt><dd><p>The video codec to use.  Not all codecs are supported by a given
+<cite>MovieWriter</cite>.</p>
+</dd>
+<dt>bitrate<span class="classifier">int, default: <a href="#id7"><span class="problematic" id="id8">:rc:`animation.bitrate`</span></a></span></dt><dd><p>The bitrate of the movie, in kilobits per second.  Higher values
+means higher quality movies, but increase the file size.  A value
+of -1 lets the underlying movie encoder select the bitrate.</p>
+</dd>
+<dt>extra_args<span class="classifier">list of str or None, optional</span></dt><dd><p>Extra command-line arguments passed to the underlying movie encoder. These
+arguments are passed last to the encoder, just before the output filename.
+The default, None, means to use <a href="#id9"><span class="problematic" id="id10">:rc:`animation.[name-of-encoder]_args`</span></a> for
+the builtin writers.</p>
+</dd>
+<dt>metadata<span class="classifier">dict[str, str], default: {}</span></dt><dd><p>Dictionary of keys and values for metadata to include in
+the output file. Some keys that may be of use include:
+title, artist, genre, subject, copyright, srcform, comment.</p>
+</dd>
+<dt>extra_anim<span class="classifier">list, default: []</span></dt><dd><p>Additional <cite>Animation</cite> objects that should be included
+in the saved movie file. These need to be from the same
+<cite>.Figure</cite> instance. Also, animation frames will
+just be simply combined, so there should be a 1:1 correspondence
+between the frames from the different animations.</p>
+</dd>
+<dt>savefig_kwargs<span class="classifier">dict, default: {}</span></dt><dd><p>Keyword arguments passed to each <cite>~.Figure.savefig</cite> call used to
+save the individual frames.</p>
+</dd>
+<dt>progress_callback<span class="classifier">function, optional</span></dt><dd><p>A callback function that will be called for every frame to notify
+the saving progress. It must have the signature</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">current_frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">total_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>where <em>current_frame</em> is the current frame number and <em>total_frames</em> is the
+total number of frames to be saved. <em>total_frames</em> is set to None, if the
+total number of frames cannot be determined. Return values may exist but are
+ignored.</p>
+<p>Example code to write the progress to stdout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">progress_callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Saving frame </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<p><em>fps</em>, <em>codec</em>, <em>bitrate</em>, <em>extra_args</em> and <em>metadata</em> are used to
+construct a <cite>.MovieWriter</cite> instance and can only be passed if
+<em>writer</em> is a string.  If they are passed as non-<em>None</em> and <em>writer</em>
+is a <cite>.MovieWriter</cite>, a <cite>RuntimeError</cite> will be raised.</p>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.to_html5_video">
+<span class="sig-name descname"><span class="pre">to_html5_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.to_html5_video" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the animation to an HTML5 <code class="docutils literal notranslate"><span class="pre">&lt;video&gt;</span></code> tag.</p>
+<p>This saves the animation as an h264 video, encoded in base64
+directly into the HTML5 video tag. This respects <a href="#id11"><span class="problematic" id="id12">:rc:`animation.writer`</span></a>
+and <a href="#id13"><span class="problematic" id="id14">:rc:`animation.bitrate`</span></a>. This also makes use of the
+<em>interval</em> to control the speed, and uses the <em>repeat</em>
+parameter to decide whether to loop.</p>
+<section id="id15">
+<h2>Parameters<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>embed_limit<span class="classifier">float, optional</span></dt><dd><p>Limit, in MB, of the returned animation. No animation is created
+if the limit is exceeded.
+Defaults to <a href="#id16"><span class="problematic" id="id17">:rc:`animation.embed_limit`</span></a> = 20.0.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>str</dt><dd><p>An HTML5 video tag with the animation embedded as base64 encoded
+h264 video.
+If the <em>embed_limit</em> is exceeded, this returns the string
+“Video too large to embed.”</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="toolbox.animate.Player.to_jshtml">
+<span class="sig-name descname"><span class="pre">to_jshtml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#toolbox.animate.Player.to_jshtml" title="Link to this definition">¶</a></dt>
+<dd><p>Generate HTML representation of the animation.</p>
+<section id="id18">
+<h2>Parameters<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>fps<span class="classifier">int, optional</span></dt><dd><p>Movie frame rate (per second). If not set, the frame rate from
+the animation’s frame interval.</p>
+</dd>
+</dl>
+<p>embed_frames : bool, optional
+default_mode : str, optional</p>
+<blockquote>
+<div><p>What to do when the animation ends. Must be one of <code class="docutils literal notranslate"><span class="pre">{'loop',</span>
+<span class="pre">'once',</span> <span class="pre">'reflect'}</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">'loop'</span></code> if the <em>repeat</em>
+parameter is True, otherwise <code class="docutils literal notranslate"><span class="pre">'once'</span></code>.</p>
+</div></blockquote>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="toolbox.animate.html" class="btn btn-neutral float-left" title="toolbox.animate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="toolbox.file_helper.html" class="btn btn-neutral float-right" title="toolbox.file_helper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Nils Van Rompaey.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
