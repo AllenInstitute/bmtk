@@ -8,6 +8,18 @@ The network receives input in the form of extracellular potentials defined by a 
 
 Uses the BioNet simulator (requires NEURON).
 
+## Directory structure
+| Directory/file            | Summary                                                                       |
+|:--------------------------|-------------------------------------------------------------------------------|
+| doc/                      | documentation and images                                                      |
+| network/                  | network files                                                                 |
+| bio_comsol.mph            | comsol file that contains the model geometry and setup (but no solutions)     |
+| build_network.py          | used to build the files in *network/*                                         |
+| config.comsol_<type>.json | configuration files                                                           |
+| plot_output.py            | used to generate raster plots and voltage traces from the simulations outputs |
+| run_bionet.py             | used to run a simulation                                                      |
+| waveform.py               | used to generate waveform.csv                                                 |
+
 
 ## Building:
 The network files have already been built and stored as SONATA files in the *network/* directory. The bmtk Builder
@@ -28,7 +40,7 @@ $ python run_bionet.py config.comsol_<type>.json
 Corresponding to the three approaches explained [here](doc/COMSOL.md), there are three example configurations.
 All configurations simulate the same stimulation setup, where two probes, with one electrode each, are inserted into a cylindrical piece of tissue. 
 Biphasic asymmetric pulses are sent from one electrode to the other, i.e. they have opposite polarity.  
-<img src="doc/geometry.png" alt="drawing" height="300" style="horizontal-align:middle;margin:0px 50px"/> <img src="doc/pulse.png" alt="drawing" height="300" style="horizontal-align:middle;margin:0px 50px"/> 
+<img src="doc/probe.png" alt="drawing" height="300"> <img src="doc/geometry.png" alt="drawing" height="300"> <img src="doc/pulse.png" alt="drawing" height="300" > 
 
 
 There are three configuration files:
