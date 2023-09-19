@@ -25,7 +25,7 @@ is built, so expect (slightly) different simulation results everytime the networ
 $ python run_bionet.py config.comsol_<type>.json
 ```
 
-Corresponding to the three approaches explained [here](docs/COMSOL.md), there are three example configurations.
+Corresponding to the three approaches explained [here](doc/COMSOL.md), there are three example configurations.
 All configurations simulate the same stimulation setup, where two probes, with one electrode each, are inserted into a cylindrical piece of tissue. 
 Biphasic asymmetric pulses are sent from one electrode to the other, i.e. they have opposite polarity.  
 <img src="doc/geometry.png" alt="drawing" height="300" style="horizontal-align:middle;margin:0px 50px"/> <img src="doc/pulse.png" alt="drawing" height="300" style="horizontal-align:middle;margin:0px 50px"/> 
