@@ -357,18 +357,24 @@ class Network(object):
         self._connection_maps.append(connection)
         return connection
 
-    def add_gap_junctions(self, source=None, target=None, iterator='one_to_one', resistance=1,
-                          target_sections=['somatic'], connection_rule=1, connection_params=None):
-        """A special function for marking a edge group as gap junctions. Just a wrapper for add_edges"""
+    def add_gap_junctions(self, source=None, target=None, resistance=1., conductance=None,
+                          distance_range=[0.0, 300.0], target_sections=['somatic'],
+                          connection_rule=1, iterator='one_to_one', **edge_type_properties):
+        """A special function for marking a edge group as gap junctions. Just a wrapper for add_edges.
+
+        :param resistance: gap junction resistance (megaohm)
+        :param conductance: gap junction conductance (microsiemens). If specified, resistance is ignored.
+        """
         if target_sections is not None:
             logger.warning(
                 'For gap junctions, the target sections variable is used for both the source and target sections.'
             )
 
+        syn_weight = 1 / resistance if conductance is None else conductance
         return self.add_edges(
-            source=source, target=target, iterator=iterator, distance_range=[0.0, 300.0], syn_weight=resistance,
-            is_gap_junction=True, target_sections=target_sections, connection_rule=connection_rule,
-            connection_params=connection_params
+            source=source, target=target, syn_weight=syn_weight, is_gap_junction=True,
+            distance_range=distance_range, target_sections=target_sections,
+            connection_rule=connection_rule, iterator=iterator, **edge_type_properties
         )
 
     def nodes(self, **properties):
