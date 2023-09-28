@@ -98,8 +98,8 @@ class ComsolMod(SimulatorMod):
             for i in range(self._data.shape[0]):                                 
                 self._data_temp[i,:] = np.interp(timestamps_bmtk, timestamps_comsol, self._data.iloc[i,3:]).flatten()                                                          
             self._data = self._data_temp*self._amplitudes
-            max_time = timestamps_bmtk[-1]    
-            self._period = int(max_time/sim.dt)
+            comsol_duration = timestamps_bmtk[-1]-timestamps_bmtk[0]    
+            self._period = int(comsol_duration/sim.dt)
 
         else: # Else stationary study    
             self._Lip = [None]*self._nb_files
@@ -119,8 +119,8 @@ class ComsolMod(SimulatorMod):
                 r05 = cell.seg_coords.p05                       # Get position of middle of segment
                 for i in range(self._nb_files):                 # For every COMSOL file
                     self._L[i][gid] = self._Lip[i](r05.T)       # Retrieve potentials with interpolate
-
-                
+                    
+    
     def step(self, sim, tstep):
         """Checks if a waveform argument was passed which determines how potentials should be retrieved.
         Iterates over all cells:
@@ -150,16 +150,18 @@ class ComsolMod(SimulatorMod):
             else:       # Else stationary study          
                 v_ext = np.zeros(np.shape(self._L[0][gid]))     # Initialise v_ext as zero array               
                
-                for i in range(self._nb_files):     # Iterate over COMSOL studies                                 
-                    period = self._waveforms[i].definition["time"].iloc[-1]     # Get duration of waveform.csv
-                    simulation_time = (tstep + 1) * sim.dt                      # Calculate current time in simulation run
-                    simulation_time = simulation_time % period                  # Repeat periodic stimulation
+                for i in range(self._nb_files):     # Iterate over COMSOL studies
+                    waveform_duration = self._waveforms[i].definition["time"][-1] - self._waveforms[i].definition["time"][0]                 
+                    period = waveform_duration/sim.dt+1     # Get duration of waveform.csv
+                    tstep = tstep % self._period                  # Repeat periodic stimulation
+                    simulation_time = tstep * sim.dt                      # Calculate current time in simulation run
                     # Add potentials(x,y,z)*waveform(t)*amplitude of this iteration to v_ext
                     v_ext += self._L[i][gid]*self._waveforms[i].calculate(simulation_time)*self._amplitudes[i]
                 v_ext[np.isnan(v_ext)] = 0
             # if tstep == 10 and gid == 10:
             #     print(v_ext)
             cell.set_e_extracellular(h.Vector(v_ext))       # Set extracellular potentials to v_ext 
+
 
     def load_comsol(self, comsol_file):
         """Extracts data and headers from comsol.txt. Returns pandas DataFrame.
