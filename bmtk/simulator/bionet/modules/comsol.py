@@ -151,9 +151,9 @@ class ComsolMod(SimulatorMod):
                 v_ext = np.zeros(np.shape(self._L[0][gid]))     # Initialise v_ext as zero array               
                
                 for i in range(self._nb_files):     # Iterate over COMSOL studies
-                    waveform_duration = self._waveforms[i].definition["time"][-1] - self._waveforms[i].definition["time"][0]                 
+                    waveform_duration = self._waveforms[i].definition["time"].iloc[-1] - self._waveforms[i].definition["time"].iloc[0]                 
                     period = waveform_duration/sim.dt+1     # Get duration of waveform.csv
-                    tstep = tstep % self._period                  # Repeat periodic stimulation
+                    tstep = tstep % period                  # Repeat periodic stimulation
                     simulation_time = tstep * sim.dt                      # Calculate current time in simulation run
                     # Add potentials(x,y,z)*waveform(t)*amplitude of this iteration to v_ext
                     v_ext += self._L[i][gid]*self._waveforms[i].calculate(simulation_time)*self._amplitudes[i]
