@@ -130,7 +130,8 @@ class IClampMod(iclamp.IClampMod):
     def initialize(self, sim):
         # Get select node gids, but only for those nodes that are on the current rank (if running on multiple cores)
         select_gids = list(sim.net.get_node_set(self._node_set).gids())
-        gids_on_rank = list(set(select_gids) & set(select_gids))
+        local_gids = sim.net.get_local_cells()
+        gids_on_rank = list(set(select_gids) & set(local_gids))
 
         for gid in gids_on_rank:
             cell = sim.net.get_cell_gid(gid)
