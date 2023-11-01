@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.signal as spsig
+from numba import njit, prange
+import mpi4py.MPI as MPI
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
 
@@ -76,16 +78,33 @@ class KernelCursor(object):
             return self.cache[ti_offset]
         
         except KeyError:
-            t_inds = self.kernel.t_inds + ti_offset + 1  # Offset by one nhc 14 Apr '17
-            min_ind, max_ind = 0, self.movie.data.shape[0]
-            allowed_inds = np.where(np.logical_and(min_ind <= t_inds, t_inds < max_ind))
-            t_inds = t_inds[allowed_inds]
-            row_inds = self.kernel.row_inds[allowed_inds]
-            col_inds = self.kernel.col_inds[allowed_inds]
-            kernel_vector = self.kernel.kernel[allowed_inds] 
-            result = np.dot(self.movie[t_inds, row_inds, col_inds], kernel_vector)
+            # This part is rewritten with numba below.
+            # t_inds = self.kernel.t_inds + ti_offset + 1  # Offset by one nhc 14 Apr '17
+            # min_ind, max_ind = 0, self.movie.data.shape[0]
+            # allowed_inds = np.where(np.logical_and(min_ind <= t_inds, t_inds < max_ind))
+            # t_inds = t_inds[allowed_inds]
+            # row_inds = self.kernel.row_inds[allowed_inds]
+            # col_inds = self.kernel.col_inds[allowed_inds]
+            # kernel_vector = self.kernel.kernel[allowed_inds] 
+            # result = np.dot(self.movie[t_inds, row_inds, col_inds], kernel_vector)
+            result = fast_dot_product(self.movie.data, ti_offset, self.kernel.t_inds, self.kernel.row_inds, self.kernel.col_inds, self.kernel.kernel)
             self.cache[ti_offset] = result
             return result
+
+
+# if MPI is not used (number of process is 1), turn on parallel in numba
+numba_parallel = MPI.COMM_WORLD.Get_size() == 1
+
+# a faster version of the commented out part of the above class method.
+# results agree up to a round off error.
+@njit(parallel=numba_parallel)
+def fast_dot_product(movie_data, ti_offset, kernel_t_inds, kernel_row_inds, kernel_col_inds, kernel_kernel):
+    t_inds = kernel_t_inds + ti_offset + 1
+    result = 0.0
+    for i in prange(len(t_inds)):
+        if t_inds[i] >= 0 and t_inds[i] < movie_data.shape[0]:
+            result = result + movie_data[t_inds[i], kernel_row_inds[i], kernel_col_inds[i]] * kernel_kernel[i]
+    return result
 
 
 class FilterCursor(KernelCursor):
