@@ -1,7 +1,9 @@
+import logging
 import numpy as np
 from collections import Counter
 import numbers
 import nest
+import os
 import types
 import pandas as pd
 
@@ -10,6 +12,8 @@ from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
 from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
 from bmtk.simulator.pointnet.nest_utils import nest_version
+
+logger = logging.getLogger(__name__)
 
 NEST_SYNAPSE_MODEL_PROP = 'model' if nest_version[0] == 2 else 'synapse_model'
 
@@ -155,6 +159,7 @@ class PointNodeAdaptor(NodeAdaptor):
     def preprocess_node_types(network, node_population):
         NodeAdaptor.preprocess_node_types(network, node_population)
         node_types_table = node_population.types_table
+
         if 'model_template' in node_types_table.columns and 'dynamics_params' in node_types_table.columns:
             node_type_ids = np.unique(node_population.type_ids)
             for nt_id in node_type_ids:
@@ -165,6 +170,20 @@ class PointNodeAdaptor(NodeAdaptor):
                     model_template, dynamics_params = convert_aibs2nest(mtemplate, dyn_params)
                     node_type_attrs['model_template'] = model_template
                     node_type_attrs['dynamics_params'] = dynamics_params
+
+                if mtemplate.startswith('nestml:'):
+                    # NESTML model was requested
+
+                    model_name = mtemplate.split(':')[1]
+
+                    models_dir = network.get_component('point_neuron_models_dir')
+                    model_fn = os.path.join(models_dir, model_name + '.nestml')
+                    network.add_nestml_models(model_fn)
+
+                    # replace model_template name with suffixed version
+
+                    node_types_table[nt_id]['model_template'] = 'nest:' + model_name + '_nestml'
+                    node_types_table._df_cache = None   # clear the table internal cache
 
     @staticmethod
     def patch_adaptor(adaptor, node_group, network):
@@ -256,14 +275,24 @@ class PointEdgeAdaptor(EdgeAdaptor):
         # Fix for sonata/300_pointneurons
         EdgeAdaptor.preprocess_edge_types(network, edge_population)
         edge_types_table = edge_population.types_table
-        edge_type_ids = np.unique(edge_population.type_ids)
 
-        for et_id in edge_type_ids:
-            edge_type = edge_types_table[et_id]
-            if 'model_template' in edge_types_table.columns:
-                model_template = edge_type['model_template']
-                if model_template.startswith('nest'):
-                    edge_type['model_template'] = model_template[5:]
+        if 'model_template' in edge_types_table.columns and 'dynamics_params' in edge_types_table.columns:
+            edge_type_ids = np.unique(edge_population.type_ids)
+            for et_id in edge_type_ids:
+                edge_type_attrs = edge_types_table[et_id]
+                mtemplate = edge_type_attrs['model_template']
+                if mtemplate.startswith('nest:'):
+                    edge_type['model_template'] = mtemplate[5:]
+
+                if mtemplate.startswith('nestml:'):
+                    model_name = mtemplate.split(':')[1]
+
+                    models_dir = network.get_component('synaptic_models_dir')
+                    model_fn = os.path.join(models_dir, model_name + '.nestml')
+                    network.add_nestml_models(model_fn)
+
+                    edge_types_table[et_id]['model_template'] = model_name + '_nestml'
+                    edge_types_table._df_cache = None  # clear the table internal cache
 
     def get_batches(self, edge_group):
         src_ids = {}
