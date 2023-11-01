@@ -1,7 +1,14 @@
 import numpy as np
 import scipy.signal as spsig
 from numba import njit, prange
-import mpi4py.MPI as MPI
+
+try:
+    from mpi4py import MPI
+    mpi_size = MPI.COMM_WORLD.Get_size()
+    numba_parallel = mpi_size == 1  # if there is only 1 thread, turn on numba parallel
+except ImportError:
+    numba_parallel = True  # If there is no MPI, turn on numba parallel
+
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
 
@@ -98,9 +105,6 @@ class KernelCursor(object):
             self.cache[ti_offset] = result
             return result
 
-
-# if MPI is not used (number of process is 1), turn on parallel in numba
-numba_parallel = MPI.COMM_WORLD.Get_size() == 1
 
 # a faster version of the commented out part of the above class method.
 # results agree up to a round off error.
