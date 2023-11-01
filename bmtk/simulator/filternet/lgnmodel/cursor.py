@@ -87,7 +87,14 @@ class KernelCursor(object):
             # col_inds = self.kernel.col_inds[allowed_inds]
             # kernel_vector = self.kernel.kernel[allowed_inds] 
             # result = np.dot(self.movie[t_inds, row_inds, col_inds], kernel_vector)
-            result = fast_dot_product(self.movie.data, ti_offset, self.kernel.t_inds, self.kernel.row_inds, self.kernel.col_inds, self.kernel.kernel)
+            result = fast_dot_product(
+                self.movie.data,
+                ti_offset,
+                self.kernel.t_inds,
+                self.kernel.row_inds,
+                self.kernel.col_inds,
+                self.kernel.kernel,
+            )
             self.cache[ti_offset] = result
             return result
 
