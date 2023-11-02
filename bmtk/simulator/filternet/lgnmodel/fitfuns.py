@@ -42,19 +42,13 @@ def makeBasis_StimKernel(kbasprs, nkt):
     ctrs = nlin(np.array(kpeaks))  # yrnge
     mxt = invnl(yrnge[ncos-1]+2*db)-b
     kt0 = np.arange(0, mxt, kdt)  # -delay
-    nt = len(kt0)
-    e1 = np.tile(nlin(kt0 + b*np.ones(np.shape(kt0))), (ncos, 1))
-    e2 = np.transpose(e1)    
-    e3 = np.tile(ctrs, (nt, 1))
-
-    kbasis0 = []
-    for kk in range(ncos):
-        kbasis0.append(ff(e2[:,kk],e3[:,kk],db))
+    e2 = np.expand_dims(nlin(kt0 + b*np.ones(np.shape(kt0))), axis=1)
+    kbasis0 = ff(e2, np.expand_dims(ctrs,axis=0), db)
 
     #Concatenate identity vectors
     nkt0 = np.size(kt0, 0)
     a1 = np.concatenate((np.eye(neye), np.zeros((nkt0,neye))),axis=0)
-    a2 = np.concatenate((np.zeros((neye,ncos)),np.array(kbasis0).T),axis=0)
+    a2 = np.concatenate((np.zeros((neye,ncos)), kbasis0), axis=0)
     kbasis = np.concatenate((a1, a2),axis=1)
     kbasis = np.flipud(kbasis)
     nkt0 = np.size(kbasis,0)
@@ -106,23 +100,15 @@ def invnl(x):
 
 
 def ff(x, c, dc):
-    rowsize = np.size(x,0)
-    m = []
-    for i in range(rowsize): 
-        xi = x[i]
-        ci = c[i]
-        val=(np.cos(np.max([-pi, np.min([pi, (xi-ci)*pi/dc/2])])) + 1)/2
-        m.append(val)
-        
-    return np.array(m)
+    val = (np.cos(np.clip((x-c)*np.pi/dc/2.0, -np.pi, np.pi)) + 1.0) / 2.0
+    return val
 
 
 def normalizecols(A):
-    B = A/np.tile(np.sqrt(sum(A**2,0)),(np.size(A,0),1))
+    B = A / np.linalg.norm(A, ord=2, axis=0, keepdims=True)
     return B
     
 def sameconv(A,B):
-    
     am = np.size(A)
     bm = np.size(B)
     nn = am+bm-1
