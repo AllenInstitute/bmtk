@@ -96,8 +96,6 @@ def default_cell_loader(node, template_name, dynamics_params):
     else:
         rotation = 0.0
 
-    spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
-
     t_weights, t_kpeaks, t_delays = get_tf_params(node, dynamics_params)
 
     if template_name:
@@ -118,10 +116,12 @@ def default_cell_loader(node, template_name, dynamics_params):
         amp_off = -(max_roff/max_ron)*(sON_sum/sOFF_sum)*amp_on - (spont*(max_roff - max_ron))/(max_ron*sOFF_sum)
 
         # Create sON subunit:
-        linear_filter_son = SpatioTemporalFilter(spatial_filter, sON_filt_new, amplitude=amp_on)
+        spatial_filter_on = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
+        linear_filter_son = SpatioTemporalFilter(spatial_filter_on, sON_filt_new, amplitude=amp_on)
 
         # Create sOFF subunit:
-        linear_filter_soff = SpatioTemporalFilter(spatial_filter, sOFF_filt_new, amplitude=amp_off)
+        spatial_filter_off = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
+        linear_filter_soff = SpatioTemporalFilter(spatial_filter_off, sOFF_filt_new, amplitude=amp_off)
 
         sf_sep = node.sf_sep
         if node.predefined_jitter:
@@ -144,10 +144,12 @@ def default_cell_loader(node, template_name, dynamics_params):
         amp_off = -0.7*(max_roff/max_ron)*(sON_sum/tOFF_sum)*amp_on - (spont*(max_roff - max_ron))/(max_ron*tOFF_sum)
 
         # Create sON subunit:
-        linear_filter_son = SpatioTemporalFilter(spatial_filter, sON_filt_new, amplitude=amp_on)
+        spatial_filter_on = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
+        linear_filter_son = SpatioTemporalFilter(spatial_filter_on, sON_filt_new, amplitude=amp_on)
 
         # Create tOFF subunit:
-        linear_filter_toff = SpatioTemporalFilter(spatial_filter, tOFF_filt_new, amplitude=amp_off)
+        spatial_filter_off = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
+        linear_filter_toff = SpatioTemporalFilter(spatial_filter_off, tOFF_filt_new, amplitude=amp_off)
 
         sf_sep = node.sf_sep
         if node.predefined_jitter:
@@ -193,6 +195,7 @@ def default_cell_loader(node, template_name, dynamics_params):
         transfer_function = ScalarTransferFunction('Heaviside(s+{})*(s+{})'.format(spont_fr, spont_fr))
         temporal_filter = TemporalFilterCosineBump(t_weights, t_kpeaks, t_delays)
 
+        spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
         if cell_type.find('ON') >= 0:
             amplitude = 1.0
             linear_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)
