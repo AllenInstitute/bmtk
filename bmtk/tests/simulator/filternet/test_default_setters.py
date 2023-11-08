@@ -109,7 +109,8 @@ def test_offunit(cell_type, expected_val):
 
 
 @pytest.mark.parametrize("cell_type,expected_val", [
-    ('sONsOFF_001', [4.0, 3.5654, 2.2956, 2.7437, 4.4480])
+    # ('sONsOFF_001', [4.0, 3.5654, 2.2956, 2.7437, 4.4480])
+    ('sONsOFF_001', [4.0, 3.0136, 3.335, 4.3349, 4.9999])  # updated value after OS bug fix. (issue, #339)
 ])
 def test_sONsOFF(cell_type, expected_val):
     gm = movie.GratingMovie(row_size=120, col_size=240, frame_rate=24.0)
@@ -128,7 +129,8 @@ def test_sONsOFF(cell_type, expected_val):
 
 
 @pytest.mark.parametrize("cell_type,expected_val", [
-    ('sONsOFF_001', [4.0, 3.5654, 2.2957, 2.7437, 4.4481])
+    # ('sONsOFF_001', [4.0, 3.5654, 2.2957, 2.7437, 4.4481])
+    ('sONsOFF_001', [4.0, 3.0136, 3.335, 4.3349, 4.9999])  # updated value after OS bug fix. (issue, #339)
 ])
 def test_sONtOFF(cell_type, expected_val):
     gm = movie.GratingMovie(row_size=120, col_size=240, frame_rate=24.0)
