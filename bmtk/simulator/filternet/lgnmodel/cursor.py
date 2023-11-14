@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.signal as spsig
-from numba import njit, prange
 
 try:
     from mpi4py import MPI
@@ -8,6 +7,33 @@ try:
     numba_parallel = mpi_size == 1  # if there is only 1 thread, turn on numba parallel
 except ImportError:
     numba_parallel = True  # If there is no MPI, turn on numba parallel
+
+
+try:
+    from numba import njit, prange
+
+    # a faster version of the commented out part of the above class method. Results agree up to a round off error.
+    @njit(parallel=numba_parallel)
+    def kernel_dot_product(movie_data, ti_offset, kernel_t_inds, kernel_row_inds, kernel_col_inds, kernel_kernel):
+        t_inds = kernel_t_inds + ti_offset + 1
+        result = 0.0
+        for i in prange(len(t_inds)):
+            if t_inds[i] >= 0 and t_inds[i] < movie_data.shape[0]:
+                result = result + movie_data[t_inds[i], kernel_row_inds[i], kernel_col_inds[i]] * kernel_kernel[i]
+        return result
+except ImportError as ie:
+    
+    # Normal way to calculate dot-product not using numba library. Also had to create because for some reason numba
+    # is interfering with NEST (at-least ver 3.3) binary causing a segmentation fault.
+    def kernel_dot_product(movie_data, ti_offset, kernel_t_inds, kernel_row_inds, kernel_col_inds, kernel_kernel):
+        t_inds = kernel_t_inds + ti_offset + 1  # Offset by one nhc 14 Apr '17
+        min_ind, max_ind = 0, movie_data.shape[0]
+        allowed_inds = np.where(np.logical_and(min_ind <= t_inds, t_inds < max_ind))
+        t_inds = t_inds[allowed_inds]
+        row_inds = kernel_row_inds[allowed_inds]
+        col_inds = kernel_col_inds[allowed_inds]
+        kernel_vector = kernel_kernel[allowed_inds] 
+        return np.dot(movie_data[t_inds, row_inds, col_inds], kernel_vector)
 
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
@@ -80,42 +106,20 @@ class KernelCursor(object):
         return curr_rate
 
     def apply_dot_product(self, ti_offset):
-        try:
-            # TODO: This needs to be altered asap
-            return self.cache[ti_offset]
-        
-        except KeyError:
-            # This part is rewritten with numba below.
-            # t_inds = self.kernel.t_inds + ti_offset + 1  # Offset by one nhc 14 Apr '17
-            # min_ind, max_ind = 0, self.movie.data.shape[0]
-            # allowed_inds = np.where(np.logical_and(min_ind <= t_inds, t_inds < max_ind))
-            # t_inds = t_inds[allowed_inds]
-            # row_inds = self.kernel.row_inds[allowed_inds]
-            # col_inds = self.kernel.col_inds[allowed_inds]
-            # kernel_vector = self.kernel.kernel[allowed_inds] 
-            # result = np.dot(self.movie[t_inds, row_inds, col_inds], kernel_vector)
-            result = fast_dot_product(
-                self.movie.data,
-                ti_offset,
-                self.kernel.t_inds,
-                self.kernel.row_inds,
-                self.kernel.col_inds,
-                self.kernel.kernel,
+        if ti_offset in self.cache:
+            result = self.cache[ti_offset]
+        else:
+            result = kernel_dot_product(
+                movie_data=self.movie.data,
+                ti_offset=ti_offset,
+                kernel_t_inds=self.kernel.t_inds,
+                kernel_row_inds=self.kernel.row_inds,
+                kernel_col_inds=self.kernel.col_inds,
+                kernel_kernel=self.kernel.kernel,
             )
             self.cache[ti_offset] = result
-            return result
 
-
-# a faster version of the commented out part of the above class method.
-# results agree up to a round off error.
-@njit(parallel=numba_parallel)
-def fast_dot_product(movie_data, ti_offset, kernel_t_inds, kernel_row_inds, kernel_col_inds, kernel_kernel):
-    t_inds = kernel_t_inds + ti_offset + 1
-    result = 0.0
-    for i in prange(len(t_inds)):
-        if t_inds[i] >= 0 and t_inds[i] < movie_data.shape[0]:
-            result = result + movie_data[t_inds[i], kernel_row_inds[i], kernel_col_inds[i]] * kernel_kernel[i]
-    return result
+        return result
 
 
 class FilterCursor(KernelCursor):
