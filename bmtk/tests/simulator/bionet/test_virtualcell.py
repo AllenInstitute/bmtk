@@ -16,9 +16,9 @@ class NRNPythonObj(object):
 try:
     load_neuron_modules(mechanisms_dir='components/mechanisms', templates_dir='.')
     h.pysim = NRNPythonObj()
-    has_mechanism = True
+    has_postfadvanced = True
 except AttributeError as ae:
-    has_mechanism = False
+    has_postfadvanced = False
 
 
 class MockNode(object):
@@ -32,7 +32,7 @@ class MockSpikes(object):
     def get_times(self, node_id):
         return self.spikes
 
-
+@pytest.mark.skipif(not has_postfadvanced, reason="NEURON unable to run post_fadvanced mechanics")
 @pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
 @pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 @pytest.mark.parametrize('spike_times', [
@@ -62,6 +62,7 @@ def test_spiketrain(spike_times):
     assert(len(v) > 0)
 
 
+@pytest.mark.skipif(not has_postfadvanced, reason="NEURON unable to run post_fadvanced mechanics")
 @pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
 @pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 @pytest.mark.parametrize('spike_times', [
