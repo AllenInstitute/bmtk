@@ -4,10 +4,7 @@ import numpy as np
 from collections import namedtuple
 from neuron import h
 
-try:
-    from conftest import *
-except ModuleNotFoundError as mnfe:
-    from .conftest import *
+from .conftest import *
 
 from bmtk.simulator.bionet.nrn import load_neuron_modules
 from bmtk.simulator.bionet.morphology import Morphology

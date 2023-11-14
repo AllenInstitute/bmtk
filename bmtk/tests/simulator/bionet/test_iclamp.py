@@ -9,11 +9,10 @@ import h5py
 
 try:
     from conftest import MORPH_DIR, load_neuron_modules
-except ModuleNotFoundError as mnfe:
+except (ModuleNotFoundError, ImportError)  as mnfe:
     from .conftest import MORPH_DIR, load_neuron_modules
-
+    
 from bmtk.simulator.bionet.modules import iclamp
-
 
 pc = h.ParallelContext()
 
