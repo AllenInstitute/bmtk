@@ -28,6 +28,7 @@ import pandas as pd
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.nest_utils import nest_version
+from bmtk.simulator.pointnet.modules.sim_module import SimulatorMod
 
 import nest
 
@@ -91,7 +92,7 @@ else:
     NEST_spikes_file_format = 'gdf'
 
 
-class SpikesMod(object):
+class SpikesMod(SimulatorMod):
     """Module use for saving spikes
 
     """

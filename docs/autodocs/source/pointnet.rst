@@ -120,3 +120,56 @@ Used to record the time trace of specific cell variables, usually the membrane p
 * cells: a `node_set <./simulators.html#node-sets>`_ filter out what cells to record.
 * file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title
    will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”
+
+
+Recording Synaptic Weights
+++++++++++++++++++++++++++
+Used to record the changes to synaptic weight changes throughout the simulation lifetime. Useful for measuring changes plastic synapse models like 
+"stdp_synapse" or "tsodyks_synapses" (can be used for static synapses though values will never change). To create a recorder add the following 
+section to the "reports" section in the simulation config json:
+
+.. code:: json
+
+    {
+        "reports": {
+            "<name>": {
+                "module": "weight_recorder",
+                "nest_model": "<original-nest-model>",
+                "model_template": "<recorder-name>",
+                "file_name": "<file-name>.csv"
+            }
+        }
+    }
+
+Which will create a special synpase model called "<recorder-name>", which is just a version of *<original-nest-model>* that will save a trace
+of synapic changes to the csv file *output/<file-name>.csv*. Just set **model_template** property value to "<recorder-name>" in the edge-types file.
+
+For example, to record the changes to a subset of the *stdp_synapse* type NEST models, add the following to the configuration:
+
+.. code:: json
+
+    {
+        "reports": {
+            "weight_recorder_stdp_1": {
+                "module": "weight_recorder",
+                "nest_model": "stdp_synapse",
+                "model_template": "stdp_synapse_recorder",
+                "file_name": "stdp_weights.csv",
+            }
+        }
+    }
+
+Then make changes to **edge_types.csv** file
+
+.. list-table:: 
+   :widths: 25 25 25 25
+   :header-rows: 1
+
+   * - edge_type_id
+     - model_template
+     - dynamics_params
+     - ...
+   * - 100
+     - stdp_synapse_recorder
+     - stdp_params.json
+     - ...

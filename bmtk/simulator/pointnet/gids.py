@@ -27,6 +27,11 @@ class GidPool(object):
         self._gid2pop_id = {}  # nest_id --> (pop_name, node_id)
         self._nestid_lu = {}
 
+        self._nest_ids = []
+        self._node_ids = []
+        self._populations = []
+        self._nestid2nodeid_df = None
+
     @property
     def gids(self):
         return list(self._gid2pop_id.keys())
@@ -34,6 +39,16 @@ class GidPool(object):
     @property
     def populations(self):
         return list(self._nestid_lu.keys())
+    
+    @property
+    def nestid2nodeid_df(self):
+        if self._nestid2nodeid_df is None:
+            self._nestid2nodeid_df = pd.DataFrame({
+                'nest_ids': self._nest_ids,
+                'node_ids': self._node_ids,
+                'populations': self._populations
+            }).set_index('nest_ids')
+        return self._nestid2nodeid_df
 
     def add(self, name, node_id, gid):
         raise NotImplementedError()
@@ -66,6 +81,11 @@ class GidPool(object):
         for node_id, nest_id in zip(node_ids, nest_ids):
             self._gid2pop_id[nest_id] = PopulationID(population=name, node_id=node_id)
 
+        self._nestid2nodeid_df = None
+        self._nest_ids.extend(nest_ids)
+        self._node_ids.extend(node_ids)
+        self._populations.extend([name]*len(nest_ids))
+
     def add_gids(self, name, node_ids, gids):
         self.add_nestids(name=name, node_ids=node_ids, nest_ids=gids)
 
@@ -75,6 +95,13 @@ class GidPool(object):
 
     def get_gids(self, name, node_ids):
         return self.get_nestids(name=name, node_ids=node_ids)
+
+    def get_node_ids(self, nest_ids, with_populations=True):
+        sonata_ids_df = self.nestid2nodeid_df.loc[nest_ids]
+        if with_populations:
+            return sonata_ids_df['node_ids'].values, sonata_ids_df['populations'].values
+        else:
+            return sonata_ids_df['node_ids'].values
 
     def __len__(self):
         return len(self.gids)

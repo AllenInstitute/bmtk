@@ -1,4 +1,4 @@
-# Copyright 2022. Allen Institute. All rights reserved
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -32,13 +32,13 @@ class SimulatorMod(object):
       sim.run()
 
     """
-
     def preload(self, sim):
         """Will be called once at the beginning of the simulation run before network is loaded
 
         :param sim: Simulation object
         """
         pass
+
 
     def initialize(self, sim):
         """Will be called once at the beginning of the simulation run, after the network and simulation parameters have
@@ -64,7 +64,7 @@ class SimulatorMod(object):
 
         Unlike the step method which is called during every time-step, the block method will typically be called only a
         few times over the entire simulation. The block method is preferable for accessing and saving to the disk,
-        summing up existing data, or simular functionality
+        summing up existing data, or similar functionality
 
         :param sim: Simulation object
         :param block_interval: The time interval (tstep_start, tstep_end) for which the block is being called on.
