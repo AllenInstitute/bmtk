@@ -4,6 +4,7 @@ import pandas as pd
 from bmtk.utils.reports import CompartmentReport
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.nest_utils import nest_version
+from bmtk.simulator.pointnet.modules.sim_module import SimulatorMod
 
 import nest
 
@@ -64,7 +65,7 @@ else:
     read_dat = read_dat_nest2
 
 
-class MultimeterMod(object):
+class MultimeterMod(SimulatorMod):
     def __init__(self, tmp_dir, file_name, variable_name, cells, tstart=None, tstop=None, interval=None, to_h5=True,
                  delete_dat=True, **opt_params):
         """For recording neuron properties using a NEST multimeter object

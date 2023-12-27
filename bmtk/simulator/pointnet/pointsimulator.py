@@ -236,22 +236,16 @@ class PointSimulator(Simulator):
             for gfile in glob.glob(os.path.join(config['output']['output_dir'], '*.gdf')):
                 os.remove(gfile)
 
-        graph.io.log_info('Building cells.')
-        graph.build_nodes()
-
-        graph.io.log_info('Building recurrent connections')
-        graph.build_recurrent_edges()
-
         for sim_input in inputs.from_config(config):
-            node_set = graph.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata', 'h5', 'hdf5']:
-                io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
-                path = sim_input.params['input_file']
-                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
-                #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                #                                       input_type=sim_input.input_type, params=sim_input.params)
-                graph.add_spike_trains(spikes, node_set, network.get_spike_generator_params())
-            
+                network.add_mod(mods.SpikesInputsMod(
+                    name=sim_input.name,
+                    input_type=sim_input.input_type,
+                    module=sim_input.module,
+                    # node_set=sim_input.node_set,
+                    **sim_input.params
+                ))
+
             elif sim_input.module == 'IClamp':
                 network.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
@@ -262,7 +256,7 @@ class PointSimulator(Simulator):
                 graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
 
         sim_reports = reports.from_config(config)
-        for report in sim_reports:
+        for report in sim_reports:           
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
 
@@ -270,11 +264,21 @@ class PointSimulator(Simulator):
                 # For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
                 # same in pointnet.
                 mod = mods.MultimeterMod(**report.params)
+            
+            elif isinstance(report, reports.WeightRecorder):
+                mod = mods.WeightRecorder(name=report.report_name, **report.params)
 
             else:
                 graph.io.log_exception('Unknown report type {}'.format(report.module))
 
+            mod.preload(sim=graph)
             network.add_mod(mod)
+
+        graph.io.log_info('Building cells.')
+        graph.build_nodes()
+
+        graph.io.log_info('Building recurrent connections')
+        graph.build_recurrent_edges()
 
         io.log_info('Network created.')
         return network
