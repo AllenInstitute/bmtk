@@ -68,7 +68,8 @@ Plays a drifting grating across the screen
          "temporal_f": 4.0,
          "contrast": 0.8,
          "theta": 45.0,
-         "phase": 0.0
+         "phase": 0.0,
+         "degrees_per_pixel": 1.0
       }
    }
 
@@ -79,6 +80,7 @@ Plays a drifting grating across the screen
 * theta: orientation angle, in degrees (default: 45.0)
 * phase: temporal phase, in degrees (default: 0.0)
 * contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)
+* degrees_per_pixel: sampling pitch of the movie in degrees per pixel (default: 1 / (cpd * 10))
 
 
 Full Field Flash
