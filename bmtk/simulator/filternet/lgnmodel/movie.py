@@ -253,7 +253,7 @@ class GratingMovie(Movie):
         self.frame_rate = float(frame_rate)  # in Hz
 
     def create_movie(self, t_min=0, t_max=1, gray_screen_dur=0, cpd=0.05, temporal_f=4, theta=45,
-                     phase=0., contrast=1.0, row_size_new=None, col_size_new=None):
+                     phase=0., contrast=1.0, physical_spacing=None, row_size_new=None, col_size_new=None):
         """Create the grating movie with the desired parameters
 
         :param t_min: start time in seconds
@@ -271,7 +271,8 @@ class GratingMovie(Movie):
         assert contrast <= 1, "Contrast must be <= 1"
         assert contrast > 0, "Contrast must be > 0"
 
-        physical_spacing = 1.0 / (float(cpd) * 10)  # To make sure no aliasing occurs
+        if physical_spacing is None:  # default behavior when not specified
+            physical_spacing = 1.0 / (float(cpd) * 10)  # To make sure no aliasing occurs
         self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
         self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
         numberFramesNeeded = int(round(self.frame_rate * (t_max - gray_screen_dur))) + 1
