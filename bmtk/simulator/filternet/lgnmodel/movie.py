@@ -253,7 +253,7 @@ class GratingMovie(Movie):
         self.frame_rate = float(frame_rate)  # in Hz
 
     def create_movie(self, t_min=0, t_max=1, gray_screen_dur=0, cpd=0.05, temporal_f=4, theta=45,
-                     phase=0., contrast=1.0, physical_spacing=None, row_size_new=None, col_size_new=None):
+                     phase=0., contrast=1.0, degrees_per_pixel=None, row_size_new=None, col_size_new=None):
         """Create the grating movie with the desired parameters
 
         :param t_min: start time in seconds
@@ -271,10 +271,10 @@ class GratingMovie(Movie):
         assert contrast <= 1, "Contrast must be <= 1"
         assert contrast > 0, "Contrast must be > 0"
 
-        if physical_spacing is None:  # default behavior when not specified
-            physical_spacing = 1.0 / (float(cpd) * 10)  # To make sure no aliasing occurs
-        self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
-        self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
+        if degrees_per_pixel is None:  # default behavior when not specified
+            degrees_per_pixel = 1.0 / (float(cpd) * 10)  # To make sure no aliasing occurs
+        self.row_range = np.linspace(0, self.row_size, int(self.row_size/degrees_per_pixel), endpoint=True)
+        self.col_range = np.linspace(0, self.col_size, int(self.col_size/degrees_per_pixel), endpoint=True)
         numberFramesNeeded = int(round(self.frame_rate * (t_max - gray_screen_dur))) + 1
         time_range = np.linspace(0, t_max - gray_screen_dur, numberFramesNeeded, endpoint=True)
 
@@ -317,9 +317,9 @@ class LoomingMovie(Movie):
         :param t_looming: duration of time looming
         :param gray_screen_dur:
         """
-        physical_spacing = 1.0  # To make sure no aliasing occurs
-        self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
-        self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
+        degrees_per_pixel = 1.0  # To make sure no aliasing occurs
+        self.row_range = np.linspace(0, self.row_size, int(self.row_size/degrees_per_pixel), endpoint=True)
+        self.col_range = np.linspace(0, self.col_size, int(self.col_size/degrees_per_pixel), endpoint=True)
         loomingFramesNeeded = int(round(self.frame_rate * t_looming))
         grayScreenFrames = int(round(self.frame_rate * gray_screen_dur))
         time_range = np.linspace(0, t_looming, loomingFramesNeeded, endpoint=True)
