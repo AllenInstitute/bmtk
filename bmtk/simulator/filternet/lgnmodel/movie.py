@@ -264,6 +264,7 @@ class GratingMovie(Movie):
         :param theta: orientation angle, in degrees
         :param phase: temporal phase, in degrees
         :param contrast: the maximum constrast, must be between 0 and 1.0
+        :param degrees_per_pixel: pixel pitch of the movie in degrees (default (if None) is 1.0/(cpd*10))
         :param row_size_new: Use to truncate screen, by default leaves original row dimension
         :param col_size_new: Use to truncate screen, by default leaves original col dimension
         :return: Movie object of grating with desired parameters
