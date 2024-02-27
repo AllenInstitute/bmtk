@@ -24,7 +24,7 @@ import numpy as np
 import warnings
 
 from .core import SortOrder
-from .spikes_file_writers import write_csv, write_sonata
+from .spikes_file_writers import write_csv, write_sonata, write_nwb
 
 
 class SpikeTrainsAPI(object):
@@ -169,7 +169,7 @@ class SpikeTrainsAPI(object):
         write_csv(path=path, spiketrain_reader=self, mode=mode, sort_orders=sort_order, **kwargs)
 
     def to_nwb(self, path, mode='w', **kwargs):
-        raise NotImplemented()
+        write_nwb(path=path, spiketrain_reader=self, mode=mode, **kwargs)
 
     def merge(self, other):
         """Import Another SpikesTrain object into current file, always in-place.
