@@ -235,6 +235,7 @@ def default_cell_loader(node, template_name, dynamics_params):
             transfer_function = ScalarTransferFunction('Heaviside(s+{})*(s+{})'.format(spont_fr, spont_fr))
             temporal_filter = TemporalFilterCosineBump(t_weights, t_kpeaks, t_delays)
 
+            spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin, rotation=rotation)
             if cell_type.find('ON') >= 0:
                 amplitude = 1.0
                 linear_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)
