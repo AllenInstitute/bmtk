@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 from six import string_types
+from inspect import signature
 
 from bmtk.simulator.core.simulator import Simulator
 import bmtk.simulator.utils.simulation_inputs as inputs
@@ -72,8 +73,10 @@ class FilterSimulator(Simulator):
             self._movies.append(mv)
 
         elif movie_type == 'graiting':
-            init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
-            create_params = FilterSimulator.find_params(['gray_screen_dur', 'cpd', 'temporal_f', 'theta', 'contrast', 'degrees_per_pixel'],
+            init_param_names = list(signature(GratingMovie.__init__).parameters.keys())
+            create_param_names = list(signature(GratingMovie.create_movie).parameters.keys())
+            init_params = FilterSimulator.find_params(init_param_names, **params)
+            create_params = FilterSimulator.find_params(create_param_names,
                                                         **params)
 
             create_params['gray_screen_dur'] /= 1000.0
