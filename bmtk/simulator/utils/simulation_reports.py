@@ -170,6 +170,7 @@ class SpikesReport(SimReport):
     def from_output_dict(cls, output_dict):
         params = {
             'spikes_file': output_dict.get('spikes_file', None),
+            'compression': output_dict.get('compression', 'gzip'),
             'spikes_file_csv': output_dict.get('spikes_file_csv', None),
             'spikes_file_nwb': output_dict.get('spikes_file_nwb', None),
             'spikes_sort_order': output_dict.get('spikes_sort_order', None),
@@ -279,7 +280,6 @@ class SaveSynapses(SimReport):
 
 @SimReport.register_module
 class MultimeterReport(MembraneReport):
-
     @staticmethod
     def avail_modules():
         return ['multimeter', 'multimeter_report']
@@ -290,6 +290,26 @@ class NetconReport(MembraneReport):
     @staticmethod
     def avail_modules():
         return ['netcon_report']
+
+
+@SimReport.register_module
+class WeightRecorder(SimReport):
+    @staticmethod
+    def avail_modules():
+        return 'weight_recorder'
+   
+    def _get_defaults(self):
+        output_dir = self.params.get('output_dir', self.default_dir)
+
+        file_name = self.params.get('file_name', None)
+        if file_name is None:
+            file_name = os.path.join(output_dir, '{}.csv'.format(self.report_name))
+        elif os.path.isabs(file_name):
+            file_name = file_name           
+        else:
+            file_name = os.path.join(output_dir, file_name)
+
+        return [('file_name', file_name), ('output_dir', output_dir), ('clean_temp_file', True)]
 
 
 def from_config(cfg):

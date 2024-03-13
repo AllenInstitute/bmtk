@@ -339,7 +339,7 @@ class SWCReader(object):
 
         frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
         ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
-        ix_labels = np.array([], dtype=np.int)
+        ix_labels = np.array([], dtype=int)
 
         for tar_sec_label in section_names:  # find indexes within sec_labels
             sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label

@@ -1,0 +1,43 @@
+<neuroml xmlns="http://www.neuroml.org/schema/neuroml2"  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.neuroml.org/schema/neuroml2 https://raw.github.com/NeuroML/NeuroML2/development/Schemas/NeuroML2/NeuroML_v2beta5.xsd" id="NeuroML2_file_exported_from_NEURON">
+    <concentrationModel id="CaDynamics" type="CaDynamics" segmentGroup="soma" minCai="1e-4 mM" decay="991.140696832 ms" depth="0.1 um" gamma="0.0040218816981199999" ion="ca"/>
+    <cell id="473863510">
+        <notes>
+
+Export of a cell model (473863510) obtained from the Allen Institute Cell Types Database into NeuroML2
+
+Electrophysiology on which this model is based: http://celltypes.brain-map.org/mouse/experiment/electrophysiology/314804042
+
+******************************************************
+*  This export to NeuroML2 has not yet been fully validated!!
+*  Use with caution!!
+******************************************************
+
+        </notes>
+        <biophysicalProperties id="biophys">
+            <membraneProperties>
+                <channelDensity id="gbar_Im" ionChannel="Im" condDensity="0.00043788364247700001 S_per_cm2" erev="-107.0 mV" segmentGroup="soma" ion="k"/>
+                <channelDensity id="gbar_Ih" ionChannel="Ih" condDensity="0.0019922075246600001 S_per_cm2" erev="-45 mV" segmentGroup="soma" ion="hcn"/>
+                <channelDensity id="gbar_NaTs" ionChannel="NaTs" condDensity="0.71282189194800005 S_per_cm2" erev="53.0 mV" segmentGroup="soma" ion="na"/>
+                <channelDensity id="gbar_Nap" ionChannel="Nap" condDensity="0.0012493753876800001 S_per_cm2" erev="53.0 mV" segmentGroup="soma" ion="na"/>
+                <channelDensity id="gbar_K_P" ionChannel="K_P" condDensity="0.034836377263399998 S_per_cm2" erev="-107.0 mV" segmentGroup="soma" ion="k"/>
+                <channelDensity id="gbar_K_T" ionChannel="K_T" condDensity="0.0166428509042 S_per_cm2" erev="-107.0 mV" segmentGroup="soma" ion="k"/>
+                <channelDensity id="gbar_SK" ionChannel="SK" condDensity="0.00024972209054299998 S_per_cm2" erev="-107.0 mV" segmentGroup="soma" ion="k"/>
+                <channelDensity id="gbar_Kv3_1" ionChannel="Kv3_1" condDensity="0.28059766435600003 S_per_cm2" erev="-107.0 mV" segmentGroup="soma" ion="k"/>
+                <channelDensity id="g_pas_soma" ionChannel="pas" condDensity="0.00092865666454699993 S_per_cm2" erev="-85.07815551757812 mV" segmentGroup="soma" ion="non_specific"/>
+                <channelDensity id="g_pas_axon" ionChannel="pas" condDensity="0.000914230933548999861 S_per_cm2" erev="-85.07815551757812 mV" segmentGroup="axon" ion="non_specific"/>
+                <channelDensity id="g_pas_dend" ionChannel="pas" condDensity="3.8264043188599994e-06 S_per_cm2" erev="-85.07815551757812 mV" segmentGroup="dend" ion="non_specific"/>
+                <channelDensity id="g_pas_apic" ionChannel="pas" condDensity="2.11145615996e-06 S_per_cm2" erev="-85.07815551757812 mV" segmentGroup="apic" ion="non_specific"/>
+                <channelDensityNernst id="gbar_Ca_HVA" ionChannel="Ca_HVA" condDensity="0.00015339031713199999 S_per_cm2" segmentGroup="soma" ion="ca"/>
+                <channelDensityNernst id="gbar_Ca_LVA" ionChannel="Ca_LVA" condDensity="0.0033469316039000004 S_per_cm2" segmentGroup="soma" ion="ca"/>
+                <specificCapacitance value="1.0 uF_per_cm2" segmentGroup="soma"/>
+                <specificCapacitance value="1.0 uF_per_cm2" segmentGroup="axon"/>
+                <specificCapacitance value="2.19 uF_per_cm2" segmentGroup="dend"/>
+                <specificCapacitance value="2.19 uF_per_cm2" segmentGroup="apic"/>
+            </membraneProperties>
+            <intracellularProperties>
+                <species segmentGroup="soma" id="ca" concentrationModel="CaDynamics" ion="ca" initialConcentration="0.0001 mM" initialExtConcentration="2 mM"/>
+                <resistivity segmentGroup="all" value="35.64 ohm_cm"/>
+            </intracellularProperties>
+        </biophysicalProperties>
+    </cell>
+</neuroml>

@@ -151,7 +151,7 @@ def spikes_table(config_file, spikes_file=None):
     spikes_file = config['output']['spikes_file']
     spikes_h5 = h5py.File(spikes_file, 'r')
     gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
-    times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
+    times = np.array(spikes_h5['/spikes/timestamps'], dtype=float)
     return pd.DataFrame(data={'gid': gids, 'spike time (ms)': times})
     #return pd.read_csv(spikes_ascii, names=['time (ms)', 'cell gid'], sep=' ')
 

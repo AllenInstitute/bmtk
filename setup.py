@@ -58,6 +58,7 @@ setup(
         'scipy',
         'scikit-image',  # Only required for filternet, consider making optional
         'sympy',  # For FilterNet
+        # 'numba',  # For FilterNet
         'pynrrd'   # For nrrd reader
     ],
     extras_require={

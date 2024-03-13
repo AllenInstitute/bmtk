@@ -117,10 +117,10 @@ class CurrentWriterv01(object):
 
         if self._buffer_data:
             # Set up in-memory block to buffer recorded variables before writing to the dataset.
-            self._data_block.buffer_block = np.zeros((self._buffer_size, self._num_currents), dtype=np.float)
+            self._data_block.buffer_block = np.zeros((self._buffer_size, self._num_currents), dtype=float)
 
             self._data_block.data_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._num_currents),
-                                                                  dtype=np.float, chunks=True)
+                                                                  dtype=float, chunks=True)
 
             if self._units is not None:
                 self._data_block.data_block.attrs['units'] = self._units
@@ -128,7 +128,7 @@ class CurrentWriterv01(object):
         else:
             # Since we are not buffering data, we just write directly to the on-disk dataset.
             self._data_block.buffer_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
-                                                               dtype=np.float, chunks=True)
+                                                               dtype=float, chunks=True)
 
             if self._units is not None:
                 self._data_block.buffer_block.attrs['units'] = self._units

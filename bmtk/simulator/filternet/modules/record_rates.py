@@ -10,7 +10,8 @@ from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
 class RecordRates(SimModule):
-    def __init__(self, csv_file=None, h5_file=None, tmp_dir='output', sort_order='node_id'):
+    def __init__(self, csv_file=None, h5_file=None, tmp_dir='output', sort_order='node_id',
+                 compression='gzip'):
         self._tmp_dir = tmp_dir
         self._csv_file = csv_file if csv_file is None or os.path.isabs(csv_file) else os.path.join(tmp_dir, csv_file)
         self._save_to_csv = csv_file is not None
@@ -19,6 +20,11 @@ class RecordRates(SimModule):
         h5_file = h5_file if h5_file is None or os.path.isabs(h5_file) else os.path.join(tmp_dir, h5_file)
         self._save_to_h5 = h5_file is not None
         self._h5_file = h5_file
+        # make sure h5py is not confused with string 'none' or 'None'.
+        if isinstance(compression, str):
+            if compression.lower() == 'none':
+                compression = None
+        self._compression = compression
 
         self._sort_order = sort_order
         self._n_nodes = 0
@@ -40,7 +46,7 @@ class RecordRates(SimModule):
             self._timestamps = times
 
         if cell.population not in self._firing_rates:
-            self._firing_rates[cell.population] = np.zeros((self._n_nodes, self._n_timesteps), dtype=np.float)
+            self._firing_rates[cell.population] = np.zeros((self._n_nodes, self._n_timesteps), dtype=float)
             self._node_ids[cell.population] = np.zeros(self._n_nodes, dtype=np.uint)
 
         self._firing_rates[cell.population][self._node_counter, :] = rates
@@ -69,9 +75,9 @@ class RecordRates(SimModule):
                     rates_grp = rates_h5.create_group('/firing_rates')
                     for pop, pop_table in self._firing_rates.items():
                         pop_grp = rates_grp.create_group(pop)
-                        pop_grp.create_dataset('node_id', data=self._node_ids[pop])
-                        pop_grp.create_dataset('times', data=self._timestamps)
-                        pop_grp.create_dataset('firing_rates_Hz', data=self._firing_rates[pop].T)
+                        pop_grp.create_dataset('node_id', data=self._node_ids[pop], compression=self._compression)
+                        pop_grp.create_dataset('times', data=self._timestamps, compression=self._compression)
+                        pop_grp.create_dataset('firing_rates_Hz', data=self._firing_rates[pop].T, compression=self._compression)
 
                 except Exception as e:
                     print(e)
@@ -94,9 +100,9 @@ class RecordRates(SimModule):
         with h5py.File(self._tmp_rates_path, 'w') as h5:
             for pop in self._firing_rates.keys():
                 pop_grp = h5.create_group(pop)
-                pop_grp.create_dataset('time', data=self._timestamps)
-                pop_grp.create_dataset('node_id', data=self._node_ids[pop])
-                pop_grp.create_dataset('firing_rates_Hz', data=self._firing_rates[pop])
+                pop_grp.create_dataset('time', data=self._timestamps, compression=self._compression)
+                pop_grp.create_dataset('node_id', data=self._node_ids[pop], compression=self._compression)
+                pop_grp.create_dataset('firing_rates_Hz', data=self._firing_rates[pop], compression=self._compression)
 
     def _combine_rates(self):
         n_cells = {}
@@ -120,7 +126,7 @@ class RecordRates(SimModule):
 
             n_timestamps = len(timestamps)
 
-            self._firing_rates = {pop: np.zeros((n_cells[pop], n_timestamps), dtype=np.float) for pop in n_cells.keys()}
+            self._firing_rates = {pop: np.zeros((n_cells[pop], n_timestamps), dtype=float) for pop in n_cells.keys()}
             self._node_ids = {pop: np.zeros(n_cells[pop], dtype=np.uint32) for pop in n_cells.keys()}
             beg_indices = {pop: 0 for pop in n_cells.keys()}
 

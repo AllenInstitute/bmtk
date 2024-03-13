@@ -47,14 +47,10 @@ class FilterSimulator(Simulator):
                 else:
                     raise Exception('Could not find movie "data_file" in config to use as input.')
 
-                contrast_min, contrast_max = m_data.min(), m_data.max()
+                # contrast_min, contrast_max = m_data.min(), m_data.max()
                 normalize_data = params.get('normalize', False)
-                if contrast_min < -1.0 or contrast_max > 1.0:
-                    if normalize_data:
-                        self.io.log_info('Normalizing movie data to (-1.0, 1.0).')
-                        m_data = m_data*2.0/(contrast_max - contrast_min) - 1.0
-                    else:
-                        self.io.log_info('Movie data range ifind_paramss not normalized to (-1.0, 1.0).')
+                if normalize_data:
+                    m_data = Movie.normalize_matrix(m_data, domain=normalize_data)
 
                 init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
                                                            't_range'], **params)
@@ -80,7 +76,7 @@ class FilterSimulator(Simulator):
 
         elif movie_type == 'graiting':
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
-            create_params = FilterSimulator.find_params(['gray_screen_dur', 'cpd', 'temporal_f', 'theta', 'contrast'],
+            create_params = FilterSimulator.find_params(['gray_screen_dur', 'cpd', 'temporal_f', 'theta', 'contrast', 'degrees_per_pixel'],
                                                         **params)
 
             create_params['gray_screen_dur'] /= 1000.0
@@ -242,13 +238,14 @@ class FilterSimulator(Simulator):
 
         rates_csv = config.output.get('rates_csv', None)
         rates_h5 = config.output.get('rates_h5', None)
+        compression = config.output.get('compression', 'gzip')
         if rates_csv or rates_h5:
-            sim.add_mod(mods.RecordRates(rates_csv, rates_h5, config.output_dir))
+            sim.add_mod(mods.RecordRates(rates_csv, rates_h5, config.output_dir, compression=compression))
 
         spikes_csv = config.output.get('spikes_csv', None) or config.output.get('spikes_file_csv', None)
         spikes_h5 = config.output.get('spikes_h5', None) or config.output.get('spikes_file', None)
         spikes_nwb = config.output.get('spikes_nwb', None) or config.output.get('spikes_file_nwb', None)
         if spikes_csv or spikes_h5 or spikes_nwb:
-            sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir))
+            sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir, compression=compression))
 
         return sim

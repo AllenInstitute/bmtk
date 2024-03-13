@@ -37,7 +37,7 @@ from bmtk.simulator.core.node_sets import NodeSet
 
 
 class PointSimulator(Simulator):
-    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
+    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False, n_thread=1):
         self._tstop = 0.0  # simulation time
         self._dt = dt  # time step
         self._output_dir = './output/'  # directory where log and temporary output will be stored
@@ -71,7 +71,7 @@ class PointSimulator(Simulator):
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
-        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time, "local_num_threads": n_thread})
 
     @property
     def tstart(self):
@@ -145,20 +145,7 @@ class PointSimulator(Simulator):
             nest.Connect(pop.keys(), self._spike_detector)
         # exit()
     '''
-
-    def add_step_currents(self, amp_times, amp_values, node_set, input_name):
-        scg = nest.Create("step_current_generator",
-                          params={'amplitude_times': amp_times, 'amplitude_values': amp_values})
-
-        if not isinstance(node_set, NodeSet):
-            node_set = self.net.get_node_set(node_set)
-
-        # Convert node set into list of gids and then look-up the nest-ids
-        for pop_name in node_set.population_names():
-            # nest_ids = self.net.gid_map.get_nestids(pop_name, list(node_set.gids()))
-            nest_ids = node_set.gids()
-            nest.Connect(scg, list(nest_ids), syn_spec={'delay': self.dt})
-
+            
     def run(self, tstop=None):
         if tstop is None:
             tstop = self._tstop
@@ -189,7 +176,7 @@ class PointSimulator(Simulator):
         self._mods.append(mod)
 
     @classmethod
-    def from_config(cls, configure, graph):
+    def from_config(cls, configure, graph, n_thread=None):
         # load the json file or object
         if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
@@ -199,15 +186,28 @@ class PointSimulator(Simulator):
             raise Exception('Could not convert {} (type "{}") to json.'.format(configure, type(configure)))
 
         if 'run' not in config:
-            raise Exception('Json file is missing "run" entry. Unable to build Bionetwork.')
+            raise Exception('Json file is missing "run" entry. Unable to build PointNetwork.')
         run_dict = config['run']
+        
+        # override the n_thread setting from the config file
+        if 'n_thread' in run_dict:
+            if n_thread is not None and n_thread != run_dict['n_thread']:
+                # give a warinig that the user is overriding the argument.
+                io.log_warning(
+                    f'Overriding n_thread setting in an argument ({n_thread}) with the value in config file ({run_dict["n_thread"]}).'
+                )
+            n_thread = run_dict['n_thread']
+        else:
+            if n_thread is None:
+                n_thread = 1  # default to 1 thread if not set in config or argument
+
 
         # Get network parameters
         # step time (dt) is set in the kernel and should be passed
         overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
         print_time = run_dict['print_time'] if 'print_time' in run_dict else False
         dt = run_dict['dt']  # TODO: make sure dt exists
-        network = cls(graph, dt=dt, overwrite=overwrite)
+        network = cls(graph, dt=dt, overwrite=overwrite, n_thread=n_thread)
 
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']
@@ -236,42 +236,27 @@ class PointSimulator(Simulator):
             for gfile in glob.glob(os.path.join(config['output']['output_dir'], '*.gdf')):
                 os.remove(gfile)
 
-        graph.io.log_info('Building cells.')
-        graph.build_nodes()
-
-        graph.io.log_info('Building recurrent connections')
-        graph.build_recurrent_edges()
-
         for sim_input in inputs.from_config(config):
-            node_set = graph.get_node_set(sim_input.node_set)
-            if sim_input.input_type == 'spikes':
-                io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
-                path = sim_input.params['input_file']
-                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
-                #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                #                                       input_type=sim_input.input_type, params=sim_input.params)
-                graph.add_spike_trains(spikes, node_set, network.get_spike_generator_params())
+            if sim_input.input_type == 'spikes' and sim_input.module in ['nwb', 'csv', 'sonata', 'h5', 'hdf5']:
+                network.add_mod(mods.SpikesInputsMod(
+                    name=sim_input.name,
+                    input_type=sim_input.input_type,
+                    module=sim_input.module,
+                    # node_set=sim_input.node_set,
+                    **sim_input.params
+                ))
 
-            elif sim_input.input_type == 'current_clamp':
-                # TODO: Need to make this more robust
-                amp_times = sim_input.params.get('amplitude_times', [])
-                amp_values = sim_input.params.get('amplitude_values', [])
+            elif sim_input.module == 'IClamp':
+                network.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
-                if 'delay' in sim_input.params:
-                    amp_times.append(sim_input.params['delay'])
-                    amp_values.append(sim_input.params['amp'])
-
-                    if 'duration' in sim_input.params:
-                        amp_times.append(sim_input.params['delay'] + sim_input.params['duration'])
-                        amp_values.append(0.0)
-
-                network.add_step_currents(amp_times, amp_values, node_set, sim_input.name)
-
+            elif sim_input.module == 'ecephys_probe':
+                network.add_mod(mods.PointECEphysUnitsModule(name=sim_input.name, **sim_input.params))
+            
             else:
                 graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
 
         sim_reports = reports.from_config(config)
-        for report in sim_reports:
+        for report in sim_reports:           
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
 
@@ -279,11 +264,21 @@ class PointSimulator(Simulator):
                 # For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
                 # same in pointnet.
                 mod = mods.MultimeterMod(**report.params)
+            
+            elif isinstance(report, reports.WeightRecorder):
+                mod = mods.WeightRecorder(name=report.report_name, **report.params)
 
             else:
                 graph.io.log_exception('Unknown report type {}'.format(report.module))
 
+            mod.preload(sim=graph)
             network.add_mod(mod)
+
+        graph.io.log_info('Building cells.')
+        graph.build_nodes()
+
+        graph.io.log_info('Building recurrent connections')
+        graph.build_recurrent_edges()
 
         io.log_info('Network created.')
         return network

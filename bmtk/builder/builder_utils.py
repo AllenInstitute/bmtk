@@ -1,7 +1,7 @@
 import numpy as np
 import hashlib
 import logging
-
+import uuid
 
 try:
     from mpi4py import MPI
@@ -12,6 +12,7 @@ try:
     barrier = comm.barrier
 
 except ImportError:
+    comm = None
     mpi_rank = 0
     mpi_size = 1
     barrier = lambda: None
@@ -110,3 +111,34 @@ def check_properties_across_ranks(properties, graph_type='node'):
                 logger.warning(err_msg)
             else:
                 raise TypeError(err_msg)
+
+
+__build_time_uuid = None
+
+
+def build_time_uuid():
+    """Produces a unique identifier that will be unique for each time a network building script is executed.
+    """
+    global __build_time_uuid
+    if __build_time_uuid is not None:
+        return __build_time_uuid
+
+    elif comm is not None and mpi_size > 1:
+        barrier()
+        
+        try:
+            if mpi_rank == 0:
+                bcast_data = str(uuid.uuid4().hex)
+            else:
+                bcast_data = None
+
+            bcast_data = comm.bcast(bcast_data, root=0)
+            __build_time_uuid = bcast_data
+        except Exception as e:
+            __build_time_uuid = 'tmp'
+    
+    else:
+        __build_time_uuid = str(uuid.uuid4().hex)
+
+    # __build_time_uuid = str(uuid.uuid4().hex)
+    return __build_time_uuid

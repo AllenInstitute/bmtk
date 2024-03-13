@@ -23,7 +23,7 @@ MECHS_DIR = os.path.join(CURR_DIR, 'components/mechanisms')
 
 if nrn_installed:
     try:
-        load_neuron_modules(mechanisms_dir=MECHS_DIR, templates_dir=None, default_templates=False)
+        load_neuron_modules(mechanisms_dir=MECHS_DIR, templates_dir=None, default_templates=True)
         vecstim = h.VecStim()
         has_mechanism = True
 

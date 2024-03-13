@@ -85,6 +85,44 @@ def test_write_sonata(st_cls, write_fnc):
     write_sonata,
     write_sonata_itr
 ])
+def test_write_sonata_compression(st_cls, write_fnc):
+    
+    def do_one_test(comp_type, test_type):
+        st = create_st_buffer_mpi(st_cls)
+        st.add_spikes(population='V1', node_ids=MPI_rank, timestamps=[MPI_rank]*5)
+        st.add_spike(population='V2', node_id=MPI_size, timestamp=float(MPI_rank))
+        st.add_spikes(population='R{}'.format(MPI_rank), node_ids=0, timestamps=[0.1, 0.2, 0.3, 0.4])
+
+        tmp_h5 = tmpfile()
+        write_fnc(tmp_h5, st, compression=comp_type)
+
+        if MPI_rank == 0:
+            # Warnings: some systems creates lock even for reading an hdf5 file
+            with h5py.File(tmp_h5, 'r') as h5:
+                assert(check_magic(h5))
+                assert(get_version(h5) is not None)
+                assert(h5['/spikes/V1']['node_ids'].compression == test_type)
+                assert(h5['/spikes/V2']['timestamps'].compression == test_type)
+                for r in range(MPI_size):
+                    grp = h5['/spikes/R{}'.format(r)]
+                    assert(grp['node_ids'].compression == test_type)
+                    assert(grp['timestamps'].compression == test_type)
+    
+    comp_types = [None, 'gzip', 3, 'lzf']
+    test_types = [None, 'gzip', 'gzip', 'lzf']
+    for comp_type, test_type in zip(comp_types, test_types):
+        do_one_test(comp_type, test_type)
+
+
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
+@pytest.mark.parametrize('st_cls', [
+    STMPIBuffer,
+    STCSVMPIBufferV2
+])
+@pytest.mark.parametrize('write_fnc', [
+    write_sonata,
+    write_sonata_itr
+])
 def test_write_sonata_byid(st_cls, write_fnc):
     st = create_st_buffer_mpi(st_cls)
     st.add_spikes(population='V1', node_ids=[MPI_size + MPI_rank, MPI_rank], timestamps=[0.5, 1.0])

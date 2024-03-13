@@ -36,3 +36,5 @@ Richard Xu
 Tyler Banks `@tjbanks <http://github.com/tjbanks>`__
 
 Ben Latimer `@latimerb <https://github.com/latimerb>`__
+
+Nils Van Rompaey `@nilsvanrompaey <https://github.com/nilsvanrompaey>`__

@@ -24,14 +24,21 @@ import os
 import csv
 import h5py
 import numpy as np
+from datetime import datetime
 
+import bmtk
 from .core import SortOrder, csv_headers, col_population, find_conversion
 from .core import MPI_rank, comm_barrier
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
-                 population_renames=None, **kwargs):
+                 population_renames=None, compression='gzip', **kwargs):
+    
+    # make sure to take care of 'none' or 'None' compression
+    if isinstance(compression, str):
+        if compression.lower() == 'none':
+            compression = None
     path_dir = os.path.dirname(path)
     if MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -60,14 +67,14 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
             if sort_order != SortOrder.unknown:
                 spikes_pop_grp.attrs['sorting'] = sort_order.value
 
-            spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'])
+            spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'], compression=compression)
             spikes_pop_grp['timestamps'].attrs['units'] = spiketrain_reader.units()
-            spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'])
+            spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'], compression=compression)
     comm_barrier()
 
 
 def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms', population_renames=None,
-                     **kwargs):
+                     compression='gzip', **kwargs):
     path_dir = os.path.dirname(path)
     if MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -93,9 +100,9 @@ def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.non
             if sort_order != SortOrder.unknown:
                 spikes_grp.attrs['sorting'] = sort_order.value
 
-            timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
+            timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64, compression=compression)
             timestamps_ds.attrs['units'] = units
-            node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
+            node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64, compression=compression)
 
         for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
             if MPI_rank == 0:
@@ -138,5 +145,49 @@ def write_csv_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
             ts = spk[0]*conv_factor
             c_data = [ts, spk[1], spk[2]] if include_population else [ts, spk[2]]
             csv_writer.writerow(c_data)
+
+    comm_barrier()
+
+
+def write_nwb(path, spiketrain_reader, mode='w', include_population=True, units='ms', **kwargs):
+    import pynwb
+    
+    path_dir = os.path.dirname(path)
+    if MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
+        os.makedirs(path_dir)
+
+    if MPI_rank == 0:
+        # Last checked pynwb doesn't support writing on multiple cores, must let first core do all the
+        # writing to NWB.
+        nwbfile = pynwb.NWBFile(
+            session_description='BMTK {} generated NWB spikes file'.format(bmtk.__version__),
+            identifier='Generated in-silico, no session id',  # TODO: No idea what to put here?
+            session_start_time=datetime.now().astimezone(),
+            # experiment_description=str(session.experiment_metadata['experiment_id'])
+        )
+
+        if include_population:
+            nwbfile.add_unit_column(name="population", description="node population identifier")
+            add_unit = lambda nid, pop, st: nwbfile.add_unit(id=nid, spike_times=st, population=pop, node_id=nid)
+        else:
+            add_unit = lambda nid, pop, st: nwbfile.add_unit(id=nid, spike_times=st, node_id=nid)
+
+        nwbfile.add_unit_column(name="node_id", description="id of each node within a population")
+
+        for population in spiketrain_reader.populations:
+            for node_id in spiketrain_reader.node_ids(population=population):
+                spikes_times = spiketrain_reader.get_times(node_id=node_id, population=population)
+                if spikes_times is None or len(spikes_times) == 0:
+                    # No spikes for given node, don't try to write to nwb 
+                    continue
+
+                # sometimes bmtk/sonata may default to use different 32 or unsigned data-types which will cause
+                # nwb to throw a fit. Need to explicity convert data-types just in case.
+                spikes_times = spikes_times.astype('float64')
+                node_id = int(node_id)
+                add_unit(node_id, population, spikes_times)
+
+        with pynwb.NWBHDF5IO(path, mode) as io:
+            io.write(nwbfile)
 
     comm_barrier()

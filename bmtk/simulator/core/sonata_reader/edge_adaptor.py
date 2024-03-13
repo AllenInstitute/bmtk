@@ -97,6 +97,7 @@ class EdgeAdaptor(object):
     def preprocess_edge_types(network, edge_population):
         edge_types_table = edge_population.types_table
         edge_type_ids = np.unique(edge_population.type_ids)
+        cached_dynamics = {}
 
         for et_id in edge_type_ids:
             edge_type = edge_types_table[et_id]
@@ -108,12 +109,17 @@ class EdgeAdaptor(object):
 
                 # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
                 # cell_model loader function handle the extension.
-                try:
-                    params_val = json.load(open(params_path, 'r'))
-                    edge_type['dynamics_params'] = params_val
-                except Exception:
-                    # TODO: Check dynamics_params before
-                    network.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
+                # Cache the loaded dynamics_params to minimize file access.
+                if params_path in cached_dynamics:
+                    edge_type['dynamics_params'] = cached_dynamics[params_path]
+                else:
+                    try:
+                        params_val = json.load(open(params_path, 'r'))
+                        edge_type['dynamics_params'] = params_val
+                        cached_dynamics[params_path] = params_val
+                    except Exception:
+                        # TODO: Check dynamics_params before
+                        network.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
 
             # Split target_sections
             if 'target_sections' in edge_type:

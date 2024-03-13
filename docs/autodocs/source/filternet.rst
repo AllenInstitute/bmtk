@@ -40,13 +40,16 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
          "input_type": "movie",
          "module": "movie",
          "data_file": "/path/to/my/movie.npy",
-         "frame_rate": 30.0
+         "frame_rate": 1000.0,
+         "normalize": true
       }
    }
 
-* movie: Link to a 3-dimensional (x, y, time) matrix representing a movie
+* movie: Link to a 3-dimensional (time, x, y) matrix representing a movie (where time is equal to the number of frames in the movie).
 * frame_rate: frames per second
-
+* normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
+  * If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
+  * If the original movie has a unique range, users can specify the min/max contrast for the original movie ```"normalize": [0.0, 100.0]```
 
 Grating
 +++++++
@@ -65,7 +68,8 @@ Plays a drifting grating across the screen
          "temporal_f": 4.0,
          "contrast": 0.8,
          "theta": 45.0,
-         "phase": 0.0
+         "phase": 0.0,
+         "degrees_per_pixel": 1.0
       }
    }
 
@@ -76,6 +80,7 @@ Plays a drifting grating across the screen
 * theta: orientation angle, in degrees (default: 45.0)
 * phase: temporal phase, in degrees (default: 0.0)
 * contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)
+* degrees_per_pixel: sampling pitch of the movie in degrees per pixel (default: 1 / (cpd * 10))
 
 
 Full Field Flash
@@ -124,3 +129,41 @@ Creates a spreading black field originating from the center.
 * frame_rate: frames per second
 * gray_screen_dur: duration of the initial grey screen (seconds)
 * t_looming: time of the looming movie (seconds).
+
+
+Optimizations Techniques
+------------------------
+The time required to generate spikes will depending on the number of cells in the network, the stimulus type, complexity of the cell-models; among
+other factors. The full simulation time can take a few seconds to a few hours. The following options may sometimes be utilized in order to 
+significantly speed up the process.
+
+
+Parallelization with MPI
+++++++++++++++++++++++++
+The `MPI <https://www.mpi-forum.org/docs/>`_ library allows the simulation to be parallelized across multiple processors and machines for use in an 
+HPC cluster or even on a single machine with multiple cores. FilterNet can take advantage of using MPI automatically. Modelers will need the following
+installed on their machine:
+* Either `OpenMPI <https://www.open-mpi.org/>`_ or `MPICH2 <https://www.mpich.org/>`_ 
+* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_
+
+On most HPC clusters these will be already installed. For personal machines you can often install using either `pip install mpi4py` or 
+`conda install -c conda-forge mpi4py`. Then to run across <N> different cores execute your run_filternet.py script using
+
+```bash
+$ mpirun -n <N> python run_filternet.py config.json
+```
+
+Or if using a scheduler like slurm you can often use the `srun` command instead (instructions for scheduling parallel jobs on an HPC will vary depending
+on the institute).
+
+The results will be the same as if running FilterNet on a single core, the results stored in the same directory as specified in the config file.
+
+
+Numba
++++++
+You can also optimize FilterNet run-time using the `Numba <https://numba.pydata.org/>`_ python libary (with and without MPI). To install numba in your python
+environment:
+
+```bash
+$ pip install numba
+```
