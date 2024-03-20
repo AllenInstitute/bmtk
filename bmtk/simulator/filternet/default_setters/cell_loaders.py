@@ -99,20 +99,22 @@ def get_wavelet_params(node, dynamics_params):
         theta = np.arctan(sp_mod_freq / t_mod_freq)
     else:
         theta = np.pi / 2
-    if isinstance(dynamics_params['psi'], string_types):
-        dynamics_params['psi'] = eval(dynamics_params['psi'].replace('pi', 'np.pi'))
     psi = node.psi if node.psi is not None else dynamics_params['psi']
-    delay = node.delays if node.delays is not None else dynamics_params['delay']
-    if dynamics_params['direction'] == 'up':
-        dynamics_params['direction'] = 1
-    elif dynamics_params['direction'] == 'down':
-        dynamics_params['direction'] = -1
-    elif dynamics_params['direction'] in [-1,0,1]:
+    if isinstance(psi, string_types):
+        psi = eval(psi.replace('pi', 'np.pi'))
+    delay = node.delay if node.delay is not None else dynamics_params['delay']
+    direction = node.direction if node.direction is not None else dynamics_params['direction']
+
+    if direction == 'up':
+        direction = 1
+    elif direction == 'down':
+        #dynamics_params['direction'] = -1
+        direction = -1
+    elif direction in [-1,0,1]:
         pass
     else:
         raise Exception("'Direction' filter parameter must be 'up' (or 1) for upward frequency modulation, "
                         " or 'down' (or -1) for downward modulation, or 0 if not applicable.")
-    direction = node.direction if node.direction is not None else dynamics_params['direction']
 
     return Lambda, sigma_f, b_t, order_t, theta, psi, delay, amplitude, direction
 

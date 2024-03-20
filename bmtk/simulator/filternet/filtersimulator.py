@@ -49,6 +49,10 @@ class FilterSimulator(Simulator):
 
                 # contrast_min, contrast_max = m_data.min(), m_data.max()
                 normalize_data = params.get('normalize', False)
+<<<<<<< HEAD
+=======
+
+>>>>>>> f452c2c5c324eeed44bd709b6e0c29af784f84aa
                 if normalize_data:
                     m_data = Movie.normalize_matrix(m_data, domain=normalize_data)
 
