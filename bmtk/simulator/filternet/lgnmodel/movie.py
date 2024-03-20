@@ -6,10 +6,11 @@ from bmtk.simulator.filternet.io_tools import io
 
 class Movie(object):
     def __init__(self, data, row_range=None, col_range=None, labels=('time', 'y', 'x'),
-                 units=('second', 'pixel', 'pixel'), frame_rate=None, t_range=None):
+                 units=('second', 'pixel', 'pixel'), frame_rate=None, t_range=None, padding=False):
         self.data = data
         self.labels = labels
         self.units = units
+        self.padding=padding
         assert(units[0] == 'second')
 
         if t_range is None:
