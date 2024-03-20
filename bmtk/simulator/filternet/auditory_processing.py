@@ -1,6 +1,3 @@
-import pycochleagram.cochleagram as cgram
-import pycochleagram.erbfilter as erb
-from pycochleagram import utils
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import resample_poly
@@ -17,6 +14,8 @@ class AuditoryInput(object):
         :param hi_lim: float, high end of frequency range (Hz)
         :param sample_factor: int,
         """
+        from pycochleagram import utils
+
         self.stim_array, self.sr = utils.wav_to_array(aud_fn)      # Allow relative size of stimulus
         self.sample_factor = sample_factor  # density of sampling, can be 1,2, or 4
         self.low_lim = low_lim
@@ -24,6 +23,9 @@ class AuditoryInput(object):
         self.downsample = downsample
 
     def get_cochleagram(self, desired_sr=1000, interp_to_freq=False):
+        import pycochleagram.erbfilter as erb
+        import pycochleagram.cochleagram as cgram
+
         n = int(np.floor(erb.freq2erb(self.hi_lim) - erb.freq2erb(self.low_lim)) - 1)
         self.sample_factor = 4
         human_coch = cgram.human_cochleagram(self.stim_array, self.sr, n=n, sample_factor=self.sample_factor,
