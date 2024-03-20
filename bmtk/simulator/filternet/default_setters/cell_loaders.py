@@ -282,6 +282,9 @@ def default_cell_loader(node, template_name, dynamics_params):
         amplitude = 1.0
         linear_filter = SpectroTemporalFilter(spectrotemporal_filter, amplitude=amplitude)
         cell = OnUnit(linear_filter, transfer_function)
+    
+    else:
+        pass
 
     return cell
 
