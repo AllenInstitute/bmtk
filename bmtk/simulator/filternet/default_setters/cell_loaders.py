@@ -127,7 +127,7 @@ def default_cell_loader(node, template_name, dynamics_params):
     :param dynamics_params:
     :return:
     """
-    if template_name[0] == 'lgnmodel':
+    if template_name is None or template_name[0] == 'lgnmodel':
         # Create the spatial filter
         origin = (0.0, 0.0)
         translate = (node['x'], node['y'])
