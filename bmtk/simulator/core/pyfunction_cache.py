@@ -274,6 +274,31 @@ def synapse_model(*wargs, **wkwargs):
                 return func(*args, **kwargs)
             return func_wrapper
         return decorator
+    
+
+def model_processing(*wargs, **wkwargs):
+    if len(wargs) == 1 and callable(wargs[0]):
+        # for the case without decorator arguments, grab the function object in wargs and create a decorator
+        func = wargs[0]
+        py_modules.add_cell_processor(func.__name__, func)  # add function assigned to its original name
+
+        @wraps(func)
+        def func_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return func_wrapper
+    else:
+        # for the case with decorator arguments
+        assert(all(k in ['name'] for k in wkwargs.keys()))
+
+        def decorator(func):
+            # store the function in py_modules but under the name given in the decorator arguments
+            py_modules.add_cell_processor(wkwargs['name'], func)
+
+            @wraps(func)
+            def func_wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return func_wrapper
+        return decorator
 
 
 def add_weight_function(func, name=None, overwrite=True):

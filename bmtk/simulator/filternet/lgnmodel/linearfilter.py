@@ -34,7 +34,6 @@ class SpatioTemporalFilter(object):
         kernel = Kernel3D(spatial_kernel.row_range, spatial_kernel.col_range, t_range, row_inds, col_inds, t_inds,
                           spatiotemporal_kernel)
         kernel.apply_threshold(threshold)
-
         kernel.kernel *= self.amplitude
         return kernel
     
@@ -48,6 +47,49 @@ class SpatioTemporalFilter(object):
     def show_spatial_filter(self, *args, **kwargs):
         self.spatial_filter.imshow(*args, **kwargs)
     
+    def to_dict(self):
+        return {'class': (__name__, self.__class__.__name__),
+                'spatial_filter': self.spatial_filter.to_dict(),
+                'temporal_filter': self.temporal_filter.to_dict(),
+                'amplitude': self.amplitude}
+
+
+class SpectroTemporalFilter(object):
+    def __init__(self, spectrotemporal_filter, amplitude=1.):
+        self.spectrotemporal_filter = spectrotemporal_filter
+        self.amplitude = amplitude
+
+    def get_spectrotemporal_kernel(self, freq_range, t_range, threshold=0, reverse=False):
+        spectrotemporal_kernel = self.spectrotemporal_filter.get_kernel(freq_range, t_range, threshold_rel = threshold)
+
+        if reverse:
+            t_range = -np.array(t_range)[::-1]
+            t_inds = -1 * spectrotemporal_kernel.col_inds - 1
+
+        else:
+            t_range = np.array(t_range)
+            t_inds = spectrotemporal_kernel.col_inds
+
+        # Keep it 3D to keep downstream consistent
+        # spectrotemporal_kernel.col_range is put in t_range
+        # frequencies are put in row_range
+        kernel = Kernel3D(spectrotemporal_kernel.row_range, [0], t_range,
+                          spectrotemporal_kernel.row_inds, np.zeros_like(spectrotemporal_kernel.row_inds),
+                          t_inds, spectrotemporal_kernel.kernel)
+        #kernel.apply_threshold(threshold)
+        #kernel.kernel *= self.amplitude
+        return kernel
+
+    def t_slice(self, t, *args, **kwargs):
+        k = self.get_spatiotemporal_kernel(*args, **kwargs)
+        return k.t_slice(t)
+
+    def show_temporal_filter(self, *args, **kwargs):
+        self.temporal_filter.imshow(*args, **kwargs)
+
+    def show_spatial_filter(self, *args, **kwargs):
+        self.spatial_filter.imshow(*args, **kwargs)
+
     def to_dict(self):
         return {'class': (__name__, self.__class__.__name__),
                 'spatial_filter': self.spatial_filter.to_dict(),

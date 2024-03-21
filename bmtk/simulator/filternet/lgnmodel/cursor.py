@@ -37,7 +37,7 @@ except ImportError as ie:
 
 
 from .utilities import convert_tmin_tmax_framerate_to_trange
-
+from .linearfilter import SpatioTemporalFilter, SpectroTemporalFilter
 
 class KernelCursor(object):
     """A class that takes care of the convolution of the (non-separable) spatial-temporal linear filter with the move.
@@ -140,8 +140,42 @@ class LNUnitCursor(KernelCursor):
     """
     def __init__(self, lnunit, movie, threshold=0):
         self.lnunit = lnunit
-        kernel = lnunit.get_spatiotemporal_kernel(movie.row_range, movie.col_range, movie.t_range, reverse=True,
+        if hasattr(movie, "t_range_orig"):    # Reset padded to original
+            movie.t_range = movie.t_range_orig
+            movie.data = movie.data_orig
+            movie.row_range = movie.row_range_orig
+        if isinstance(self.lnunit.linear_filter, SpatioTemporalFilter):
+            kernel = lnunit.get_spatiotemporal_kernel(movie.row_range, movie.col_range, movie.t_range, reverse=True,
                                                   threshold=threshold)
+        elif isinstance(self.lnunit.linear_filter, SpectroTemporalFilter):
+            kernel = lnunit.get_spectrotemporal_kernel(movie.row_range, movie.t_range, reverse=True, threshold=0.05)
+            if movie.padding:
+                if movie.padding == 'edge':
+                    pre_pad = np.full((len(np.unique(kernel.t_inds))-1, movie.data.shape[1]),
+                                  movie.data[0, :, 0])
+                    pre_pad = pre_pad[:, :, np.newaxis]
+                    movie.data_orig = movie.data
+                    movie.data = np.concatenate((pre_pad, movie.data))
+                    lower_pad = np.full((movie.data.shape[0], len(np.unique(kernel.row_inds)) - 1, 1),
+                                        np.reshape(movie.data[:, 0, 0], (-1, 1, 1)))
+                    upper_pad = np.full((movie.data.shape[0], len(np.unique(kernel.row_inds)) - 1, 1),
+                                        np.reshape(movie.data[:, -1, 0], (-1, 1, 1)))
+                    movie.data = np.hstack((lower_pad, movie.data, upper_pad))
+                    kernel.t_range = np.linspace(kernel.t_range[0] - pre_pad.shape[0] * 1/movie.frame_rate,
+                                                 0, movie.data.shape[0])
+                    movie.t_range_orig = movie.t_range
+                    movie.t_range = kernel.t_range - kernel.t_range[0]
+                    # Treating it like an image, although technically strange to pad to negative frequencies
+                    kernel.row_range = np.linspace(kernel.row_range[0] -
+                                                   lower_pad.shape[1] * (kernel.row_range[1]-kernel.row_range[0]),
+                                                   kernel.row_range[-1] +
+                                                   upper_pad.shape[1] * (kernel.row_range[-1]-kernel.row_range[-2]),
+                                                   movie.data.shape[1])
+                    movie.row_range_orig = movie.row_range
+                    movie.row_range = kernel.row_range
+                    kernel.row_inds = kernel.row_inds + lower_pad.shape[1]
+        else:
+            pass
         kernel.apply_threshold(threshold)
              
         super(LNUnitCursor, self).__init__(kernel, movie)

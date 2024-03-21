@@ -107,4 +107,6 @@ class GaussianSpatialFilter(object):
         kernel.normalize()
         kernel.kernel *= amplitude
 
+        #kernel.imshow()
+
         return kernel
