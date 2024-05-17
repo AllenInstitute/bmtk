@@ -122,16 +122,23 @@ class SpikesMod(SimulatorMod):
         self._tmp_file_base = 'tmp_spike_times'
         self._spike_labels = os.path.join(self._tmp_dir, self._tmp_file_base)
 
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_to_disk=cache_to_disk)
-        self._spike_writer.delimiter = '\t'
-        self._spike_writer.gid_col = 0
-        self._spike_writer.time_col = 1
-        self._spike_writer.compression = compression
+        # saving them to initialize SpikeTrains in initialize()
+        self._tmp_dir = tmp_dir
+        self._cache_to_disk = cache_to_disk
+        self._compression = compression
+
         self._sort_order = sort_order.none if not spikes_sort_order else sort_order_lu[spikes_sort_order]
 
         self._spike_detector = None
 
     def initialize(self, sim):
+        # Now this function takes care of initializing the spike_writer.
+        self._spike_writer = SpikeTrains(cache_dir=self._tmp_dir, cache_to_disk=self._cache_to_disk)
+        self._spike_writer.delimiter = '\t'
+        self._spike_writer.gid_col = 0
+        self._spike_writer.time_col = 1
+        self._spike_writer.compression = self._compression
+        
         self._spike_detector = create_spike_detector(self._spike_labels)
         nest.Connect(sim.net.gid_map.gids, self._spike_detector)
 
