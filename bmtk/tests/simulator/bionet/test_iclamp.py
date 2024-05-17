@@ -38,6 +38,10 @@ class MockBioSimulator(object):
         self.cell = None
         self.vm = None
 
+    @property
+    def local_gids(self):
+        return [0]
+
     def get_node_set(self, _):
         return self
 

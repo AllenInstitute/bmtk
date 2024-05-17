@@ -1,0 +1,40 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output_natural_scenes",
+    "$INPUT_DIR": "$BASE_DIR/movies"
+  },
+
+  "run": {
+    "tstop": 2500.0,
+    "dt": 0.1
+  },
+
+  "target_simulator": "LGNModel",
+
+  "conditions": {
+    "jitter_lower": 1.0,
+    "jitter_upper": 1.0
+  },
+
+  "inputs": {
+    "movie_input": {
+      "input_type": "movie",
+      "module": "movie",
+      "data_file": "$INPUT_DIR/ns_20images.set00.2500ms.1000fps.10ips.npy",
+      "frame_rate": 1000.0,
+      "normalize": true
+    }
+  },
+
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "log_file": "log.txt",
+    "rates_csv": "rates.csv",
+    "spikes_csv": "spikes.csv",
+    "spikes_h5": "spikes.h5",
+    "overwrite_output_dir": true
+  },
+
+  "network": "config.circuit.json"
+}

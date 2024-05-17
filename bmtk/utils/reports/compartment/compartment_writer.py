@@ -411,6 +411,8 @@ class CompartmentWriterv01(CompartmentWriterABC):
         barrier()
         if self._mpi_size > 1 and self._mpi_rank == 0:
             h5final = h5py.File(self._final_fpath, 'w')
+            add_hdf5_version(h5final)
+            add_hdf5_magic(h5final)
 
             tmp_reports = [CompartmentReader(name) for name in self.temp_files if os.path.exists(name)]
             populations = set()

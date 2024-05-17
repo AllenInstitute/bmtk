@@ -114,7 +114,7 @@ class SpikeGenerator(SpikeTrains):
         if population is not None and 'default_population' not in kwargs:
             kwargs['default_population']= population
 
-        if seed:
+        if seed is not None:
             np.random.seed(seed)
 
         super(SpikeGenerator, self).__init__(units=output_units, **kwargs)

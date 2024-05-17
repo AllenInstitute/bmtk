@@ -11,8 +11,10 @@ Main Tutorials
    BioNet: Multiple Nodes with single cell-type <tutorial_single_pop>
    BioNet: Heterogeneous network <tutorial_multi_pop>
    PointNet: Point-neuron modeling <tutorial_pointnet_modeling>
-   PopNet: Population-based firing rate models <tutorial_population_modeling>
    FilterNet: Full-field flashing movie <tutorial_filter_models>
+   Auditory FilterNet: Generating stimuli from auditory input <tutorial_auditory_filternet>
+   PopNet: Population-based firing rate models <tutorial_population_modeling>
+   
 
 
 Also check out the tutorial series from our `annual workshop <workshop>`_.

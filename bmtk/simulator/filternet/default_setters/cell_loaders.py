@@ -203,11 +203,7 @@ def default_cell_loader(node, template_name, dynamics_params):
             cell = sep_ts_onoff_cell
 
         elif model_name == 'LGNOnOFFCell':
-            wts = [node['weight_dom_0'], node['weight_dom_1']]
-            kpeaks = [node['kpeaks_dom_0'], node['kpeaks_dom_1']]
-            delays = [node['delay_dom_0'], node['delay_dom_1']]
-            # transfer_function = ScalarTransferFunction('s')
-            temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
+            temporal_filter = TemporalFilterCosineBump(t_weights, t_kpeaks, t_delays)
 
             spatial_filter_on = GaussianSpatialFilter(sigma=node['sigma_on'], origin=origin, translate=translate)
             on_linear_filter = SpatioTemporalFilter(spatial_filter_on, temporal_filter, amplitude=20)
