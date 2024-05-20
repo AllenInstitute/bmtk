@@ -89,6 +89,8 @@ class PointNetwork(SimNetwork):
         self._gid_map = GidPool()
         self._virtual_gids = GidPool()
 
+        self._nestml_models = []
+
     @property
     def py_function_caches(self):
         return pyfunction_cache
@@ -246,3 +248,25 @@ class PointNetwork(SimNetwork):
             # Record exception to log file.
             self.io.log_error(str(e))
             raise
+
+    def add_nestml_models(self, modelname):
+        if modelname not in self._nestml_models:
+            self._nestml_models.append(modelname)
+
+    def initialize_nestml(self, rebuild_nestml=True):
+        from pynestml.frontend.pynestml_frontend import generate_nest_target
+        models_dir = os.path.commonpath([self.get_component('point_neuron_models_dir'), self.get_component('synaptic_models_dir')])
+        nestml_model_name_suffix = '_nestml'
+
+        if self._nestml_models:
+            if rebuild_nestml or not (os.path.exists(os.path.join(models_dir, 'nestml_target'))):
+                if not rebuild_nestml:
+                    self.io.log_info('Cannot find nestml target, must rebuild')
+                generate_nest_target(input_path=self._nestml_models,
+                                     logging_level='ERROR',
+                                     suffix=nestml_model_name_suffix,
+                                     target_path=os.path.join(models_dir, 'nestml_target'))
+                self.io.log_info('Generating NESTML models: ', self._nestml_models)
+                # a module by the same name can only be loaded once; do this at the very end of the function
+            nest.Install('nestmlmodule')
+
