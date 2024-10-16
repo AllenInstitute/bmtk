@@ -29,7 +29,7 @@ from subprocess import call
 from optparse import OptionParser
 from collections import OrderedDict
 import logging
-from distutils.dir_util import copy_tree
+from shutil import copytree
 
 
 logger = logging.getLogger(__name__)
@@ -248,7 +248,7 @@ class EnvBuilder(object):
 
             if with_examples:
                 logger.info('  Copying files from {}.'.format(src_dir))
-                copy_tree(src_dir, trg_dir)
+                copytree(src_dir, trg_dir, dirs_exist_ok=True)
 
         # return components_config
         self._circuit_config['components'] = components_config

@@ -27,7 +27,7 @@ import numpy as np
 from subprocess import call
 from collections import OrderedDict
 import logging
-from distutils.dir_util import copy_tree
+from shutil import copytree
 
 from bmtk.utils.compile_mechanisms import copy_modfiles, compile_mechanisms
 
@@ -270,7 +270,7 @@ class EnvBuilder(object):
 
             if with_examples:
                 logger.info('  Copying files from {}.'.format(src_dir))
-                copy_tree(src_dir, trg_dir)
+                copytree(src_dir, trg_dir, dirs_exist_ok=True)
 
         # return components_config
         self._circuit_config['components'] = components_config
