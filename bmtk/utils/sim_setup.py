@@ -687,7 +687,7 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
 
 
 def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
-                       tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
+                       overwrite_config=False, tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
                        v_init=-80.0, celsius=34.0,
                        report_vars=[], report_nodes=None, current_clamp=None,
                        spikes_inputs=None,
@@ -700,7 +700,8 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                       report_vars=report_vars, report_nodes=report_nodes, current_clamp=current_clamp,
                       spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
-                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
+                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius,
+                      overwrite_config=overwrite_config)
 
 
 def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
