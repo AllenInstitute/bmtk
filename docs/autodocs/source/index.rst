@@ -40,7 +40,7 @@ population-level firing rate models.
 The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
 models. What BMTK does provide:
 
-* A unified inteferce across different simulators, so that modelers can work with and study their own network models
+* A unified interface across different simulators, so that modelers can work with and study their own network models
   across different simulators without having to learn how to use each tool.
 * An easy way to setup and initialize network simulations with little-to-no programming necessary
 * Automatic integration of parallelization when running on HPC.
