@@ -2,6 +2,8 @@ from pathlib import Path
 from typing import Any
 import numpy as np
 import pandas as pd
+import h5py
+import fnmatch
 
 from .simulator_module import SimulatorMod
 from bmtk.simulator.core.io_tools import io
@@ -21,11 +23,13 @@ try:
     bcast = comm.bcast
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
+    barrier = comm.Barrier
     has_mpi = True
 except:
     MPI_rank = 0
     MPI_size = 1
     bcast = lambda v, n: v
+    barrier = lambda : True
     has_mpi = False
 
 
@@ -81,6 +85,16 @@ class NWBFileWrapper(object):
             self._id = nwb_path
             self._io = pynwb.NWBHDF5IO(nwb_path, 'r').read()
         
+    @property
+    def uuid(self):
+        return self._id
+    
+    def __getattr__(self, name):
+        return getattr(self.__dict__['_io'], name)
+
+class DandiFileWrapper(object):
+    
+    
     @property
     def uuid(self):
         return self._id
@@ -220,7 +234,8 @@ class TimeWindow(object):
 
 class MappingStrategy(object):
     def __init__(self, **kwargs):
-        self._nwb_paths = kwargs['input_file']
+        self._nwb_paths = kwargs.get('input_file', None)
+        self._dandi_repo = kwargs.get('dandi_repo', None)
         self._filters = kwargs.get('units', {})       
         self._simulation_onset = kwargs.get('interval_offset', 0.0)/1000.0
         self._missing_ids = kwargs.get('missing_ids', 'fail')
@@ -234,13 +249,28 @@ class MappingStrategy(object):
         self._units2nodes_map = None
 
     @lazy_property
-    def nwb_files(self):
-        if not isinstance(self._nwb_paths, (list, tuple)):
-            self._nwb_paths = [self._nwb_paths] 
+    def nwb_files(self):        
+        if not (self._nwb_paths or self._dandi_repo):
+            io.log_exception('ecephys_probe module missing "input_type" and/or "dandi_repo" parameter, please specify location of NWB files or repo containing sorted spike units.')
+              
+        if self._nwb_paths is None:
+            self._nwb_paths = []
+        elif not isinstance(self._nwb_paths, (list, tuple)):
+            self._nwb_paths = [self._nwb_paths]
 
         nwb_files = []
-        for nwb_path in self._nwb_paths:            
+        for nwb_path in self._nwb_paths:
+            # print(self._nwnwb_paths)
+            print(nwb_path)
             nwb_files.append(NWBFileWrapper(nwb_path))
+
+        if self._dandi_repo is not None:
+            if isinstance(self._dandi_repo, dict):
+                dandi_nwbs = get_dandiset(**self._dandi_repo)
+            else:
+                dandi_nwbs = get_dandiset(dandi_repo=self._dandi_repo)
+            
+            nwb_files.extend(dandi_nwbs)
 
         return nwb_files
     
@@ -397,3 +427,41 @@ def filter_table(table_df, filters_dict):
         table_df = table_df[mask]
 
     return table_df
+
+
+def get_dandiset(dandi_repo, version_id="draft", variable_measured='Units',
+                 download=True, download_dir='dandisets', overwrite=False):
+    from dandi.dandiapi import DandiAPIClient
+    import fsspec
+    
+    repo_url = dandi_repo.split(':')
+    if repo_url[0] == 'dandi':
+        del repo_url[0]
+
+    dandiset_id = repo_url[0]
+    filepath_pattern = repo_url[1] if len(repo_url) > 1 else '*'
+    
+    nwb_files = []
+    with DandiAPIClient() as client:        
+        dandiset = client.get_dandiset(dandiset_id, version_id)
+        for asset in dandiset.get_assets():
+            asset_measured_vars = [v['value'] for v in asset.get_raw_metadata().get('variableMeasured', []) if variable_measured in v['value']]
+            if asset_measured_vars and fnmatch.fnmatch(asset.path, filepath_pattern):
+                if download:
+                    nwb_path = Path(download_dir) / Path(dandiset_id) / Path(asset.path)
+                    nwb_path.parent.mkdir(parents=True, exist_ok=True)
+                    if (not nwb_path.exists() or overwrite) and MPI_rank == 0:
+                        asset.download(nwb_path)
+                    barrier()
+                    nwb_files.append(NWBFileWrapper(nwb_path))
+
+                else:
+                    io.debug(f'Streaming {asset.path}')
+                    s3_url = asset.get_content_url(follow_redirects=1, strip_query=True)
+                    fs = fsspec.filesystem("http")
+                    f = fs.open(s3_url, 'rb')
+                    file_h5 = h5py.File(f)
+                    io = pynwb.NWBHDF5IO(file=file_h5)
+                    nwb_files.append(NWBFileWrapper(io.read()))
+
+    return nwb_files
