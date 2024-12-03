@@ -76,8 +76,8 @@ class SubclassMetricsCache(object):
                 si_exp = exp_means.iloc[scn, 3:4].values
                 ttp_exp = exp_means.iloc[scn, 1:2].values
             else:
-                si_exp = np.NaN * np.ones((1, 5))
-                ttp_exp = np.NaN * np.ones((1, 2))
+                si_exp = np.nan * np.ones((1, 5))
+                ttp_exp = np.nan * np.ones((1, 2))
 
             nsub = exp_nsub.iloc[scn]
             if nsub == 1:
@@ -89,7 +89,7 @@ class SubclassMetricsCache(object):
                 elif ctype.find('ON') >= 0:
                     si_std = np.mean(exp_std.iloc[max_nsub_ind, 3:4].values) * np.ones((1, 5))
                 else:
-                    si_std = np.NaN * np.ones((1, 5))
+                    si_std = np.nan * np.ones((1, 5))
 
             else:
                 f0_std = exp_std.iloc[scn, 5:10].values
@@ -100,7 +100,7 @@ class SubclassMetricsCache(object):
                 elif ctype.find('ON') >= 0:
                     si_std = exp_std.iloc[scn, 3:4].values
                 else:
-                    si_std = np.NaN * np.ones((1, 5))
+                    si_std = np.nan * np.ones((1, 5))
 
             if ctype.find('t') >= 0:
                 tcross = 40.
