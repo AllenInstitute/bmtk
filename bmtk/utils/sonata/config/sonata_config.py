@@ -397,7 +397,7 @@ class ConfigParser(object):
         :return: json rvalue with resolved variables. Won't resolve variables that don't exist in manifest.
         """
         ret_val = json_str
-        variables = [m for m in re.finditer('\$\{?[\w]+\}?', json_str)]
+        variables = [m for m in re.finditer(r'\$\{?[\w]+\}?', json_str)]
         for var in variables:
             var_key = var.group()
             # change $VAR or ${VAR} --> VAR
