@@ -85,7 +85,8 @@ class FilterSimulator(Simulator):
             mv = ffm.full(t_max=self._tstop)
             self._movies.append(mv)
 
-        elif movie_type == 'graiting':
+        # elif movie_type == 'graiting':
+        elif movie_type in ['grating', 'graiting']:  # Misspelled in original code
             init_param_names = list(signature(GratingMovie.__init__).parameters.keys())
             create_param_names = list(signature(GratingMovie.create_movie).parameters.keys())
             init_params = FilterSimulator.find_params(init_param_names, **params)
@@ -94,8 +95,8 @@ class FilterSimulator(Simulator):
 
             create_params['gray_screen_dur'] /= 1000.0
             gm = GratingMovie(**init_params)
-            graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
-            self._movies.append(graiting_movie)
+            grating_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
+            self._movies.append(grating_movie)
 
         elif movie_type == 'looming':
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)

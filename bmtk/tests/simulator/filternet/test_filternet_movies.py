@@ -8,7 +8,7 @@ from bmtk.utils.sim_setup import build_env_filternet
 def test_filtersimulator_add_movie_with_phase(tmp_path):
     simulator = build_simulator(tmp_path)
     simulator.add_movie(
-        'graiting',
+        'graiting',  # this is typo, but keeping it this line for backward compatibility
         {'row_size': 100,
          'col_size': 100,
          'gray_screen_dur': 0,
@@ -17,6 +17,21 @@ def test_filtersimulator_add_movie_with_phase(tmp_path):
         simulator._movies[0].data,
         GratingMovie(100, 100).create_movie(phase=180, t_max=simulator._tstop).data)
 
+def test_filtersimulator_add_movie(tmp_path):
+    simulator = build_simulator(tmp_path)
+    simulator.add_movie(
+        'grating',
+        {'row_size': 120,
+         'col_size': 80,
+         'gray_screen_dur': 0,
+         'y_dir': 'up'}
+    )
+    assert np.allclose(
+        simulator._movies[0].data,
+        GratingMovie(120, 80, y_dir='up').create_movie(
+            t_max=simulator._tstop
+        ).data,
+    )
 
 def build_simulator(tmp_path):
     data_dir = Path(__file__).parent / 'data' 

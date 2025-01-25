@@ -41,7 +41,9 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
          "module": "movie",
          "data_file": "/path/to/my/movie.npy",
          "frame_rate": 1000.0,
-         "normalize": true
+         "normalize": true,
+         "y_dir": "down",
+         "flip_y": false
       }
    }
 
@@ -50,6 +52,8 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
 * normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
   * If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
   * If the original movie has a unique range, users can specify the min/max contrast for the original movie ```"normalize": [0.0, 100.0]```
+* y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
+* flip_y: Flip the y-axis of the movie (default: false).
 
 Grating
 +++++++
@@ -60,7 +64,7 @@ Plays a drifting grating across the screen
    {
       "gratings_input": {
          "input_type": "movie",
-         "module": "graiting",
+         "module": "grating",
          "row_size": 120,
          "col_size": 240,
          "gray_screen_dur": 0.5,
@@ -69,7 +73,8 @@ Plays a drifting grating across the screen
          "contrast": 0.8,
          "theta": 45.0,
          "phase": 0.0,
-         "degrees_per_pixel": 1.0
+         "degrees_per_pixel": 1.0,
+         "y_dir": "down"
       }
    }
 
@@ -81,6 +86,10 @@ Plays a drifting grating across the screen
 * phase: temporal phase, in degrees (default: 0.0)
 * contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)
 * degrees_per_pixel: sampling pitch of the movie in degrees per pixel (default: 1 / (cpd * 10))
+* y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
+
+Note: Theta is always defined as counterclockwise rotation from the x-axis
+regardless of how the Y-axis is defined.
 
 
 Full Field Flash
@@ -97,7 +106,8 @@ Creates a bright (or dark) flash on a gray screen for a limited number of second
          "col_size": 240,
          "t_on": 1000.0,
          "t_off": 2000.0,
-         "max_intensity": 20.0
+         "max_intensity": 20.0,
+         "y_dir": "down"
       }
    }
 
@@ -105,6 +115,7 @@ Creates a bright (or dark) flash on a gray screen for a limited number of second
 * t_on: time (ms) from the beginning on when to start the flash
 * t_off: length (ms) of flash
 * max_intensity: intensity of screen during flash (>0.0 is brighter, <0.0 is darker) compared to a gray screen.
+* y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 
 
 Looming
@@ -121,7 +132,8 @@ Creates a spreading black field originating from the center.
          "col_size": 240,
          "frame_rate": 1000.0,
          "gray_screen_dur": 0.5,
-         "t_looming": 1.0
+         "t_looming": 1.0,
+         "y_dir": "down"
       }
    }
 
@@ -129,6 +141,7 @@ Creates a spreading black field originating from the center.
 * frame_rate: frames per second
 * gray_screen_dur: duration of the initial grey screen (seconds)
 * t_looming: time of the looming movie (seconds).
+* y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 
 
 Optimizations Techniques

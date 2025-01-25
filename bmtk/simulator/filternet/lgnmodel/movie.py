@@ -6,11 +6,16 @@ from bmtk.simulator.filternet.io_tools import io
 
 class Movie(object):
     def __init__(self, data, row_range=None, col_range=None, labels=('time', 'y', 'x'),
-                 units=('second', 'pixel', 'pixel'), frame_rate=None, t_range=None, padding=False):
-        self.data = data
+                 units=('second', 'pixel', 'pixel'), frame_rate=None, t_range=None,
+                 padding=False, y_dir='down', flip_y=False):
+        if flip_y:
+            self.data = data[:, ::-1, :]
+        else:
+            self.data = data
         self.labels = labels
         self.units = units
-        self.padding=padding
+        self.padding = padding
+        self.y_dir = y_dir 
         assert(units[0] == 'second')
 
         if t_range is None:
@@ -44,6 +49,9 @@ class Movie(object):
         ax.plot(t_vals, y_vals)
         ax.set_ylim(y_vals.min()-np.abs(y_vals.min())*.05, y_vals.max()+np.abs(y_vals.max())*.05)
         
+        if self.y_dir == 'up':
+            ax.invert_yaxis()
+        
         if not xlabel is None:
             ax.set_xlabel(xlabel)
             
@@ -61,6 +69,8 @@ class Movie(object):
         ti = int(t*self.frame_rate)
         data = self.data[ti, :, :]
         plt.imshow(data, vmin=vmin, vmax=vmax, cmap=cmap)
+        if self.y_dir == 'up':
+            plt.gca().invert_yaxis()
         plt.colorbar()
         if show:
             plt.show()
@@ -98,6 +108,8 @@ class Movie(object):
             # TODO: Find a way to display a running clock as a x-label or title
             frame_img = ax.imshow(data[i, :, :], cmap=cmap, animated=True, vmin=vmin, vmax=vmax,
                                   extent=[self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]])
+            if self.y_dir == 'up':
+                ax.invert_yaxis()
             title = ax.text(0.99, 0.000, "{:05.2f} s".format(times[i]),
                             size=plt.rcParams["axes.titlesize"],
                             horizontalalignment='right',
@@ -186,7 +198,7 @@ class Movie(object):
 # TODO: Instead of using subclasses, convert the following movie type to a Factory class/function that returns a Movie
 #   object
 class FullFieldMovie(Movie):
-    def __init__(self, f, rows, cols, frame_rate=24.0):
+    def __init__(self, f, rows, cols, frame_rate=24.0, y_dir='down'):
         if np.isscalar(rows):
             rows = np.arange(0, rows)
 
@@ -198,6 +210,7 @@ class FullFieldMovie(Movie):
         self.frame_size = (len(self.row_range), len(self.col_range))
         self._frame_rate = frame_rate
         self.f = f
+        self.y_dir = y_dir
         
     @property
     def frame_rate(self):
@@ -230,28 +243,29 @@ class FullFieldMovie(Movie):
         data[af, bf, cf] = self.f(t_range[af])
         
         return Movie(data, row_range=self.row_range, col_range=self.col_range, labels=('time', 'y', 'x'),
-                     units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate)
+                     units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate, y_dir=self.y_dir)
 
     def create_movie(self, t_max, t_min=0.0):
         return self.full(t_min=t_min, t_max=t_max)
 
 
 class FullFieldFlashMovie(FullFieldMovie):
-    def __init__(self, row_range, col_range, t_on, t_off, max_intensity=1, frame_rate=24):
+    def __init__(self, row_range, col_range, t_on, t_off, max_intensity=1, frame_rate=24, y_dir='down'):
         assert(t_on < t_off)
 
         def f(t):
             return np.piecewise(t, *zip(*[(t < t_on, 0), (np.logical_and(t_on <= t, t < t_off), max_intensity),
                                           (t_off <= t, 0)]))
 
-        super(FullFieldFlashMovie, self).__init__(f, row_range, col_range, frame_rate=frame_rate)
+        super(FullFieldFlashMovie, self).__init__(f, row_range, col_range, frame_rate=frame_rate, y_dir=y_dir)
 
 
 class GratingMovie(Movie):
-    def __init__(self, row_size, col_size, frame_rate=1000.0):
+    def __init__(self, row_size, col_size, frame_rate=1000.0, y_dir='down'):
         self.row_size = row_size  # in degrees
         self.col_size = col_size  # in degrees
         self.frame_rate = float(frame_rate)  # in Hz
+        self.y_dir = y_dir  # 'up' or 'down'
 
     def create_movie(self, t_min=0, t_max=1, gray_screen_dur=0, cpd=0.05, temporal_f=4, theta=45,
                      phase=0., contrast=1.0, degrees_per_pixel=None, row_size_new=None, col_size_new=None):
@@ -282,10 +296,17 @@ class GratingMovie(Movie):
 
         # Creates a drifting grating panel
         tt, yy, xx = np.meshgrid(time_range, self.row_range, self.col_range, indexing='ij')
-        theta_rad = np.pi*(180 - theta) / 180.
-        phase_rad = np.pi*(180 - phase) / 180.
+        # theta_rad = np.pi*(180 - theta) / 180.
+        # phase_rad = np.pi*(180 - phase) / 180.
+        if self.y_dir == 'up':
+            theta_rad = np.deg2rad(theta)
+        elif self.y_dir == 'down':
+            theta_rad = np.deg2rad(-theta)
+        else:
+            raise ValueError("y_dir must be 'up' or 'down'")
+        phase_rad = np.deg2rad(phase)
         xy = xx * np.cos(theta_rad) + yy * np.sin(theta_rad)
-        data = contrast*np.sin(2*np.pi*(cpd * xy + temporal_f *tt) + phase_rad)
+        data = contrast*np.sin(2*np.pi*(cpd * xy - temporal_f *tt) + phase_rad)
 
         # truncate
         if row_size_new != None:
@@ -297,21 +318,23 @@ class GratingMovie(Movie):
         if gray_screen_dur > 0:
             # just adding one or two seconds to gray screen so flash never "happens"
             m_gray = FullFieldFlashMovie(self.row_range, self.col_range, gray_screen_dur + 1, gray_screen_dur + 2,
-                                         frame_rate=self.frame_rate).full(t_max=gray_screen_dur)
+                                         frame_rate=self.frame_rate, y_dir=self.y_dir).full(t_max=gray_screen_dur)
             mov = m_gray + Movie(data, row_range=self.row_range, col_range=self.col_range, labels=('time', 'y', 'x'),
-                                 units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate)
+                                 units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate,
+                                 y_dir=self.y_dir)
         else:
             mov = Movie(data, row_range=self.row_range, col_range=self.col_range, labels=('time', 'y', 'x'),
-                        units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate)
+                        units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate, y_dir=self.y_dir)
 
         return mov
 
 
 class LoomingMovie(Movie):
-    def __init__(self, row_size, col_size, frame_rate=1000.):
+    def __init__(self, row_size, col_size, frame_rate=1000., y_dir='down'):
         self.row_size = row_size  # in degrees
         self.col_size = col_size  # in degrees
         self.frame_rate = float(frame_rate)  # in Hz
+        self.y_dir = y_dir
 
     def create_movie(self, t_looming=1, gray_screen_dur=0.5):
         """Create the looming movie with the desired parameters
@@ -341,6 +364,6 @@ class LoomingMovie(Movie):
         data *= -1   # Adjusting so have dark looming and not bright looming disk
 
         mov = Movie(data, row_range=self.row_range, col_range=self.col_range, labels=('time', 'y', 'x'),
-                    units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate)
+                    units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate, y_dir=self.y_dir)
 
         return mov
