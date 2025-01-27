@@ -40,39 +40,37 @@ class FilterSimulator(Simulator):
         movie_type = movie_type.lower() if isinstance(movie_type, string_types) else 'movie'
         if movie_type == 'movie' or not movie_type:
             if 'data_file' in params:
-                m_data = None
-                if 'data_file' in params:
-                    m_data = np.load(params['data_file'])
-                elif 'data' in params:
-                    m_data = params['data']
-                else:
-                    raise Exception('Could not find movie "data_file" in config to use as input.')
+                m_data = np.load(params['data_file'])
+            elif 'data' in params:
+                m_data = params['data']
+            else:
+                raise Exception('Could not find movie "data_file" in config to use as input.')
 
-                # If file passed in is a npz compressed file then it is in a dictionary format and need to find
-                # the key-value pair containing the array
-                if isinstance(m_data, np.lib.npyio.NpzFile):
-                    try:
-                        for key in m_data:
-                            m_data = m_data[key]
-                            break
-                    except IndexError as ie:
-                        io.log_warning('Was unable to find array from compressed numpy matrix file.')
+            # If file passed in is a npz compressed file then it is in a dictionary format and need to find
+            # the key-value pair containing the array
+            if isinstance(m_data, np.lib.npyio.NpzFile):
+                try:
+                    for key in m_data:
+                        m_data = m_data[key]
+                        break
+                except IndexError as ie:
+                    io.log_warning('Was unable to find array from compressed numpy matrix file.')
 
-                # contrast_min, contrast_max = m_data.min(), m_data.max()
-                normalize_data = params.get('normalize', False)
-                if normalize_data:
-                    m_data = Movie.normalize_matrix(m_data, domain=normalize_data)
+            # contrast_min, contrast_max = m_data.min(), m_data.max()
+            normalize_data = params.get('normalize', False)
+            if normalize_data:
+                m_data = Movie.normalize_matrix(m_data, domain=normalize_data)
 
-                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
-                                                           't_range'], **params)
-                self._movies.append(Movie(m_data, **init_params))
+            init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
+                                                       't_range', 'y_dir', 'flip_y'], **params)
+            self._movies.append(Movie(m_data, **init_params))
 
         elif movie_type == 'full_field':
             raise NotImplementedError
 
         elif movie_type == 'full_field_flash':
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 't_on', 't_off', 'max_intensity',
-                                                       'frame_rate'], **params)
+                                                       'frame_rate', 'y_dir'], **params)
             init_params['row_range'] = range(init_params['row_size'])
             del init_params['row_size']
             init_params['col_range'] = range(init_params['col_size'])
@@ -85,7 +83,8 @@ class FilterSimulator(Simulator):
             mv = ffm.full(t_max=self._tstop)
             self._movies.append(mv)
 
-        elif movie_type == 'graiting':
+        # elif movie_type == 'graiting':
+        elif movie_type in ['grating', 'graiting']:  # Misspelled in original code
             init_param_names = list(signature(GratingMovie.__init__).parameters.keys())
             create_param_names = list(signature(GratingMovie.create_movie).parameters.keys())
             init_params = FilterSimulator.find_params(init_param_names, **params)
@@ -94,11 +93,12 @@ class FilterSimulator(Simulator):
 
             create_params['gray_screen_dur'] /= 1000.0
             gm = GratingMovie(**init_params)
-            graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
-            self._movies.append(graiting_movie)
+            grating_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
+            self._movies.append(grating_movie)
 
         elif movie_type == 'looming':
-            init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
+            init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate',
+                                                       'y_dir'], **params)
             movie_params = FilterSimulator.find_params(['t_looming', 'gray_sceen_dur'], **params)
             lm = LoomingMovie(**init_params)
             looming_movie = lm.create_movie(**movie_params)
