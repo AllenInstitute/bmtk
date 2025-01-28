@@ -25,7 +25,7 @@ import networkx as nx
 from .network import Network
 
 
-class NxNetwork(Network):
+class NxNetwork(Network): # pragma: no cover
     def __init__(self, name, **network_props):
         super(NxNetwork, self).__init__(name, **network_props or {})
 
