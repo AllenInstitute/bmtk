@@ -48,7 +48,7 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
                 del edges_pop_grp[index_grp_name]
 
         index_grp = edges_pop_grp.create_group(index_grp_name)
-        ids_array = np.array(edges_pop_grp[col_to_index])  # ids to be indexed
+        ids_array = np.array(edges_pop_grp[col_to_index][()])  # ids to be indexed
         total_edges = len(edges_pop_grp[col_to_index])
 
         if total_edges == 0:
@@ -202,11 +202,12 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
 
             # fill in missing ids and foward fill Nans with the last previous index index
             i2r_table_df = i2r_table_df.reindex(pd.RangeIndex(i2r_table_df.index.max() + 1))
-            i2r_table_df['range_end'] = i2r_table_df['range_end'].fillna(method='ffill')
-            i2r_table_df['range_end'].fillna(0, inplace=True)
+            i2r_table_df['range_end'] = i2r_table_df['range_end'].ffill()
+            i2r_table_df.fillna({'range_end': 0}, inplace=True)
 
             nans_mask = i2r_table_df['range_beg'].isna()
-            i2r_table_df['range_beg'][nans_mask] = i2r_table_df['range_end'][nans_mask]
+            # i2r_table_df['range_beg'][nans_mask] = i2r_table_df['range_end'][nans_mask]
+            i2r_table_df.loc[nans_mask, 'range_beg'] = i2r_table_df['range_end'][nans_mask]
 
             # Save partition to disk
             partition_grp = cache_grp.create_group(partition_grp_name)
