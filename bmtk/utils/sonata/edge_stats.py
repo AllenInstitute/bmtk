@@ -279,7 +279,7 @@ def edge_props_distribution(edge_files, edge_prop, populations=None,
             edges_df = pd.merge(edges_df, trg_nodes_df, how='left', on='target_node_id')
 
         if fill_val is not False:
-            edges_df[edge_prop] = fill_val if edge_prop not in edges_df.columns else edges_df[edge_prop].infer_objects(copy=False).fillna(fill_val)
+            edges_df[edge_prop] = fill_val if edge_prop not in edges_df.columns else edges_df[edge_prop].infer_objects().fillna(fill_val)
             
         grouping_cols = edge_props_grouping + source_props_grouping + target_props_grouping
         if not grouping_cols:
@@ -431,7 +431,7 @@ def edge_stats_table(edges_data):
         n_trg_nodes = edges_df['target_node_id'].nunique()
         n_edge_types = edges_df.pop('edge_type_id').nunique()
         
-        edges_df['nsyns'] = 1 if 'nsyns' not in edges_df.columns else edges_df['nsyns'].infer_objects(copy=False).fillna(1)
+        edges_df['nsyns'] = 1 if 'nsyns' not in edges_df.columns else edges_df['nsyns'].infer_objects().fillna(1)
         conns_se = edges_df.groupby(['source_node_id', 'target_node_id'])['nsyns'].agg('sum')
         n_conns = len(conns_se)
         n_syns = np.sum(conns_se.values)
