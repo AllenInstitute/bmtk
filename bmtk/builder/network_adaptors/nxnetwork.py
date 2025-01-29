@@ -20,12 +20,12 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import networkx as nx
+import networkx as nx  # pragma: no cover
 
-from .network import Network
+from .network import Network  # pragma: no cover
 
 
-class NxNetwork(Network): # pragma: no cover
+class NxNetwork(Network):  # pragma: no cover
     def __init__(self, name, **network_props):
         super(NxNetwork, self).__init__(name, **network_props or {})
 
