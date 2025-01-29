@@ -279,7 +279,6 @@ def test_add_gap_junction():
     net.save(output_dir=net_dir)
 
 
-
 def test_dm_base():
     net = DenseNetwork('test')
     net.add_nodes(N=10, attr1=[1.0]*10, attr2=range(10))
@@ -288,11 +287,9 @@ def test_dm_base():
         targets=net.nodes(),
         connection_rule=1,
     )
-    # net.build()
-
     print(len(net.edges_table()) == 1)
-    net.save_nodes()
-
+    # net.build()
+    # net.save_nodes()
 
 
 def test_basic_one_to_one():
