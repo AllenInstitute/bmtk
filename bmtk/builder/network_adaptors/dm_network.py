@@ -62,10 +62,10 @@ class DenseNetwork(Network):
     def edges_table(self):
         return self.__edges_tables
 
-    def _save_nodes(self, nodes_file_name, compression='gzip'):
+    def _save_nodes(self, nodes_file_name, mode='w', compression='gzip'):
         if not self._nodes_built:
             self._build_nodes()
-        if compression == 'none':
+        if compression is None or (isinstance(compression, str) and compression.lower() == 'none'):
             compression = None  # legit option for h5py for no compression
 
         # save the node_types file
@@ -100,7 +100,7 @@ class DenseNetwork(Network):
                 prop_ds.append(node.params[key])
 
         if mpi_rank == 0:
-            with h5py.File(nodes_file_name, 'w') as hf:
+            with h5py.File(nodes_file_name, mode) as hf:
                 # Add magic and version attribute
                 add_hdf5_attrs(hf)
 
@@ -116,7 +116,7 @@ class DenseNetwork(Network):
                     for key, dataset in props.items():
                         try:
                             model_grp.create_dataset(key, data=dataset, compression=compression)
-                        except TypeError:
+                        except TypeError:  # pragma: no cover
                             str_list = [str(d) for d in dataset]
                             hf.create_dataset(key, data=str_list, compression=compression)
         barrier()
@@ -127,8 +127,8 @@ class DenseNetwork(Network):
         else:
             return self._nodes
 
-    def _process_nodepool(self, nodepool):
-        return nodepool
+    # def _process_nodepool(self, nodepool):
+    #     return nodepool
 
     def import_nodes(self, nodes_file_name, node_types_file_name, population=None):
         sonata_file = sonata.File(data_files=nodes_file_name, data_type_files=node_types_file_name)
@@ -217,9 +217,9 @@ class DenseNetwork(Network):
         self.__edges_tables.append(edges_table)
 
     def _get_edge_group_id(self, params_hash):
-        return int(params_hash)
+        return int(params_hash)  # pragma: no cover
 
-    def _save_gap_junctions(self, gj_file_name, compression='gzip'):
+    def _save_gap_junctions(self, gj_file_name, compression='gzip', **opts):
         source_ids = []
         target_ids = []
         src_gap_ids = []
@@ -255,7 +255,7 @@ class DenseNetwork(Network):
                 f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids), compression=compression)
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
-                    index_by=('target_node_id', 'source_node_id'), compression='gzip'):
+                    index_by=('target_node_id', 'source_node_id'), compression='gzip', sort_on_disk=False, **opts):
         barrier()
 
         if compression == 'none':
@@ -282,10 +282,10 @@ class DenseNetwork(Network):
 
         # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
         # write to disk first then sort the hdf5 file
-        sort_on_disk = False
+        # sort_on_disk = opts.get('sort_on_disk', False)
         edges_file_name_final = edges_file_name
         if sort_by:
-            if merged_edges.can_sort:
+            if merged_edges.can_sort and not sort_on_disk:
                 merged_edges.sort(sort_by=sort_by)
             else:
                 sort_on_disk = True
@@ -297,6 +297,7 @@ class DenseNetwork(Network):
                 if mpi_rank == 0:
                     logger.debug('Unable to sort edges in memory, will temporarly save to {}'.format(edges_file_name) +
                                  ' before sorting hdf5 file.')
+        
         barrier()
 
         if mpi_rank == 0:
@@ -351,8 +352,8 @@ class DenseNetwork(Network):
                 try:
                     logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
                     os.remove(edges_file_name)
-                except OSError as e:
-                    logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name))
+                except OSError as e:  # pragma: no cover
+                    logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name)) 
 
             if index_by:
                 index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]

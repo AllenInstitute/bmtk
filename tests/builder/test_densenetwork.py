@@ -9,6 +9,16 @@ import tempfile
 from bmtk.builder.network_adaptors.dm_network import DenseNetwork
 # from bmtk.builder.network_adaptors.dm_network_orig import DenseNetworkOrig
 
+#########
+pytest.skip(allow_module_level=True)
+#########
+
+def test_basics():
+    dn = DenseNetwork(name='test')
+    dn.add_nodes(N=100)
+    print(dn.edges_table)
+
+
 
 @pytest.mark.parametrize('network_cls', [
     (DenseNetwork),

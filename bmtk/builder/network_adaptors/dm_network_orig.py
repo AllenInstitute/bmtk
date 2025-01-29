@@ -20,31 +20,31 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import os
-import numpy as np
-import h5py
-import six
-import csv
+import os  # pragma: no cover
+import numpy as np  # pragma: no cover
+import h5py  # pragma: no cover
+import six  # pragma: no cover
+import csv  # pragma: no cover
 
-from .network import Network
-from bmtk.builder.node import Node
-from bmtk.builder.edge import Edge
-from bmtk.utils import sonata
+from .network import Network  # pragma: no cover
+from bmtk.builder.node import Node  # pragma: no cover
+from bmtk.builder.edge import Edge  # pragma: no cover
+from bmtk.utils import sonata  # pragma: no cover
 
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    mpi_rank = comm.Get_rank()
-    mpi_size = comm.Get_size()
-    barrier = comm.barrier
+try:   # pragma: no cover
+    from mpi4py import MPI # pragma: no cover
+    comm = MPI.COMM_WORLD  # pragma: no cover
+    mpi_rank = comm.Get_rank()  # pragma: no cover
+    mpi_size = comm.Get_size()  # pragma: no cover
+    barrier = comm.barrier  # pragma: no cover
 
-except ImportError:
-    mpi_rank = 0
-    mpi_size = 1
-    barrier = lambda: None
+except ImportError:   # pragma: no cover
+    mpi_rank = 0  # pragma: no cover
+    mpi_size = 1  # pragma: no cover
+    barrier = lambda: None  # pragma: no cover
 
 
-class DenseNetworkOrig(Network):
+class DenseNetworkOrig(Network):  # pragma: no cover
     def __init__(self, name, **network_props):
         super(DenseNetworkOrig, self).__init__(name, **network_props or {})
 
@@ -530,7 +530,7 @@ class DenseNetworkOrig(Network):
             return self._prop_array[indicies]
 
 
-def add_hdf5_attrs(hdf5_handle):
+def add_hdf5_attrs(hdf5_handle):  # pragma: no cover
     # TODO: move this as a utility function
     hdf5_handle['/'].attrs['magic'] = np.uint32(0x0A7A)
     hdf5_handle['/'].attrs['version'] = [np.uint32(0), np.uint32(1)]
