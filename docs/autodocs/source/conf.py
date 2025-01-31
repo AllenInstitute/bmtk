@@ -41,13 +41,12 @@ extensions = [
     'numpydoc',
     'sphinx.ext.autosummary',
     'nbsphinx',
-    'IPython.sphinxext.ipython_console_highlighting',
-    'sphinx_design'
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates', 'aibs_sphinx/templates']
-templates_path = ['_templates']
+#templates_path = ['_templates', 'aibs_sphinx/templates']
+templates_path = ['aibs_sphinx/templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -101,41 +100,10 @@ numpydoc_show_class_members = False
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-# html_theme = 'pydata'
-
-html_css_files = [
-    'custom.css',
-]
 
 html_theme_path = ['.']
-# html_theme = 'aibs_sphinx'
+html_theme = 'aibs_sphinx'
 # html_theme = 'alabaster'
-html_theme = 'pydata_sphinx_theme'
-html_logo = "_static/images/allen-logo.svg"
-html_theme_options = {
-    "show_prev_next": False,             # Do not show the prev & next buttons at the bottom of the page
-    "header_links_before_dropdown": 8,   # By default pyshinx will only show 5 items in navbar then a "more" dropdown. Increase num of items to show all top pages
-    "logo": {
-        "link": "https://alleninstitute.org/",
-    }
-}
-
-
-html_sidebars = {
-    # '**': ["sbt-sidebar-nav.html"]
-    # '**': ['custom_sidebar.html', 'localtoc.html', 'searchbox.html'],
-    # '**': ['user_guide'],
-    # "simulators_guide": ["user_guide.html"],
-    "news_and_events": [],
-    "contact_us": [],
-}
-
-# html_sidebars = {
-#     '**': [
-#         'globaltoc.html',
-#         # 'searchbox.html'
-#     ],
-# }
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -146,28 +114,23 @@ html_sidebars = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static', 'aibs_sphinx/static']
-html_static_path = ['_static']
+html_static_path = ['_static', 'aibs_sphinx/static']
 html_extra_path = ['../.nojekyll']
-# html_theme_options = {
-#     # "sidebarwidth": "300",
-#     "navbar_align": "left",
-# }
+html_theme_options = {
+    "sidebarwidth": "300"
+}
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-# html_sidebars = {
-#     # '**': [
-#     #     'globaltoc.html',
-#     #     'searchbox.html'
-#     # ],
-#     # "simulators_guide": []
-# }
-
-
+html_sidebars = {
+    '**': [
+        'globaltoc.html',
+        'searchbox.html'
+    ]
+}
 
 
 # -- Options for HTMLHelp output ------------------------------------------

@@ -1,107 +1,63 @@
-######################
-Tutorials and Examples
-######################
+Main Tutorials
+==============
 
 .. toctree::
-    :hidden:
-    :maxdepth: 1
-    
-    Builder: Using the Network Builder <tutorial_NetworkBuilder_Intro>
-    BioNet: Single cell with current injection <tutorial_single_cell_clamped>
-    BioNet: Single with with synaptic input <tutorial_single_cell_syn>
-    BioNet: Multiple Nodes with single cell-type <tutorial_single_pop>
-    BioNet: Heterogeneous network <tutorial_multi_pop>
-    PointNet: Point-neuron modeling <tutorial_pointnet_modeling>
-    FilterNet: Full-field flashing movie <tutorial_filter_models>
-    Auditory FilterNet: Generating stimuli from auditory input <tutorial_auditory_filternet>
-    PopNet: Population-based firing rate models <tutorial_population_modeling>
+   :maxdepth: 2
+   :titlesonly:
+
+   Builder: Using the Network Builder <tutorial_NetworkBuilder_Intro>
+   BioNet: Single cell with current injection <tutorial_single_cell_clamped>
+   BioNet: Single with with synaptic input <tutorial_single_cell_syn>
+   BioNet: Multiple Nodes with single cell-type <tutorial_single_pop>
+   BioNet: Heterogeneous network <tutorial_multi_pop>
+   PointNet: Point-neuron modeling <tutorial_pointnet_modeling>
+   FilterNet: Full-field flashing movie <tutorial_filter_models>
+   Auditory FilterNet: Generating stimuli from auditory input <tutorial_auditory_filternet>
+   PopNet: Population-based firing rate models <tutorial_population_modeling>
+   
 
 
-    
+Also check out the tutorial series from our `annual workshop <workshop>`_.
 
 
+Prerequisites
+-------------
 
-Basic Usage
-===========
+Running with Docker
++++++++++++++++++++
 
-.. grid:: 1 1 3 3
-    :gutter: 1
+If you have Docker installed on your machine then there is a Docker Image with all the prerequists installed - including
+a jupyter notebook server with the tutorials installed. Just run:
 
-    .. grid-item-card::  Overview 
+.. code:: bash
 
-        A high level look at the BMTK workflow, SONATA data-format, and how to 
-        create an environment for network modeling and simulation
+    $ docker pull alleninstitute/bmtk
+    $ docker run -v /path/to/local/directory:/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
 
+and then open a browser to 127.0.0.1:8888/. The tutorials folder will contain the jupyter notebook tutorials for you to
+follow along and modify. However, if you want to save the work permentately make sure to save it in the workspace
+folder. The tutorials and examples folder will be deleted once the docker container has stopped.
 
-    .. grid-item-card:: Building Networks models with the BMTK NetworkBuilder 
-        :link: tutorial_NetworkBuilder_Intro.html
+you can also use the Docker image to run bmtk build and run scripts. Just replace the python <script>.py <opts> command
+with docker run alleninstitute/bmtk -v /path/to/local/directory:/home/shared/workspace python <script>.py <opts>
 
-        Using the BMTK NetworkBuilder to create SONATA based network models for use in simulation and analysis
+Running from source
++++++++++++++++++++
 
-       
-    .. grid-item-card:: Simulating biologically detailed networks
+The bmtk requires at minimum python 2.7 and 3.6+, as well as additional libraries to use features like building networks
+or running analyses. To install the bmtk it is best recommending to pull the latest from github.
 
-        How to use BMTK BioNet to run simulations of networks of biophyscially realistic compartmental
-        cell models.        
+.. code:: bash
 
+    $ git clone https://github.com/AllenInstitute/bmtk.git
+    $ cd bmtk
+    $ python setup.py install
 
-    .. grid-item-card:: Simulating point-neuron networks with PointNet
+However, to run a simulation on the network the bmtk uses existing open-source simulatiors, which (at the moment) needs
+to be installed separately. The different simulators, which run simulations on different levels-of-resolution, will
+require different software. So depending on the type of simulation to be run
 
-        How to use BMTK PointNet for running simulation of single point-neuron models.
-
-
-    .. grid-item-card:: Generating releastic sensory stimuli with FilterNet
-
-        Use BMTK FilterNet to convert stimuli into a series of spikes for analysis and network 
-        stimuli.
-
-
-    .. grid-item-card:: Analyzing simulation results
-
-        How to use bmtk to fetch data from simulation results, plot and get statistics.
-
-
-
-
-More Features
-=============
-
-.. grid:: 1 1 3 3
-    :gutter: 1
-
-    .. grid-item-card:: Parallelization and Threading Options 
-
-        Options for running large-scale simulations taking advantage of multiple cores and Threading
-        with HPC
-
-    .. grid-item-card:: Advanced Stimulus for simulations 
-
-        More options for input stimulus to simulations
-
-
-    .. grid-item-card:: Advanced simulation recordings 
-
-        Includes voltage. LFP, synapse recording
-
-    .. grid-item-card:: Customized Python  
-
-        Creating modules
-
-
-
-
-
-
-Advanced Simulation options
----------------------------
-
-.. grid:: 1 1 3 3
-    :gutter: 1
-
-
-
-
-Advanced Options For simulation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
+biophysically detailed network (BioNet) - Uses NEURON.
+point-neuron network (PointNet) - Uses NEST.
+population-level network (PopNet) - Uses DiPDE.
+filter models of the visual field (FilterNet) - Uses LGNModels

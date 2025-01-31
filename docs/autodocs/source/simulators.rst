@@ -1,5 +1,3 @@
-:orphan:
-
 Simulation Engines
 ==================
 .. toctree::

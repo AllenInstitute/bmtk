@@ -1,5 +1,5 @@
-Building brain network models with BMTK Network Builder
-=======================================================
+The Network Builder
+===================
 
 .. figure:: _static/images/bmtk_architecture_builder_highlight.jpg
    :scale: 40%
