@@ -657,7 +657,7 @@ our network model that can be referenced by the rest of the config
       "module": "membrane_report",
       "variable_name": "v",
       "cells": "<SET-NAME-1>",
-      ...
+      // ...
     },
 
   "inputs": {
@@ -665,9 +665,10 @@ our network model that can be referenced by the rest of the config
           "input_type": "current_clamp",
           "module": "ICLAMP",
           "node_set": "<SET-NAME-2>",
-          ...
+          // ...
         }
       }
+
 
 For **<SET-NAME-1>**, the node-set will tell BMTK to record from only those cells with with specified node ids. If you 
 don't know the exact node_ids, or if there are too many to feasibly write down, you can filter by cell attributes. In 
@@ -687,7 +688,7 @@ to the exact same subset of cells as done in the above.
             "cell_description": "pyramidal",
             "cell_location": "L23"
           },
-          ...
+          // ...
         }
       }
 
@@ -782,9 +783,15 @@ If you want to reduce the number of files you can also import a separate "networ
 .. code:: json
 
   {
-    "run": {...},
-    "inputs": {...},
-    "reports": {...},
+    "run": {
+      // ...
+    },
+    "inputs": {
+      // ...
+    },
+    "reports": {
+      //...
+    },
 
     "network": "./path/to/config.network.json"
   }  
