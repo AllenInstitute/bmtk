@@ -4,7 +4,7 @@ Tutorials and Examples
 
 .. toctree::
     :hidden:
-    :maxdepth: 1
+    :maxdepth: 2
     
     Builder: Using the Network Builder <tutorial_NetworkBuilder_Intro>
     BioNet: Single cell with current injection <tutorial_single_cell_clamped>
@@ -16,9 +16,9 @@ Tutorials and Examples
     Auditory FilterNet: Generating stimuli from auditory input <tutorial_auditory_filternet>
     PopNet: Population-based firing rate models <tutorial_population_modeling>
 
+    ad_tutorials
 
-    
-
+    examples
 
 
 Basic Usage
@@ -86,22 +86,3 @@ More Features
     .. grid-item-card:: Customized Python  
 
         Creating modules
-
-
-
-
-
-
-Advanced Simulation options
----------------------------
-
-.. grid:: 1 1 3 3
-    :gutter: 1
-
-
-
-
-Advanced Options For simulation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-

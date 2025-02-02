@@ -657,7 +657,7 @@ our network model that can be referenced by the rest of the config
       "module": "membrane_report",
       "variable_name": "v",
       "cells": "<SET-NAME-1>",
-      ...
+      // ...
     },
 
   "inputs": {
@@ -665,9 +665,10 @@ our network model that can be referenced by the rest of the config
           "input_type": "current_clamp",
           "module": "ICLAMP",
           "node_set": "<SET-NAME-2>",
-          ...
+          // ...
         }
       }
+
 
 For **<SET-NAME-1>**, the node-set will tell BMTK to record from only those cells with with specified node ids. If you 
 don't know the exact node_ids, or if there are too many to feasibly write down, you can filter by cell attributes. In 
@@ -687,7 +688,7 @@ to the exact same subset of cells as done in the above.
             "cell_description": "pyramidal",
             "cell_location": "L23"
           },
-          ...
+          // ...
         }
       }
 
@@ -782,9 +783,15 @@ If you want to reduce the number of files you can also import a separate "networ
 .. code:: json
 
   {
-    "run": {...},
-    "inputs": {...},
-    "reports": {...},
+    "run": {
+      // ...
+    },
+    "inputs": {
+      // ...
+    },
+    "reports": {
+      //...
+    },
 
     "network": "./path/to/config.network.json"
   }  
@@ -1169,67 +1176,6 @@ Inputs
 BMTK supports using a wide variety of inputs and stimulus when running a simulation. Please see the following guides 
 for built-in "inputs" types and how to use them in your simulations.
 
-.. grid:: 2 2 5 5
-    :gutter: 1
-
-    .. grid-item-card:: Spiking inputs
-        :link: builder_guide 
-
-        Demonstrates various ways which one can drive network using synaptic spikes (eg. action potentials) including: 
-
-        * Using PoissonSpikesGenerater to pre-generate spike trains for network stimulus.
-
-        * Dynamically insert custom spike train files and functions into a simulation.
-
-        * Inject in-vivo spike-train recordings into a simulation with Dandi and NWB 2.0.
-
-    .. grid-item-card:: Current clamp
-        :link: builder_guide 
-
-        Inject positve or negative current into one or more cells.
-
-        * Using simple block stimuli, or complex current wave-form injection from a list, file or function.
-
-        * Inject in-virtro current-clamp sweeps using Allen Cell-Types experiments.
-
-        * How to create optogenetic like polarization and depolarization of selected cells.
-
-    .. grid-item-card:: Voltage clamps
-        :link: builder_guide 
-
-        Insert single or mulitelectrode voltage clamping into one or more cells in a network.
-
-    .. grid-item-card:: extracellular stimulation
-        :link: builder_guide 
-
-        Simulate the placement of an extracellular electrode into a network that can change polarization of the 
-        cell membranes. Create custom wave forms, or use COMSOL to grainular alter extracellular field.
-
-    .. grid-item-card:: spontaneous activity
-        :link: builder_guide 
-
-        Allows you to selectively induce spontaneous synaptic activity between a subset of cells. Users can choose 
-        which synapses to target based on the synaptic, pre- or post-synaptic cell atrributes. The activity can be
-        random or predetermined from a list or function.
-
-    .. grid-item-card:: replaying previous simulation activity
-        :link: builder_guide 
-
-        Users can take a subset of the results from a previously generated network results and inject them into a 
-        current simulation. Can target specific subsets of cells or synapses to replay. Useful in isolating activity
-        of a subset or motif of cells within a much larger network.
-
-    .. grid-item-card:: Visual stimuli 
-        :link: builder_guide 
-
-        Play an image, movie, drifting-grating, or one of a number of visual stimuli onto a network to see how cells
-        encode sensory information into firing rates and spike trains. 
-
-    .. grid-item-card:: Auditory stimuli.
-        :link: builder_guide 
-
-        Convert auditory wave files into firing rates and spike trains.
-
 
 Reports
 ^^^^^^^
@@ -1237,106 +1183,10 @@ Reports
 Modelers can choose which variables and changes in a simulation to record using the "reports" section. See following 
 guides for further information how to implement such output.
 
-.. grid:: 2 2 5 5
-    :gutter: 1
-
-    .. grid-item-card:: Spike Train Recording
-        :link: builder_guide 
-
-        Advanced options for recording spikes (eg. action potential) events during the simulation.
-
-    .. grid-item-card:: Membrane and Ion Recording
-        :link: builder_guide 
-
-        Recording a contingous time-trace for one or more cell variable, such as membrane voltage, calcium
-        concentration, or any number of other ion or channel variables.
-
-    .. grid-item-card:: Synapse Recording
-        :link: builder_guide 
-
-        Allows users to gather changes in synaptic strength and other variables over the time course of a simualtion.
-
-    .. grid-item-card:: Firing Rates
-        :link: builder_guide 
-
-        Recording individual cell or even population level wide firing rate changes over teh course of a simulation.
-
-    .. grid-item-card:: Local Field Potentials (LFP)
-        :link: builder_guide 
-
-        Allows modelers to simulate the injection of multi-channel electrodes into a network to record dynamics of the
-        extraceullar electrical field. Allows modelers to see the full field, or even the contribution of single cells.
-        Also capable of generate curren source densities (CSD) maps to see the location of major sources and sinks 
-        within a network. 
-
 
 Useful Options and Scripts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. grid:: 2 2 5 5
-    :gutter: 1
-
-    .. grid-item-card:: environmental setup (create_environment) script.
-        :link: builder_guide 
-
-        A useful tool for generating simulation environments from the ground up.
-
-    .. grid-item-card:: Network and Simulation validation
-        :link: builder_guide 
-
-        Tools and recommendation for checking on a network and setup before running a simulation. Includes tools and 
-        guides for fetching network statistics and how one can compare multiple models.
-
-    .. grid-item-card:: Advanced Configuration options.
-        :link: builder_guide 
-
-        Advance options and directives for the SONATA simulation configuration file.
-
-    .. grid-item-card:: Advanced Population Querying and Filtering
-        :link: builder_guide 
-
-        Advance options and tricks for selecting sub populations (or "node_sets").
-
 
 Advanced Features
 ^^^^^^^^^^^^^^^^^
-
-.. grid:: 2 2 4 4
-    :gutter: 2
-
-    .. grid-item-card:: 
-        :link: builder_guide
-        :class-header: sd-d-flex-column sd-align-minor-center
-        :class-body: sd-card-body-custom
-        
-        Customized Modules for Simulation                                 
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-        
-        Allows users to create modules to alter the setup, control flow, and output of a given simulation.
-
-    .. grid-item-card::
-        :link: builder_guide 
-        :class-header: sd-d-flex-column sd-align-minor-center
-       
-        Custom Cell Models and Instantiation.
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-        How to create and alter cell models using Python, NEURON or NEST.
-
-    .. grid-item-card:: 
-        :link: builder_guide 
-        :class-header: sd-d-flex-row sd-align-minor-center
-
-        Adjust Synaptic Weights
-        ^^^^^^^^^^^^^^^^^^^^^^^
-
-        Update synaptic weights before a simulation.
-
-    .. grid-item-card:: 
-        :link: builder_guide 
-        :class-header: sd-d-flex-row sd-align-minor-center
-
-        Custom Synaptic Models
-        ^^^^^^^^^^^^^^^^^^^^^^
-
-        Update and alter synaptic models, their parameters and/or instantiation.

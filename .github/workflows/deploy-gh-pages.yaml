@@ -1,0 +1,41 @@
+name: Deploy Github Pages
+
+on:
+  workflow_dispatch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Install Pandoc
+        run: sudo apt-get install -y pandoc
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Requirements
+        run: |
+          pip install -r doc_requirements.txt
+          pip install .
+
+      - name: Build Documentation
+        run: |
+          cd docs/autodocs
+          make html
+          
+      - name: Deploy to Github Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          clean: true
+          branch: gh-pages
+          folder: ./docs/autodocs/build/html
