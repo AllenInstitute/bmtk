@@ -243,11 +243,11 @@ def copy_tutorials():
         elif tut_fname[:2].isnumeric():
             tut_fname = tut_fname[3:]
 
-        tut_path = os.path.join(source_dir, 'tutorial_{}'.format(tut_fname))
+        tut_path = os.path.join(source_dir, 'tutorials', tut_fname)
         shutil.copy(ipynb_file, tut_path)
 
     tutorial_images_dir = os.path.join(tutorials_dir, '_static/_tutorial_images')
-    source_tutorial_images_dir = os.path.join(source_dir, '_static/_tutorial_images')
+    source_tutorial_images_dir = os.path.join(source_dir, 'tutorials/_static/_tutorial_images')
     if os.path.exists(source_tutorial_images_dir):
         shutil.rmtree(source_tutorial_images_dir)
 
