@@ -1,0 +1,1702 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Running Network Simulations with BMTK &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=8cbc5bfe" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=58fbf978"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'simulators_guide';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Analyzing the Results" href="analyzer.html" />
+    <link rel="prev" title="Building brain network models with BMTK Network Builder" href="builder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials and Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Example Networks and Simulations</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Running Network Simulations with BMTK</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Running Network Simulations with BMTK</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="running-network-simulations-with-bmtk">
+<h1>Running Network Simulations with BMTK<a class="headerlink" href="#running-network-simulations-with-bmtk" title="Link to this heading">#</a></h1>
+<p>In this section we will show how to use BMTK and SONATA to run simulation(s) on a brain network model.</p>
+<p>Unlike other neural simulation tools which will create and simulate a network in one script, BMTK workflow design is to
+to split up these two parts of the process. So before we can run a simulation we must first procure a network model
+(typically store using <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#representing-circuits">SONATA circuit format</a>).
+We can either download an existing model, or alternatively use a tool like the BMTK Network Builder to create one from
+scratch.</p>
+<p>Once we have our network to run simulations on, we typically need to complete the following steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Setup the enviornment</strong>. For most networks, this entails downloading or creating any auxiliary files required for
+network instantiation (morphology files, cell parameters, mod files, etc) and inputs (spikes, electrodes).</p></li>
+<li><p><strong>Setup the SONATA configuration file(s)</strong>. We use a json based SONATA configuration file to instruct BMTK how to
+instiante a network (including location of circuits and any auxiliary files), run-time parameters, and what stimuli
+to use as input and what variables to record for our output. We can create a SONATA config file from scratch, or
+download and edit an existing one using any prefered text-editor.</p></li>
+<li><p><strong>Run the simulation(s)</strong>. The majority of BMTK simulation can be fully defined in the SONATA config (although for
+advanced users BMTK allows extensive customization using Python). Thus we just need to execute an pre-generated
+python script with the above SONATA config file and let our simulation finish.</p></li>
+</ol>
+<p>Once the simulation has completed it will automatically generate and save the results as specified in the SONATA
+configuration file. Although BMTK can run network models of different levels-of-resolutions, this is abstracted from
+the user will use the appropiate underlying simulator library, eg. <strong>Simulation Engine</strong>, depending on the cell models.
+So no matter if the network is ran using NEURON, NEST, DiPDE, or any other engine; the expected inputs and outputs
+are the same format</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/bmtk-workflow-v2-simulation-highlighted.png"><img alt="_images/bmtk-workflow-v2-simulation-highlighted.png" src="_images/bmtk-workflow-v2-simulation-highlighted.png" style="width: 753.6px; height: 153.6px;" />
+</a>
+</figure>
+<p>The rest of this guide will go through each of the above steps in detail.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">To help make the concepts for concrete we will also be referencing the <strong>example</strong> network simulation found
+<a class="reference external" href="https://github.com/kaeldai/bmtk/tree/refactor/documentation/docs/autodocs/source/example_bionetwork">here</a>.
+This is a biophysically detailed network containing a 450 cells with a mixture of both multicompartment biophysically
+detailed cells with parameters and morphologies download form the Allen Cell Database, surrounded by a ring of
+point integrate and fire neuron. For the main configuration will feedforward synaptic stimuli emerging from virtual
+cells firing at a randomized rate.</p>
+</div>
+</div>
+<section id="setting-up-the-environment">
+<h2>1. Setting up the Environment<a class="headerlink" href="#setting-up-the-environment" title="Link to this heading">#</a></h2>
+<p>First step is to download and/or create neccesary files required to instiate network and execute the simulation. At
+miniumum we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. But depending on the
+model and simulation we may also need the following:</p>
+<ul class="simple">
+<li><p>template files used to build the cell or synapse models (<em>Hoc Templates</em>, <em>NeuroML</em>, <em>NESTML</em>)</p></li>
+<li><p>cell and synaptic dynamics attribute values,</p></li>
+<li><p>cell morphologies (<em>SWC</em>, <em>Neuralucdia</em>),</p></li>
+<li><p>simulation input and stimuli (<em>spike-trains</em>, <em>current wave-form</em>, <em>movie and auditory files</em>),</p></li>
+<li><p>NEURON .mod files.</p></li>
+</ul>
+<p>We can put these files wherever we want as long as they are accessable during simulation execution. Although best
+practices is to put them inside a single directory with the following structure.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/bmtk_sim_env.2024.png"><img alt="_images/bmtk_sim_env.2024.png" src="_images/bmtk_sim_env.2024.png" style="width: 371.20000000000005px; height: 338.8px;" />
+</a>
+</figure>
+<p>BMTK includes the <a class="reference external" href="SIMSETUP">create_environment</a> tool that can help new users generate an environmental directory from
+scratch. Another option we recommend, especially if running simulations on an already existing model, is to download an
+existing simulation environment and make changes as necessary.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">When creating the <a href="#id2"><span class="problematic" id="id3">`BioNet example`_</span></a> we used the <cite>build_network.py</cite> python script to build and save the network model
+into the <strong>network/</strong> sub-directory (see <a href="#id4"><span class="problematic" id="id5">`BMTK Builder Guide`_</span></a> for more information on that process). With the network
+built we then used the following command to generate baseline strucutre plus <cite>config.simulation.json</cite> configuration and
+the <cite>run_bionet.py</cite> script used to execute the simulation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.create_environment<span class="w">         </span><span class="se">\</span>
+<span class="w">                </span>--config-file<span class="w"> </span>config.iclamp.json<span class="w">  </span><span class="se">\</span>
+<span class="w">                </span>--overwrite<span class="w">                       </span><span class="se">\</span>
+<span class="w">                </span>--network-dir<span class="w"> </span>network<span class="w">             </span><span class="se">\</span>
+<span class="w">                </span>--output-dir<span class="w"> </span>output_iclamp<span class="w">        </span><span class="se">\</span>
+<span class="w">                </span>--tstop<span class="w"> </span><span class="m">3000</span>.0<span class="w">                    </span><span class="se">\</span>
+<span class="w">                </span>--dt<span class="w"> </span><span class="m">0</span>.1<span class="w">                          </span><span class="se">\</span>
+<span class="w">                </span>--report-vars<span class="w"> </span>v<span class="w">                   </span><span class="se">\</span>
+<span class="w">                </span>--iclamp<span class="w"> </span><span class="m">0</span>.150,500,2000<span class="w">           </span><span class="se">\</span>
+<span class="w">                </span>--compile-mechanisms<span class="w">              </span><span class="se">\</span>
+<span class="w">                </span>bionet<span class="w"> </span>.
+</pre></div>
+</div>
+<p class="sd-card-text">This script will create the <strong>components/</strong> directory to place any auxiliary files for network instiation, but unless
+explicity defined, the corresponding subfolders will be empty. In particular out model’s various cell-types require
+SWC morphology and dynamics parameters files that can be downloaded from the Allen Cell Types Database, renamed and
+placed into their corresponding folders.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/ctdb2bmtk_model_download.png"><img alt="_images/ctdb2bmtk_model_download.png" src="_images/ctdb2bmtk_model_download.png" style="width: 1288.0px; height: 421.6px;" />
+</a>
+</figure>
+<p class="sd-card-text">For simulation input our network will be stimulated by feed-forwar pre-generated spike-trains that will save into
+the <strong>inputs/</strong> folder using the <cite>create_inputs.py</cite> script</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>create_inputs.py
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setting-up-sonata-config-file-s">
+<h2>2. Setting up Sonata Config file(s)<a class="headerlink" href="#setting-up-sonata-config-file-s" title="Link to this heading">#</a></h2>
+<p>The primary interface thorugh which most users will run a simulation is through the <strong>SONATA confiugration</strong> file(s).
+Each simulation will have its own json config file that can be opened and modified by any text editor, allowing users
+to readily adjust simulation, network, input, and output of any given simulation without any required coding or having
+to learn the API for a specific simulator.</p>
+<p>The config file is segmented into sections for the various aspects of running a full simulation. We will go into depth
+of each section below.</p>
+<section id="run">
+<h3>“run”<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
+<p>The “run” section allows us set run-time parameters for the simulation. At minimum this includes
+the <strong>tstop</strong> parameter that determines the time step (in ms) when the simulation will stop. Other options, including
+<strong>tstart</strong> (time at start of simulation, ms) and <strong>dt</strong> (time step interval, ms), may or may not be optional or even
+used depending on the simulation.</p>
+<p>The following attributes can be used by BMTK to set to time course of a given simulation.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">“run” simulation attributes</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">name</p></th>
+<th class="head"><p class="sd-card-text">description</p></th>
+<th class="head"><p class="sd-card-text">required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">tstart</p></td>
+<td><p class="sd-card-text">Start time of simulation in ms (default 0.0)</p></td>
+<td><p class="sd-card-text">False</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">tstop</p></td>
+<td><p class="sd-card-text">Stop time of simulation (default 0.0)</p></td>
+<td><p class="sd-card-text">True</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">dt</p></td>
+<td><p class="sd-card-text">The time step of a simulation; ms</p></td>
+<td><p class="sd-card-text">True</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">dL</p></td>
+<td><p class="sd-card-text">For networks with morphological models, is a global parameter used to indicate to the simulator the maximum length
+of each compartmental segment, in microns. If “dL” parameter is explicitly defined for a specific cell or cell-type,
+then BMTK will default to the more grainular option.</p></td>
+<td><p class="sd-card-text">False</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">spike_threshold</p></td>
+<td><p class="sd-card-text">For networks using conductance based model, is a global paramter to indicate the threshold in mV at which a cell undergoes
+an action potential. Will not apply to integrate-and-fire type models. Value will be overwritten for any cell or cell-type
+that explicity defines “spike_threshold” parameter in network attribute.</p></td>
+<td><p class="sd-card-text">False</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">nsteps_block</p></td>
+<td><p class="sd-card-text">Used by certain input/report modules to indicate time processing of timestep in blocks of every n time-steps. In particular
+for recording of spike-trains, membrane variables, or extraceullar potential; tells the simulation when to flush data
+out of memory and onto the disk.</p></td>
+<td><p class="sd-card-text">False</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></blockquote>
+</div>
+</details><div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">The “run” section for our example simulation contains the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;dL&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<p class="sd-card-text">This will tell our simulation to run for 3,000 ms (3 seconds) with 0.1 ms timesteps, block process all the data every
+5000 steps (eg. 500 ms). The “dL” makes sure that for morphologically detailed cells each branch segment is no more
+than 20 microns in lenght. And to record a spike when a cell reaches threshold of -15.0 mV.</p>
+</div>
+</div>
+</section>
+<section id="inputs">
+<h3>“inputs”<a class="headerlink" href="#inputs" title="Link to this heading">#</a></h3>
+<p>The “inputs” section of the SONATA config file is used to specify stimlus to apply to the network. It will contain one
+or more independent stimuli blocks of the format</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;BLOCK_NAME&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;STIMULI_TYPE&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;STIMULI_FORMAT&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;NODES_SUBSET&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;param1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;VAL1&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;param2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;VAL2&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;paramN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;value&quot;</span>
+
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <strong>&lt;BLOCK_NAME&gt;</strong> is the name of the stimuli block, users can choose whatever name they want to identify a specific stimuli.</p></li>
+<li><p><strong>input_type</strong> specifies the nature of the stimlulation, eg. if cell activity is being generated by synaptic events, current clamps, etc. The available options will depend of the resolution of the model and the type of cell models used. The options will depend on the input_type</p></li>
+<li><p><strong>module</strong> is used to indicate the format of the stimuli. For example in trying to stimulate network with virtual spiking activity file, the individual spike times may be stored in a SONATA spikes file, a NWB file, a CSV, etc.</p></li>
+<li><p><strong>node_set</strong> is a dictionary or reference used to select which cells to apply current stimuli to.</p></li>
+<li><p>Most stimuli will have one or more <strong>parameters</strong> options, depending on the input_type + module.</p></li>
+</ul>
+<p>The following is a list of inputs types supported in BMTK. For further detail about how to implement a given input in
+a simulation please see the respective documentation.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Available “input_type” stimuli</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">input_type</p></th>
+<th class="head"><p class="sd-card-text">module</p></th>
+<th class="head"><p class="sd-card-text">description</p></th>
+<th class="head"><p class="sd-card-text">available</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">current_clamp</p></td>
+<td><div class="line-block">
+<div class="line">IClamp</div>
+<div class="line">csv</div>
+<div class="line">nwb</div>
+<div class="line">allen</div>
+</div>
+</td>
+<td><p class="sd-card-text">Directly injects current into one or more cells in the network. Shape of stimulus may be a simple block, or user may specify more advanced current form using a csv, nwb, or hdf5 file.</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">spikes</p></td>
+<td><div class="line-block">
+<div class="line">sonata</div>
+<div class="line">csv</div>
+<div class="line">ecephys_probe</div>
+<div class="line">function</div>
+</div>
+</td>
+<td><p class="sd-card-text">Reads a table of spike train events into one or more virtual cells in the network.</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">voltage_clamp</p></td>
+<td><p class="sd-card-text">SEClamp</p></td>
+<td><p class="sd-card-text">Applys a voltage clamping block onto one or more cells.</p></td>
+<td><p class="sd-card-text">BioNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">extracellular</p></td>
+<td><div class="line-block">
+<div class="line">xstim</div>
+<div class="line">comsol</div>
+</div>
+</td>
+<td><p class="sd-card-text">Provides an extracellular potential to alter the membrane comptanence of a selected set of cells in the network. Can replicate extracellular stimulation coming from an electrode (xstim) or field can pre-generated (comsol).</p></td>
+<td><p class="sd-card-text">BioNet</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">replay</p></td>
+<td><p class="sd-card-text">replay</p></td>
+<td><p class="sd-card-text">Allows users “replay” the recurrent activity of a previous recorded simulation with a selected subset of cells and/or connections. Useful for when looking at summative properties of contributions in large networks.</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">syn_activity</p></td>
+<td><div class="line-block">
+<div class="line">syn_activity</div>
+<div class="line">function</div>
+<div class="line">list</div>
+</div>
+</td>
+<td><p class="sd-card-text">Provides spontaneous firing of a select subset of recurrently connected synapses. Users may pre-specify firing times or let bmtk generate them randomly.</p></td>
+<td><p class="sd-card-text">BioNet</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">movie</p></td>
+<td><p class="sd-card-text">movie</p></td>
+<td><p class="sd-card-text">Plays a movie (eg a numpy matrix file) onto the receptive field of a grid of neurons to mimic LGN reaction.</p></td>
+<td><p class="sd-card-text">FilterNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">movie</p></td>
+<td><div class="line-block">
+<div class="line">grating</div>
+<div class="line">full_field_flash</div>
+<div class="line">spontaneous</div>
+<div class="line">looming</div>
+</div>
+</td>
+<td><p class="sd-card-text">Automatically generate a movie of one of a number of well-known experimental stimuli and use it to play onto the receptive field of a set of neurons.</p></td>
+<td><p class="sd-card-text">FilterNet</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></blockquote>
+</div>
+</details><div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">The “inputs” section for our 400 cell example looks like the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;external_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/external_spikes.h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;external-cell&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">The “external_spikes” block tells BMTK that it will stimulate our network using SONATA spike-trains. The input spike
+trains were generated by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>create_inputs.py
+</pre></div>
+</div>
+<p class="sd-card-text">which will create a SONATA spike-trains file in <strong>inputs/external_spikes.h5</strong>. The node-set parameter, explained
+below, tells the module which cells we want to assign our spike-trains.</p>
+</div>
+</div>
+</section>
+<section id="components">
+<h3>“components”<a class="headerlink" href="#components" title="Link to this heading">#</a></h3>
+<p>The “components” section is used to indicate the paths to various auxiliary files required for instantiating our
+simulation; like morphology swc files, NEURON mod files, NESTML or NeuroML cell models. BMTK will use these paths to
+find neccesary files required to instantiate the network for simulation.</p>
+<p>the different directories are defined using the format</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;COMPONENT_TYPE&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/components/dir/&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Recognized “components” directories</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">name</p></th>
+<th class="head"><p class="sd-card-text">description</p></th>
+<th class="head"><p class="sd-card-text">utilized by</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">biophysical_neuron_models_dir</p></td>
+<td><p class="sd-card-text">Directory containing files for instantiation of biophysically detailed models. Typically containing json
+cell model files downloaded from the Allen Cell-Types Database.</p></td>
+<td><p class="sd-card-text"><strong>dynamics_params</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">point_neuron_models_dir</p></td>
+<td><p class="sd-card-text">Directory containing files for instantiation of point-neuron models. Typically json parameter files, or with
+PointNet may be model files downloaded from the Allen Cell-Types Database to instantiate optimized “glif”
+models.</p></td>
+<td><p class="sd-card-text"><strong>dynamics_params</strong></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">filters_dir</p></td>
+<td><p class="sd-card-text">Directory containing parameters files for instiating models used by FilterNet.</p></td>
+<td><p class="sd-card-text"><strong>dynamics_params</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">morphologies_dir</p></td>
+<td><p class="sd-card-text">Directory containing any morphological reconstruction files (ex. swc, neuralucdia).</p></td>
+<td><p class="sd-card-text"><strong>morphology</strong></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">synpatic_models_dir</p></td>
+<td><p class="sd-card-text">Directory containing files for specific synaptic parameters.</p></td>
+<td><p class="sd-card-text"><strong>dynamics_params</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">mechanisms_dir</p></td>
+<td><p class="sd-card-text">Directory containing any morphological reconstruction files (ex. swc, neuralucdia)</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">templates_dir</p></td>
+<td><p class="sd-card-text">Contains NEURON Hoc template files or NeuroML cell or synapse models.</p></td>
+<td><p class="sd-card-text"><strong>model_template</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></blockquote>
+</div>
+</details><div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">For our example network,</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/morphologies&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/synaptic_models&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="s2">&quot;$COMPONENT_DIR/mechanisms&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;biophysical_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/biophysical_neuron_templates/nml&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/point_neuron_templates&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="output-and-reports">
+<h3>“output” and “reports”<a class="headerlink" href="#output-and-reports" title="Link to this heading">#</a></h3>
+<p>The “outputs” section is where we define basic information about where and how to we will save any simulation results. Most importantly is the
+<strong>output_dir</strong> attribute that defines default location of any files generated during the simulation. We also define the <strong>spikes_file</strong> attribute
+which is the file name (relative to the <strong>output_dir</strong> path) where BMTK will save any non-virtual spikes generated during the simulation in a
+SONATA hdf5 formated file.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">“output” attributes</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">name</p></th>
+<th class="head"><p class="sd-card-text">description</p></th>
+<th class="head"><p class="sd-card-text">default value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">output_dir</p></td>
+<td><p class="sd-card-text">Path of output folder where simulation results and temp files will be saved in. BMTK will create the folder if it does not already
+exists. If value is not an absolute path, then will assume to be relative to location where BMTK simulation is being executed (eg <cite>os.getcwd()</cite>)</p></td>
+<td><p class="sd-card-text"><cite>.</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">overwrite_output_dir</p></td>
+<td><p class="sd-card-text">If set to True then BMTK will overwrite any previous output files stored in <strong>output_dir</strong>. If set to False and files exists before run time then
+BMTK may throw an error and exit simulation.</p></td>
+<td><p class="sd-card-text">True</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">log_file</p></td>
+<td><p class="sd-card-text">Name of file where any BMTK messages will be written to. If the file name has a relative path then file will be saved underneath <strong>output_dir</strong>.
+If value is set to <cite>false</cite> or <cite>none</cite> then no log file will be created during simulation.</p></td>
+<td><p class="sd-card-text"><cite>none</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">log_level</p></td>
+<td><p class="sd-card-text">Level of logging information that will be included during simulation (<cite>DEBUG</cite>, <cite>INFO</cite>, <cite>WARNING</cite>, <cite>ERROR</cite>).</p></td>
+<td><p class="sd-card-text"><cite>DEBUG</cite></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">log_format</p></td>
+<td><p class="sd-card-text">The format string for how BMTK will save loggnig messages. It uses the <a class="reference external" href="https://docs.python.org/3/library/logging.html#logrecord-attributes">LogRecord attributes</a> options
+set by python’s logging module.</p></td>
+<td><p class="sd-card-text"><cite>%(asctime)s [%(levelname)s] %(message)s</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">log_to_console</p></td>
+<td><p class="sd-card-text">If <cite>true</cite> then will also log output to default <strong>standard output (stdout)</strong>, if <cite>false</cite> then will disable <strong>stdout</strong> logging. Note: if both <strong>log_to_console</strong> and
+<strong>log_file</strong> are set to <cite>false</cite> then BMTK will not log any simulation messages (simulation will still run and produce results).</p></td>
+<td><p class="sd-card-text"><cite>true</cite></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">quiet_simulator</p></td>
+<td><p class="sd-card-text">Can be set <cite>true</cite> to turn off any extermporaneous messages generated by the underlying simulator (NEURON, NEST, DiPDE)</p></td>
+<td><p class="sd-card-text"><cite>false</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">spikes_file</p></td>
+<td><p class="sd-card-text">location of hdf5 file where spikes will be saved. If location is a relative path file will be saved under the <strong>output_dir</strong> directory. If set to <cite>none</cite> then no
+SONATA spikes file will be created during simulation.</p></td>
+<td><p class="sd-card-text"><cite>none</cite></p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">spikes_file_csv</p></td>
+<td><p class="sd-card-text">Location of space separated csv file where spikes will be saved. If location is a relative path file will be saved under the <strong>output_dir</strong> directory. If set to <cite>none</cite>
+then no csv spikes file will be created during simulation.</p></td>
+<td><p class="sd-card-text"><cite>none</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">sort_by</p></td>
+<td></td>
+<td><p class="sd-card-text"><cite>none</cite></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></blockquote>
+</div>
+</details><p>By default BMTK will save non-virtual spike-trains of the simulation. BMTK is also capable of saving many other cell, synapse, and even network wide parameters
+and attributes during a simulation, like membrane potential, Calcium concentration, or local field potentials. To instruct BMTK to record a extra parameter we
+must add one or more blocks to the “reports” subsection to config, which will have the following format:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;BLOCK_NAME&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;REPORT_TYPE&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;REPORT_VAR&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;NODES_SUBSET&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;FILE_NAME&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;param1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;VAL1&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;param2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;VAL1&gt;&quot;</span>
+
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <strong>&lt;BLOCK_NAME&gt;</strong> is a user-given identifier for a different report, each different block assumed to be independent of each other.</p>
+<ul class="simple">
+<li><p><strong>module</strong> is used to indicate the report type and nature.</p></li>
+<li><p><strong>variable_name</strong> indicates the specific variable in the simulation being recorded.</p></li>
+<li><p><strong>cells</strong> is a node-set to indicate which cells are being targeted in recording.</p></li>
+<li><p><strong>file_name</strong> is an <em>optional</em> path for where module will save output. If path is relative then it will assume to be saved under the <strong>output_dir</strong>
+path specified in “output” block. If not specified, then BMTK will attempt to infer the correct path (usually under <strong>output_dir/&lt;BLOCK_NAME&gt;.h5</strong></p></li>
+</ul>
+<p>Different modules may also have different required/optional parameters. The following is a list of BMTK supported “report” modules:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">Available “report” modules</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p class="sd-card-text">module</p></th>
+<th class="head"><p class="sd-card-text">description</p></th>
+<th class="head"><p class="sd-card-text">available</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p class="sd-card-text">membrane_report</p></td>
+<td><p class="sd-card-text">Used to record a contingous time trace of a cell ion or parameter, like membrane voltage or calcium concentration</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">syn_report</p></td>
+<td><p class="sd-card-text">Used to record a contingous time trace of variables for the synapses of a given set of cells</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-even"><td><p class="sd-card-text">syn_weight</p></td>
+<td><p class="sd-card-text">Record of synaptic weight changes for a given set of cells.</p></td>
+<td><p class="sd-card-text">BioNet, PointNet</p></td>
+</tr>
+<tr class="row-odd"><td><p class="sd-card-text">extracellular</p></td>
+<td><p class="sd-card-text">Used to record a contingous time trace of variables for the synapses of a given set of cells</p></td>
+<td><p class="sd-card-text">BioNet</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></blockquote>
+</div>
+</details><div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">For our 400 cell example we will want to have all the output generated by BMTK to be written to the <strong>output/</strong> folder,
+including the logging which will be written to <strong>output/log.txt</strong>. It will also create two spike-train files on the
+(non-virtual) cells recorded from all cells during the simulation, <strong>output/spikes.h5</strong> and <strong>output/spikes.csv</strong>. Both
+files will contain the exact same data, only one will be stored in a SONATA hdf5 file and another in a space-separated
+csv file.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;output&quot;</span><span class="p">:{</span>
+<span class="w">  </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;overwrite_output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;spikes_file_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.csv&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">Besides recording spikes, we also want to record the local field potentials of all cells plus the membrane voltage
+traces for a select number of cells, which we do through the following two blocks in the “reports” section,
+respectively.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;vm_report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scnn1a-bio-cells&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;vm_report.h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical-cells&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/recXelectrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp_contributions&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">The “vm_report” block will instruct BMTK to record membrane traces from all “scnn1a” type cells and save them in the
+SONATA formated <strong>output/vm_report.h5</strong> file. If you wanted to record membrane potential from other cell types you
+have the option of either modifying the “vm_report” block to save the membrane traces of other cells to the same
+output/vm_report.h5 file. Or alternatively create another block that will independently save a different set of cell
+voltage traces into a different file.</p>
+<p class="sd-card-text">The “ecp” block will record the local field potential (LFP) and save it to the file <strong>output/ecp.h5</strong>.</p>
+<p class="sd-card-text">Note that recording LFP and membrane voltages at every time step can signficantly decrease simulation time and their
+resulting output files can become very large. So if you only care about spikes and firing rates then you can either
+remove these “report” blocks from the configuration file, or set attribute <cite>“enabled: false</cite></p>
+</div>
+</div>
+</section>
+<section id="networks">
+<h3>“networks”<a class="headerlink" href="#networks" title="Link to this heading">#</a></h3>
+<p>The “networks” section contains path to any SONATA network files, cells and connections, used during our simulation. By
+default it is divided into two subsection, one containing any nodes (cells) files used during the simulation, and the
+other containing and edges (synapses) files used, with the following format</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;/path/to/nodes.h5&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;/path/to/node_types.h5&gt;&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;/path/to/edges.h5&gt;&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;/path/to/edge_types.h5&gt;&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>BMTK will go through each nodes.h5 and edges.h5 file and import all nodes and edges population found, respectively If a
+file contains both nodes and edges populations then said file must be added to the “nodes” list and the “edges” list to
+include the total network.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">The main set of cells we want to simulate our example is saved under file name <strong>intenral_nodes.h5</strong>, with the
+recurrent connections between the cells are saved in the file <strong>internal_internal_edges.h5</strong>. If we wanted to run
+simulation on these and only these cells either with no input, spontaneous input, or some form of clamp we specify
+using the “inputs” section; then we could do the following in our configuration file</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+
+<span class="w">  </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">But in this example we explicity want to synaptically stimulate the “internal”, which we can do using a separate
+population of virtual cells we name “external”. The <strong>external_nodes.h5</strong> contain a cell population of virtual cells
+while the <strong>external_internal_edges.h5</strong> file is used to synaptically connect the “external” virtual cells to our
+“internal” cells in a pre-determined manner.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_node_types.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+
+<span class="w">  </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edges.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edge_types.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">When BMTK runs it will create both the “internal” and “external” population of cells and generate all external –&gt;
+internal and internal &lt;–&gt; internal synaptic connections. The “inputs” section of the configuration will assign
+firing patterns to the “external” cells creating stimuli to our network.</p>
+</div>
+</div>
+</section>
+<section id="node-sets">
+<h3>“node_sets”<a class="headerlink" href="#node-sets" title="Link to this heading">#</a></h3>
+<p>During a simulation we often want to apply an input or report to only a specific subset of cells. For example, we may
+want voltage traces from only pyramidal cells. We can do this can use the “node_sets” subsection to create subsets of
+our network model that can be referenced by the rest of the config</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;node_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;&lt;SET-NAME-1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="mi">103</span><span class="p">,</span><span class="w"> </span><span class="mi">104</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;&lt;SET-NAME-2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cell_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyramidal&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cell_location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L23&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">},</span>
+
+<span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;vm_report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;SET-NAME-1&gt;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;iclamp_stimulus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ICLAMP&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;SET-NAME-2&gt;&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>For <strong>&lt;SET-NAME-1&gt;</strong>, the node-set will tell BMTK to record from only those cells with with specified node ids. If you
+don’t know the exact node_ids, or if there are too many to feasibly write down, you can filter by cell attributes. In
+<strong>&lt;SET-NAME-2&gt;</strong> we are directing BMTK to apply current clamp to all biophysical pyramidal cells found in L23.</p>
+<p>Users also have the option of embedding the “node-set” query parameters directly. The below example will apply inputs
+to the exact same subset of cells as done in the above.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;iclamp_stimulus&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ICLAMP&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;cell_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyramidal&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;cell_location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L23&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">For our 400 cell example we need 3 different node-steps</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;node_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;external-cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;external&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;virtual&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;bio-cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nt">&quot;scnn1a-bio-cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scnn1a&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p class="sd-card-text">The <strong>external-cells</strong> set will contain all cells in our “external” population of virtual cells that will
+be used in the “inputs” so that spike trains are not applied to the “internal” cells.</p></li>
+<li><p class="sd-card-text">The <strong>bio-cells</strong> set is required by “ecp” recording block. Our model contains both morpholigcally detailed
+and point-neuron models, but only the former can be used to record the local field potential. Passing “node_set”:
+“bio-cells” to the ecp module will make sure the module doesn’t try (and crash) trying to record from cell models
+that don’t produce extracellular potential.</p></li>
+<li><p class="sd-card-text">The <strong>scnn1a-bio-cells</strong> set is used by the “vm_report” recording block so that it knows only to record voltage
+traces that have their “model_name” attribute set to value “scnn1a”. Although we could record “v” varaible from
+all cells, doing so would increase simulation time and generate a lot of extra data we don’t need.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="manifest-optional">
+<h3>“manifest” <strong>[OPTIONAL]</strong><a class="headerlink" href="#manifest-optional" title="Link to this heading">#</a></h3>
+<p>The “manifest” section lets users define variables and special directives to be used throughout the rest of the
+configuration file. SONATA uses the standard “$” posix prefix for differentiating a constant versus a varaible.</p>
+<p>For example, we use the manifest in the following manner to create custom variable “$NETWORK_DIR”</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;manifest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;$NETWORK_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$/path/to/my/models/network/&quot;</span>
+<span class="p">},</span>
+
+<span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">     </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/network1_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/network1_types.csv&quot;</span>
+<span class="w">     </span><span class="p">},</span>
+<span class="w">     </span><span class="p">{</span>
+<span class="w">       </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/network2_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">       </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/network2_types.csv&quot;</span>
+<span class="w">     </span><span class="p">}</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This way if we need to change the location of our network files or copy it to a new drive we can simply update the
+manifest in one single place.</p>
+</section>
+<section id="splitting-the-config-optional">
+<h3>Splitting the config <strong>[OPTIONAL]</strong><a class="headerlink" href="#splitting-the-config-optional" title="Link to this heading">#</a></h3>
+<p>Sometimes it is convient to think of the SONATA configuration as two parts; the <em>simulation</em> section with the “run”,
+“inputs”, and “reports” section, and the <em>network</em> section with the “networks” and “components” sections. BMTK allows
+configuration file to be split up along these lines, first by splitting them up into respective json files, for
+example called <em>./path/to/config.simulation.json</em> and <em>./path/to/config.network.json</em> (you can use whatever name and
+path you choose). Then to import these two sections into one file just use the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;simulation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./path/to/config.simulation.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;network&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./path/to/config.network.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And when BMTK runs it will locate and combine both configuration into one json dictionary.</p>
+<p>If you want to reduce the number of files you can also import a separate “network” config into a “simulation” config
+(or vice-versa).</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">//...</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="nt">&quot;network&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./path/to/config.network.json&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This can be useful if you have multiple simulations on the same network with different input regimens. It insures that
+each simulation configs all use the same model. And if you have to update the model and/or component paths then you
+only need to do so once.</p>
+</section>
+</section>
+<section id="run-the-simulation">
+<h2>3. Run the Simulation<a class="headerlink" href="#run-the-simulation" title="Link to this heading">#</a></h2>
+<p>Now that we have all the files we need to instantiate the model, along with a configuration that specifies the run-time,
+inputs, and reporting conditions of our simulation; we can go ahead an execute the simulation using the following
+command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_simulation.py<span class="w"> </span>config.simulation.json
+</pre></div>
+</div>
+<p>If you have a machine or cluster with multiple cores BMTK will automatically parallize the simulation. The only change
+the user will have to make is to change the way python is called to comply with your setup.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span>N<span class="w"> </span>python<span class="w"> </span>run_simulation.py<span class="w"> </span>config.simulation.json
+</pre></div>
+</div>
+<p>The simulation can also be executed inside Jupyter notebook/lab if prefered. Just copy the contents of the run_script
+(see below) into the cell and execute as you would a normal notebook.</p>
+<p>There are numerious other options for ways to execute BMTK; including using:</p>
+<ul>
+<li><p><strong>Docker Image</strong>: The BMTK Docker image allows users to run BMTK through a virtual machine containing a pre-generated
+environment will BMTK and all dependencies installed. You can use <cite>docker run</cite> command to run a simulation on your
+machine, or even spin up a Jupyter lab server (that will include BMTK tutorials and examples).</p>
+<p>See <cite>Using Docker with BMTK</cite> guide for more information.</p>
+</li>
+<li><p><strong>Neuroscience Gateway (NSG)</strong></p></li>
+<li><p><strong>singularity</strong></p></li>
+</ul>
+<section id="run-script">
+<h3>run script<a class="headerlink" href="#run-script" title="Link to this heading">#</a></h3>
+<p>The for majority of use-cases users will not need to do any programming, as most simulation options can be set using
+the SONATA simulation configuration file. But BMTK does makes available for users to insert customized code and data
+into any simulation. To do so you will need to interface with and add to the default run_simulation script used to
+execute and simulate a network.</p>
+<p>If you want to modify the way BMTK executes, and/or run a BMTK simulation from a Jupyter cell or within another
+piece of code, use the code within the <strong>run()</strong> function . <strong>note</strong>: there is slight differences in the run script
+depending on the underlying “simulation engine” used, although they all follow the same structure.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+BioNet</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+<span class="linenos"> 5</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="linenos"> 6</span>    <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>    <span class="n">bionet</span><span class="o">.</span><span class="n">nrn</span><span class="o">.</span><span class="n">quit_execution</span><span class="p">()</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="n">run</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>description of run() function by lines #</strong></p>
+<ol class="arabic simple" start="5">
+<li><p>Loads in the <strong>config.simulation.json</strong> file into python a dictionary-like object, resolving any variables,
+paths, and directives.</p></li>
+<li><p>Sets up logging and creates and validates any directories/files to be used for recording simulation output.</p></li>
+</ol>
+<ol class="arabic simple" start="8">
+<li><p>Initializes the network using the SONATA configuration file’s “networks” section.</p></li>
+<li><p>Initialize the simulation.</p></li>
+<li><p>Runs the simulation.</p></li>
+<li><p>Because BioNet runs within a NEURON console, we must explicity exit() it.</p></li>
+</ol>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+PointNet</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointnet</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+<span class="linenos"> 5</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="linenos"> 6</span>    <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">sim</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="n">run</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>description of run() function by lines #</strong></p>
+<ol class="arabic simple" start="5">
+<li><p>Loads in the <strong>config.simulation.json</strong> file into python a dictionary-like object, resolving any variables,
+paths, and directives.</p></li>
+<li><p>Sets up logging and creates and validates any directories/files to be used for recording simulation output.</p></li>
+</ol>
+<ol class="arabic simple" start="8">
+<li><p>Initializes the network using the SONATA configuration file’s “networks” section.</p></li>
+<li><p>Initialize the simulation.</p></li>
+<li><p>Runs the simulation.</p></li>
+</ol>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+FilterNet</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">filternet</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+<span class="linenos"> 5</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="linenos"> 6</span>    <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="n">run</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>description of run() function by lines #</strong></p>
+<ol class="arabic simple" start="5">
+<li><p>Loads in the <strong>config.simulation.json</strong> file into python a dictionary-like object, resolving any variables,
+paths, and directives.</p></li>
+<li><p>Sets up logging and creates and validates any directories/files to be used for recording simulation output.</p></li>
+</ol>
+<ol class="arabic simple" start="8">
+<li><p>Initializes the network using the SONATA configuration file’s “networks” section.</p></li>
+<li><p>Initialize the simulation.</p></li>
+<li><p>Runs the simulation.</p></li>
+</ol>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-3">
+PopNet</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">popnet</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">config_path</span><span class="p">):</span>
+<span class="linenos"> 5</span>    <span class="n">configure</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+<span class="linenos"> 6</span>    <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span>    <span class="n">network</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="n">sim</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="n">run</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>description of run() function by lines #</strong></p>
+<ol class="arabic simple" start="5">
+<li><p>Loads in the <strong>config.simulation.json</strong> file into python a dictionary-like object, resolving any variables,
+paths, and directives.</p></li>
+<li><p>Sets up logging and creates and validates any directories/files to be used for recording simulation output.</p></li>
+</ol>
+<ol class="arabic simple" start="8">
+<li><p>Initializes the network using the SONATA configuration file’s “networks” section.</p></li>
+<li><p>Initialize the simulation.</p></li>
+<li><p>Runs the simulation.</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="simulation-results">
+<h3>simulation results<a class="headerlink" href="#simulation-results" title="Link to this heading">#</a></h3>
+<p>Depending on the complexity of the model and inputs and reports, a simulation may take anywhere between a few seconds
+to a few days to complete. By default, BMTK will automically save the any results and “reports” as set up in the
+SONATA config. Once completed and results are saved we can go ahead and analyze our results, which we go into Further
+details in the <a class="reference external" href="Analysis">NEST</a> section of the user guide.</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+example network</div>
+<p class="sd-card-text">We can go ahead and simply run our 400 cell network simulation using the <strong>run_simulation.py</strong> script found in our
+working folder.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-4">
+single core</label><div class="sd-tab-content docutils">
+<p class="sd-card-text">The simplest way to run the simulation in a command line using a single core.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_simulation.py<span class="w"> </span>config.simulation.json
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-5">
+multiple-cores using MPI</label><div class="sd-tab-content docutils">
+<p class="sd-card-text">If you have MPI (Message Passing interface) installed on you machine use the following to split the simulation up
+between <em>N</em> cores (replace <em>N</em> with the number of cores/ranks).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span>N<span class="w"> </span>nrniv<span class="w"> </span>-mpi<span class="w"> </span>-python<span class="w"> </span>run_simulation.py<span class="w"> </span>config.simulation.json
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-6">
+In a jupyter lab cell</label><div class="sd-tab-content docutils">
+<p class="sd-card-text">To run the simulation inside jupyter notebook, add the following lines to a cell and execute:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s2">&quot;config.simulation.json&quot;</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-7">
+Docker</label><div class="sd-tab-content docutils">
+<p class="sd-card-text">If you have docker client installed on your machine, you can use the following to execute the simulation</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>alleninstitute/bmtk<span class="w"> </span>-v<span class="w"> </span>local/path:/home/shared/workspace<span class="w"> </span>python<span class="w"> </span>run_simulation.py<span class="w"> </span>config.simulation.json
+</pre></div>
+</div>
+</div>
+</div>
+<p class="sd-card-text">When it starts the first thing it will do is create (or overwrite) the <strong>output/</strong> folder along with
+<strong>output/log.txt</strong> log file that we can use to keep track of progress of the simulation. Although the network is
+small enough to run on any modern computer or laptop, it will still take anywhere 5 to 30 minutes to complete
+depending on the hardware.</p>
+<p class="sd-card-text">Once completed it will create the following files:</p>
+<ul class="simple">
+<li><p class="sd-card-text"><strong>output/spikes.h5</strong> and <strong>output/spikes.csv</strong> contain spike trains for all non-virtual cells. (Both files have the
+same data but in different file formats).</p></li>
+<li><p class="sd-card-text"><strong>output/vm_reports.h5</strong> contains membrane traces of selected cells in SONATA formated hdf5 file.</p></li>
+<li><p class="sd-card-text"><strong>ouput/ecp.h5</strong> contains local field potential (LFP) recordings from all the biophysically detailed cells, as
+recorded from a simulated electroded, and saved in SONATA hdf5 format.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="simulation-engines">
+<h2>Simulation Engines<a class="headerlink" href="#simulation-engines" title="Link to this heading">#</a></h2>
+<p>As mentioned before, BMTK is capable of simulating a wide variety of different network models across multiple levels
+of cell resolutions. To do this BMTK utilizes different backend simulator libraries, or “Simulation Engines”, depending
+on the nature of the model (ie. compartmental models, point models, filter models, rates based models, etc).</p>
+<p>BMTK standarizes and abstracts the simulation process so that users can easily switch between models types with having
+to learn a whole new API, however there are still important differences between the varying Simulation Engines. Some
+may excpect certain parameters and attributes (e.g. compartmental models will expect cells to have a defined morphology).
+Similarily some may contain extra features and capabilities.</p>
+<p>To learn more about the requirements and capabilities for the model(s) of your attention please see their respective
+user guides.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-4 sd-row-cols-lg-4 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-header docutils">
+<p class="sd-card-text"><strong>BioNet</strong> - Multicompartment Biophysicaly Detailed Simulation</p>
+</div>
+<div class="sd-card-body docutils">
+<p class="sd-card-text"><em>BioNet</em> utilizes the NEURON simulator tool to allow simulation of multicompartment cell models. It can
+encorporate a cells full morphology into model and the simulation; allowing you to simulate apects including ion
+flow, intracellular and extracellular membrane comptanence, and synaptic location and density.</p>
+</div>
+<img alt="" class="sd-card-img-bottom" src="_images/bionet_rep_morpholgy_network.png" />
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-header docutils">
+<p class="sd-card-text"><strong>PointNet</strong> - point-neuron based models</p>
+</div>
+<div class="sd-card-body docutils">
+<p class="sd-card-text"><em>PointNet</em> utlizes the NEST simulator for simulation of networks of point-neuron models, including Allen’s
+glif models, izhieckcih models, hodgkin-huxley, and many more. Most PointNet network models run faster with
+less overhead than BioNet and is a good starting point.</p>
+</div>
+<img alt="" class="sd-card-img-bottom" src="_images/pointnet_figure.png" />
+<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-header docutils">
+<p class="sd-card-text"><strong>FilterNet</strong> - Receptive Field Filter Models</p>
+</div>
+<div class="sd-card-body docutils">
+<p class="sd-card-text"><em>FilterNet</em> allows modelers to play visual or auditory onto a receptive field model to generate realistic
+firing rates and spike trains based on the spatio-temporal properties of the stimuli. The results of which can
+be used by compartmental and point models as realistic stimuli.</p>
+</div>
+<img alt="" class="sd-card-img-bottom" src="_images/filternet_rep_filter_models.png" />
+<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-header docutils">
+<p class="sd-card-text"><strong>PopNet</strong> - Population Wide Firing Rates Models</p>
+</div>
+<div class="sd-card-body docutils">
+<p class="sd-card-text"><em>PopNet</em> - Use’s Allen’s DiPDE solver to look at population level firing rate dyanmics.</p>
+</div>
+<img alt="" class="sd-card-img-bottom" src="_images/dipde_figure.png" />
+<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="additional-resources-and-guides">
+<h2>Additional Resources and Guides<a class="headerlink" href="#additional-resources-and-guides" title="Link to this heading">#</a></h2>
+<section id="exectuion-and-run-options">
+<h3>Exectuion and Run Options<a class="headerlink" href="#exectuion-and-run-options" title="Link to this heading">#</a></h3>
+<p>The following guides and tutorials for setting up and running simulations across a wide variety of different
+computing environments.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-4 sd-row-cols-lg-5 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Running BMTK on the on HPC.</div>
+<p class="sd-card-text">Guides, tips and tricks for running bmtk using high-performance computing resources with Message Passing
+Interface (MPI). Including tips for installing MPI, running on slurm, and using singularity container.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Running BMTK on the Neuroscience Gateway (NSG)</div>
+<p class="sd-card-text">The Neuroscience Gateway is a tool for neuroscientists to access HPC resources for free. Guide shows how to
+use BMTK with the NSG web and API interface to build networks and run large simulations.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Cybershuttle</div>
+<p class="sd-card-text">Comming Soon.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Using BMTK Images and Applications</div>
+<p class="sd-card-text">How to setup and run BMTK using pre-built applications and images; including with Docker, AppImage, and Snap.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Parallel and Serial Simulations</div>
+<p class="sd-card-text">How to run multiple simulations in parallel and/or serial; including grid searching, evolutionary, and gradient
+search methods for optimizing network and simulations.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h3>Inputs<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>BMTK supports using a wide variety of inputs and stimulus when running a simulation. Please see the following guides
+for built-in “inputs” types and how to use them in your simulations.</p>
+</section>
+<section id="reports">
+<h3>Reports<a class="headerlink" href="#reports" title="Link to this heading">#</a></h3>
+<p>Modelers can choose which variables and changes in a simulation to record using the “reports” section. See following
+guides for further information how to implement such output.</p>
+</section>
+<section id="useful-options-and-scripts">
+<h3>Useful Options and Scripts<a class="headerlink" href="#useful-options-and-scripts" title="Link to this heading">#</a></h3>
+</section>
+<section id="advanced-features">
+<h3>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading">#</a></h3>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-environment">1. Setting up the Environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-sonata-config-file-s">2. Setting up Sonata Config file(s)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">“run”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inputs">“inputs”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components">“components”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-and-reports">“output” and “reports”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#networks">“networks”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#node-sets">“node_sets”</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#manifest-optional">“manifest” <strong>[OPTIONAL]</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-the-config-optional">Splitting the config <strong>[OPTIONAL]</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-simulation">3. Run the Simulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-script">run script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-results">simulation results</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-engines">Simulation Engines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-resources-and-guides">Additional Resources and Guides</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exectuion-and-run-options">Exectuion and Run Options</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Inputs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reports">Reports</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#useful-options-and-scripts">Useful Options and Scripts</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced Features</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/simulators_guide.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,3 +1,5 @@
+:orphan:
+
 How to Cite
 ===========
 
@@ -30,10 +32,9 @@ The BioNet module of BMTK was described in an earlier paper. If using BioNet, pl
 
 |
 |
+
 **How to cite the V1 models:**
 
 Development of BMTK and SONATA was driven to a large degree by our efforts to model cortical circuits. Models of the mouse primary visual cortex (area V1) are `publicly available here <https://portal.brain-map.org/explore/models/mv1-all-layers>`_ and should be cited as follows:
 
 [1] Billeh, Y. N., Cai, B., Gratiy, S. L., Dai, K., Iyer, R., Gouwens, N. W., Abbasi-Asl, R., Jia, X., Siegle, J. H., Olsen, S. R., Koch, C., Mihalas, S., & Arkhipov, A. (2020). Systematic Integration of Structural and Functional Data into Multi-scale Models of Mouse Primary Visual Cortex. Neuron, 106(3), 388-403.e18. https://doi.org/10.1016/j.neuron.2020.01.040 
-
-

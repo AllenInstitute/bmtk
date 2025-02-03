@@ -1,1121 +1,1037 @@
+
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="../">
+
+<html lang="en" data-content_root="../" >
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bmtk.simulator.core.sonata_reader package &#8212; Brain Modeling Toolkit 1.1.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css?v=1b18bd45" />
-    <script src="../_static/documentation_options.js?v=fc837d61"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <title>bmtk.simulator.core.sonata_reader package &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=8cbc5bfe" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'bmtk/bmtk.simulator.core.sonata_reader';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.filternet package" href="bmtk.simulator.filternet.html" />
-    <link rel="prev" title="bmtk.simulator.core.modules package" href="bmtk.simulator.core.modules.html" /> 
-  </head><body>
-<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
-<style>
-
-	/* the icon font-family definition and helper classes */
-	@font-face {
-	  font-family: 'portal_icon_font';
-	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
-	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
-	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
-	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
-	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
-	  font-weight: normal;
-	  font-style: normal;
-	}
-	 
-	 [class^="icon-"]:before, [class*=" icon-"]:before {
-	  font-family: "portal_icon_font";
-	  font-style: normal;
-	  font-weight: normal;
-	  speak: none;
-	 
-	  display: inline-block;
-	  text-decoration: inherit;
-	  width: 1em;
-	  margin-right: .2em;
-	  text-align: center;
-	  /* opacity: .8; */
-	 
-	  /* For safety - reset parent styles, that can break glyph codes*/
-	  font-variant: normal;
-	  text-transform: none;
-	     
-	  /* fix buttons height, for twitter bootstrap */
-	  line-height: 1em;
-	 
-	  /* Animation center compensation - margins should be symmetric */
-	  /* remove if not needed */
-	  margin-left: .2em;
-	
-	}
-	 
-	.icon-spin5:before { content: '\e806'; } /* '' */
-	.icon-left-open-1:before { content: '\e81e'; } /* '' */
-	.icon-plus-1:before { content: '\e801'; } /* '' */
-	.icon-facebook:before { content: '\e816'; } /* '' */
-	.icon-gplus:before { content: '\e818'; } /* '' */
-	.icon-linkedin-3:before { content: '\e815'; } /* '' */
-	.icon-twitter:before { content: '\e817'; } /* '' */
-	.icon-youtube-play:before { content: '\e805'; } /* '' */
-	.icon-plus-2:before { content: '\e809'; } /* '' */
-	.icon-record-1:before { content: '\e81c'; } /* '' */
-	.icon-cancel:before { content: '\e80b'; } /* '' */
-	.icon-search:before { content: '\e804'; } /* '' */
-	.icon-cancel-2:before { content: '\e80c'; } /* '' */
-	.icon-plus-4:before { content: '\e80d'; } /* '' */
-	.icon-cancel-3:before { content: '\e80e'; } /* '' */
-	.icon-plus:before { content: '\e808'; } /* '' */
-	.icon-down-open:before { content: '\e800'; } /* '' */
-	.icon-right-open:before { content: '\e802'; } /* '' */
-	.icon-up-open:before { content: '\e803'; } /* '' */
-	.icon-stop:before { content: '\e813'; } /* '' */
-	.icon-cancel-1:before { content: '\e820'; } /* '' */
-	.icon-plus-3:before { content: '\e80a'; } /* '' */
-	/* end icon font helpers */
-
-	/* icon font spin animation */
-	.animate-spin {
-	  -moz-animation: spin 2s infinite linear;
-	  -o-animation: spin 2s infinite linear;
-	  -webkit-animation: spin 2s infinite linear;
-	  animation: spin 2s infinite linear;
-	  display: inline-block;
-	}
-	@-moz-keyframes spin {
-	  0% {
-	    -moz-transform: rotate(0deg);
-	    -o-transform: rotate(0deg);
-	    -webkit-transform: rotate(0deg);
-	    transform: rotate(0deg);
-	  }
-
-	  100% {
-	    -moz-transform: rotate(359deg);
-	    -o-transform: rotate(359deg);
-	    -webkit-transform: rotate(359deg);
-	    transform: rotate(359deg);
-	  }
-	}
-	@-webkit-keyframes spin {
-	  0% {
-	    -moz-transform: rotate(0deg);
-	    -o-transform: rotate(0deg);
-	    -webkit-transform: rotate(0deg);
-	    transform: rotate(0deg);
-	  }
-
-	  100% {
-	    -moz-transform: rotate(359deg);
-	    -o-transform: rotate(359deg);
-	    -webkit-transform: rotate(359deg);
-	    transform: rotate(359deg);
-	  }
-	}
-	@-o-keyframes spin {
-	  0% {
-	    -moz-transform: rotate(0deg);
-	    -o-transform: rotate(0deg);
-	    -webkit-transform: rotate(0deg);
-	    transform: rotate(0deg);
-	  }
-
-	  100% {
-	    -moz-transform: rotate(359deg);
-	    -o-transform: rotate(359deg);
-	    -webkit-transform: rotate(359deg);
-	    transform: rotate(359deg);
-	  }
-	}
-	@-ms-keyframes spin {
-	  0% {
-	    -moz-transform: rotate(0deg);
-	    -o-transform: rotate(0deg);
-	    -webkit-transform: rotate(0deg);
-	    transform: rotate(0deg);
-	  }
-
-	  100% {
-	    -moz-transform: rotate(359deg);
-	    -o-transform: rotate(359deg);
-	    -webkit-transform: rotate(359deg);
-	    transform: rotate(359deg);
-	  }
-	}
-	@keyframes spin {
-	  0% {
-	    -moz-transform: rotate(0deg);
-	    -o-transform: rotate(0deg);
-	    -webkit-transform: rotate(0deg);
-	    transform: rotate(0deg);
-	  }
-
-	  100% {
-	    -moz-transform: rotate(359deg);
-	    -o-transform: rotate(359deg);
-	    -webkit-transform: rotate(359deg);
-	    transform: rotate(359deg);
-	  }
-	}
-	/*  end spin animation */	
-
-	@font-face {
-	    font-family: 'bebas_neueregular';
-	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
-	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
-	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
-	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
-	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
-	    font-weight: normal;
-	    font-style: normal;
-	}
-
-	/* top chrome styles */
-	#top_chrome {
-
-		width:100%;
-		height:28px;
-		background-color:#163E65;
-	}
-
-	.chrome_link_block {
-
-		color:#fff !important;	
-		display:inline-block;
-		height:100%;
-		max-height:28px;
-	}
-
-	.chrome_link_block:hover {
-
-		background-color:#eee;
-		color:#0779BE !important;	
-		cursor:pointer;
-	}
-
-	#top_chrome a {
-
-		color:inherit !important;	
-		text-decoration:none;
-	}
-
-	#top_chrome a:hover {
-
-		color:inherit !important;	
-	}
-
-	#top_chrome_buttons {
-
-		float:right;
-		margin-right:50px;
-	}
-
-	.chrome_button {
-
-		font-family:arial,sans-serif;
-		font-weight:bold;
-		display:inline-block;
-		font-size:9px;
-		text-align:left;
-		text-decoration:none;
-		margin:9px 20px 10px 20px;
-	}
-
-	.chrome_active {
-
-		background-color:#1b7abd;
-		color:#fff;
-	}
-
-
-	/* header element styles*/
-	#header_content {
-
-		font-family: bebas_neueregular, arial, sans-serif;
-		font-size:22px;
-		color:#0779be;		
-		letter-spacing:0.03em;
-
-		position:relative;
-		width:calc(100% - 112px);
-		min-width:800px;
-		height:76px;
-		border-bottom:2px solid #A5A8AB;
-		margin-left:50px;
-		margin-right:50px;
-        z-index:9999; /* IT-9508 */
-	}
-
-	#portal_logo {
-
-		position:absolute;
-		top:20px;
-		left:0px;
-		width:236px;
-	}
-
-	#portal_tabs {
-
-		position: absolute;
-		bottom: 12px;
-		left: 0px;
-		margin-bottom: -12px;
-		display: block;
-	}
-
-	.horizontal_list
-	{
-		margin: 0;
-		padding: 0;
-		list-style-type: none;
-		display: inline; 		
-	}
-
-	.horizontal_list li { 
-
-		display: inline; 	
-	}	
-
-	#portal_tab_menu_container {
-
-		display:none;
-	}
-
-	#portal_search_input_group {
-
-		position:absolute;
-		margin: 0;
-		padding: 0;
-		bottom:12px;
-		right:0px;
-		border:1px solid #DAD9D3;
-		color:#DAD9D3;
-	}
-
-	#portal_search_input_group input {
-
-		margin: 0;
-		padding: 0;
-		border:none;
-		width:110px;
-		color:#DAD9D3;
-		font-family:Helvetica,sans-serif;
-		font-size:12px;
-		height:28px;
-		margin-left:10px;
-
-		outline:none;
-	}
-
-	input::-ms-clear {
-		display: none;
-	}
-
-	#portal_search_input_group i {
-
-		font-size:0.8em;
-		cursor:pointer;
-	}
-
-	#pSiteSearchTextInput:focus {
-
-		color:#000;
-	}
-
-	.icon_menu_down {
-
-		font-size: 12px;
-		margin-left: 4px;
-		vertical-align: text-top;
-		padding-top: 4px;
-		display: inline-block;
-	}
-
-	.portal_tab_item {
-
-		background-color: #fff;
-		padding: 12px;
-		padding-left:20px;
-		padding-right:20px;
-		display: inline-block !important;		
-	}
-
-	.portal_tab_item a:hover {
-
-		color:#fbe300;	
-	}
-
-	.portal_tab_item:hover {
-
-		background-color: #0779be;	
-		color:#fbe300 !important;	
-	}	
-
-
-	.portal_menu_active {
-
-		background-color: #EEEEEE;
-	}	
-
-	.portal_menu_item_active {
-
-		color:#fbe300 !important;	
-	}
-
-	.portal_tab_active {
-
-		color:#a5a8ab !important;
-	}
-
-	#header_content a {		
-
-		color:inherit !important;
-	}
-
-	#header_content a:hover {
-
-		background-color: #0779be;	
-		color:#fbe300 !important;	
-	}
-
-	#header_content ul {
-
-		list-style: none;
-		position: relative;
-		top: 58px;
-		display: inline-table;
-	}
-
-	#header_content ul ul {
-		
-		display:none;
-		opacity:0;
-	}
-
-	/* the fly out menus */
-	#header_content ul li:hover > ul,
-	#header_content ul li.hover > ul {
-
-		position: absolute;
-		top: 48px;
-		z-index:999;
-
-		display: block;
-		width: 152px;
-		padding:0px;
-		padding-top:20px;
-		padding-bottom:10px;
-		font-size: 12px;
-		font-family: Arial,Sans-Serif;
-		font-weight: bold;
-		text-transform: uppercase;
-
-		background-color: rgba(8,122,191,0.98);
-		color: #fff !important;
-		opacity: 1;
-
-		-webkit-animation: fade 0.25s;
-		animation: fade 0.25s;
-	}
-
-	@-webkit-keyframes fade {
-	    from {opacity: 0}
-	    to {opacity: 1}
-	}
-	@keyframes fade {
-	    from {opacity: 0}
-	    to {opacity: 1}
-	}	
-
-	#header_content ul li:hover > ul li {
-
-		padding: 10px;
-		padding-top: 0px;
-		padding-left: 20px;
-		display: block;
-		opacity:1;
-	}
-
-	#header_content ul li:hover > ul a {
-
-		display: block;
-		opacity:1;
-		white-space:nowrap;
-	}
-
-	#portal_menu_start_list {
-
-		left: 81px;
-
-		/* IE sauce */
-		left:85px\9;
-
-		/* Safari sauce */
-		(;left:79px;);
-	}
-
-	#portal_menu_atlases_list {
-
-		left: 290px;
-		width: 210px !important;
-        height: 236px;
-
-		padding-bottom:5px !important;
-
-		/* IE sauce */
-		left: 303px\9;
-        height: 225px\9;
-
-		/* Safari sauce */
-		(;left:279px;);
-	}
-
-	#portal_menu_tools_list {
-
-		left: 500px;
-		width: 172px !important;
-		height: 236px;
-
-		padding-bottom:5px !important;
-
-		/* IE sauce */
-		left: 513px\9;
-		height:225px\9;
-
-		/* Safari sauce */
-		(;left:489px;);
-		(;height:227px;);
-	}
-
-	/* mozilla sauce */
-	@-moz-document url-prefix() {
-
-		#header_content {
-
-			height:107px;
-		}
-
-		#portal_menu_start_list {
-
-			left:85px;
-		}
-
-		#portal_menu_atlases_list {
-
-			left: 302px;		
-		}
-
-		#portal_menu_tools_list {
-
-			left: 512px;
-			height:236px;
-		}
-	}
-
-
-	/* make it look OK on iPad also */
-	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
-
-		#portal_menu_start_list {
-
-			left:81px;
-		}
-
-		#portal_menu_atlases_list {
-
-			left: 291px;		
-		}
-
-		#portal_menu_tools_list {
-
-			left: 501px;
-			height:236px;
-		}  
-	}
-	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
-
-		#portal_menu_start_list {
-
-			left:81px;
-		}
-
-		#portal_menu_atlases_list {
-
-			left: 291px;		
-		}
-
-		#portal_menu_tools_list {
-
-			left: 501px;
-			height:236px;
-		}	  
-	}
-
-	.portal_menu_list_heading {
-
-		color:#9ccae5;
-		border-bottom:1px solid #9ccae5;
-		padding-bottom:5px !important;
-	}
-
-	.portal_menu_list_heading + li {
-
-		padding-top:10px !important;
-	}
-
-	.portal_menu_list_heading li {
-
-		padding-bottom:0px;
-	}	
-
-	#portal_menu_atlases_list li:last-of-type {
-
-		padding-bottom:15px !important;
-	}
-
-	.icon-spin5 {
-
-		color:#000;
-	}
-</style>
-<div id="pHeader">
-<div id="top_chrome">
-	<div id="top_chrome_buttons">
-		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
-	</div>
-</div>
-
-<div id="header_content">
-
-	<a href="http://AllenInstitute.github.io">
-		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
-	</a>
-</div>
-</div>
-
-<script>
-
-jQuery('#portal_tab_menu').bind('touchstart', function() {
-
-	if(window.console)
-		console.log("touchstart");
-});
-</script>
-<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
-
+    <link rel="prev" title="bmtk.simulator.core.modules package" href="bmtk.simulator.core.modules.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">bmtk</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="bmtk.html">bmtk package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.auxi.html">bmtk.builder.auxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html">bmtk.builder.bionet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.edges_sorter.html">bmtk.builder.edges_sorter package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html">bmtk.builder.network_adaptors package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.html">bmtk.simulator.bionet package</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="bmtk.simulator.core.html">bmtk.simulator.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.html">bmtk.simulator.filternet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.html">bmtk.simulator.pointnet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html">bmtk.simulator.popnet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.html">bmtk.simulator.utils package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html">bmtk.utils.io package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html">bmtk.utils.reports package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html">bmtk.utils.sonata package</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../developers_guide.html" class="nav-link">For Developers</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">bmtk</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.html" class="nav-link">bmtk package</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.simulator.html" class="nav-link">bmtk.simulator package</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.simulator.core.html" class="nav-link">bmtk.simulator.core package</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">bmtk.simulator.core.sonata_reader package</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="bmtk-simulator-core-sonata-reader-package">
-<h1>bmtk.simulator.core.sonata_reader package<a class="headerlink" href="#bmtk-simulator-core-sonata-reader-package" title="Link to this heading">¶</a></h1>
+<h1>bmtk.simulator.core.sonata_reader package<a class="headerlink" href="#bmtk-simulator-core-sonata-reader-package" title="Link to this heading">#</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 </section>
 <section id="module-bmtk.simulator.core.sonata_reader.edge_adaptor">
-<span id="bmtk-simulator-core-sonata-reader-edge-adaptor-module"></span><h2>bmtk.simulator.core.sonata_reader.edge_adaptor module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.edge_adaptor" title="Link to this heading">¶</a></h2>
+<span id="bmtk-simulator-core-sonata-reader-edge-adaptor-module"></span><h2>bmtk.simulator.core.sonata_reader.edge_adaptor module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.edge_adaptor" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">EdgeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">EdgeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.batch_process">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.batch_process" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.batch_process" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.create_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.create_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge">
-<span class="sig-name descname"><span class="pre">get_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.get_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.get_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_group</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.patch_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_group</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.patch_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess_edge_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.preprocess_edge_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess_edge_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#EdgeAdaptor.preprocess_edge_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">SonataBaseEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#SonataBaseEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">SonataBaseEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#SonataBaseEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.delay">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delay</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.delay" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delay</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.delay" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.dynamics_params">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamics_params</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.dynamics_params" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamics_params</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.edge_type_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edge_type_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.edge_type_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edge_type_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.edge_type_id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.is_gap_junction">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_gap_junction</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.is_gap_junction" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_gap_junction</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.is_gap_junction" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.model_template">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_template</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.model_template" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_template</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.model_template" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.nsyns">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nsyns</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.nsyns" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nsyns</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.nsyns" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.preselected_targets">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preselected_targets</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.preselected_targets" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preselected_targets</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.preselected_targets" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_node_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_node_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_node_id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_population">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_population" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_population" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight">
-<span class="sig-name descname"><span class="pre">syn_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#SonataBaseEdge.syn_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">syn_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#SonataBaseEdge.syn_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_distance">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_distance</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_distance" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_distance</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_distance" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_node_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_node_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_node_id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_population">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_population" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_population" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_sections">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_sections</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_sections" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_sections</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_sections" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.weight_function">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weight_function</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.weight_function" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weight_function</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.weight_function" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">group_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#group_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">group_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#group_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">no_nsyns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#no_nsyns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">no_nsyns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#no_nsyns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">nsyns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#nsyns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">nsyns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#nsyns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">ret_none_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#ret_none_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">ret_none_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#ret_none_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">syn_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#syn_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">syn_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#syn_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">syn_weight_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#syn_weight_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">syn_weight_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trg_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#syn_weight_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">types_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#types_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">types_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#types_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">weight_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#weight_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.</span></span><span class="sig-name descname"><span class="pre">weight_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/edge_adaptor.html#weight_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
 <section id="module-bmtk.simulator.core.sonata_reader.network_reader">
-<span id="bmtk-simulator-core-sonata-reader-network-reader-module"></span><h2>bmtk.simulator.core.sonata_reader.network_reader module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.network_reader" title="Link to this heading">¶</a></h2>
+<span id="bmtk-simulator-core-sonata-reader-network-reader-module"></span><h2>bmtk.simulator.core.sonata_reader.network_reader module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.network_reader" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">SonataEdges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">SonataEdges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.network_reader.EdgesReader" title="bmtk.simulator.core.network_reader.EdgesReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">EdgesReader</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_edges">
-<span class="sig-name descname"><span class="pre">get_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_edges" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_edges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_edges" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_source">
-<span class="sig-name descname"><span class="pre">get_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_source" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_source" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_target">
-<span class="sig-name descname"><span class="pre">get_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_target" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.get_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_target" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.initialize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.initialize" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_populations=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_populations=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataEdges.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.name" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.source_nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.source_nodes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">source_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.source_nodes" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.target_nodes">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.target_nodes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_nodes</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.target_nodes" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">SonataNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">SonataNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node_population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.network_reader.NodesReader" title="bmtk.simulator.core.network_reader.NodesReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">NodesReader</span></code></a></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.adaptor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptor</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.adaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">adaptor</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.adaptor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.filter">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_conditons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.filter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_conditons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.filter" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_node">
-<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_node" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_node" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_nodes">
-<span class="sig-name descname"><span class="pre">get_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_nodes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.get_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_nodes" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_table=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_nodes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_table=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_nodes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes">
-<span class="sig-name descname"><span class="pre">n_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.n_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">n_nodes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.n_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.name" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df">
-<span class="sig-name descname"><span class="pre">nodes_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.nodes_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nodes_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#SonataNodes.nodes_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.load_edges">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">load_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_populations=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#load_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.load_edges" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">load_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edges_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_populations=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#load_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.load_edges" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.network_reader.load_nodes">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">load_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_table=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_nodes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#load_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.load_nodes" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.network_reader.</span></span><span class="sig-name descname"><span class="pre">load_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes_h5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_types_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_table=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_nodes=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptor=&lt;class</span> <span class="pre">'bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/network_reader.html#load_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.network_reader.load_nodes" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
 <section id="module-bmtk.simulator.core.sonata_reader.node_adaptor">
-<span id="bmtk-simulator-core-sonata-reader-node-adaptor-module"></span><h2>bmtk.simulator.core.sonata_reader.node_adaptor module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.node_adaptor" title="Link to this heading">¶</a></h2>
+<span id="bmtk-simulator-core-sonata-reader-node-adaptor-module"></span><h2>bmtk.simulator.core.sonata_reader.node_adaptor module<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader.node_adaptor" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">NodeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">NodeAdaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_DYNAMICS_PARAM">
-<span class="sig-name descname"><span class="pre">COL_DYNAMICS_PARAM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dynamics_params'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_DYNAMICS_PARAM" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COL_DYNAMICS_PARAM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dynamics_params'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_DYNAMICS_PARAM" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_GID">
-<span class="sig-name descname"><span class="pre">COL_GID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gid'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_GID" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COL_GID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gid'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_GID" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_PROCESSING">
-<span class="sig-name descname"><span class="pre">COL_MODEL_PROCESSING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_processing'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_PROCESSING" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COL_MODEL_PROCESSING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_processing'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_PROCESSING" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TEMPLATE">
-<span class="sig-name descname"><span class="pre">COL_MODEL_TEMPLATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_template'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TEMPLATE" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COL_MODEL_TEMPLATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_template'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TEMPLATE" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TYPE">
-<span class="sig-name descname"><span class="pre">COL_MODEL_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_type'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TYPE" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COL_MODEL_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_type'</span></em><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TYPE" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.batch_process">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.batch_process" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_process</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.batch_process" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.create_adaptor">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.create_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.create_adaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.create_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.create_adaptor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.get_node">
-<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.get_node" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sonata_node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.get_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.get_node" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_processing">
-<span class="sig-name descname"><span class="pre">model_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_processing" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">model_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_processing" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_template">
-<span class="sig-name descname"><span class="pre">model_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_template" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">model_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_template" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_type">
-<span class="sig-name descname"><span class="pre">model_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_type" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">model_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.model_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_type" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.node_id">
-<span class="sig-name descname"><span class="pre">node_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.node_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.node_id" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">node_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.node_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.node_id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.patch_adaptor">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.patch_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.patch_adaptor" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch_adaptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adaptor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.patch_adaptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.patch_adaptor" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.preprocess_node_types">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess_node_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.preprocess_node_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.preprocess_node_types" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">preprocess_node_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#NodeAdaptor.preprocess_node_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.preprocess_node_types" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">SonataBaseNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#SonataBaseNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">SonataBaseNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_adaptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#SonataBaseNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.dynamics_params">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamics_params</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.dynamics_params" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dynamics_params</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.gid">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gid</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.gid" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gid</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.gid" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_processing">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_processing</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_processing" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_processing</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_processing" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_template">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_template</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_template" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_template</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_template" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_type">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_type" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_type" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.network">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.network" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">network</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.network" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.node_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.node_id" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_id</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.node_id" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population_name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population_name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population_name" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">population_name</span></span><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population_name" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.empty_list">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">empty_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#empty_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.empty_list" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">empty_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#empty_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.empty_list" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.group_dynamics_params">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">group_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#group_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.group_dynamics_params" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">group_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#group_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.group_dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.none_function">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">none_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#none_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.none_function" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">none_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#none_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.none_function" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params">
-<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">types_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#types_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.</span></span><span class="sig-name descname"><span class="pre">types_dynamics_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/sonata_reader/node_adaptor.html#types_dynamics_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
 <section id="module-bmtk.simulator.core.sonata_reader">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader" title="Link to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.core.sonata_reader" title="Link to this heading">#</a></h2>
 </section>
 </section>
 
 
-            <div class="clearer"></div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.core.sonata_reader.edge_adaptor">bmtk.simulator.core.sonata_reader.edge_adaptor module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.batch_process"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.batch_process</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.create_adaptor()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.get_edge()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.patch_adaptor()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types"><code class="docutils literal notranslate"><span class="pre">EdgeAdaptor.preprocess_edge_types()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.delay"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.delay</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.dynamics_params"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.dynamics_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.edge_type_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.edge_type_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.is_gap_junction"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.is_gap_junction</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.model_template"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.model_template</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.nsyns"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.nsyns</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.preselected_targets"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.preselected_targets</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.source_node_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.source_population"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.source_population</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.syn_weight()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_distance"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_distance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_node_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_population"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_population</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.target_sections"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.target_sections</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.weight_function"><code class="docutils literal notranslate"><span class="pre">SonataBaseEdge.weight_function</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params"><code class="docutils literal notranslate"><span class="pre">group_dynamics_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns"><code class="docutils literal notranslate"><span class="pre">no_nsyns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns"><code class="docutils literal notranslate"><span class="pre">nsyns()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function"><code class="docutils literal notranslate"><span class="pre">ret_none_function()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight"><code class="docutils literal notranslate"><span class="pre">syn_weight()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function"><code class="docutils literal notranslate"><span class="pre">syn_weight_function()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params"><code class="docutils literal notranslate"><span class="pre">types_dynamics_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function"><code class="docutils literal notranslate"><span class="pre">weight_function()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.core.sonata_reader.network_reader">bmtk.simulator.core.sonata_reader.network_reader module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges"><code class="docutils literal notranslate"><span class="pre">SonataEdges</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_edges"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_edges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_source"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_source()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.get_target"><code class="docutils literal notranslate"><span class="pre">SonataEdges.get_target()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.initialize"><code class="docutils literal notranslate"><span class="pre">SonataEdges.initialize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load"><code class="docutils literal notranslate"><span class="pre">SonataEdges.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.name"><code class="docutils literal notranslate"><span class="pre">SonataEdges.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.source_nodes"><code class="docutils literal notranslate"><span class="pre">SonataEdges.source_nodes</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.target_nodes"><code class="docutils literal notranslate"><span class="pre">SonataEdges.target_nodes</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.adaptor"><code class="docutils literal notranslate"><span class="pre">SonataNodes.adaptor</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.filter"><code class="docutils literal notranslate"><span class="pre">SonataNodes.filter()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_node"><code class="docutils literal notranslate"><span class="pre">SonataNodes.get_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.get_nodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes.get_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize"><code class="docutils literal notranslate"><span class="pre">SonataNodes.initialize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load"><code class="docutils literal notranslate"><span class="pre">SonataNodes.load()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes"><code class="docutils literal notranslate"><span class="pre">SonataNodes.n_nodes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.name"><code class="docutils literal notranslate"><span class="pre">SonataNodes.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df"><code class="docutils literal notranslate"><span class="pre">SonataNodes.nodes_df()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.load_edges"><code class="docutils literal notranslate"><span class="pre">load_edges()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.network_reader.load_nodes"><code class="docutils literal notranslate"><span class="pre">load_nodes()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.core.sonata_reader.node_adaptor">bmtk.simulator.core.sonata_reader.node_adaptor module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_DYNAMICS_PARAM"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_DYNAMICS_PARAM</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_GID"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_GID</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_PROCESSING"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_PROCESSING</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TEMPLATE"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_TEMPLATE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.COL_MODEL_TYPE"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.COL_MODEL_TYPE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.batch_process"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.batch_process</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.create_adaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.create_adaptor()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.get_node"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.get_node()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_processing"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_processing()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_template"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_template()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.model_type"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.model_type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.node_id"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.node_id()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.patch_adaptor"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.patch_adaptor()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor.preprocess_node_types"><code class="docutils literal notranslate"><span class="pre">NodeAdaptor.preprocess_node_types()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.dynamics_params"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.dynamics_params</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.gid"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.gid</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_processing"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_processing</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_template"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_template</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.model_type"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.model_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.network"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.network</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.node_id"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.node_id</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.population</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode.population_name"><code class="docutils literal notranslate"><span class="pre">SonataBaseNode.population_name</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.empty_list"><code class="docutils literal notranslate"><span class="pre">empty_list()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.group_dynamics_params"><code class="docutils literal notranslate"><span class="pre">group_dynamics_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.none_function"><code class="docutils literal notranslate"><span class="pre">none_function()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params"><code class="docutils literal notranslate"><span class="pre">types_dynamics_params()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.core.sonata_reader">Module contents</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/bmtk/bmtk.simulator.core.sonata_reader.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h3><a href="../index.html">Contents</a></h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Main Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorial_bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../workshop.html">Annual Modeling Software Workshop</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../registration.html">Registration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to_cite.html">How to Cite</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
-</ul>
-</li>
-</ul>
-
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
     </div>
+  
+</div>
 
-
-    <div class="footer" role="contentinfo">
-    </div>
-<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
-
+  </footer>
   </body>
 </html>

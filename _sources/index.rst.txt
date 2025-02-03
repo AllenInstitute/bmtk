@@ -1,38 +1,32 @@
-.. Brain Modeling Toolkit documentation master file, created by
-   sphinx-quickstart on Tue Sep 26 10:33:33 2017.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+############################################
+Welcome to the Brain Modeling Toolkit (BMTK)
+############################################
 
-
-Welcome to the Brain Modeling Toolkit
-=====================================
 
 .. toctree::
-   :maxdepth: 2
-   :titlesonly:
    :hidden:
 
-   Installation Guide <installation>
-   Building Networks <builder>
-   simulators
-   analyzer
-   tutorials
-   ad_tutorials
-   Example Networks <examples>
-   Github Profile <https://github.com/AllenInstitute/bmtk.git>
-   workshop
-   registration
-   contributors
-   how_to_cite
-   Source Documentation <bmtk/bmtk>
-   
+   About BMTK <self>
 
+.. toctree::
+   :hidden:
+
+   About BMTK <index.rst>
+   news_and_events
+   contact_us
+   installation
+   user_guide
+   tutorials
+   developers_guide
+   
+   
+About the Brain Modeling Toolkit (BMTK)
+=======================================
 
 The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
 neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
 multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
 population-level firing rate models.
-
 
 .. figure:: _static/images/levels_of_resolution_noml.png
    :scale: 70%
@@ -40,18 +34,8 @@ population-level firing rate models.
 The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
 models. What BMTK does provide:
 
-* A unified inteferce across different simulators, so that modelers can work with and study their own network models
-  across different simulators without having to learn how to use each tool.
-* An easy way to setup and initialize network simulations with little-to-no programming necessary
-* Automatic integration of parallelization when running on HPC.
-* Extra built-in features which the native simulators may not support out-of-the-box.
-
-The BMTK was developed and is supported at the `Allen Institute for Brain Science <https://alleninstitute.org/>`_ and
-released under a BSD 3-clause license. We encourage others to use the BMTK for their own research, and suggestions and
-contributions to the BMTK are welcome.
-
-The latest release, previous releases, and current development can be found at `<https://github.com/AllenInstitute/bmtk>`_
-
+.. figure:: _static/images/bmtk_architecture.jpg
+   :scale: 45%
 
 The BMTK Workflow and architecture
 ----------------------------------
