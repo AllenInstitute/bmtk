@@ -454,24 +454,20 @@ where extracellular potentials are calculated using FEM in a first step and then
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.comsol.ComsolMod.initialize">
 <span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/comsol.html#ComsolMod.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.comsol.ComsolMod.initialize" title="Link to this definition">#</a></dt>
-<dd><p>Checks if a waveform argument was passed which determines how to comsol.txt and waveform.csv should be treated.
-If no waveform is specified:</p>
-<blockquote>
-<div><p>Loads COMSOL output
-Sets up nearest neighbour interpolation object (for spatial interpolation)
-Performs temporal interpolation so COMSOL and BMTK timings match.</p>
-</div></blockquote>
-<dl>
-<dt>If one or more waveforms are specified:</dt><dd><dl>
-<dt>Iterates over COMSOL outputs:</dt><dd><p>Loads COMSOL output
-Iterates over cells:</p>
-<blockquote>
-<div><p>Retrieves potentials at each segment via spatial interpolation</p>
-</div></blockquote>
-</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>Checks if a waveform argument was passed which determines how to comsol.txt and waveform.csv should be treated.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">If</span> <span class="n">no</span> <span class="n">waveform</span> <span class="ow">is</span> <span class="n">specified</span><span class="p">:</span>
+    <span class="n">Loads</span> <span class="n">COMSOL</span> <span class="n">output</span>
+    <span class="n">Sets</span> <span class="n">up</span> <span class="n">nearest</span> <span class="n">neighbour</span> <span class="n">interpolation</span> <span class="nb">object</span> <span class="p">(</span><span class="k">for</span> <span class="n">spatial</span> <span class="n">interpolation</span><span class="p">)</span>
+    <span class="n">Performs</span> <span class="n">temporal</span> <span class="n">interpolation</span> <span class="n">so</span> <span class="n">COMSOL</span> <span class="ow">and</span> <span class="n">BMTK</span> <span class="n">timings</span> <span class="n">match</span><span class="o">.</span>
+
+<span class="n">If</span> <span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">waveforms</span> <span class="n">are</span> <span class="n">specified</span><span class="p">:</span>
+    <span class="n">Iterates</span> <span class="n">over</span> <span class="n">COMSOL</span> <span class="n">outputs</span><span class="p">:</span>
+        <span class="n">Loads</span> <span class="n">COMSOL</span> <span class="n">output</span>
+        <span class="n">Iterates</span> <span class="n">over</span> <span class="n">cells</span><span class="p">:</span>
+            <span class="n">Retrieves</span> <span class="n">potentials</span> <span class="n">at</span> <span class="n">each</span> <span class="n">segment</span> <span class="n">via</span> <span class="n">spatial</span> <span class="n">interpolation</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sim</strong> – Simulation object</p>
@@ -499,23 +495,19 @@ For a time-dependent study, each subsequent column stores the potentials at one 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.modules.comsol.ComsolMod.step">
 <span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/comsol.html#ComsolMod.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.comsol.ComsolMod.step" title="Link to this definition">#</a></dt>
-<dd><p>Checks if a waveform argument was passed which determines how potentials should be retrieved.
-Iterates over all cells:</p>
-<blockquote>
-<div><dl>
-<dt>If no waveform is specified:</dt><dd><p>Retrieves nearest neighbour with interpolator
-Looks up potentials (for each segment of the cell) in comsol data at current time</p>
-</dd>
-<dt>If one or more waveforms are specified:</dt><dd><p>Initialises extracellular potential v_ext at 0
-Iterates over COMSOL outputs (thus making a linear combination of several FEM solutions):</p>
-<blockquote>
-<div><p>Calls interpolated potentials
-Multiplies by corresponding waveform value at current time and by corresponding amplitude
-Adds to v_ext</p>
-</div></blockquote>
-</dd>
-</dl>
-</div></blockquote>
+<dd><p>Checks if a waveform argument was passed which determines how potentials should be retrieved.</p>
+<p>Iterates over all cells:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">If</span> <span class="n">no</span> <span class="n">waveform</span> <span class="ow">is</span> <span class="n">specified</span><span class="p">:</span>
+    <span class="n">Retrieves</span> <span class="n">nearest</span> <span class="n">neighbour</span> <span class="k">with</span> <span class="n">interpolator</span>
+    <span class="n">Looks</span> <span class="n">up</span> <span class="n">potentials</span> <span class="p">(</span><span class="k">for</span> <span class="n">each</span> <span class="n">segment</span> <span class="n">of</span> <span class="n">the</span> <span class="n">cell</span><span class="p">)</span> <span class="ow">in</span> <span class="n">comsol</span> <span class="n">data</span> <span class="n">at</span> <span class="n">current</span> <span class="n">time</span>
+<span class="n">If</span> <span class="n">one</span> <span class="ow">or</span> <span class="n">more</span> <span class="n">waveforms</span> <span class="n">are</span> <span class="n">specified</span><span class="p">:</span>
+    <span class="n">Initialises</span> <span class="n">extracellular</span> <span class="n">potential</span> <span class="n">v_ext</span> <span class="n">at</span> <span class="mi">0</span>
+    <span class="n">Iterates</span> <span class="n">over</span> <span class="n">COMSOL</span> <span class="n">outputs</span> <span class="p">(</span><span class="n">thus</span> <span class="n">making</span> <span class="n">a</span> <span class="n">linear</span> <span class="n">combination</span> <span class="n">of</span> <span class="n">several</span> <span class="n">FEM</span> <span class="n">solutions</span><span class="p">):</span>
+        <span class="n">Calls</span> <span class="n">interpolated</span> <span class="n">potentials</span>
+        <span class="n">Multiplies</span> <span class="n">by</span> <span class="n">corresponding</span> <span class="n">waveform</span> <span class="n">value</span> <span class="n">at</span> <span class="n">current</span> <span class="n">time</span> <span class="ow">and</span> <span class="n">by</span> <span class="n">corresponding</span> <span class="n">amplitude</span>
+        <span class="n">Adds</span> <span class="n">to</span> <span class="n">v_ext</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

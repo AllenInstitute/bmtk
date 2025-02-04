@@ -70,7 +70,7 @@ For example, using a session NWB downloaded using the AllenSDK, the below exampl
       }
     }
 
-See the `documentation <ecephys_probe.html>`_ for more information and advanced features.
+See the `documentation <ecephys_probe.html>`__ for more information and advanced features.
 
 `Current Clamps <current_clamps.html>`_
 +++++++++++++++++++++++++++++++++++++++
@@ -89,7 +89,7 @@ May use one step current clamp on multiple nodes, or have one node receive multi
         }
     }
 
-See `documentation <current_clamps.html>`_ for more details on using current clamp inputs.
+See `documentation <current_clamps.html>`__ for more details on using current clamp inputs.
 
 
 Outputs

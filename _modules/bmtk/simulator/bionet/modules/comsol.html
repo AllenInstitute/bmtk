@@ -397,13 +397,16 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comsol_files</span><span class="p">,</span> <span class="n">waveforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">amplitudes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
                  <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">set_nrn_mechanisms</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_set</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if a waveform argument was passed which determines what comsol_files and amplitudes should look like.</span>
-<span class="sd">        If no waveform is specified:</span>
-<span class="sd">            The comsol output should be from a time-dependent study.</span>
-<span class="sd">            The amplitude can optionally be passed in the form of an integer to scale all potentials.</span>
-<span class="sd">        If one or more waveforms are specified:</span>
-<span class="sd">            There should be as many comsol outputs from stationary studies. </span>
-<span class="sd">            Optionally, as many amplitudes can be passed to scale the corresponding potentials</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if a waveform argument was passed which determines what comsol_files and amplitudes should look like.</span>
+<span class="sd">        </span>
+<span class="sd">        If no waveform is specified</span>
+<span class="sd">        - The comsol output should be from a time-dependent study.</span>
+<span class="sd">        - The amplitude can optionally be passed in the form of an integer to scale all potentials.</span>
+<span class="sd">        </span>
+<span class="sd">        If one or more waveforms are specified</span>
+<span class="sd">        - There should be as many comsol outputs from stationary studies. </span>
+<span class="sd">        - Optionally, as many amplitudes can be passed to scale the corresponding potentials</span>
 
 <span class="sd">        :param comsol_files: (str or list) &quot;/path/to/comsol.txt&quot; or list thereof.</span>
 <span class="sd">        :param waveforms: (str or list) &quot;/path/to/waveform.csv&quot; or list thereof. Defaults to None, in which case comsol study should be time dependent.</span>
@@ -412,7 +415,6 @@
 <span class="sd">        :param set_nrn_mechanisms: defaults to True.</span>
 <span class="sd">        :param node_set: defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="k">if</span> <span class="n">waveforms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_comsol_files</span> <span class="o">=</span> <span class="n">comsol_files</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">_waveforms</span> <span class="o">=</span> <span class="n">waveforms</span>
@@ -441,16 +443,20 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.comsol.ComsolMod.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if a waveform argument was passed which determines how to comsol.txt and waveform.csv should be treated.</span>
-<span class="sd">        If no waveform is specified:</span>
-<span class="sd">            Loads COMSOL output</span>
-<span class="sd">            Sets up nearest neighbour interpolation object (for spatial interpolation)</span>
-<span class="sd">            Performs temporal interpolation so COMSOL and BMTK timings match.</span>
-<span class="sd">        If one or more waveforms are specified:</span>
-<span class="sd">            Iterates over COMSOL outputs:</span>
+<span class="sd">        </span>
+<span class="sd">        Usage::</span>
+<span class="sd">        </span>
+<span class="sd">            If no waveform is specified:</span>
 <span class="sd">                Loads COMSOL output</span>
-<span class="sd">                Iterates over cells:</span>
-<span class="sd">                    Retrieves potentials at each segment via spatial interpolation</span>
-
+<span class="sd">                Sets up nearest neighbour interpolation object (for spatial interpolation)</span>
+<span class="sd">                Performs temporal interpolation so COMSOL and BMTK timings match.</span>
+<span class="sd">            </span>
+<span class="sd">            If one or more waveforms are specified:</span>
+<span class="sd">                Iterates over COMSOL outputs:</span>
+<span class="sd">                    Loads COMSOL output</span>
+<span class="sd">                    Iterates over cells:</span>
+<span class="sd">                        Retrieves potentials at each segment via spatial interpolation</span>
+<span class="sd">       </span>
 <span class="sd">        :param sim: Simulation object</span>
 <span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -508,7 +514,9 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.comsol.ComsolMod.step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if a waveform argument was passed which determines how potentials should be retrieved.</span>
-<span class="sd">        Iterates over all cells:</span>
+<span class="sd">        </span>
+<span class="sd">        Iterates over all cells::</span>
+
 <span class="sd">            If no waveform is specified:</span>
 <span class="sd">                Retrieves nearest neighbour with interpolator</span>
 <span class="sd">                Looks up potentials (for each segment of the cell) in comsol data at current time</span>

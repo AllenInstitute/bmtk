@@ -2,24 +2,18 @@
 Welcome to the Brain Modeling Toolkit (BMTK)
 ############################################
 
-
 .. toctree::
    :hidden:
 
    About BMTK <self>
-
-.. toctree::
-   :hidden:
-
-   About BMTK <index.rst>
    news_and_events
    contact_us
    installation
    user_guide
    tutorials
    developers_guide
-   
-   
+
+
 About the Brain Modeling Toolkit (BMTK)
 =======================================
 
@@ -85,9 +79,9 @@ VND
 
 References
 ----------
-See the paper about BMTK: `link <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386>`_.
+See the paper about BMTK: `link <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386>`__.
 
-For information on how to cite BMTK, please see: `link <how_to_cite.html>`_.
+For information on how to cite BMTK, please see: `link <how_to_cite.html>`__.
 
 
 

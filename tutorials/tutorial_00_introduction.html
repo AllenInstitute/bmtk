@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 0: Introduction to the Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=8cbc5bfe" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_00_introduction';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 0: Introduction to the Brain Modeling Toolkit</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Chapter-0:-Introduction-to-the-Brain-Modeling-Toolkit">
+<h1>Chapter 0: Introduction to the Brain Modeling Toolkit<a class="headerlink" href="#Chapter-0:-Introduction-to-the-Brain-Modeling-Toolkit" title="Link to this heading">#</a></h1>
+<p>The Brain Modeling ToolKit (bmtk) was developed at the Allen Institute for Brain Science to assist with modeling, simulation and analysis of large-scale networks. It was developed in python and is open-source. The bmtk also provides a unified interface across different level of representations of brain models: supporting everything from biophysically detailed models of indvidual neurons and synapses, to high level representation of connection dynamics between different regions of the brain.</p>
+<p>Included in the bmtk:</p>
+<ul class="simple">
+<li><p><strong>The Network Builder</strong> - python API that allows modelers to build large-scale network models with a minimal amount of coding.</p></li>
+<li><p>A <a class="reference external" href="https://github.com/AllenInstitute/sonata">standarized format</a> for representing networks across a range of different levels of resolution, that is both efficient in memory and read-time, but also allows users to quickly adjust parameters before and during simulations.</p></li>
+<li><p>A collection of simulator interfaces to run network simulations on a variety of different simulators.</p></li>
+<li><p><strong>Analysis Toolkit</strong> - An set of tools for visualizing and analyzing networks and simulation results.</p></li>
+</ul>
+<p><img alt="994c02502162402388f21b238b7a7f5b" src="../_images/levels_of_resolution.png" /></p>
+<section id="About-This-Guide">
+<h2>About This Guide<a class="headerlink" href="#About-This-Guide" title="Link to this heading">#</a></h2>
+<section id="General-Guides">
+<h3>General Guides<a class="headerlink" href="#General-Guides" title="Link to this heading">#</a></h3>
+<p>High level overviews of the bmtk.</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="NetworkBuilder_Intro.html"><span class="doc">Quick guide to building networks</span></a></div>
+<div class="line"><a class="reference internal" href="Simulation_Intro.html"><span class="doc">Setting up and running simulations</span></a></div>
+</div>
+</section>
+<section id="Workflow-tutorials">
+<h3>Workflow tutorials<a class="headerlink" href="#Workflow-tutorials" title="Link to this heading">#</a></h3>
+<p>A collection of tutorials for building and simulating different types of networks using the bmtk. These tutorials are only very loosely in order and can for the most part be skipped around.</p>
+<div class="line-block">
+<div class="line"><a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Single cell with current stimulation (with BioNet)</span></a></div>
+<div class="line"><a class="reference internal" href="tutorial_02_single_cell_syn.html"><span class="doc">Tutorial 2: Single cell with external synaptic stimulation (with BioNet)</span></a></div>
+<div class="line"><a class="reference internal" href="tutorial_03_single_pop.html"><span class="doc">Tutorial 3: Single population recurrent network (with BioNet)</span></a></div>
+<div class="line"><a class="reference internal" href="tutorial_04_multi_pop.html"><span class="doc">Tutorial 4: Multi-population recurrent network (with BioNet)</span></a></div>
+<div class="line"><a class="reference internal" href="tutorial_05_pointnet_modeling.html"><span class="doc">Tutorial 5: Point-neuron simulation (with PointNet)</span></a></div>
+<div class="line"><a class="reference internal" href="tutorial_06_population_modeling.html"><span class="doc">Tutorial 6: Population-level simulation (with PopNet)</span></a></div>
+</div>
+</section>
+</section>
+<section id="Other-Resources">
+<h2>Other Resources<a class="headerlink" href="#Other-Resources" title="Link to this heading">#</a></h2>
+<p>BMTK tutorials and lectures previously used at various workshops and conferences. <strong>WARNING - these materials are not guaranteed to be up-to-date, use at your own risk!</strong></p>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://github.com/AllenInstitute/CNS_2018_Tutorial">bmtk tutorial at CNS (June 2018)</a></div>
+<div class="line"><a class="reference external" href="https://github.com/AllenInstitute/SWDB_2018">bmtk tutorial at the Summer Workshop on the Dynamic Brain (August 2018)</a></div>
+</div>
+</section>
+<section id="Prerequisites:">
+<h2>Prerequisites:<a class="headerlink" href="#Prerequisites:" title="Link to this heading">#</a></h2>
+<section id="Running-with-Docker">
+<h3>Running with Docker<a class="headerlink" href="#Running-with-Docker" title="Link to this heading">#</a></h3>
+<p>If you have Docker installed on your machine then there is a Docker Image with all the prerequists installed - including a jupyter notebook server with the tutorials installed. Just run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span>alleninstitute/bmtk
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/path/to/local/directory:/home/shared/workspace<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>alleninstitute/bmtk<span class="w"> </span>jupyter
+</pre></div>
+</div>
+<p>and then open a browser to <strong>127.0.0.1:8888/</strong>. The <em>tutorials</em> folder will contain the jupyter notebook tutorials for you to follow along and modify. However, if you want to save the work permentately make sure to save it in the <em>workspace</em> folder. The <em>tutorials</em> and <em>examples</em> folder will be deleted once the docker container has stopped.</p>
+<p>you can also use the Docker image to run bmtk build and run scripts. Just replace the <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&lt;script&gt;.py</span> <span class="pre">&lt;opts&gt;</span></code> command with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">alleninstitute/bmtk</span> <span class="pre">-v</span> <span class="pre">/path/to/local/directory:/home/shared/workspace</span> <span class="pre">python</span> <span class="pre">&lt;script&gt;.py</span> <span class="pre">&lt;opts&gt;</span></code></p>
+</section>
+<section id="Running-from-source">
+<h3>Running from source<a class="headerlink" href="#Running-from-source" title="Link to this heading">#</a></h3>
+<p>The bmtk requires at minimum python 2.7 and 3.6+, as well as additional libraries to use features like building networks or running analyses. To install the bmtk it is best recommending to pull the latest from github.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/AllenInstitute/bmtk.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>bmtk
+$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+<p>However, to run a simulation on the network the bmtk uses existing open-source simulators, which (at the moment) needs to be installed separately. The different simulators, which run simulations on different levels-of-resolution, will require different software. So depending on the type of simulation to be run:</p>
+<ul class="simple">
+<li><p>biophysically detailed network (BioNet) - Uses <a class="reference external" href="https://www.neuron.yale.edu/neuron/download">NEURON</a>.</p></li>
+<li><p>point-neuron network (PointNet) - Uses <a class="reference external" href="http://www.nest-simulator.org/installation/">NEST</a>.</p></li>
+<li><p>population-level network (PopNet) - Uses <a class="reference external" href="https://github.com/nicain/dipde_dev">DiPDE</a>.</p></li>
+<li><p>filter models of the visual field (FilterNet) - Uses LGNModels</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#About-This-Guide">About This Guide</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#General-Guides">General Guides</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Workflow-tutorials">Workflow tutorials</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Other-Resources">Other Resources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Prerequisites:">Prerequisites:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-with-Docker">Running with Docker</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-from-source">Running from source</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/tutorial_00_introduction.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

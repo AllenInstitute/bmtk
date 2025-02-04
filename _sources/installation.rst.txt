@@ -146,7 +146,7 @@ Population-Level Models
 +++++++++++++++++++++++
 
 PopNet will simulate population-level firing rate dynamics using `DiPDE <https://github.com/AllenInstitute/dipde>`_. Instructions
-for installing DiPDE can be found `here <http://alleninstitute.github.io/dipde/user.html#quick-start-install-using-pip>`_.
+for installing DiPDE can be found `here <http://alleninstitute.github.io/dipde/user.html#quick-start-install-using-pip>`__.
 However, we recommend installing DiPDE using anaconda::
 
   $ conda install -c nicholasc dipde
