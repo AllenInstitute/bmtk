@@ -99,14 +99,9 @@ numpydoc_show_class_members = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# html_theme = 'alabaster'
-# html_theme = 'pydata'
-
 html_css_files = [
     'custom.css',
 ]
-
 html_theme_path = ['.']
 # html_theme = 'aibs_sphinx'
 # html_theme = 'alabaster'
@@ -231,27 +226,40 @@ texinfo_documents = [
 
 
 def copy_tutorials():
-    source_dir = os.path.dirname(os.path.abspath(__file__))
-    tutorials_dir = os.path.abspath('../tutorial')
-    tutorials = os.path.join(tutorials_dir, '*.ipynb')
+    """In order for nbsphinx to convert .ipynb tutorials into html they must be first copied into 
+    the autodocs/source/ directory, along with any embedded images and associated files. 
+    """
+    autodocs_src_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Get path of original .ipynb files
+    tut_src_dir = os.path.abspath('../tutorial')
+    tutorials = os.path.join(tut_src_dir, '*.ipynb')
 
+    # Path to where .ipynb file will be moved to. To make things easier to manage any jupyter notebooks
+    # imported will be placed in a separate tutorials/ direction that must be created on first use.
+    tut_dest_dir = os.path.join(autodocs_src_dir, 'tutorials')
+    if not os.path.exists(tut_dest_dir):
+        os.makedirs(tut_dest_dir)   
+
+    # Copy each ipynb file from ../tutorial/ to ./source/tutorials/
     for ipynb_file in glob.glob(tutorials):
         tut_fname = os.path.basename(ipynb_file)
-        if tut_fname.startswith('00') or tut_fname.startswith('tutorial_introduction') \
-                or tut_fname.startswith('Simulation_Intro'):
-            continue
-        elif tut_fname[:2].isnumeric():
+        # if tut_fname.startswith('00') or tut_fname.startswith('tutorial_introduction') \
+        #         or tut_fname.startswith('Simulation_Intro'):
+        #     continue
+        if tut_fname[:2].isnumeric():
             tut_fname = tut_fname[3:]
 
-        tut_path = os.path.join(source_dir, 'tutorials', tut_fname)
-        shutil.copy(ipynb_file, tut_path)
+        tut_dest_path = os.path.join(tut_dest_dir, tut_fname)
+        shutil.copy(ipynb_file, tut_dest_path)
 
-    tutorial_images_dir = os.path.join(tutorials_dir, '_static/_tutorial_images')
-    source_tutorial_images_dir = os.path.join(source_dir, 'tutorials/_static/_tutorial_images')
-    if os.path.exists(source_tutorial_images_dir):
-        shutil.rmtree(source_tutorial_images_dir)
+    # Copy tutorial images into ./source directory
+    images_src_dir = os.path.join(tut_src_dir, '_static/_tutorial_images')
+    images_dest_dir = os.path.join(tut_dest_dir, '_static/_tutorial_images')
+    if os.path.exists(images_dest_dir):
+        shutil.rmtree(images_dest_dir)
 
-    shutil.copytree(tutorial_images_dir, source_tutorial_images_dir)
+    shutil.copytree(images_src_dir, images_dest_dir)
 
 
 def autodoc_skip_member(app, what, name, obj, skip, options):
