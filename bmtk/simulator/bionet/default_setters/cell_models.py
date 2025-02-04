@@ -42,7 +42,7 @@ loaded with Cell-Types json files or their NeuroML equivelent, but may be overri
 """
 
 def loadHOC(cell, template_name, dynamics_params):
-    """A Generic function for creating a cell object from a NEURON HOC Template (eg. a *.hoc file with 
+    """A Generic function for creating a cell object from a NEURON HOC Template (eg. a \*.hoc file with 
     `begintemplate template_name` in header). It essentially tries to guess the correct parameters that need to be
     called so may not work the majority of the times and require to be overloaded.
 

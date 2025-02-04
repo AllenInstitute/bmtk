@@ -54,17 +54,25 @@ First step is to download and/or create neccesary files required to instiate net
 miniumum we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. But depending on the 
 model and simulation we may also need the following:
 
-* template files used to build the cell or synapse models (*Hoc Templates*, *NeuroML*, *NESTML*)
-* cell and synaptic dynamics attribute values,
-* cell morphologies (*SWC*, *Neuralucdia*),
-* simulation input and stimuli (*spike-trains*, *current wave-form*, *movie and auditory files*),
-* NEURON .mod files.
+.. grid:: 1 2 2 2
 
-We can put these files wherever we want as long as they are accessable during simulation execution. Although best 
-practices is to put them inside a single directory with the following structure.
+  .. grid-item::
+    :columns: 12 6 6 6
 
-.. figure:: _static/images/bmtk_sim_env.2024.png
-    :scale: 40%
+    * template files used to build the cell or synapse models (*Hoc Templates*, *NeuroML*, *NESTML*)
+    * cell and synaptic dynamics attribute values,
+    * cell morphologies (*SWC*, *Neuralucdia*),
+    * simulation input and stimuli (*spike-trains*, *current wave-form*, *movie and auditory files*),
+    * NEURON .mod files.
+
+    We can put these files wherever we want as long as they are accessable during simulation execution. Although best 
+    practices is to put them inside a single directory with the following structure.
+
+  .. grid-item::
+    :columns: 12 6 6 6
+
+    .. figure:: _static/images/bmtk_sim_env.2024.png
+        :scale: 40%
 
 
 BMTK includes the `create_environment <SIMSETUP>`_ tool that can help new users generate an environmental directory from 
@@ -76,8 +84,9 @@ existing simulation environment and make changes as necessary.
 .. card:: example network
   :class-card: .user-guide-example sd-border-2
 
-  When creating the `BioNet example`_ we used the `build_network.py` python script to build and save the network model 
-  into the **network/** sub-directory (see `BMTK Builder Guide`_ for more information on that process). With the network
+  When creating the `BioNet example <https://github.com/kaeldai/bmtk/tree/refactor/documentation/docs/autodocs/source/example_bionetwork>`_ 
+  we used the `build_network.py` python script to build and save the network model 
+  into the **network/** sub-directory (see `BMTK Builder Guide <builder.html>`_ for more information on that process). With the network
   built we then used the following command to generate baseline strucutre plus `config.simulation.json` configuration and
   the `run_bionet.py` script used to execute the simulation:
 

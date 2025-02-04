@@ -6,14 +6,6 @@ BioNet
 Basics
 ******
 
-
-
-
-
-
-
-
-
 .. figure:: _static/images/bmtk_architecture_bionet_highlight.jpg
    :scale: 40%
 
@@ -90,7 +82,7 @@ For example, using a session NWB downloaded using the AllenSDK, the below exampl
       }
     }
 
-See the `documentation <ecephys_probe.html>`_ for more information and advanced features.
+See the `documentation <ecephys_probe.html>`__ for more information and advanced features.
 
 
 `Current Clamps <current_clamps.html>`_
@@ -111,7 +103,7 @@ only support injections at the soma.
         }
     }
 
-See `documentation <current_clamps.html>`_ for more details on using current clamp inputs.
+See `documentation <current_clamps.html>`__ for more details on using current clamp inputs.
 
 
 Voltage Clamp

@@ -17,13 +17,16 @@ class ComsolMod(SimulatorMod):
 
     def __init__(self, comsol_files, waveforms=None, amplitudes=1, 
                  cells=None, set_nrn_mechanisms=True, node_set=None):
-        """Checks if a waveform argument was passed which determines what comsol_files and amplitudes should look like.
-        If no waveform is specified:
-            The comsol output should be from a time-dependent study.
-            The amplitude can optionally be passed in the form of an integer to scale all potentials.
-        If one or more waveforms are specified:
-            There should be as many comsol outputs from stationary studies. 
-            Optionally, as many amplitudes can be passed to scale the corresponding potentials
+        """
+        Checks if a waveform argument was passed which determines what comsol_files and amplitudes should look like.
+        
+        If no waveform is specified
+        - The comsol output should be from a time-dependent study.
+        - The amplitude can optionally be passed in the form of an integer to scale all potentials.
+        
+        If one or more waveforms are specified
+        - There should be as many comsol outputs from stationary studies. 
+        - Optionally, as many amplitudes can be passed to scale the corresponding potentials
 
         :param comsol_files: (str or list) "/path/to/comsol.txt" or list thereof.
         :param waveforms: (str or list) "/path/to/waveform.csv" or list thereof. Defaults to None, in which case comsol study should be time dependent.
@@ -32,7 +35,6 @@ class ComsolMod(SimulatorMod):
         :param set_nrn_mechanisms: defaults to True.
         :param node_set: defaults to None.
         """
-
         if waveforms is None:
             self._comsol_files = comsol_files 
             self._waveforms = waveforms
@@ -59,16 +61,20 @@ class ComsolMod(SimulatorMod):
 
     def initialize(self, sim):
         """Checks if a waveform argument was passed which determines how to comsol.txt and waveform.csv should be treated.
-        If no waveform is specified:
-            Loads COMSOL output
-            Sets up nearest neighbour interpolation object (for spatial interpolation)
-            Performs temporal interpolation so COMSOL and BMTK timings match.
-        If one or more waveforms are specified:
-            Iterates over COMSOL outputs:
+        
+        Usage::
+        
+            If no waveform is specified:
                 Loads COMSOL output
-                Iterates over cells:
-                    Retrieves potentials at each segment via spatial interpolation
-
+                Sets up nearest neighbour interpolation object (for spatial interpolation)
+                Performs temporal interpolation so COMSOL and BMTK timings match.
+            
+            If one or more waveforms are specified:
+                Iterates over COMSOL outputs:
+                    Loads COMSOL output
+                    Iterates over cells:
+                        Retrieves potentials at each segment via spatial interpolation
+       
         :param sim: Simulation object
         """        
         if self._cells is None:
@@ -123,7 +129,9 @@ class ComsolMod(SimulatorMod):
     
     def step(self, sim, tstep):
         """Checks if a waveform argument was passed which determines how potentials should be retrieved.
-        Iterates over all cells:
+        
+        Iterates over all cells::
+
             If no waveform is specified:
                 Retrieves nearest neighbour with interpolator
                 Looks up potentials (for each segment of the cell) in comsol data at current time

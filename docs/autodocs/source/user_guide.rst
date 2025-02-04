@@ -1,21 +1,14 @@
 .. toctree::
     :hidden:
-    :maxdepth: 4
-    :caption: Tutorials
-
-    tutorials
-
-
-.. toctree::
-    :hidden:
     :maxdepth: 3
     :caption: User Guide
 
     installation
-    User guide <self>
+    Overview of BMTK <self>
     builder
     simulators_guide
     analyzer
+    tutorials
 
 
 ##########
