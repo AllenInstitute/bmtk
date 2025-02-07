@@ -422,16 +422,56 @@
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
 <section id="overview-of-bmtk-workflow-and-architecture">
 <h2>Overview of BMTK Workflow and Architecture<a class="headerlink" href="#overview-of-bmtk-workflow-and-architecture" title="Link to this heading">#</a></h2>
+<p>The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
+neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
+multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
+population-level firing rate models.</p>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/bmtk_workflow.jpg"><img alt="_images/bmtk_workflow.jpg" src="_images/bmtk_workflow.jpg" style="width: 618.0999999999999px; height: 200.2px;" />
+<a class="reference internal image-reference" href="_images/levels_of_resolution_noml.png"><img alt="_images/levels_of_resolution_noml.png" src="_images/levels_of_resolution_noml.png" style="width: 876.4px; height: 287.7px;" />
 </a>
 </figure>
+<p>The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
+models. What BMTK does provide:</p>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 498.25px; height: 229.0px;" />
+<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" />
 </a>
 </figure>
+<section id="the-bmtk-workflow-and-architecture">
+<h3>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Link to this heading">#</a></h3>
+<p>BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
+neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
+Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
+wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
+recordings (see Allen Brain Observatory).</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/bmtk_workflow.jpg"><img alt="_images/bmtk_workflow.jpg" src="_images/bmtk_workflow.jpg" style="width: 883.0px; height: 286.0px;" />
+</a>
+</figure>
+<p>Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
+instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
+a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
+the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
+iterations of a simulation be done as fast as possible</p>
+<p>As such BMTK can be broken into three major components:</p>
+<ul class="simple">
+<li><p>The Network Builder [<a class="reference internal" href="bmtk/bmtk.builder.html#module-bmtk.builder" title="bmtk.builder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.builder</span></code></a>] - Used to build network models</p></li>
+<li><p>The Simulation Engines [<a class="reference internal" href="bmtk/bmtk.simulator.html#module-bmtk.simulator" title="bmtk.simulator"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.simulator</span></code></a>] - Interfaces for simulating the network</p></li>
+<li><dl class="simple">
+<dt>Analysis and Visualization Tools [<a class="reference internal" href="bmtk/bmtk.analyzer.html#module-bmtk.analyzer" title="bmtk.analyzer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.analyzer</span></code></a>] - Python functions for analyzing and visualizing the</dt><dd><p>network and simulation results</p>
+</dd>
+</dl>
+</li>
+</ul>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" />
+</a>
+</figure>
+<p>The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
+to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
+another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
+be able to simulate it.</p>
 <section id="getting-started">
-<span id="cards-clickable"></span><h3>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h3>
+<span id="cards-clickable"></span><h4>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h4>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -468,7 +508,7 @@ Analyzing Networks and Simulations</div>
 </div>
 </section>
 <section id="related-resources">
-<h3>Related Resources<a class="headerlink" href="#related-resources" title="Link to this heading">#</a></h3>
+<h4>Related Resources<a class="headerlink" href="#related-resources" title="Link to this heading">#</a></h4>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -515,7 +555,8 @@ Allen Institute Mouse Models</div>
 </div>
 </section>
 <section id="core-guides">
-<h3>Core Guides<a class="headerlink" href="#core-guides" title="Link to this heading">#</a></h3>
+<h4>Core Guides<a class="headerlink" href="#core-guides" title="Link to this heading">#</a></h4>
+</section>
 </section>
 </section>
 </section>
@@ -544,9 +585,12 @@ Allen Institute Mouse Models</div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-bmtk-workflow-and-architecture">Overview of BMTK Workflow and Architecture</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#related-resources">Related Resources</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-guides">Core Guides</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-bmtk-workflow-and-architecture">The BMTK Workflow and architecture</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#related-resources">Related Resources</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#core-guides">Core Guides</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

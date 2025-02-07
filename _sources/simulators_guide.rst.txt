@@ -26,8 +26,8 @@ Once we have our network to run simulations on, we typically need to complete th
    
 Once the simulation has completed it will automatically generate and save the results as specified in the SONATA 
 configuration file. Although BMTK can run network models of different levels-of-resolutions, this is abstracted from 
-the user will use the appropiate underlying simulator library, eg. **Simulation Engine**, depending on the cell models.
-So no matter if the network is ran using NEURON, NEST, DiPDE, or any other engine; the expected inputs and outputs 
+the user, and it will use the appropiate underlying simulator library, e.g. **Simulation Engine**, depending on the cell models.
+So no matter if the network is run using NEURON, NEST, DiPDE, or any other engine; the expected inputs and outputs 
 are the same format
 
 .. figure:: _static/images/bmtk-workflow-v2-simulation-highlighted.png
@@ -42,17 +42,17 @@ The rest of this guide will go through each of the above steps in detail.
   To help make the concepts for concrete we will also be referencing the **example** network simulation found 
   `here <https://github.com/kaeldai/bmtk/tree/refactor/documentation/docs/autodocs/source/example_bionetwork>`_. 
   This is a biophysically detailed network containing a 450 cells with a mixture of both multicompartment biophysically 
-  detailed cells with parameters and morphologies download form the Allen Cell Database, surrounded by a ring of 
-  point integrate and fire neuron. For the main configuration will feedforward synaptic stimuli emerging from virtual 
+  detailed cells with parameters and morphologies download from the Allen Cell Types Database, surrounded by a ring of 
+  point integrate and fire neuron. For the main configuration, feedforward synaptic stimuli will emerge from virtual 
   cells firing at a randomized rate.
 
 
 1. Setting up the Environment
 =============================
 
-First step is to download and/or create neccesary files required to instiate network and execute the simulation. At 
-miniumum we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. But depending on the 
-model and simulation we may also need the following:
+First step is to download and/or create neccesary files required to instantiate network and execute the simulation. At 
+miniumum, we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. In addition, we may also
+need the followings depending on the type of model and simulation:
 
 .. grid:: 1 2 2 2
 
@@ -106,14 +106,14 @@ existing simulation environment and make changes as necessary.
                       bionet .
               
   This script will create the **components/** directory to place any auxiliary files for network instiation, but unless
-  explicity defined, the corresponding subfolders will be empty. In particular out model's various cell-types require
+  explicity defined, the corresponding subfolders will be empty. In particular our model's various cell-types require
   SWC morphology and dynamics parameters files that can be downloaded from the Allen Cell Types Database, renamed and 
   placed into their corresponding folders.
 
   .. figure:: _static/images/ctdb2bmtk_model_download.png
     :scale: 80%
 
-  For simulation input our network will be stimulated by feed-forwar pre-generated spike-trains that will save into 
+  For simulation input our network will be stimulated by feed-forward pre-generated spike-trains that will be saved into 
   the **inputs/** folder using the `create_inputs.py` script
 
   .. code:: bash
@@ -277,7 +277,7 @@ a simulation please see the respective documentation.
           - BioNet
         * - movie
           - movie
-          - Plays a movie (eg a numpy matrix file) onto the receptive field of a grid of neurons to mimic LGN reaction.
+          - Plays a movie (eg a numpy matrix file) onto the receptive field of a grid of neurons to mimic LGN response.
           - FilterNet
         * - movie
           - | grating

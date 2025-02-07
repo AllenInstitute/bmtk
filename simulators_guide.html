@@ -439,8 +439,8 @@ python script with the above SONATA config file and let our simulation finish.</
 </ol>
 <p>Once the simulation has completed it will automatically generate and save the results as specified in the SONATA
 configuration file. Although BMTK can run network models of different levels-of-resolutions, this is abstracted from
-the user will use the appropiate underlying simulator library, eg. <strong>Simulation Engine</strong>, depending on the cell models.
-So no matter if the network is ran using NEURON, NEST, DiPDE, or any other engine; the expected inputs and outputs
+the user, and it will use the appropiate underlying simulator library, e.g. <strong>Simulation Engine</strong>, depending on the cell models.
+So no matter if the network is run using NEURON, NEST, DiPDE, or any other engine; the expected inputs and outputs
 are the same format</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk-workflow-v2-simulation-highlighted.png"><img alt="_images/bmtk-workflow-v2-simulation-highlighted.png" src="_images/bmtk-workflow-v2-simulation-highlighted.png" style="width: 753.6px; height: 153.6px;" />
@@ -454,16 +454,16 @@ example network</div>
 <p class="sd-card-text">To help make the concepts for concrete we will also be referencing the <strong>example</strong> network simulation found
 <a class="reference external" href="https://github.com/kaeldai/bmtk/tree/refactor/documentation/docs/autodocs/source/example_bionetwork">here</a>.
 This is a biophysically detailed network containing a 450 cells with a mixture of both multicompartment biophysically
-detailed cells with parameters and morphologies download form the Allen Cell Database, surrounded by a ring of
-point integrate and fire neuron. For the main configuration will feedforward synaptic stimuli emerging from virtual
+detailed cells with parameters and morphologies download from the Allen Cell Types Database, surrounded by a ring of
+point integrate and fire neuron. For the main configuration, feedforward synaptic stimuli will emerge from virtual
 cells firing at a randomized rate.</p>
 </div>
 </div>
 <section id="setting-up-the-environment">
 <h2>1. Setting up the Environment<a class="headerlink" href="#setting-up-the-environment" title="Link to this heading">#</a></h2>
-<p>First step is to download and/or create neccesary files required to instiate network and execute the simulation. At
-miniumum we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. But depending on the
-model and simulation we may also need the following:</p>
+<p>First step is to download and/or create neccesary files required to instantiate network and execute the simulation. At
+miniumum, we require the SONATA circuit file(s), simulation configuration, and a BMTK run script. In addition, we may also
+need the followings depending on the type of model and simulation:</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
 <div class="sd-col sd-d-flex-column sd-col-12 sd-col-xs-12 sd-col-sm-6 sd-col-md-6 sd-col-lg-6 docutils">
@@ -511,14 +511,14 @@ the <cite>run_bionet.py</cite> script used to execute the simulation:</p>
 </pre></div>
 </div>
 <p class="sd-card-text">This script will create the <strong>components/</strong> directory to place any auxiliary files for network instiation, but unless
-explicity defined, the corresponding subfolders will be empty. In particular out model’s various cell-types require
+explicity defined, the corresponding subfolders will be empty. In particular our model’s various cell-types require
 SWC morphology and dynamics parameters files that can be downloaded from the Allen Cell Types Database, renamed and
 placed into their corresponding folders.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/ctdb2bmtk_model_download.png"><img alt="_images/ctdb2bmtk_model_download.png" src="_images/ctdb2bmtk_model_download.png" style="width: 1288.0px; height: 421.6px;" />
 </a>
 </figure>
-<p class="sd-card-text">For simulation input our network will be stimulated by feed-forwar pre-generated spike-trains that will save into
+<p class="sd-card-text">For simulation input our network will be stimulated by feed-forward pre-generated spike-trains that will be saved into
 the <strong>inputs/</strong> folder using the <cite>create_inputs.py</cite> script</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>create_inputs.py
 </pre></div>
@@ -700,7 +700,7 @@ a simulation please see the respective documentation.</p>
 </tr>
 <tr class="row-even"><td><p class="sd-card-text">movie</p></td>
 <td><p class="sd-card-text">movie</p></td>
-<td><p class="sd-card-text">Plays a movie (eg a numpy matrix file) onto the receptive field of a grid of neurons to mimic LGN reaction.</p></td>
+<td><p class="sd-card-text">Plays a movie (eg a numpy matrix file) onto the receptive field of a grid of neurons to mimic LGN response.</p></td>
 <td><p class="sd-card-text">FilterNet</p></td>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text">movie</p></td>
