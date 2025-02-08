@@ -1,7 +1,3 @@
-################################
-BMTK: The Brain Modeling Toolkit
-################################
-
 .. toctree::
    :hidden:
 
@@ -13,6 +9,10 @@ BMTK: The Brain Modeling Toolkit
    tutorials
    developers_guide
 
+
+################################
+BMTK: The Brain Modeling Toolkit
+################################
 
 .. figure:: _static/images/mousev1_banner_compressed.png
 
@@ -155,6 +155,10 @@ Related Tools
 
 Acknowledgements
 ================
+
+.. card:: 
+
+   See our `Contributors Page <contributors.html>`__ for a list of the people who have helped with the development and growth of BMTK.
 
 .. card:: 
 
