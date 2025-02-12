@@ -24,7 +24,7 @@ About BMTK
 
    The Brain Modeling Toolkit (BMTK) is a open-source software package for modeling and simulation of large-scale, 
    realistic neural network models. It's designed to support a range of different levels-of-resolution; from 
-   multi-compartment biophysically detailed cells, point-neuron, filter-based models, and even population-level 
+   multi-compartment biophysically-detailed cells, point-neuron, filter-based models, and even population-level 
    firing-rate models. 
    
    .. raw:: html
@@ -36,29 +36,29 @@ About BMTK
 
    BMTK isn't just a simulation tool, but is designed to support the full workflow that would be required for developing 
    realistic models of the brain; from building network models from scratch, to using running existing models with novel 
-   conditions, to doing pertubraiton analysis and parameter searching before an experiment. 
+   conditions, to doing perturbation analysis and parameter searching before an experiment. 
 
    .. grid:: 2
 
       .. grid-item:: 
 
-         * An API for building instantiable models that can encorporate exitings cell and connectivity data.
+         * An API for building instantiable models that can encorporate existing cell and connectivity data
          
-         * Provides a framework to easily share models and allow for scientist to expand upon existing models and simulations.
+         * Provides a framework to easily share models and allows for scientist to expand upon existing models and simulations
          
          * Quickly set-up and run a variety of simulations on built or borrowed models under varying conditions
 
-           * Create your own variety of network input stimuli or import experimental data.
+           * Create your own variety of network input stimuli or import experimental data
           
-           * Simulate recording from a variety of different modalities.
+           * Simulate recording from a variety of different modalities
 
-           * Combine multple networks into one simulation, or silence subsets of an existing network.
+           * Combine multiple networks into one simulation, or silence subsets of an existing network
 
-           * Run multiple simulations in parallel or serial for parameter optimization.
+           * Run multiple simulations in parallel or serial for parameter optimization
          
-         * A suite of funtions for analyzing and visualizing network structure and simulations results.
+         * A suite of functions for analyzing and visualizing network structure and simulations results
             
-         * Programatically adjust cell and synaptic properties on-the-fly during simulations. 
+         * Programatically adjust cell and synaptic properties on-the-fly during simulations
 
    
       .. grid-item::
@@ -67,14 +67,14 @@ About BMTK
             :scale: 50%
 
 
-   BMTK is written in Python, but also through the use of the SONATA JSON format, users can easily set-up, run, modify, and 
+   BMTK is written in Python, but through the use of the SONATA JSON format, users can easily set-up, run, modify, and 
    re-run multiple network simulations under a variety of different conditions and perturbations without having to write a 
-   single line of code. While at the same time BMTK is powerful and adaptable to allow more advance users to completely 
+   single line of code. At the same time, BMTK is powerful and adaptable to allow more advanced users to completely 
    change how networks are instantiated and simulated.
 
    
-   BMTK can run network models ranging from the simplest model of a single cell, to networks with millions of cells 
-   and billions of synapses. As such BMTK can automatical scale networks to run as effiecent as possible on everything
+   BMTK can run network models ranging from the simplest model of a single cell to networks with millions of cells 
+   and billions of synapses. As such, BMTK can automatically scale networks to run as efficiently as possible on everything
    from single core laptops to high performance computing clusters running thousand of cores. 
    
    .. figure:: _static/images/bmtk_compute_scaling.png
