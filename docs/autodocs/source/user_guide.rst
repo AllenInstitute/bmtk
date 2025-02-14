@@ -23,7 +23,7 @@ Overview of BMTK Workflow and Architecture
 
 The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
 neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
-multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
+multi-compartment biophysically-detailed networks, to point-neuron models, to filter-based models, and even
 population-level firing rate models.
 
 .. figure:: _static/images/levels_of_resolution_noml.png
@@ -39,8 +39,8 @@ The BMTK Workflow and architecture
 ----------------------------------
 BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
 neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
-Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
-wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
+Generating the connectivity matrix could take hours or even days to complete. We can then test these optimized base-line 
+models against a large variety of conditions and stimuli and directly compare with existing in-vivo
 recordings (see Allen Brain Observatory).
 
 .. figure:: _static/images/bmtk_workflow.jpg
@@ -50,7 +50,7 @@ Unlike other simulators, BMTK separates the process of building, simulating, and
 instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
 a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
 the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
-iterations of a simulation be done as fast as possible
+iterations of a simulation be done as fast as possible.
 
 As such BMTK can be broken into three major components:
 
@@ -62,9 +62,9 @@ As such BMTK can be broken into three major components:
 .. figure:: _static/images/bmtk_architecture.jpg
    :scale: 45%
 
-The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
+The components can function as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
-another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
+another tool to run the model. Or if another model has been built by someone else and saved in SONATA format, BMTK will
 be able to simulate it.
 
 
