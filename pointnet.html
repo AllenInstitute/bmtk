@@ -175,6 +175,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="developers_guide.html">
     For Developers
   </a>
@@ -296,6 +303,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="developers_guide.html">
     For Developers
   </a>
@@ -391,12 +405,15 @@
 </a>
 </figure>
 <p>PointNet is a simulation engine that utilizes <a class="reference external" href="http://www.nest-simulator.org/">NEST</a> to run large-scale point
-neuron network models. Features including:</p>
+neuron network models. Features include:</p>
 <ul class="simple">
-<li><p>Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.</p></li>
-<li><p>Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.</p></li>
-<li><p>Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.</p></li>
+<li><p>Ability to run the same simulation on a single core or in parallel with no extra programming required</p></li>
+<li><p>Support for any spiking neuron model available in NEST or with user contributed modules</p></li>
+<li><p>Recording of neuron spike times and multi-meter variables in the optimized SONATA data format</p></li>
 </ul>
+<p>To build a network in PointNet, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">Network Builder overview</a>.</p>
+<p>For an example tutorial, please see <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_05_pointnet_modeling.html">Tutorial 5: Point-Neuron Network Models</a>.</p>
+<p>For an example network with 12,500 randomly connected excitatory and inhibitory point neurons, please see the <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/ei_networks">BMTK github</a>.</p>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading">#</a></h2>
 <p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="simulators.html#configuration-files">simulation config</a>,
@@ -404,9 +421,11 @@ following the rules specified in the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-input---stimuli">SONATA Data format</a>.</p>
 <section id="spike-trains">
 <h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Link to this heading">#</a></h3>
-<p>Cells with <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> are equivalent to NEST’s spike_generator models which will play a
-pre-recorded series of spikes throughout the simulation. You may use either a
-<a class="reference external" href="./analyzer.html#spike-trains">SONATA spike-train file</a>, an NWB file, or a space-separated csv file with columns
+<dl class="simple">
+<dt>Cells with <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> are equivalent to NEST’s <a class="reference external" href="https://nest-simulator.readthedocs.io/en/v3.7/models/spike_generator.html">spike_generator</a> model</dt><dd><p>which plays a pre-recorded series of spikes throughout the simulation. You may use either a</p>
+</dd>
+</dl>
+<p><a class="reference external" href="./analyzer.html#spike-trains">SONATA spike-train file</a>, an NWB file, or a space-separated csv file with columns
 <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. Examples of how to create your own spike-train files can be found
 <a class="reference external" href="./analyzer.html#creating-spike-trains">here</a>.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -427,13 +446,15 @@ pre-recorded series of spikes throughout the simulation. You may use either a
 </section>
 <section id="id1">
 <h3><a class="reference external" href="ecephys_probe.html">Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
-<p>An increasing number of ECEPhys electrode experimental data is being release to the public in NWB format, such as the
-<a class="reference external" href="https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html">Allen Visual Coding - Neuropixels</a> dataset or through
-<a class="reference external" href="https://dandiarchive.org/">DANDI</a>. While it is possible to manually convert this data into SONATA spike-trains to
-encorpate into your simulations, the <cite>ecephys_probe</cite> spikes module can do this automatically; fetching spikes from ECEPhys units
+<p>An increasing number of ECEPhys electrode experimental data are available to the public in NWB format, such as the
+<a class="reference external" href="https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html">Allen Visual Coding - Neuropixels</a> dataset or the many datasets available on</p>
+<blockquote>
+<div><p><a class="reference external" href="https://dandiarchive.org/">DANDI</a>. While it is possible to manually convert this data into SONATA spike-trains to</p>
+</div></blockquote>
+<p>encorpate into your simulations, the <cite>ecephys_probe</cite> spikes module can do this automatically; fetching spikes from ECEPhys units
 and converting them to virtual cells for network input into your model.</p>
-<p>For example, using a session NWB downloaded using the AllenSDK, the below example wil randomly l map “LGd” cells from the session onto our
-“LGN” population, and filter out only spikes that occur between 10.0 and 12.0 seconds</p>
+<p>For example, using a session NWB downloaded using the AllenSDK, the below example wil randomly map “LGd” cells from the session onto our
+“LGN” population, and filter out only spikes that occur between 10.0 and 12.0 seconds:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -455,7 +476,7 @@ and converting them to virtual cells for network input into your model.</p>
 </section>
 <section id="id2">
 <h3><a class="reference external" href="current_clamps.html">Current Clamps</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
-<p>May use one step current clamp on multiple nodes, or have one node receive multiple current injections.</p>
+<p>May use one step current clamp on multiple nodes, or multiple current injections to a single node.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
@@ -475,11 +496,11 @@ and converting them to virtual cells for network input into your model.</p>
 <h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading">#</a></h2>
 <section id="spikes">
 <h3>Spikes<a class="headerlink" href="#spikes" title="Link to this heading">#</a></h3>
-<p>By default all non-virtual cells in the circuit will have all their spikes at the soma recorded.</p>
+<p>By default all non-virtual cells in the circuit will have all their spikes recorded as if from the soma.</p>
 </section>
 <section id="membrane-and-intracellular-variables">
 <h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Link to this heading">#</a></h3>
-<p>Used to record the time trace of specific cell variables, usually the membrane potential (v). This is equivalent to NEST’s multimeter object.</p>
+<p>Used to record the time trace of specific cell variables, usually the membrane potential (v). This is equivalent to NEST’s <a class="reference external" href="https://nest-simulator.readthedocs.io/en/v3.3/models/multimeter.html">multimeter object</a>.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span>
@@ -491,11 +512,11 @@ and converting them to virtual cells for network input into your model.</p>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>module: either mutlimeter_report or membrane_report, both the same</p></li>
-<li><p>variable_name: name of variable being recorded, will depend on the nest cell model.</p></li>
-<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> filter out what cells to record.</p></li>
+<li><p>module: either multimeter_report or membrane_report, both the same</p></li>
+<li><p>variable_name: name of the variable being recorded, will depend on the NEST cell model</p></li>
+<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> defines what cells to record</p></li>
 <li><dl class="simple">
-<dt>file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title</dt><dd><p>will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”</p>
+<dt>file_name: name of the data file, under the “output_dir”. If not specified the the report title</dt><dd><p>will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”</p>
 </dd>
 </dl>
 </li>
@@ -503,8 +524,8 @@ and converting them to virtual cells for network input into your model.</p>
 </section>
 <section id="recording-synaptic-weights">
 <h3>Recording Synaptic Weights<a class="headerlink" href="#recording-synaptic-weights" title="Link to this heading">#</a></h3>
-<p>Used to record the changes to synaptic weight changes throughout the simulation lifetime. Useful for measuring changes plastic synapse models like
-“stdp_synapse” or “tsodyks_synapses” (can be used for static synapses though values will never change). To create a recorder add the following
+<p>Used to record the synaptic weight changes throughout the simulation lifetime. This tool is useful for measuring changes in plastic synapse models like
+“stdp_synapse” or “tsodyks_synapses” (can also be used for static synapses though values will never change). To create a recorder, add the following
 section to the “reports” section in the simulation config json:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -518,8 +539,8 @@ section to the “reports” section in the simulation config json:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Which will create a special synpase model called “&lt;recorder-name&gt;”, which is just a version of <em>&lt;original-nest-model&gt;</em> that will save a trace
-of synapic changes to the csv file <em>output/&lt;file-name&gt;.csv</em>. Just set <strong>model_template</strong> property value to “&lt;recorder-name&gt;” in the edge-types file.</p>
+<p>which will create a special synapse model called “&lt;recorder-name&gt;”, which is just a version of <em>&lt;original-nest-model&gt;</em> that will save a trace
+of the synaptic changes to the csv file <em>output/&lt;file-name&gt;.csv</em>. Just set the <strong>model_template</strong> property value to “&lt;recorder-name&gt;” in the edge-types file.</p>
 <p>For example, to record the changes to a subset of the <em>stdp_synapse</em> type NEST models, add the following to the configuration:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -533,7 +554,7 @@ of synapic changes to the csv file <em>output/&lt;file-name&gt;.csv</em>. Just s
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Then make changes to <strong>edge_types.csv</strong> file</p>
+<p>Then make the following changes to the <strong>edge_types.csv</strong> file</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
 <col style="width: 25.0%" />

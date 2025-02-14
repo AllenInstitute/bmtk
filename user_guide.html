@@ -179,6 +179,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="developers_guide.html">
     For Developers
   </a>
@@ -300,6 +307,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="developers_guide.html">
     For Developers
   </a>
@@ -342,13 +356,13 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials and Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_02_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
@@ -424,7 +438,7 @@
 <h2>Overview of BMTK Workflow and Architecture<a class="headerlink" href="#overview-of-bmtk-workflow-and-architecture" title="Link to this heading">#</a></h2>
 <p>The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
 neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
-multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
+multi-compartment biophysically-detailed networks, to point-neuron models, to filter-based models, and even
 population-level firing rate models.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/levels_of_resolution_noml.png"><img alt="_images/levels_of_resolution_noml.png" src="_images/levels_of_resolution_noml.png" style="width: 876.4px; height: 287.7px;" />
@@ -440,8 +454,8 @@ models. What BMTK does provide:</p>
 <h3>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Link to this heading">#</a></h3>
 <p>BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
 neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
-Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
-wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
+Generating the connectivity matrix could take hours or even days to complete. We can then test these optimized base-line
+models against a large variety of conditions and stimuli and directly compare with existing in-vivo
 recordings (see Allen Brain Observatory).</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_workflow.jpg"><img alt="_images/bmtk_workflow.jpg" src="_images/bmtk_workflow.jpg" style="width: 883.0px; height: 286.0px;" />
@@ -451,7 +465,7 @@ recordings (see Allen Brain Observatory).</p>
 instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
 a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
 the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
-iterations of a simulation be done as fast as possible</p>
+iterations of a simulation be done as fast as possible.</p>
 <p>As such BMTK can be broken into three major components:</p>
 <ul class="simple">
 <li><p>The Network Builder [<a class="reference internal" href="bmtk/bmtk.builder.html#module-bmtk.builder" title="bmtk.builder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.builder</span></code></a>] - Used to build network models</p></li>
@@ -466,9 +480,9 @@ iterations of a simulation be done as fast as possible</p>
 <a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" />
 </a>
 </figure>
-<p>The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
+<p>The components can function as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
-another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
+another tool to run the model. Or if another model has been built by someone else and saved in SONATA format, BMTK will
 be able to simulate it.</p>
 <section id="getting-started">
 <span id="cards-clickable"></span><h4>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">#</a></h4>

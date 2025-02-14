@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_06_population_modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Additional Tutorials" href="../ad_tutorials.html" />
-    <link rel="prev" title="Chapter 8: Auditory Stimuli Inputs using FilterNet" href="auditory_filternet.html" />
+    <link rel="next" title="Tutorial 7: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
+    <link rel="prev" title="Tutorial 5: Point-Neuron Network Models (with PointNet)" href="tutorial_05_pointnet_modeling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -180,6 +180,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../developers_guide.html">
     For Developers
   </a>
@@ -301,6 +308,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../developers_guide.html">
     For Developers
   </a>
@@ -343,13 +357,13 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials and Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
@@ -425,21 +439,24 @@
                   
   <section id="Tutorial-6:-Population-Level-Modeling-(with-PopNet)">
 <h1>Tutorial 6: Population Level Modeling (with PopNet)<a class="headerlink" href="#Tutorial-6:-Population-Level-Modeling-(with-PopNet)" title="Link to this heading">#</a></h1>
-<p>In this tutorial we will focus on modeling of populations and population firing rates. This is done with the PopNet simulator application of bmtk which uses <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a> engine as a backend. We will first build our networks using the bmtk NetworkBuilder and save them into the SONATA data format. Then we will show how to simulate the firing rates over a given time-source.</p>
+<p>In this tutorial we will focus on modeling of populations and population firing rates. This is done with the PopNet simulator application of BMTK which uses the <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a> engine as a backend. We will first build our networks using the BMTK <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">NetworkBuilder</a> and save them into the <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master">SONATA data format</a>. Then we will show how to simulate the firing
+rates over a given interval.</p>
 <p>Requirements:</p>
 <ul class="simple">
 <li><p>BMTK</p></li>
 <li><p>DiPDE</p></li>
 </ul>
+<p>Scripts for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter06">sources/chapter06</a>.</p>
+<p>For more information on BMTK and SONATA format, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/user_guide.html">Overview of BMTK</a> and <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">Network Builder</a> pages.</p>
 <section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Link to this heading">#</a></h2>
-<section id="Converting-existing-networks">
-<h3>Converting existing networks<a class="headerlink" href="#Converting-existing-networks" title="Link to this heading">#</a></h3>
-<p>Like BioNet for biophysically detailed modeling, and PointNet with point-based networks, PopNet stores networks in the SONATA data format. PopNet supports simulating networks of individual cells at the population level. First thing you have to do is modify the node-types and edge-types of an existing network to use Population level models (rather than models of individual cells.</p>
+<section id="Option-1:-Converting-existing-networks">
+<h3>Option 1: Converting existing networks<a class="headerlink" href="#Option-1:-Converting-existing-networks" title="Link to this heading">#</a></h3>
+<p>Like BioNet for biophysically detailed modeling and PointNet with point-based networks, PopNet stores networks in the SONATA data format. PopNet supports simulating networks of individual cells at the population level. The first thing you have to do is modify the node-types and edge-types of an existing network to use Population level models (rather than models of individual cells).</p>
 <div class="admonition warning">
 <p><strong>WARNING</strong> - Converting a network of individual nodes into population of nodes is good for a quick and naive simulation, but for faster and more reliable results it’s best to build a network from scratch (next section).</p>
 </div>
-<p>Here is the node-types csv file of a network set to work with BioNet:</p>
+<p>Here is the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_nodes">node-types csv file</a> of a network set to work with BioNet (for an example of the BioNet network, see <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_01_single_cell_clamped.html">tutorial 1</a>):</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -537,7 +554,7 @@
 </table>
 </div></div>
 </div>
-<p>vs the equivelent form for PopNet:</p>
+<p>versus the equivalent form for PopNet:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -640,15 +657,15 @@
 <li><p>We are using new <strong>dynamic_params</strong> files with parameters that have been adjusted to appropiate range for DiPDE models.</p></li>
 <li><p><strong>morophology_file</strong> and <strong>model_processing</strong>, which were used to set and processes individual cell morphologies, are no longer applicable.</p></li>
 </ul>
-<p>We must make similar adjustments to our edge_types.csv files. And finally when we run the simulation we must tell PopNet to cluster nodes together using the <strong>group_by</strong> property:</p>
+<p>We must make similar adjustments to our <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_edges">edge_types.csv</a> files. Finally, when we run the simulation we must tell PopNet to cluster nodes together using the <strong>group_by</strong> property:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="Building-a-network">
-<h3>Building a network<a class="headerlink" href="#Building-a-network" title="Link to this heading">#</a></h3>
-<p>We will create a network of two populations: one population of excitatory cells and another of inhibitory cells. Then we will save the network into SONATA formated data files.</p>
-<p>The first step is to use the NetworkBuilder to instantiate a new network with two populations:</p>
+<section id="Option-2:-Building-a-network-from-scratch">
+<h3>Option 2: Building a network from scratch<a class="headerlink" href="#Option-2:-Building-a-network-from-scratch" title="Link to this heading">#</a></h3>
+<p>We will create a network of two populations: one population of excitatory cells and another of inhibitory cells. Then we will save the network into SONATA-formatted data files.</p>
+<p>The first step is to use the <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html#">NetworkBuilder</a> to instantiate a new network with two populations:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -721,7 +738,7 @@
 <section id="External-Nodes">
 <h4>External Nodes<a class="headerlink" href="#External-Nodes" title="Link to this heading">#</a></h4>
 <p>The <em>dipde:Internal</em> nodes we created need input to fire, so we will use External Populations to drive the network activity. To do this we will create a separate network of ‘virtual’ populations, or alternativly use model_type=dipde:External, that connect to our excitatory population.</p>
-<p>Note: we could add ‘virtual’ populations directly to our V1 network. However creating them as a separate network provides a great advantage if/when we want to replace our external connections with a different model (or if we want to remove the reccurrent connections and simulation with only feed-foward activity).</p>
+<p>Note: we could add ‘virtual’ populations directly to our V1 network. However, creating them as a separate network provides a great advantage if/when we want to replace our external connections with a different model (or if we want to remove the reccurrent connections and simulate with feed-foward activity only).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -751,14 +768,14 @@
 </section>
 <section id="2.-Setting-up-the-PopNet-environment">
 <h2>2. Setting up the PopNet environment<a class="headerlink" href="#2.-Setting-up-the-PopNet-environment" title="Link to this heading">#</a></h2>
-<p>Before running the simulation we need to set up our simulation environment, including setting up run-scripts, configuration parameters, and placing our parameter files in their appropriate location. The easiest way to do this is through the command-line:</p>
+<p>Before running the simulation we need to set up our simulation environment. This includes setting up run-scripts, configuration parameters, and placing our parameter files in their appropriate location. The easiest way to do this is through the command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.sim_setup<span class="w"> </span>-n<span class="w"> </span>network<span class="w"> </span>--tstop<span class="w"> </span><span class="m">1500</span>.0<span class="w"> </span>popnet<span class="w"> </span>sim_ch06/
 </pre></div>
 </div>
-<p>Which creates initial files to run a 1500 ms simulation using the network files found in our ./network directory.</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">`bmtk.utils.sim_setup</span></code> &lt;<a class="reference external" href="https://alleninstitute.github.io/bmtk/_modules/bmtk/utils/sim_setup.html">https://alleninstitute.github.io/bmtk/_modules/bmtk/utils/sim_setup.html</a>&gt;`__ creates initial files to run a 1500 ms simulation (<code class="docutils literal notranslate"><span class="pre">--tstop</span> <span class="pre">1500.00</span></code>) of the population network (<code class="docutils literal notranslate"><span class="pre">popnet</span></code>) using the network files found in our ./network directory (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">network</span></code>) under the main directory (<code class="docutils literal notranslate"><span class="pre">sim_ch06/</span></code>).</p>
 <section id="Inputs">
 <h3>Inputs<a class="headerlink" href="#Inputs" title="Link to this heading">#</a></h3>
-<p>We next need to set the firing rates of the External Population. There are multiple ways to set this value which will be discussed later. The best way is to set the firing rates using a input-rates file for each External Population, we can fetch an existing one using the command:</p>
+<p>We next need to set the firing rates of the External Population. There are multiple ways to set this value which will be discussed later. The best way is to set the firing rates using a input-rates file for each External Population. We can fetch an input-rates existing file using the command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sim_ch06
 $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/inputs/external_rates.csv<span class="w"> </span>-O<span class="w"> </span>lgn_rates.csv
 </pre></div>
@@ -780,11 +797,12 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </section>
 <section id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Link to this heading">#</a></h2>
-<p>The call to sim_setup created a file run_pointnet.py which we can run directly in a command line:</p>
+<p>The call to sim_setup created a file run_pointnet.py that we can run directly in a command line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_popnet.py<span class="w"> </span>config.json
 </pre></div>
 </div>
-<p>Or we can run it directly using the following python code:</p>
+<p>It takes one argument, config.json, which contains the simulation parameters specified during the previous steps.</p>
+<p>Alternatively, we can run it directly using the following python code:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -815,9 +833,9 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </pre></div></div>
 </div>
 </section>
-<section id="4.-Analyzing-results">
-<h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Link to this heading">#</a></h2>
-<p>As specified in the “output” section of simulation_config.json, the results will be written to ouput/spike_rates.csv. The BMTK analyzer includes code for plotting and analyzing the firing rates of our network:</p>
+<section id="4.-Analyzing-the-results">
+<h2>4. Analyzing the results<a class="headerlink" href="#4.-Analyzing-the-results" title="Link to this heading">#</a></h2>
+<p>As specified in the “output” section of the simulation_config.json file, the results will be written to ouput/spike_rates.csv. The BMTK analyzer includes code for plotting and analyzing the firing rates of our network:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -870,8 +888,8 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Building-the-network">1. Building the network</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Converting-existing-networks">Converting existing networks</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-a-network">Building a network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Option-1:-Converting-existing-networks">Option 1: Converting existing networks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Option-2:-Building-a-network-from-scratch">Option 2: Building a network from scratch</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#External-Nodes">External Nodes</a></li>
 </ul>
 </li>
@@ -882,7 +900,7 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Running-the-simulation">3. Running the simulation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Analyzing-results">4. Analyzing results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Analyzing-the-results">4. Analyzing the results</a></li>
 </ul>
   </nav></div>
 

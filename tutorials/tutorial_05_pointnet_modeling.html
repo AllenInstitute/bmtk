@@ -51,7 +51,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_05_pointnet_modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 7: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
+    <link rel="next" title="Tutorial 6: Population Level Modeling (with PopNet)" href="tutorial_06_population_modeling.html" />
     <link rel="prev" title="Tutorial 4: Multi-Population Recurrent Network (with BioNet)" href="tutorial_04_multi_pop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -180,6 +180,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../developers_guide.html">
     For Developers
   </a>
@@ -301,6 +308,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../developers_guide.html">
     For Developers
   </a>
@@ -343,13 +357,13 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials and Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
@@ -1358,7 +1372,7 @@ we can read using hdf5 or bmtk like below:</p>
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">tutorial 1: bionet</span></a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="e54dc374817d4de691d64010b14784bf" src="../_images/raster_120cells_orig.png" /></p>
+<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="3d8f85e9bb2c4976b3c3dfa0a74ffdc3" src="../_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1401,7 +1415,7 @@ we can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="bae37a37716445988233090310f27b3f" src="../_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation: <img alt="2fb9fd8763aa4e639324bd7d33ece97b" src="../_images/raster_120cells_perturbed.png" /></p>
 </section>
 </section>
 </section>

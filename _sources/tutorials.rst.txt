@@ -9,13 +9,13 @@ Tutorials and Examples
     
     Builder: Using the Network Builder <tutorials/NetworkBuilder_Intro>
     BioNet: Single cell with current injection <tutorials/tutorial_01_single_cell_clamped>
-    BioNet: Single with with synaptic input <tutorials/tutorial_02_single_cell_syn>
+    BioNet: Single cell with with synaptic input <tutorials/tutorial_02_single_cell_syn>
     BioNet: Multiple Nodes with single cell-type <tutorials/tutorial_03_single_pop>
     BioNet: Heterogeneous network <tutorials/tutorial_04_multi_pop>
     PointNet: Point-neuron modeling <tutorials/tutorial_05_pointnet_modeling>
+    PopNet: Population-based firing rate models <tutorials/tutorial_06_population_modeling>
     FilterNet: Full-field flashing movie <tutorials/tutorial_07_filter_models>
     Auditory FilterNet: Generating stimuli from auditory input <tutorials/auditory_filternet>
-    PopNet: Population-based firing rate models <tutorials/tutorial_06_population_modeling>
     ad_tutorials
     examples
 
