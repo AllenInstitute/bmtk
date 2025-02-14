@@ -123,6 +123,7 @@ html_sidebars = {
     # "simulators_guide": ["user_guide.html"],
     "news_and_events": [],
     "contact_us": [],
+    "how_to_cite": [],
 }
 
 # html_sidebars = {
