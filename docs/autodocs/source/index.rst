@@ -7,6 +7,7 @@
    installation
    user_guide
    tutorials
+   how_to_cite
    developers_guide
 
 
@@ -17,68 +18,80 @@ BMTK: The Brain Modeling Toolkit
 .. figure:: _static/images/mousev1_banner_compressed.png
 
 
+.. raw:: html
+
+   <a href="https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools" style="float: right;">
+      <button>Subscribe to our newsletter</button>
+   </a>
+
+
 About BMTK
 ==========
 
 .. card::
 
-   The Brain Modeling Toolkit (BMTK) is a open-source software package for modeling and simulation of large-scale, 
-   realistic neural network models. It's designed to support a range of different levels-of-resolution; from 
-   multi-compartment biophysically detailed cells, point-neuron, filter-based models, and even population-level 
-   firing-rate models. 
+   The Brain Modeling Toolkit (BMTK) is a open-source software package for modeling and simulation of large-scale neural 
+   network models. It Supports a range of modeling levels of resolution: multi-compartment biophysically detailed, 
+   point-neuron, and population-level firing rate models. 
    
-   .. raw:: html
-
-      <div style="text-align: left; clear: both;">
-         <img src="_static/images/levels_of_resolution.png"  style="width: 50%;" />
-      </div>
-
-
-   BMTK isn't just a simulation tool, but is designed to support the full workflow that would be required for developing 
-   realistic models of the brain; from building network models from scratch, to using running existing models with novel 
-   conditions, to doing pertubraiton analysis and parameter searching before an experiment. 
+   BMTK supports the full workflow for developing biologically realistic models of the brain networks; from building 
+   network models from scratch, to running parallelized simulations, to doing perturbation analysis. It offers:
 
    .. grid:: 2
 
       .. grid-item:: 
 
-         * An API for building instantiable models that can encorporate exitings cell and connectivity data.
+         * An interface (API) for building models and running simulations, unified across levels of resolution
          
-         * Provides a framework to easily share models and allow for scientist to expand upon existing models and simulations.
+         * A framework to easily share models and expand upon existing models
          
-         * Quickly set-up and run a variety of simulations on built or borrowed models under varying conditions
+         * A simple network simulation setup with little-to-no programming necessary
 
-           * Create your own variety of network input stimuli or import experimental data.
+         * Adaptability that allows more advanced users to completely change how networks are instantiated and simulated
           
-           * Simulate recording from a variety of different modalities.
+         * Auotmatic parallelization
 
-           * Combine multple networks into one simulation, or silence subsets of an existing network.
+         * Support for simulations ranging from single cells to networks with millions of cells and billions of synapses
 
-           * Run multiple simulations in parallel or serial for parameter optimization.
-         
-         * A suite of funtions for analyzing and visualizing network structure and simulations results.
-            
-         * Programatically adjust cell and synaptic properties on-the-fly during simulations. 
+         * Functionality to programmatically adjust cell and synaptic properties on-the-fly during simulations
+
+         * A suite of functions for analyzing and visualizing network structure and simulations results
+
+         And much more!
 
    
       .. grid-item::
 
-         .. figure:: _static/images/modeling_lifecycle.png
-            :scale: 50%
+         .. figure:: _static/images/v1_dg_500x333.gif
 
 
-   BMTK is written in Python, but also through the use of the SONATA JSON format, users can easily set-up, run, modify, and 
-   re-run multiple network simulations under a variety of different conditions and perturbations without having to write a 
-   single line of code. While at the same time BMTK is powerful and adaptable to allow more advance users to completely 
-   change how networks are instantiated and simulated.
+   **BMTK Workflow**
 
-   
-   BMTK can run network models ranging from the simplest model of a single cell, to networks with millions of cells 
-   and billions of synapses. As such BMTK can automatical scale networks to run as effiecent as possible on everything
-   from single core laptops to high performance computing clusters running thousand of cores. 
-   
-   .. figure:: _static/images/bmtk_compute_scaling.png
-      :scale: 80%
+   BMTK separates the process of building, simulating, and analyzing the results, thanks to modular organization and the
+   data format it uses (`SONATA <https://github.com/AllenInstitute/sonata>`__, see below). BMTK constructs a fully instantiated model and saves it in SONATA files. 
+   Subsequently, running a simulation involves loading SONATA files, without the need to re-build the model.
+
+   On the other hand, users can easily adjust cell and synaptic parameters in SONATA files, enabling faster iterations
+   of simulations. Models in SONATA format can be constructed, simulated, or analyzed using not only BMTK, but also a 
+   variety of other tools that support this format.
+
+   BMTK consists of three major components: `the network builder <builder.hmtl>`__, the 
+   `simulation engines <simulators_guide.html>`__, and the 
+   `analysis and visualization tools <analyzer.html>`__. The components can be used in one workflow or separately.
+
+   .. raw:: html
+
+      <div style="position: relative;">
+         <img src="_static/images/bmtk-workflow-ver2.png" style="width: 100%; height: auto;">
+         <a href="builder.html"><div style="position: absolute; left: 0%; top: 22%; width: 20%; height: 13%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="simulators_guide.html"><div style="position: absolute; left: 38%; top: 22%; width: 23%; height: 13%; background-color: rgba(0, 0, 0, 0);"></div></a>
+         <a href="analyzer.html"><div style="position: absolute; left: 78%; top: 22%; width: 22%; height: 13%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         
+         <a href="bionet.html"><div style="position: absolute; left: 22%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="pointnet.html"><div style="position: absolute; left: 36%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="filternet.html"><div style="position: absolute; left: 50%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="popnet.html"><div style="position: absolute; left: 64%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+      </div>
 
 
 Further Resources
@@ -87,34 +100,9 @@ Further Resources
 .. grid:: 1 1 2 2
    :gutter: 1
 
-   .. grid-item-card:: `Publications <publications.html>`__
-      :columns: 12
+   .. grid-item-card:: `User Guide <user_guide.html>`__
 
-      For further detail about BMTK please see our paper in `PLOS Computational Biology <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386>`__.
-
-         [1] Dai, K., Gratiy, S. L., Billeh, Y. N., Xu, R., Cai, B., Cain, N., Rimehaug, A. E., Stasik, A. J., Einevoll, G. T., Mihalas, S., Koch, C., & Arkhipov, A. (2020). Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Computational Biology, 16(11), e1008386. https://doi.org/10.1371/journal.pcbi.1008386 
-
-      *bibtex*
-      
-      .. code:: latex
-
-         @article{dai2020brain,
-            title={Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits},
-            author={Dai, Kael and Gratiy, Sergey L and Billeh, Yazan N and Xu, Richard and Cai, Binghuang and Cain, Nicholas and Rimehaug, Atle E and Stasik, Alexander J and Einevoll, Gaute T and Mihalas, Stefan and others},
-            journal={PLOS Computational Biology},
-            volume={16},
-            number={11},
-            pages={e1008386},
-            year={2020},
-            publisher={Public Library of Science San Francisco, CA USA}
-         }
-      
-      We also have a `publications <publications.html>`_ page for a list of other relevant articles about BMTK or that have utilized BMTK in their own work.
-
-
-   .. grid-item-card:: `User Guide <user_guide.html>`_
-
-      For detailed usage about using BMTK and all the available features please see our `User Guide <user_guide>`_ page.
+      For detailed information about using BMTK and all the available features please see our `User Guide <user_guide>`__ page.
 
 
    .. grid-item-card:: `Tutorials and Examples <tutorials.html>`_
@@ -122,7 +110,7 @@ Further Resources
       For a list of workable tutorials and example networks please see our `Tutorials and Examples <tutorials.html>`_ page.      
 
 
-   .. grid-item-card:: Allen Brain Map Portal
+   .. grid-item-card:: Allen Institute Brain Map Portal
 
       For examples of how we use BMTK and related tools to build realistic models at the Allen Institute, please see our  `Computational Modeling & Theory page at the Allen Brain Map Portal <https://portal.brain-map.org/explore/models>`__.
 
@@ -137,16 +125,13 @@ Further Resources
 Related Tools
 -------------
 
-
 .. grid:: 1
 
    .. grid-item-card:: SONATA Data Formats
 
-
-      SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
-      simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
-      in the documentation and tutorials will be based on SONATA. For more information see the
-      `SONATA github page <https://github.com/AllenInstitute/sonata>`_.
+      SONATA is a cross-platform data format for storing and exchaning large scale networks and simulation results. For 
+      more inofmration see the `SONATA github page <https://github.com/AllenInstitute/sonata>`_ and the 
+      `SONATA Paper <how_to_cite.html>`__.
 
    .. grid-item-card:: Visual Neuronal Dynamics (VND)
 
@@ -156,11 +141,15 @@ Related Tools
 Acknowledgements
 ================
 
+.. card::
+
+   `How to cite <how_to_cite>`__ BMTK and related tools.
+
 .. card:: 
 
    See our `Contributors Page <contributors.html>`__ for a list of the people who have helped with the development and growth of BMTK.
 
 .. card:: 
 
-   We wish to thank the Allen Institute for Brain Science founder, Paul G. Allen, for their vision, encouragement, and support.
+   We wish to thank the Allen Institute founder, Paul G. Allen, for his vision, encouragement, and support.
 

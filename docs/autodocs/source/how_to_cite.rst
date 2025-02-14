@@ -11,6 +11,24 @@ The following are general citation guidelines for referencing our tools. Please 
 
 [1] Dai, K., Gratiy, S. L., Billeh, Y. N., Xu, R., Cai, B., Cain, N., Rimehaug, A. E., Stasik, A. J., Einevoll, G. T., Mihalas, S., Koch, C., & Arkhipov, A. (2020). Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Computational Biology, 16(11), e1008386. https://doi.org/10.1371/journal.pcbi.1008386 
 
+
+*bibtex*
+
+.. code:: latex
+
+    @article{dai2020brain,
+    title={Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits},
+    author={Dai, Kael and Gratiy, Sergey L and Billeh, Yazan N and Xu, Richard and Cai, Binghuang and Cain, Nicholas and Rimehaug, Atle E and Stasik, Alexander J and Einevoll, Gaute T and Mihalas, Stefan and others},
+    journal={PLOS Computational Biology},
+    volume={16},
+    number={11},
+    pages={e1008386},
+    year={2020},
+    publisher={Public Library of Science San Francisco, CA USA}
+    }
+      
+
+
 [2] Brain Modeling ToolKit v1.0.6 [Computer software]. (2020). Available: https://alleninstitute.github.io/bmtk/, Accessed on: Aug. 26, 2022.
 
 *Replace with the appropriate version number and accessed date.*
