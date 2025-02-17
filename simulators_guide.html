@@ -48,7 +48,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'simulators_guide';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Analyzing the Results" href="analyzer.html" />
+    <link rel="next" title="BioNet" href="bionet.html" />
     <link rel="prev" title="Building brain network models with BMTK Network Builder" href="builder.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -349,7 +349,13 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
 <li class="toctree-l1"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Running Network Simulations with BMTK</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Running Network Simulations with BMTK</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials and Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
@@ -433,6 +439,8 @@
                   
   <section id="running-network-simulations-with-bmtk">
 <h1>Running Network Simulations with BMTK<a class="headerlink" href="#running-network-simulations-with-bmtk" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>In this section we will show how to use BMTK and SONATA to run simulation(s) on a brain network model.</p>
 <p>Unlike other neural simulation tools which will create and simulate a network in one script, BMTK workflow design is to
 to split up these two parts of the process. So before we can run a simulation we must first procure a network model
@@ -1503,7 +1511,7 @@ encorporate a cells full morphology into model and the simulation; allowing you 
 flow, intracellular and extracellular membrane comptanence, and synaptic location and density.</p>
 </div>
 <img alt="" class="sd-card-img-bottom" src="_images/bionet_rep_morpholgy_network.png" />
-<a class="sd-stretched-link sd-hide-link-text reference external" href="builder_guide"><span>builder_guide</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html"><span>bionet.html</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -1516,7 +1524,7 @@ glif models, izhieckcih models, hodgkin-huxley, and many more. Most PointNet net
 less overhead than BioNet and is a good starting point.</p>
 </div>
 <img alt="" class="sd-card-img-bottom" src="_images/pointnet_figure.png" />
-<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="pointnet.html"><span>pointnet.html</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -1529,7 +1537,7 @@ firing rates and spike trains based on the spatio-temporal properties of the sti
 be used by compartmental and point models as realistic stimuli.</p>
 </div>
 <img alt="" class="sd-card-img-bottom" src="_images/filternet_rep_filter_models.png" />
-<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="filternet.html"><span>filternet.html</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -1540,7 +1548,7 @@ be used by compartmental and point models as realistic stimuli.</p>
 <p class="sd-card-text"><em>PopNet</em> - Use’s Allen’s DiPDE solver to look at population level firing rate dyanmics.</p>
 </div>
 <img alt="" class="sd-card-img-bottom" src="_images/dipde_figure.png" />
-<a class="sd-stretched-link sd-hide-link-text reference external" href="analzer"><span>analzer</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="popnet.html"><span>popnet.html</span></a></div>
 </div>
 </div>
 </div>

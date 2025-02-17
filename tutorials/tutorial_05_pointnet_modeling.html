@@ -352,7 +352,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">Overview of BMTK</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../builder.html">Building brain network models with BMTK Network Builder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators_guide.html">Running Network Simulations with BMTK</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../simulators_guide.html">Running Network Simulations with BMTK</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials and Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
@@ -1372,7 +1378,7 @@ we can read using hdf5 or bmtk like below:</p>
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">tutorial 1: bionet</span></a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="3d8f85e9bb2c4976b3c3dfa0a74ffdc3" src="../_images/raster_120cells_orig.png" /></p>
+<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="93f8bbdf0ab049ce95a1da65e3c09612" src="../_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1415,7 +1421,7 @@ we can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="2fb9fd8763aa4e639324bd7d33ece97b" src="../_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation: <img alt="bf9c9b39c0a74030a0199452a1af7196" src="../_images/raster_120cells_perturbed.png" /></p>
 </section>
 </section>
 </section>
