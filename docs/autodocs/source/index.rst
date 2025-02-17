@@ -104,16 +104,14 @@ Further Resources
 
       For detailed information about using BMTK and all the available features please see our `User Guide <user_guide>`__ page.
 
-
-   .. grid-item-card:: `Tutorials and Examples <tutorials.html>`_
+   .. grid-item-card:: `Tutorials and Examples <tutorials.html>`__
 
       For a list of workable tutorials and example networks please see our `Tutorials and Examples <tutorials.html>`_ page.      
 
-
    .. grid-item-card:: Allen Institute Brain Map Portal
 
-      For examples of how we use BMTK and related tools to build realistic models at the Allen Institute, please see our  `Computational Modeling & Theory page at the Allen Brain Map Portal <https://portal.brain-map.org/explore/models>`__.
-
+      For examples of how we use BMTK and related tools to build realistic models at the Allen Institute, please see our 
+      `Computational Modeling & Theory page at the Allen Brain Map Portal <https://portal.brain-map.org/explore/models>`__.
 
    .. grid-item-card:: `Contact Us <contact_us.html>`__ 
 
