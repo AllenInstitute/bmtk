@@ -25,8 +25,9 @@ following the rules specified in the
 
 Spike-Trains
 ++++++++++++
-Cells with ``model_type`` value ``virtual`` are equivalent to NEST’s `spike_generator <https://nest-simulator.readthedocs.io/en/v3.7/models/spike_generator.html>`_ model
- which plays a pre-recorded series of spikes throughout the simulation. You may use either a
+
+Cells with `model_type` value `virtual` are equivalent to NEST's `spike_generator <https://nest-simulator.readthedocs.io/en/v3.7/models/spike_generator.html>`_ model
+which plays a pre-recorded series of spikes throughout the simulation. You may use either a
 `SONATA spike-train file <./analyzer.html#spike-trains>`_, an NWB file, or a space-separated csv file with columns
 **node_id**, **population**, and **timestamps**. Examples of how to create your own spike-train files can be found
 `here <./analyzer.html#creating-spike-trains>`_.
@@ -49,9 +50,10 @@ Cells with ``model_type`` value ``virtual`` are equivalent to NEST’s `spike_ge
 
 `Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes <ecephys_probe.html>`_
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 An increasing number of ECEPhys electrode experimental data are available to the public in NWB format, such as the 
 `Allen Visual Coding - Neuropixels <https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html>`_ dataset or the many datasets available on
- `DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert this data into SONATA spike-trains to 
+`DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert this data into SONATA spike-trains to 
 encorpate into your simulations, the `ecephys_probe` spikes module can do this automatically; fetching spikes from ECEPhys units
 and converting them to virtual cells for network input into your model.
 
@@ -75,6 +77,7 @@ For example, using a session NWB downloaded using the AllenSDK, the below exampl
         }
       }
     }
+
 
 See the `documentation <ecephys_probe.html>`__ for more information and advanced features.
 

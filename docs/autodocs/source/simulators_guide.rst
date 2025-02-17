@@ -2,6 +2,16 @@
 Running Network Simulations with BMTK
 #####################################
 
+.. toctree::
+    :hidden:
+    :maxdepth: 2
+
+    bionet
+    pointnet
+    filternet
+    popnet
+
+
 In this section we will show how to use BMTK and SONATA to run simulation(s) on a brain network model. 
 
 Unlike other neural simulation tools which will create and simulate a network in one script, BMTK workflow design is to
@@ -1094,7 +1104,7 @@ user guides.
     :gutter: 1
 
     .. grid-item-card::  
-        :link: builder_guide 
+        :link: bionet.html
         :img-bottom: _static/images/bionet_rep_morpholgy_network.png
 
         **BioNet** - Multicompartment Biophysicaly Detailed Simulation
@@ -1105,7 +1115,7 @@ user guides.
         flow, intracellular and extracellular membrane comptanence, and synaptic location and density. 
 
     .. grid-item-card::
-        :link: analzer
+        :link: pointnet.html
         :img-bottom: _static/images/pointnet_figure.png
 
         **PointNet** - point-neuron based models
@@ -1116,7 +1126,7 @@ user guides.
         less overhead than BioNet and is a good starting point.
 
     .. grid-item-card::
-        :link: analzer
+        :link: filternet.html
         :img-bottom: _static/images/filternet_rep_filter_models.png
 
         **FilterNet** - Receptive Field Filter Models
@@ -1128,7 +1138,7 @@ user guides.
 
 
     .. grid-item-card::
-        :link: analzer
+        :link: popnet.html
         :img-bottom: _static/images/dipde_figure.png
 
         **PopNet** - Population Wide Firing Rates Models
