@@ -445,19 +445,23 @@
                   
   <section id="Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)">
 <h1>Tutorial 5: Point-Neuron Network Models (with PointNet)<a class="headerlink" href="#Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)" title="Link to this heading">#</a></h1>
-<p>In this chapter we will create a heterogeneous network of point-model neurons and use the PointNet simulator which will run the network using the NEST simulator. As with the previous BioNet examples we will create both a internal recurrently-connected network of different node types, and an external network of “virtual” neurons that will drive the firing of the internal neurons. And we’ll show how to drive network activity by using a current clamp.</p>
-<p>PointNet, like BioNet and the other simulators, use the SONATA data format for representing networks, setting up simulations and saving results. Thus the tools used to build and display biophysically detailed networks in the previous chapters will work very similarily but the parameters will differ a bit.</p>
+<p>In this chapter we will create a heterogeneous network of point-model neurons and use the PointNet simulator which will run the network using the <a class="reference external" href="https://nest-simulator.readthedocs.io/en/stable/index.html">NEST simulator</a>. As with the previous BioNet examples, we will create both a internal recurrently-connected network of different node types and an external network of “virtual” neurons that will drive the internal neurons. We’ll also show how to drive network activity by using a current
+clamp.</p>
+<p>PointNet, like BioNet and the other BMTK simulators, uses the <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master">SONATA data format</a> to represent networks, set up simulations, and save results. Thus the tools used to build and display biophysically detailed networks in the previous chapters will work very similarily but the parameters will differ a bit.</p>
 <p>Requirements:</p>
 <ul class="simple">
 <li><p>bmtk</p></li>
 <li><p>NEST 2.11+</p></li>
 </ul>
+<p>Scripts for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter06">sources/chapter05</a>.</p>
+<p>For more information on the PointNet Simulator, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/pointnet.html">PointNet Overview</a>.</p>
+<p>For more information on BMTK and SONATA format, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/user_guide.html">Overview of BMTK</a> and <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">Network Builder</a> pages.</p>
 <section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Link to this heading">#</a></h2>
-<p>There are two ways of generating a network of point-neurons. Either we can take the existing biophysical network created in the previous chapters and make some minor adjustments to the neuron models being used. Or we can build a new network from scratch using the BMTK Builder.</p>
+<p>There are two ways to generate a network of point neurons. We can either take the existing biophysical network created in the previous chapters and make some minor adjustments to the neuron models or we can build a new network from scratch using the BMTK Builder.</p>
 <section id="Converting-networks">
 <h3>Converting networks<a class="headerlink" href="#Converting-networks" title="Link to this heading">#</a></h3>
-<p>If we want to take the BioNet V1 network and change parameters so that the individual neurons are using point models we can use the parameters stored in the node and edge “types” csv files, thus we can easily change them with a simple text editor (emacs, vi, sublime-text, etc). Here is an example of the old <em>V1_node_types.csv</em>:</p>
+<p>If we want to take the BioNet V1 network and change parameters so that the individual neurons are simulated as point neurons we can use the parameters stored in the node and edge “types” CSV files and easily change them with a simple text editor (emacs, vi, sublime-text, etc). Here is an example of the old <em>V1_node_types.csv</em>:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -800,16 +804,16 @@
 <ul class="simple">
 <li><p><strong>model_template</strong> has been changed to use a NEST based model type (static_synapse)</p></li>
 <li><p>Use different <strong>dynamics_parameter</strong> files</p></li>
-<li><p>It’s important to readjust <strong>syn_weight</strong> as values appropiate for NEURON based models are oftern wrong for NEST based models.</p></li>
+<li><p>It’s important to readjust <strong>syn_weight</strong> as values appropriate for NEURON based models are oftern wrong for NEST based models.</p></li>
 </ul>
-<p>Notice we don’t have to change any of the hdf5 files. The network topology remains the same making it a powerful tool for comparing networks of different levels of resolution.</p>
+<p>Notice we don’t have to change any of the hdf5 files. The network topology remains the same making it a powerful tool for comparing networks at different levels of resolution.</p>
 </section>
-<section id="Building-a-model-from-scratch.">
-<h3>Building a model from scratch.<a class="headerlink" href="#Building-a-model-from-scratch." title="Link to this heading">#</a></h3>
-<p>We can use the BMTK Network Builder to create new network files just for point-based modeling</p>
+<section id="Building-a-model-from-scratch">
+<h3>Building a model from scratch<a class="headerlink" href="#Building-a-model-from-scratch" title="Link to this heading">#</a></h3>
+<p>We can use the BMTK Network Builder to create new network files just for point-based modeling.</p>
 <section id="V1-Network">
 <h4>V1 Network<a class="headerlink" href="#V1-Network" title="Link to this heading">#</a></h4>
-<p>First lets build a “V1” network of 400 cells, split into 4 different populations</p>
+<p>First lets build a “V1” network of 400 cells, split into 4 different populations.</p>
 <section id="Set-nodes">
 <h5>Set nodes<a class="headerlink" href="#Set-nodes" title="Link to this heading">#</a></h5>
 <p>See <a class="reference internal" href="tutorial_02_single_cell_syn.html"><span class="doc">tutorial 2</span></a> and <a class="reference internal" href="tutorial_03_single_pop.html"><span class="doc">tutorial 3</span></a> for more details about .add_nodes() parameters.</p>
@@ -957,7 +961,7 @@
 </section>
 <section id="Building-external-network">
 <h3>Building external network<a class="headerlink" href="#Building-external-network" title="Link to this heading">#</a></h3>
-<p>Next we want to create an external network of “virtual cells” with spike-trains that will synapse onto our V1 cells and drive activity. We will call this external network “LGN” and contains 500 excitatory cells.</p>
+<p>Next we want to create an external network of “virtual cells” with spike-trains that will synapse onto our V1 cells and drive activity. We will call this external network “LGN” and it contains 500 excitatory cells.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -1029,7 +1033,7 @@
 &lt;bmtk.builder.connection_map.ConnectionMap at 0x7fa9173cfd30&gt;
 </pre></div></div>
 </div>
-<p>Finally we build and save our lgn network.</p>
+<p>Finally we build and save our LGN network.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -1042,11 +1046,11 @@
 </div>
 </section>
 </section>
-<section id="2.-Setting-up-PointNet-Environment">
-<h2>2. Setting up PointNet Environment<a class="headerlink" href="#2.-Setting-up-PointNet-Environment" title="Link to this heading">#</a></h2>
+<section id="2.-Setting-up-the-PointNet-Environment">
+<h2>2. Setting up the PointNet Environment<a class="headerlink" href="#2.-Setting-up-the-PointNet-Environment" title="Link to this heading">#</a></h2>
 <section id="Directory-Structure">
 <h3>Directory Structure<a class="headerlink" href="#Directory-Structure" title="Link to this heading">#</a></h3>
-<p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. If using the tutorial these files will already be in place. Otherwise we can use a command-line:</p>
+<p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. If using the tutorial, these files will already be in place. Otherwise we can use the command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.sim_setup<span class="w">        </span><span class="se">\</span>
 <span class="w">    </span>--network<span class="w"> </span>sim_ch05/network/<span class="w">         </span><span class="se">\</span>
 <span class="w">    </span>--include-examples<span class="w">                  </span><span class="se">\</span>
@@ -1070,10 +1074,10 @@
 </pre></div>
 </div>
 </div>
-<p>The network files are written to <strong>circuit_config.json</strong> and the simulation parameters are set in <strong>simulation_config</strong>, which are both linked to the main <strong>config.json</strong> file. The simulation time is set to run for 3000.0 ms (tstop). In general, all the parameters needed to setup and start a simulation are found in the config files, and adjusting network/simulation conditions can be done by editing these json files in a text editor.</p>
-<section id="lgn-input">
-<h4>lgn input<a class="headerlink" href="#lgn-input" title="Link to this heading">#</a></h4>
-<p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use SONATA spike files.</p>
+<p>The network files are written to <strong>circuit_config.json</strong> and the simulation parameters are written to <strong>simulation_config.json</strong>, which are both linked to the main <strong>config.json</strong> file. The simulation time is set to run for 3000.0 ms (tstop). In general, all the parameters needed to setup and start a simulation are found in the config JSON files, and adjusting network/simulation conditions can be done by editing these JSON files in a text editor.</p>
+<section id="LGN-input">
+<h4>LGN input<a class="headerlink" href="#LGN-input" title="Link to this heading">#</a></h4>
+<p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating CSV files. We can also use SONATA spike files.</p>
 <p>First download the file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>sim_ch05
 $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenInstitute/bmtk/raw/develop/examples/spikes_inputs/lgn_spikes.h5
@@ -1101,11 +1105,11 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_pointnet.py<span class="w"> </span>config.json
 </pre></div>
 </div>
-<p>or if you have mpi setup:</p>
+<p>or if you have MPI setup:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="nv">$NCORES</span><span class="w"> </span>python<span class="w"> </span>run_pointnet.py<span class="w"> </span>config.json
 </pre></div>
 </div>
-<p>Or we can run it directly</p>
+<p>Or we can run it directly:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -1299,7 +1303,7 @@ INFO:NestIOUtils:Done.
 </section>
 <section id="4.-Analyzing-results">
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Link to this heading">#</a></h2>
-<p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
+<p>Results of the simulation, as specified in the config file, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -1317,7 +1321,7 @@ INFO:NestIOUtils:Done.
 <img alt="../_images/tutorials_tutorial_05_pointnet_modeling_28_0.png" src="../_images/tutorials_tutorial_05_pointnet_modeling_28_0.png" />
 </div>
 </div>
-<p>Or we can plot the rates of the different populations</p>
+<p>Or we can plot the rates of the different populations:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
@@ -1333,13 +1337,13 @@ INFO:NestIOUtils:Done.
 <img alt="../_images/tutorials_tutorial_05_pointnet_modeling_30_0.png" src="../_images/tutorials_tutorial_05_pointnet_modeling_30_0.png" />
 </div>
 </div>
-<p>In our simulation_config.json in the reports section, we can see we also record the V_m (i.e membrane potential) of a select sample of cells. By default these files are written to an hdf5 file with the same name as the report (membrane_potential.h5), and we can use the analyzer to show the time course of some of these cells.</p>
+<p>In our simulation_config.json in the reports section, we can see we also record the membrane potential (V_m) of a select sample of cells. By default these files are written to an hdf5 file with the same name as the report (membrane_potential.h5), and we can use the analyzer to show the time course of some of these cells.</p>
 </section>
 <section id="5.-Additional-Information">
 <h2>5. Additional Information<a class="headerlink" href="#5.-Additional-Information" title="Link to this heading">#</a></h2>
-<section id="Recording-membrane-potential-(and-other-cell-properties).">
-<h3>Recording membrane potential (and other cell properties).<a class="headerlink" href="#Recording-membrane-potential-(and-other-cell-properties)." title="Link to this heading">#</a></h3>
-<p>By default bmtk will automatically record and save the spike-trains of our (non-virtual) cells. Sometimes it can be useful to record other properties besides spikes, like the membrane voltage traces, of all or a subsection of the cells. To do so we only need to open the <em>simulation_config.json</em> with our prefered text editor and insert the following section:</p>
+<section id="Recording-membrane-potential-(and-other-cell-properties)">
+<h3>Recording membrane potential (and other cell properties)<a class="headerlink" href="#Recording-membrane-potential-(and-other-cell-properties)" title="Link to this heading">#</a></h3>
+<p>By default BMTK will automatically record and save the spike-trains of our (non-virtual) cells. Sometimes it can be useful to record other properties besides spikes, like the membrane voltage traces, of all or a subsection of the cells. To do so we only need to open the <em>simulation_config.json</em> file with our prefered text editor and insert the following section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1355,8 +1359,8 @@ INFO:NestIOUtils:Done.
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>This will tell bmtk to record the “V_m” variable for selected cells with ids 0, 80, 100 - and save the results in a file <em>output/membrane_potential.h5</em>. The cell model you use to simulate non virtual cells will determine what other output variables you are able to record. After re-running the simulation the file will be generated, <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">according to the SONATA format</a>, which
-we can read using hdf5 or bmtk like below:</p>
+<p>This will tell bmtk to record the “V_m” variable for selected cells with ids 0, 80, 100 and save the results in a file <em>output/membrane_potential.h5</em>. The cell model you use to simulate non-virtual cells will determine what other output variables you are able to record. After re-running the simulation the file will be generated, <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">according to the SONATA format</a>, which we
+can read using hdf5 or bmtk like below:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
@@ -1377,8 +1381,9 @@ we can read using hdf5 or bmtk like below:</p>
 </section>
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
-<p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">tutorial 1: bionet</span></a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="93f8bbdf0ab049ce95a1da65e3c09612" src="../_images/raster_120cells_orig.png" /></p>
+<p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Bionet</span></a>.</p>
+<p>The <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells">‘point_120cells’ network</a> in the BMTK examples folder consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows:</p>
+<p><img alt="16abed6ca63e414a917ea25edc2742c9" src="../_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1395,7 +1400,7 @@ we can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to excite. However it is also possible to get a subset using a specific property, for example if we wanted to only select inhibitory L2/3 cells:</p>
+<p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to excite. However it is also possible to get a subset using a specific property - for example if we wanted to only select inhibitory L2/3 cells:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
@@ -1421,7 +1426,8 @@ we can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="bf9c9b39c0a74030a0199452a1af7196" src="../_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation:</p>
+<p><img alt="aaa0ee8d71e24bd0be1c515fadd82d42" src="../_images/raster_120cells_perturbed.png" /></p>
 </section>
 </section>
 </section>
@@ -1451,7 +1457,7 @@ we can read using hdf5 or bmtk like below:</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Building-the-network">1. Building the network</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Converting-networks">Converting networks</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-a-model-from-scratch.">Building a model from scratch.</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-a-model-from-scratch">Building a model from scratch</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#V1-Network">V1 Network</a><ul class="nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#Set-nodes">Set nodes</a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#Set-edges">Set edges</a></li>
@@ -1463,9 +1469,9 @@ we can read using hdf5 or bmtk like below:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-external-network">Building external network</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Setting-up-PointNet-Environment">2. Setting up PointNet Environment</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Setting-up-the-PointNet-Environment">2. Setting up the PointNet Environment</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Directory-Structure">Directory Structure</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#lgn-input">lgn input</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#LGN-input">LGN input</a></li>
 </ul>
 </li>
 </ul>
@@ -1473,7 +1479,7 @@ we can read using hdf5 or bmtk like below:</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Running-the-simulation">3. Running the simulation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Analyzing-results">4. Analyzing results</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#5.-Additional-Information">5. Additional Information</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Recording-membrane-potential-(and-other-cell-properties).">Recording membrane potential (and other cell properties).</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Recording-membrane-potential-(and-other-cell-properties)">Recording membrane potential (and other cell properties)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Perturbation-simulations">Perturbation simulations</a></li>
 </ul>
 </li>
