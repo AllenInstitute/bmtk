@@ -24,11 +24,6 @@ import os
 import logging
 from six import string_types
 
-from dipde.internals.internalpopulation import InternalPopulation
-from dipde.internals.externalpopulation import ExternalPopulation
-from dipde.internals.connection import Connection
-import dipde
-
 from bmtk.simulator.core.simulator import Simulator
 from . import config as cfg
 from . import utils as poputils
@@ -203,12 +198,14 @@ class PopSimulator(Simulator):
                 self.__connection_list.append(self.__create_connection(source_pop, target_pop, edge))
 
     def run(self, tstop=None):
+        from dipde import Network
+
         # TODO: Check if cells/connections need to be rebuilt.
 
         # Create the network
         dipde_pops = [p.dipde_obj for p in self._graph.populations]
         dipde_conns = [c.dipde_obj for c in self._graph.connections]
-        self._dipde_network = dipde.Network(population_list=dipde_pops, connection_list=dipde_conns)
+        self._dipde_network = Network(population_list=dipde_pops, connection_list=dipde_conns)
 
         if tstop is None:
             tstop = self.tstop
@@ -220,16 +217,22 @@ class PopSimulator(Simulator):
         self.io.log_info("Finished simulation.")
 
     def __create_internal_pop(self, params):
+        from dipde.internals.internalpopulation import InternalPopulation
+
         # TODO: use getter methods directly in case arguments are not stored in dynamics params
         # pop = InternalPopulation(**params.dynamics_params)
         pop = InternalPopulation(**params.model_params)
         return pop
 
     def __create_external_pop(self, params, rates):
+        from dipde.internals.externalpopulation import ExternalPopulation
+
         pop = ExternalPopulation(rates, record=False)
         return pop
 
     def __create_connection(self, source, target, params):
+        from dipde.internals.connection import Connection
+
         return Connection(source, target, nsyn=params.nsyns, delays=params.delay, weights=params.weight)
 
     def __record_rates(self):
