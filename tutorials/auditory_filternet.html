@@ -351,7 +351,10 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide.html">Overview of BMTK</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building brain network models with BMTK Network Builder</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../builder_features.html">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../simulators_guide.html">Running Network Simulations with BMTK</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
@@ -694,7 +697,7 @@ INFO:FilterNetIOUtils:Done.
 <p>To change the stimulus to a WAV file of your choice, point to the relative path of the file under “data_file”.</p>
 <p>The filter carrier consists of a sinusoidal modulation in 2D akin to a plane wave. This carrier is multiplied by a Gaussian envelope in the spectral axis and an asymmetric scaled gamma distribution function in the temporal axis to allow for faster onset of responses and a slower tail decay.</p>
 <p>Filters with very little spectral modulation have a “vertical” appearance and respond preferentially to broadband temporal edges such as sound onsets. Filters with very little temporal modulation have a “horizontal” appearance and respond preferentially to sustained spectral edges. If the nodes are ordered by their center frequencies, we can construct different “views” of the stimulus (speech in this case) through these different types of filters.</p>
-<div><p><img alt="cced85fee95e431aa4450c409b373098" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
+<div><p><img alt="5906290cc7a849dfb46008b47a864a96" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
 </div><img alt="Responses" src="../_images/Responses_to_diff_scales_and_orientations.png" />
 <p>Now we will build a larger bank of filters with randomly assigned properties. Beware that if n_filts is set larger, the code could take a long time to run in the notebook.</p>
 <div class="nbinput docutils container">

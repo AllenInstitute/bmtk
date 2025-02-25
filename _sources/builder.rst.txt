@@ -2,6 +2,13 @@
 Building brain network models with BMTK Network Builder
 #######################################################
 
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   builder_features
+
+
 .. figure:: _static/images/bmtk_architecture_builder_highlight.jpg
    :scale: 40%
 
@@ -226,7 +233,7 @@ list see `SONATA <https://github.com/AllenInstitute/sonata/blob/master/docs/SONA
       "morphology", "Name of the detailed morphology file (usually SWC).", string path to file
 
 
-.. admontion:: note about "node_id" and "node_type_id" properties
+.. admonition:: note about "node_id" and "node_type_id" properties
 
    The BMTK Network Builder will automatically assign each cell within a network population a unique identifer 
    (`node_id`) as-well-as assign it to a specific **node-type** (`node_type_id`). However, if for some reason you 
@@ -477,18 +484,6 @@ Useful Edge Parameters
       "weight_function", "Name of the detailed morphology file (usually SWC)."
 
 
-
-Edge Accessor methods
----------------------
-
-:py:meth:`NetworkBuilder.edges() <bmtk.builder.network.Network.edges>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The method will return an iterator of edges filtered by edge and/or node properties. Each edge will be
-represented using a :py:class:`Edge <bmtk.builder.edge.Edge>` object
-
-
-
 4. Building and Saving the Model
 ================================
 
@@ -581,4 +576,51 @@ Tutorials and Guides
 Advanced Features
 -----------------
 
+.. grid:: 1 1 5 5
+   :gutter: 1
 
+   .. grid-item-card::  
+      :link: builder_features.html#iterating-and-filter-nodes-from-a-network-using-nodes-method
+
+      Getting node and cell properties from a network
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * Filter and find specific subpopulations of nodes with-in a network.
+      * Filter and find edges based on edge and source/target node properties. 
+      * Get name, status, and various properties of a network.
+
+
+   .. grid-item-card::  
+      :link: builder_features.html#importing-existing-nodes
+
+      Importing Nodes into a network
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * How to import nodes from existing SONATA network files into your new network.
+
+   .. grid-item-card::  
+      :link: builder_features.html#options-for-setting-synapse-location
+
+      Advanced options for designating synaptic locations
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * How to easily set post-synaptic (afferent) synaptic locations on morphological detailed cells.
+
+   .. grid-item-card::  
+        :link: builder_features.html#options-for-saving-network-to-sonata
+
+        Options for Saving network to file
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        * Manually setting file path 
+        * How to write multiple networks to a single file.
+        * How to sort and index edges
+        * File Compression
+        
+   .. grid-item-card::  
+      :link: builder_features.html#options-for-saving-network-to-sonata
+
+      Parallizgin Network Building with MPI
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      * How to build a network faster on a cluster or multi-core computer using MPI (Message Passing Interface)

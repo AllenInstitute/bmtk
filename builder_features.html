@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Network Builder Features and Options &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=58fbf978"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'builder_features';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running Network Simulations with BMTK" href="simulators_guide.html" />
+    <link rel="prev" title="Building brain network models with BMTK Network Builder" href="builder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="simulators_guide.html">Running Network Simulations with BMTK</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials and Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Example Networks and Simulations</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="builder.html" class="nav-link">Building brain network models with BMTK Network Builder</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Network Builder Features and Options</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="network-builder-features-and-options">
+<h1>Network Builder Features and Options<a class="headerlink" href="#network-builder-features-and-options" title="Link to this heading">#</a></h1>
+<section id="networkbuilder-methods">
+<h2>NetworkBuilder methods<a class="headerlink" href="#networkbuilder-methods" title="Link to this heading">#</a></h2>
+<section id="iterating-and-filter-nodes-from-a-network-using-nodes-method">
+<h3>Iterating and Filter Nodes from a Network using <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method<a class="headerlink" href="#iterating-and-filter-nodes-from-a-network-using-nodes-method" title="Link to this heading">#</a></h3>
+<p>You can use the The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method
+of the <code class="docutils literal notranslate"><span class="pre">NetworkBuilder</span></code> class to iterate over the nodes stored in a network. The <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method
+returns an iterable list which contains dictionaries of the properties of each individual cell that will
+be created by each call to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+    <span class="n">coord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">node_dict</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node_dict</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">],</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">node_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above will show each 10 nodes/cells created by the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> call:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">0</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span>-74.13859238611045,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">0</span><span class="o">}</span>
+<span class="m">1</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span>-22.88965188502479,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">1</span><span class="o">}</span>
+<span class="m">2</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span><span class="m">54</span>.31170697608857,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">2</span><span class="o">}</span>
+...
+</pre></div>
+</div>
+<p>You can also filter by property values by passing in value into parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>The above will return only the 10 nodes from the two calls with <code class="docutils literal notranslate"><span class="pre">ei=='exc'</span></code>. If you want to filter by multiple
+properties in the format <code class="docutils literal notranslate"><span class="pre">prop1==A</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop2==B</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop3==C</span></code> you can just pass in multiple key-value pairs into the
+<code class="docutils literal notranslate"><span class="pre">nodes()</span></code> parameters. For example if we want to find only those cells that are <strong>excitatory point</strong> neuron cells from
+the example above</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="iterating-and-filtering-edges-using-the-edges-method">
+<h3>Iterating and Filtering Edges using the edges() method<a class="headerlink" href="#iterating-and-filtering-edges-using-the-edges-method" title="Link to this heading">#</a></h3>
+<p>Simular to the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code> method
+allows you to iterate and filter all the edges/synapses generated by each call to <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code>. When called
+with no parameters it will return a list of all edges/synapses in a dictionary like format.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span>
+<span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+    <span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;inh2exc&#39;</span><span class="p">,</span>
+    <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">20.0</span>
+<span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">),</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span>
+<span class="p">)</span>
+
+<span class="n">edge0</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;syn_function&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following small network will display the following like the following (<strong>note that the order of edges
+may be different</strong>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5</span>
+<span class="mi">1</span>
+<span class="n">inh2exc</span>
+<span class="o">-</span><span class="mf">20.0</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">1</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">2</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">4</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Before the <code class="docutils literal notranslate"><span class="pre">edges()</span></code> method is called the <a class="reference external" href="builder.html#building-and-saving-the-model">connectivity matrix needs to be created</a>
+which is equivalent to calling the <code class="docutils literal notranslate"><span class="pre">build()</span></code> method. For very large networks this can take a long amount of time
+and memory. And if you call <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> or <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> after it will need to rebuild the network.</p>
+<p>As such it is highly recommend to not call <code class="docutils literal notranslate"><span class="pre">edge()</span></code> iterator until after all calls to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> are completed.</p>
+</div>
+<p>The easiest way to filter only certain edges by query is, like with the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, add key-value parameters to
+the method. If more than one parameter is called then it will be treated as a logical “and”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We should expect 5x(5+5) = 50 edges in total</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="c1"># print(edge)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Due to the &quot;syn_weight&quot; conditional we expect to find no (0) edges.</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>You can also filter edges by either source and/or target properties using the <strong>source_nodes</strong> and
+<strong>target_nodes</strong> parameters, respectively. Use the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> iterator to create filters for nodes
+(this will work even if a source/target set of nodes comes from a differnt population - as long as the edges
+still exists).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We should expect &lt;= 50 inh -&gt; exc edges.</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
+    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
+    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+
+<span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_function&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;inh2exc&#39;</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
+    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
+    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="importing-existing-nodes">
+<h3>Importing Existing Nodes<a class="headerlink" href="#importing-existing-nodes" title="Link to this heading">#</a></h3>
+<p>If you have an existing SONATA network (.h5 and .csv file) you can import the nodes using the
+<code class="docutils literal notranslate"><span class="pre">import_nodes()</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+
+<span class="c1"># expect 0 nodes</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">import_nodes</span><span class="p">(</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;network/v1_nodes.h5&#39;</span><span class="p">,</span>
+    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">&#39;network/v1_node_types.csv&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Should have more than 0 nodes</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="connector-functions">
+<h2>Connector Functions<a class="headerlink" href="#connector-functions" title="Link to this heading">#</a></h2>
+<section id="options-for-setting-synapse-location">
+<h3>Options for setting synapse location<a class="headerlink" href="#options-for-setting-synapse-location" title="Link to this heading">#</a></h3>
+<p>When creating a network with morphologically realistic cells, the location of the afferent synapses along a given cell
+dendrites/soma is often very important. However trying to manually place each synapse quickly becomes an intractable
+problem even for small networks. Also with simulators like NEURON it is very difficult to know the name/identifier of
+each dendritic branch and segment prior to simulation.</p>
+<p>BMTK Network Builder along with BioNet offers some solutions to make it easier to manage placing synaptic locations
+when using the <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> calls.</p>
+<section id="target-sections-and-distance-range-properties">
+<h4>“target_sections” and “distance_range” properties<a class="headerlink" href="#target-sections-and-distance-range-properties" title="Link to this heading">#</a></h4>
+<p>The easiest and most efficient solution is add properties <strong>target_section</strong> and <strong>distance_range</strong> when calling the
+<code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method. <strong>target_section</strong> is a list of of one or more cell section names as defined in the SWC
+format (<em>axon</em>, <em>somatic</em>, <em>basal</em>, <em>apical</em>, <em>dend</em>, <em>other</em>). while <strong>distance_range</strong> is a vector of two values - the
+start and end distance (both inclusive) in arc-length a segment has to be away from the hilt of the soma.</p>
+<p>For example we want to create edges that on connect to <em>apical</em> or <em>basal</em> dendritic sections that are between 50-200
+microns away from the soma. (If you want to have it go to the end of the dendrite you can use a large number like
+<code class="docutils literal notranslate"><span class="pre">[50.0,</span> <span class="pre">1.0e20]</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyramidal.swc&#39;</span><span class="p">),</span>
+    <span class="o">...</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>At the beggining of each simulation <em>BioNet</em> will see the <strong>target_section</strong> and <strong>distance_range</strong> parameters and use
+them to find every morphology segment that matches, choose one at random, and create a synapse.</p>
+<p>There are two potential issues when using this method for assigning synapse locations</p>
+<p>1. <strong>target_section</strong> and <strong>distance_range</strong> are not SONATA reserved keywords, meaning other tools will likely not be
+able to use these parameters to regenerate synaptic locations.
+2. Since the synapses are generated by <em>BioNet</em> dynamically before each simulation, it could lead to issues with
+reproducability of network results.</p>
+</section>
+<section id="explicity-setting-afferent-synapse-section-and-position">
+<h4>Explicity setting afferent synapse section and position<a class="headerlink" href="#explicity-setting-afferent-synapse-section-and-position" title="Link to this heading">#</a></h4>
+<p>The more reproducable alternative is to set the parameters <strong>afferent_section_id</strong> and <strong>afferent_section_pos</strong>, which
+are reserve SONATA keywords recognized by other tools, for every synapse. To help with this you can use the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method. Point to this method
+in the <code class="docutils literal notranslate"><span class="pre">add_properties()</span></code> call and choose the <strong>target_section</strong> and <strong>distance_range</strong>, like above. When build() is
+called it will choose appropiate synapse location and store them in the SONATA file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">rand_syn_locations</span>
+
+<span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyramidal.swc&#39;</span><span class="p">),</span>
+    <span class="o">...</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;afferent_section_id&#39;</span><span class="p">,</span> <span class="s1">&#39;afferent_section_pos&#39;</span><span class="p">],</span>
+    <span class="n">rule</span><span class="o">=</span><span class="n">rand_syn_locations</span><span class="p">,</span>
+    <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;section_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;distance_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
+        <span class="s1">&#39;morphology_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;./components/morphologies&#39;</span>
+    <span class="p">},</span>
+    <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">build()</span></code> is called on the previous code it will load the ‘pyramidal.swc’ file with NEURON
+to determine how the simulator will generate and name all the branches and segments. If you prefer
+you can use the <code class="docutils literal notranslate"><span class="pre">SWCReader</span></code> class inside your script to access information about availabe sections
+and segments (including x, y, z coordinates):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet.swc_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SWCReader</span>
+
+<span class="n">morph</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="s1">&#39;./components/morphologies/pyramidal.swc&#39;</span><span class="p">)</span>
+<span class="n">morph</span><span class="o">.</span><span class="n">set_segment_dl</span><span class="p">(</span><span class="n">dL</span><span class="p">)</span>
+<span class="n">morph</span><span class="o">.</span><span class="n">move_and_rotate</span><span class="p">(</span>
+    <span class="n">soma_coords</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span>
+    <span class="n">rotation_angles</span><span class="o">=</span><span class="p">[</span><span class="n">rotation_angle_xaxis</span><span class="p">,</span> <span class="n">rotation_angle_yaxis</span><span class="p">,</span> <span class="n">rotation_angle_zaxis</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="built-in-connection-rules">
+<h3>Built-in connection rules<a class="headerlink" href="#built-in-connection-rules" title="Link to this heading">#</a></h3>
+<p>The BMTK Network Builder includes a number of built-in functions that you can use for the
+<strong>connection_rule</strong> option when using <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method.</p>
+<p><a class="reference internal" href="bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.edge_connectors.distance_connector" title="bmtk.builder.auxi.edge_connectors.distance_connector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bmtk.builder.auxi.edge_connector.distance_connector()</span></code></a>
+- Creates connections between source and target cells based on distance, cells that are closer together will more likely
+to have more connections between them (will rule-out self-connections).</p>
+<p><a class="reference internal" href="bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.edge_connectors.connect_random" title="bmtk.builder.auxi.edge_connectors.connect_random"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bmtk.builder.auxi.edge_connector.connect_random()</span></code></a> - Will
+choose at random if two cells share a connection or not.</p>
+</section>
+</section>
+<section id="options-for-saving-network-to-sonata">
+<h2>Options for Saving Network to SONATA<a class="headerlink" href="#options-for-saving-network-to-sonata" title="Link to this heading">#</a></h2>
+<section id="network-file-name-and-path">
+<h3>network file name and path<a class="headerlink" href="#network-file-name-and-path" title="Link to this heading">#</a></h3>
+<p>By default when you when have a population network with name “NETNAME” and call <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code> the Builder will by default save it to file names <em>NETNAME_nodes.h5</em> and
+<em>NETNAME_nodes.csv</em>. Similarly for edges from populations “NETSRC” to “NETTRG” will be saved by default
+under file names <em>NETSRC_to_NETTRG_edges.h5</em> and <em>NETSRC_to_NETTRG_edge_types.csv</em>.</p>
+<p>To change the file names use the <strong>node[_type]s_file_name</strong> and <strong>edge[_types]_file_name</strong> parameters. You can use
+absolute file paths, and when using relative file paths it will place it under the <strong>output_dir</strong> option</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will save the network nodes and edges files into &quot;network/custom-*&quot; file-name.</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;custom-nodes.h5&#39;</span>
+    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">&#39;custom-node-types.csv&#39;</span><span class="p">,</span>
+    <span class="n">edges_file_name</span><span class="o">=</span><span class="s1">&#39;custom-edges.h5&#39;</span><span class="p">,</span>
+    <span class="n">edge_types_file_name</span><span class="o">=</span><span class="s1">&#39;custom-edge-types.csv&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="append-mode">
+<h3>append mode<a class="headerlink" href="#append-mode" title="Link to this heading">#</a></h3>
+<p>When the <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> method is called it will by default overwrite any existing SONATA h5 and csv files if
+they already exist (you can change this behavior by setting <code class="docutils literal notranslate"><span class="pre">force_overwrite=False</span></code>). The SONATA format does allow
+you to save multiple nodes and edges populations in the save files - although each population must have a unique name.,
+With BMTK you must set the <strong>mode</strong> parameter to <code class="docutils literal notranslate"><span class="pre">a</span></code> or <code class="docutils literal notranslate"><span class="pre">append</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumes network/shared-nodes.h5 already exists and user wants to append another node population into it.</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;shared-nodes.h5&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="sorting-of-edges">
+<h3>Sorting of Edges<a class="headerlink" href="#sorting-of-edges" title="Link to this heading">#</a></h3>
+<p>By default when the NetworkBuilder saves the SONATA edges file the edges are sorted by “target_node_id” (ie. all the
+edges with post-synapse node 0 comes before edges with post-synapse node 1). The <strong>sort_by</strong> parameter in the <code class="docutils literal notranslate"><span class="pre">save()</span></code>
+method allows you to choose between sorting by</p>
+<ul class="simple">
+<li><p>“target_node_id” - Group and sort by post-synaptic node-id</p></li>
+<li><p>“source_node_id” - Group and sort by pre-synaptic node-id</p></li>
+<li><p>“edge_type_id” - Will group edges that share the same <strong>edge-type</strong> properties and id.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
+    <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="edges-indexing">
+<h3>Edges Indexing<a class="headerlink" href="#edges-indexing" title="Link to this heading">#</a></h3>
+<p>SONATA edges formats allows the addition of indices which can be used to quickly search for edges based on either
+the target_node_id, source_node_id, or edge_type_id. By default BMTK Network Builder will create indices for
+both target_node_id and source_node_id. This can be changed using the <strong>index_by</strong> parameter.</p>
+<p>To build an edges file with <strong>No indexes</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">index_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>To build an edges file with only <strong>target_node_id indices</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or to build an edges file with <strong>all indexing options</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_type_id&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="file-compression">
+<h3>File Compression<a class="headerlink" href="#file-compression" title="Link to this heading">#</a></h3>
+<p>the <a class="reference external" href="https://support.hdfgroup.org/documentation/hdf5-docs/hdf5_topics/UsingCompressionInHDF5.html">HDF5 Format allows for data-sets to be compressed inside the file</a>.
+To save an hdf5 file with a compression use the <strong>compression</strong> option (<strong>note</strong> that the options for compression may
+vary depending on machine on hdf5/h5py libraries installed).</p>
+<p>To save with GZIP compression</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>To ensure no compression use the <code class="docutils literal notranslate"><span class="pre">None</span></code> option.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+    <span class="n">compression</span><span class="o">=</span><span class="kc">None</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="options-for-optimization-of-network-building">
+<h2>Options for Optimization of Network Building<a class="headerlink" href="#options-for-optimization-of-network-building" title="Link to this heading">#</a></h2>
+<section id="iterators">
+<h3>iterators<a class="headerlink" href="#iterators" title="Link to this heading">#</a></h3>
+</section>
+<section id="building-with-multiple-cores">
+<h3>Building with multiple cores<a class="headerlink" href="#building-with-multiple-cores" title="Link to this heading">#</a></h3>
+<p>When running on a computer or cluster with <a class="reference external" href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> installed
+the BMTK Network Builder can automatically parallelize the bulding of the network. Just make sure to call
+the script with the approiate command for your system (eg. <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>, <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code>, <code class="docutils literal notranslate"><span class="pre">srun</span></code>, etc).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Split building of script across 10 cores</span>
+$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">10</span><span class="w"> </span>python<span class="w"> </span>build_network.py
+</pre></div>
+</div>
+<p>The resulting SONATA network file will be similar to as if run in single core python. There is no need for the user
+to change their code.</p>
+<p>The one <strong>exception</strong> is when passing is parameters to either the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> or <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> methods that rely
+on randomized values. For example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In such cases, when not taking extra precautions, each rank/core will generate different values for each cell’s (x, y, z)
+coordinates, and BMTK will not know which values to save into the final file. The Network Builder will by default check
+if values are different across ranks and throw an error if needed.</p>
+<p>The simplest solution is to make sure to hard-code the random seed. This will better ensure that each take a random
+numbers are generated they produce the same values across all ranks.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Another option is to use the <strong>mpi4py</strong> <code class="docutils literal notranslate"><span class="pre">Bcast</span></code> function to generate values to generate inputs on one rank then
+send them to all the others.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#networkbuilder-methods">NetworkBuilder methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filter-nodes-from-a-network-using-nodes-method">Iterating and Filter Nodes from a Network using <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filtering-edges-using-the-edges-method">Iterating and Filtering Edges using the edges() method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-existing-nodes">Importing Existing Nodes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connector-functions">Connector Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-setting-synapse-location">Options for setting synapse location</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#target-sections-and-distance-range-properties">“target_sections” and “distance_range” properties</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#explicity-setting-afferent-synapse-section-and-position">Explicity setting afferent synapse section and position</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-connection-rules">Built-in connection rules</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-saving-network-to-sonata">Options for Saving Network to SONATA</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-file-name-and-path">network file name and path</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#append-mode">append mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sorting-of-edges">Sorting of Edges</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#edges-indexing">Edges Indexing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-compression">File Compression</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-optimization-of-network-building">Options for Optimization of Network Building</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterators">iterators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-multiple-cores">Building with multiple cores</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/builder_features.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
