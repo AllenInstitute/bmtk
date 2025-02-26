@@ -182,9 +182,9 @@ class ComsolMod(SimulatorMod):
         """
 
         # Extract column headers and data from comsol_file
-        headers = pd.read_csv(comsol_file, sep="\s{3,}", header=None, skiprows=8, nrows=1, engine='python')
+        headers = pd.read_csv(comsol_file, sep=r"\s{3,}", header=None, skiprows=8, nrows=1, engine='python')
         headers = headers.to_numpy()[0]
-        data = pd.read_csv(comsol_file, sep="\s+", header=None, skiprows=9)
+        data = pd.read_csv(comsol_file, sep=r"\s+", header=None, skiprows=9)
 
         # Convert V to mV if necessary
         if headers[3][3] == 'V':                        
