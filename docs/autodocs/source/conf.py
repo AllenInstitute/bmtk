@@ -21,7 +21,7 @@ import sys
 import glob
 import shutil
 
-sys.path.insert(0, os.path.abspath("../../.."))
+sys.path.insert(0, os.path.abspath('../../..'))
 import bmtk
 
 
@@ -35,34 +35,34 @@ import bmtk
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.githubpages",
-    "sphinx.ext.viewcode",
-    "numpydoc",
-    "sphinx.ext.autosummary",
-    "nbsphinx",
-    "IPython.sphinxext.ipython_console_highlighting",
+    'sphinx.ext.autodoc',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.viewcode',
+    'numpydoc',
+    'sphinx.ext.autosummary',
+    'nbsphinx',
+    'IPython.sphinxext.ipython_console_highlighting'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates', 'aibs_sphinx/templates']
-templates_path = ["aibs_sphinx/templates"]
+#templates_path = ['_templates', 'aibs_sphinx/templates']
+templates_path = ['aibs_sphinx/templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = [".rst", ".md"]
+source_suffix = ['.rst', '.md']
 # source_suffix = ['.rst', '.ipynb']
 
-autodoc_mock_imports = ["nest", "lxml", "bluepyopt", "utils"]
+autodoc_mock_imports = ['nest', 'lxml', 'bluepyopt', 'utils']
 
 # The master toctree document.
-master_doc = "index"
+master_doc = 'index'
 
 # General information about the project.
-project = "Brain Modeling Toolkit"
-copyright = "2021, Allen Institute for Brain Science"
-author = "Allen Institute for Brain Science"
+project = u'Brain Modeling Toolkit'
+copyright = u'2021, Allen Institute for Brain Science'
+author = u'Allen Institute for Brain Science'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -78,7 +78,7 @@ release = bmtk.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = "en"
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -86,7 +86,7 @@ language = "en"
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -101,8 +101,8 @@ numpydoc_show_class_members = False
 #
 # html_theme = 'alabaster'
 
-html_theme_path = ["."]
-html_theme = "aibs_sphinx"
+html_theme_path = ['.']
+html_theme = 'aibs_sphinx'
 # html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -114,22 +114,29 @@ html_theme = "aibs_sphinx"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static", "aibs_sphinx/static"]
-html_extra_path = ["../.nojekyll"]
-html_theme_options = {"sidebarwidth": "300"}
+html_static_path = ['_static', 'aibs_sphinx/static']
+html_extra_path = ['../.nojekyll']
+html_theme_options = {
+    "sidebarwidth": "300"
+}
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {"**": ["globaltoc.html", "searchbox.html"]}
+html_sidebars = {
+    '**': [
+        'globaltoc.html',
+        'searchbox.html'
+    ]
+}
 
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "BrainModelingToolkitdoc"
+htmlhelp_basename = 'BrainModelingToolkitdoc'
 
 html_show_sphinx = False
 html_show_copyright = False
@@ -141,12 +148,15 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
+
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
+
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
+
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -156,13 +166,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        master_doc,
-        "BrainModelingToolkit.tex",
-        "Brain Modeling Toolkit Documentation",
-        "Kael Dai",
-        "manual",
-    ),
+    (master_doc, 'BrainModelingToolkit.tex', u'Brain Modeling Toolkit Documentation',
+     u'Kael Dai', 'manual'),
 ]
 
 
@@ -171,13 +176,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (
-        master_doc,
-        "brainmodelingtoolkit",
-        "Brain Modeling Toolkit Documentation",
-        [author],
-        1,
-    )
+    (master_doc, 'brainmodelingtoolkit', u'Brain Modeling Toolkit Documentation',
+     [author], 1)
 ]
 
 
@@ -187,86 +187,40 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (
-        master_doc,
-        "BrainModelingToolkit",
-        "Brain Modeling Toolkit Documentation",
-        author,
-        "BrainModelingToolkit",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
+    (master_doc, 'BrainModelingToolkit', u'Brain Modeling Toolkit Documentation',
+     author, 'BrainModelingToolkit', 'One line description of project.',
+     'Miscellaneous'),
 ]
 
 
 def copy_tutorials():
     source_dir = os.path.dirname(os.path.abspath(__file__))
-    tutorials_dir = os.path.abspath("../tutorial")
-    tutorials = os.path.join(tutorials_dir, "*.ipynb")
+    tutorials_dir = os.path.abspath('../tutorial')
+    tutorials = os.path.join(tutorials_dir, '*.ipynb')
 
     for ipynb_file in glob.glob(tutorials):
         tut_fname = os.path.basename(ipynb_file)
-        if (
-            tut_fname.startswith("00")
-            or tut_fname.startswith("tutorial_introduction")
-            or tut_fname.startswith("Simulation_Intro")
-        ):
+        if tut_fname.startswith('00') or tut_fname.startswith('tutorial_introduction') \
+                or tut_fname.startswith('Simulation_Intro'):
             continue
         elif tut_fname[:2].isnumeric():
             tut_fname = tut_fname[3:]
 
-        tut_path = os.path.join(source_dir, "tutorial_{}".format(tut_fname))
+        tut_path = os.path.join(source_dir, 'tutorial_{}'.format(tut_fname))
         shutil.copy(ipynb_file, tut_path)
 
-    tutorial_images_dir = os.path.join(tutorials_dir, "_static/_tutorial_images")
-    source_tutorial_images_dir = os.path.join(source_dir, "_static/_tutorial_images")
+    tutorial_images_dir = os.path.join(tutorials_dir, '_static/_tutorial_images')
+    source_tutorial_images_dir = os.path.join(source_dir, '_static/_tutorial_images')
     if os.path.exists(source_tutorial_images_dir):
         shutil.rmtree(source_tutorial_images_dir)
 
     shutil.copytree(tutorial_images_dir, source_tutorial_images_dir)
 
 
-def copy_opt_tutorials():
-    source_dir = os.path.dirname(os.path.abspath(__file__))
-
-    opt_tutorials_dir = [
-        "01_opt_external_models",
-        "02_opt_nest_custom_models",
-        "03_opt_advanced_spiking_inputs",
-        "04_opt_advanced_inputs",
-        "05_opt_extracellular",
-        "06_opt_hpc_resources",
-    ]
-
-    for opt_tutorial in opt_tutorials_dir:
-        tutorials_dir = os.path.abspath("../tutorial/" + opt_tutorial)
-        tutorials = os.path.join(tutorials_dir, "*.ipynb")
-
-        for ipynb_file in glob.glob(tutorials):
-            tut_fname = os.path.basename(ipynb_file)
-            if tut_fname.startswith("Hay_Model_SingleCell") or tut_fname.startswith(
-                "Ch_External_Resources.ipynb"
-            ):
-                continue
-
-            tut_path = os.path.join(source_dir, "tutorial_{}".format(tut_fname))
-            shutil.copy(ipynb_file, tut_path)
-
-        tutorial_images_dir = os.path.join(tutorials_dir, "_static/_tutorial_images")
-        source_tutorial_images_dir = os.path.join(
-            source_dir, "_static/_tutorial_images"
-        )
-        if os.path.exists(tutorial_images_dir):
-            shutil.copytree(
-                tutorial_images_dir, source_tutorial_images_dir, dirs_exist_ok=True
-            )
-
-
 def autodoc_skip_member(app, what, name, obj, skip, options):
-    return skip or name in ["load_reports", "plot_report", "bmtk.analyzer.cell_vars"]
+    return skip or name in ['load_reports', 'plot_report', 'bmtk.analyzer.cell_vars']
 
 
 def setup(app):
     copy_tutorials()
-    copy_opt_tutorials()
-    app.connect("autodoc-skip-member", autodoc_skip_member)
+    app.connect('autodoc-skip-member', autodoc_skip_member)
