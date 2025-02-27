@@ -117,7 +117,7 @@ RUN cd ${HOME_DIR}/tutorial/modeling_tut_2021/components/mechanisms \
     && nrnivmodl modfiles/
 
 
-#### Add the tutorial for the 2024 workshop
+#### Add the tutorial for the 2023 workshop
 RUN cd ${HOME_DIR}; \
     git clone https://github.com/AllenInstitute/bmtk-workshop.git
 
