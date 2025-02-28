@@ -301,7 +301,7 @@ has durations that corresponds to the simulation durations.
                 "spikes0.h5",
                 "spikes1.h5"
             ],
-            "spikes_file_csv: [
+            "spikes_file_csv": [
                 "spikes0.csv",
                 "spikes1.csv"
             ],
