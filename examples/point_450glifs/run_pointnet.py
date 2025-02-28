@@ -1,5 +1,5 @@
-import os, sys
 from bmtk.simulator import pointnet
+import argparse
 
 
 def run(config_file):
@@ -12,4 +12,13 @@ def run(config_file):
 
 
 if __name__ == '__main__':
-    run('config.simulation.json')
+    parser = argparse.ArgumentParser(description='Run point network simulation.')
+    parser.add_argument('config_file',
+        type=str,
+        nargs='?',
+        default='config.multiplesimulation.json',
+        help='Path to the configuration file'
+    )
+    args = parser.parse_args()
+
+    run(args.config_file)

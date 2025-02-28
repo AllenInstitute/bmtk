@@ -201,27 +201,32 @@ class PointSimulator(Simulator):
         if tstop is None:
             tstop = self._tstop
 
-        for mod in self._mods:
-            mod.initialize(self)
+        # run recursively over the list of tstop values
+        if isinstance(tstop, list):
+            for t in tstop:
+                self.run(t)
+        else:
+            for mod in self._mods:
+                mod.initialize(self)
 
-        io.barrier()
+            io.barrier()
 
-        io.log_info('Starting Simulation')
-        n, res, data_res = self._get_block_trial(tstop)
-        if n > 0:
-            for r in moves.range(n):
-                nest.Simulate(data_res)
-        if res > 0:
-            nest.Simulate(res * self.dt)
-        if n < 0:
-            nest.Simulate(tstop)
+            io.log_info('Starting Simulation')
+            n, res, data_res = self._get_block_trial(tstop)
+            if n > 0:
+                for r in moves.range(n):
+                    nest.Simulate(data_res)
+            if res > 0:
+                nest.Simulate(res * self.dt)
+            if n < 0:
+                nest.Simulate(tstop)
 
-        io.barrier()
-        io.log_info('Simulation finished, finalizing results.')
-        for mod in self._mods:
-            mod.finalize(self)
-        io.barrier()
-        io.log_info('Done.')
+            io.barrier()
+            io.log_info('Simulation finished, finalizing results.')
+            for mod in self._mods:
+                mod.finalize(self)
+            io.barrier()
+            io.log_info('Done.')
 
     def add_mod(self, mod):
         self._mods.append(mod)
@@ -272,6 +277,9 @@ class PointSimulator(Simulator):
             network.tstop = run_dict['duration']
         elif 'tstop' in run_dict:
             network.tstop = run_dict['tstop']
+        
+        if 'n_runs' in run_dict:
+            network.tstop = [network.tstop] * run_dict['n_runs']
 
         if 'precise_times' in run_dict:
             network.set_spike_generator_params(precise_times=run_dict['precise_times'])
