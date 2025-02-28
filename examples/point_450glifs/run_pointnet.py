@@ -16,7 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('config_file',
         type=str,
         nargs='?',
-        default='config.multiplesimulation.json',
+        default='config.simulation.json',
         help='Path to the configuration file'
     )
     args = parser.parse_args()
