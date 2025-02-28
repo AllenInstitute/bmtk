@@ -192,7 +192,9 @@ without resetting the network. This functionality eliminates the need
 to create separate configuration files for each input file, and it allows
 similar simulations to run without the overhead of rebuilding the network
 each time. An example configuration file demonstrating this feature is
-located at 'examples/point_450glifs/config.multiplesimulation.json'.
+located at 'examples/point_450glifs/config.multiplesimulation.json'. Currently,
+this feature is only available with the sonata spikes input type, but not with
+the current clamp, NWB, and spontaneous noise input types.
 
 To use this functionality, you must maintain a consistent structure in
 the 'run' section for 'tstop' (or equivalently, 'duration'), in the
@@ -218,7 +220,8 @@ introduce an interval between simulations to allow neurons to return to
 their resting state. The simplest approach is to set 'tstop' longer than
 the stimulus period. For example, if your stimulus lasts 3000 ms, setting
 'tstop' to 3500 ms will provide a 500 ms blank period at the end of the
-simulation, giving neurons time to reset before the next simulation.
+simulation, giving neurons time to go back to resting state before the next
+simulation.
 
 Note that this implementation sets the onset of stimuli, but not their
 offset. If a stimulation file is longer than 'tstop', its input will
@@ -227,6 +230,8 @@ continue into subsequent simulations.
 Combining these features, you can, for example, use a single background
 Poisson spike file with an extended duration alongside multiple short LGN
 input files with different patterns—all in one configuration file.
+Also, other input types (e.g. current clamp) can be used if the stimulus time
+refers to the overall simulation time.
 
 When 'tstop' is the same for all simulations, you can also use the 'n_runs'
 option in the 'run' section. Internally, this creates a list for 'tstop'
