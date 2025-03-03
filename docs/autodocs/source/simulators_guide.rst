@@ -165,7 +165,7 @@ The following attributes can be used by BMTK to set to time course of a given si
         - description
         - required
       * - tstart
-        - Start time of simulation in ms (default 0.0)
+        - Start time of simulation in ms (default 0.0; not currently used in BMTK)
         - False
       * - tstop
         - Stop time of simulation (default 0.0)
