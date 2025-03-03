@@ -192,8 +192,7 @@ run
 +++
 contains simulation parameters. most importantly are
 
-* tstart: simulation start time in ms (default 0.0)
-* stop: final simulation time in ms
+* tstop: final simulation time in ms
 * dt: time step parameter
 * overwrite_output_dir: overwrites any previous ran results
 
