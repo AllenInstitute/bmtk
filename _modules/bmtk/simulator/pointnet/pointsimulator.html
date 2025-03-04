@@ -606,27 +606,32 @@
         <span class="k">if</span> <span class="n">tstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span>
 
-        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># run recursively over the list of tstop values</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tstop</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tstop</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Starting Simulation&#39;</span><span class="p">)</span>
-        <span class="n">n</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_trial</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-                <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">data_res</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Starting Simulation&#39;</span><span class="p">)</span>
+            <span class="n">n</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_trial</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                    <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">data_res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Simulation finished, finalizing results.&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Simulation finished, finalizing results.&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PointSimulator.add_mod">
@@ -683,6 +688,9 @@
             <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="s1">&#39;tstop&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
             <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="s1">&#39;n_runs&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">tstop</span><span class="p">]</span> <span class="o">*</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;n_runs&#39;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="s1">&#39;precise_times&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
             <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">precise_times</span><span class="o">=</span><span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;precise_times&#39;</span><span class="p">])</span>

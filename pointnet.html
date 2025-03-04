@@ -346,7 +346,6 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="builder_features.html">Network Builder Features and Options</a></li>
@@ -360,26 +359,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials and Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2"><a class="reference internal" href="examples.html">Example Networks and Simulations</a></li>
-</ul>
-</details></li>
 </ul>
 </div>
 </nav></div>
@@ -484,7 +463,7 @@ which plays a pre-recorded series of spikes throughout the simulation. You may u
 <ul class="simple">
 <li><p>module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file</p></li>
 <li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
-<li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
+<li><p>input_file: path or a list of paths to file contain spike-trains for one or mode node</p></li>
 </ul>
 </section>
 <section id="id1">
@@ -621,6 +600,128 @@ of the synaptic changes to the csv file <em>output/&lt;file-name&gt;.csv</em>. J
 </div>
 </section>
 </section>
+<section id="running-multiple-simulations-with-a-single-config-file">
+<h2>Running multiple simulations with a single config file<a class="headerlink" href="#running-multiple-simulations-with-a-single-config-file" title="Link to this heading">#</a></h2>
+<p>PointNet now supports running multiple simulations using a single
+configuration file. This file can include multiple inputs and outputs
+without resetting the network. This functionality eliminates the need
+to create separate configuration files for each input file, and it allows
+similar simulations to run without the overhead of rebuilding the network
+each time. An example configuration file demonstrating this feature is
+located at ‘examples/point_450glifs/config.multiplesimulation.json’. Currently,
+this feature is only available with the sonata spikes input type, but not with
+the current clamp, NWB, and spontaneous noise input types.</p>
+<p>To use this functionality, you must maintain a consistent structure in
+the ‘run’ section for ‘tstop’ (or equivalently, ‘duration’), in the
+‘input’ section for ‘input_file’, and in the ‘output’ section for
+‘output_file’. You can still have multiple input and output items, but
+their shape must be consistent.</p>
+<p>If ‘tstop’ is provided as a list, its length determines the number of
+simulations to run. If ‘output_file’ is shorter than ‘tstop’, an error
+will occur. Similarly, if ‘input_file’ is shorter than ‘tstop’, a warning
+will be issued, and some simulations toward the end may not receive
+corresponding inputs.</p>
+<p>The NEST state is not reset between simulations. Each sequential
+simulation inherits properties (such as membrane voltages and synaptic
+inputs) from the previous run. Also, the timestamps stored in the output
+files are not reset. For example, if the first simulation lasts 3000 ms,
+the timestamps in the second output file will begin at 3000 ms.</p>
+<p>Although there is no method to force-reset the network
+(see <a class="github reference external" href="https://github.com/nest/nest-simulator/issues/1618">nest/nest-simulator#1618</a>), you can
+introduce an interval between simulations to allow neurons to return to
+their resting state. The simplest approach is to set ‘tstop’ longer than
+the stimulus period. For example, if your stimulus lasts 3000 ms, setting
+‘tstop’ to 3500 ms will provide a 500 ms blank period at the end of the
+simulation, giving neurons time to go back to resting state before the next
+simulation.</p>
+<p>Note that this implementation sets the onset of stimuli, but not their
+offset. If a stimulation file is longer than ‘tstop’, its input will
+continue into subsequent simulations.</p>
+<p>Combining these features, you can, for example, use a single background
+Poisson spike file with an extended duration alongside multiple short LGN
+input files with different patterns—all in one configuration file.
+Also, other input types (e.g. current clamp) can be used if the stimulus time
+refers to the overall simulation time.</p>
+<p>When ‘tstop’ is the same for all simulations, you can also use the ‘n_runs’
+option in the ‘run’ section. Internally, this creates a list for ‘tstop’
+where each entry has the same value, repeated ‘n_runs’ times.</p>
+<p>Here are examples of valid options:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1500</span><span class="p">,</span><span class="w"> </span><span class="mi">2500</span><span class="p">,</span><span class="w"> </span><span class="mi">3500</span><span class="p">],</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/lgn_spikes0.h5&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/lgn_spikes1.h5&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/lgn_spikes2.h5&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;spikes0.h5&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;spikes1.h5&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;spikes2.h5&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this example, 3 simulations will be run. Each simulation will have a different
+duration, and will be stored separately. The assumption here is that the LGN input
+has durations that corresponds to the simulation durations.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;n_runs&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/lgn_spikes0.h5&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/lgn_spikes1.h5&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;BKG_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;./inputs/bkg_spikes.h5&quot;</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">            </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bkg&quot;</span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;outputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;spikes0.h5&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;spikes1.h5&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;spikes_file_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">&quot;spikes0.csv&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">&quot;spikes1.csv&quot;</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In this example, 2 simulations with the same duration will be run. The LGN input
+will be distinct for the two simulations, but the BKG spikes is a single file.
+If the BKG spikes file has sufficiently long duration (6 s in this case), it will
+continue into the second simulation. The output files can be multiple types, each
+with a corresponding list of filenames.</p>
+</section>
 </section>
 
 
@@ -658,6 +759,7 @@ of the synaptic changes to the csv file <em>output/&lt;file-name&gt;.csv</em>. J
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#recording-synaptic-weights">Recording Synaptic Weights</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-multiple-simulations-with-a-single-config-file">Running multiple simulations with a single config file</a></li>
 </ul>
   </nav></div>
 

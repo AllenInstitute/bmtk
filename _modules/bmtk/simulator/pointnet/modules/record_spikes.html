@@ -505,24 +505,15 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">cache_to_disk</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">_get_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
-            <span class="c1"># Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR</span>
-            <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
 
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">file_name</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">abs_tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
-                <span class="n">abs_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">abs_fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">abs_tmp</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">file_name</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">spikes_file_csv</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">spikes_file_nwb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># store the file names in the raw format, accepting lists as well.</span>
+        <span class="c1"># self._csv_fname = _get_path(spikes_file_csv)</span>
+        <span class="c1"># self._h5_fname = _get_path(spikes_file)</span>
+        <span class="c1"># self._nwb_fname = _get_path(spikes_file_nwb)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname_raw</span> <span class="o">=</span> <span class="n">spikes_file_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname_raw</span> <span class="o">=</span> <span class="n">spikes_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname_raw</span> <span class="o">=</span> <span class="n">spikes_file_nwb</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file_base</span> <span class="o">=</span> <span class="s1">&#39;tmp_spike_times&#39;</span>
@@ -536,10 +527,41 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">sort_order</span><span class="o">.</span><span class="n">none</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spikes_sort_order</span> <span class="k">else</span> <span class="n">sort_order_lu</span><span class="p">[</span><span class="n">spikes_sort_order</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_output_connected</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="SpikesMod.initialize">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="c1"># if the fnames are list, then we&#39;ll use the next file in the list</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">):</span>
+            <span class="c1"># Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR</span>
+            <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">file_name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">abs_tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
+                <span class="n">abs_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">abs_fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">abs_tmp</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">file_name</span>
+                
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get_next</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">counter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Number of output files is less than number of runs&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">[</span><span class="n">counter</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">_get_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_counter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">_get_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_counter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="o">=</span> <span class="n">_get_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_counter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
         <span class="c1"># Now this function takes care of initializing the spike_writer.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="n">cache_to_disk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_to_disk</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
@@ -548,7 +570,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">compression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compression</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="n">create_spike_detector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span><span class="p">)</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_output_connected</span><span class="p">:</span>
+            <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_output_connected</span> <span class="o">=</span> <span class="kc">True</span></div>
+
 
 
 <div class="viewcode-block" id="SpikesMod.finalize">

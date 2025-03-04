@@ -45,7 +45,7 @@ which plays a pre-recorded series of spikes throughout the simulation. You may u
 
 * module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file
 * `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
-* input_file: path to file contain spike-trains for one or mode node
+* input_file: path or a list of paths to file contain spike-trains for one or mode node
 
 
 `Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes <ecephys_probe.html>`_
@@ -182,3 +182,141 @@ Then make the following changes to the **edge_types.csv** file
      - stdp_synapse_recorder
      - stdp_params.json
      - ...
+
+
+Running multiple simulations with a single config file
+------------------------------------------------------
+PointNet now supports running multiple simulations using a single
+configuration file. This file can include multiple inputs and outputs
+without resetting the network. This functionality eliminates the need
+to create separate configuration files for each input file, and it allows
+similar simulations to run without the overhead of rebuilding the network
+each time. An example configuration file demonstrating this feature is
+located at 'examples/point_450glifs/config.multiplesimulation.json'. Currently,
+this feature is only available with the sonata spikes input type, but not with
+the current clamp, NWB, and spontaneous noise input types.
+
+To use this functionality, you must maintain a consistent structure in
+the 'run' section for 'tstop' (or equivalently, 'duration'), in the
+'input' section for 'input_file', and in the 'output' section for
+'output_file'. You can still have multiple input and output items, but
+their shape must be consistent.
+
+If 'tstop' is provided as a list, its length determines the number of
+simulations to run. If 'output_file' is shorter than 'tstop', an error
+will occur. Similarly, if 'input_file' is shorter than 'tstop', a warning
+will be issued, and some simulations toward the end may not receive
+corresponding inputs.
+
+The NEST state is not reset between simulations. Each sequential
+simulation inherits properties (such as membrane voltages and synaptic
+inputs) from the previous run. Also, the timestamps stored in the output
+files are not reset. For example, if the first simulation lasts 3000 ms,
+the timestamps in the second output file will begin at 3000 ms.
+
+Although there is no method to force-reset the network
+(see https://github.com/nest/nest-simulator/issues/1618), you can
+introduce an interval between simulations to allow neurons to return to
+their resting state. The simplest approach is to set 'tstop' longer than
+the stimulus period. For example, if your stimulus lasts 3000 ms, setting
+'tstop' to 3500 ms will provide a 500 ms blank period at the end of the
+simulation, giving neurons time to go back to resting state before the next
+simulation.
+
+Note that this implementation sets the onset of stimuli, but not their
+offset. If a stimulation file is longer than 'tstop', its input will
+continue into subsequent simulations.
+
+Combining these features, you can, for example, use a single background
+Poisson spike file with an extended duration alongside multiple short LGN
+input files with different patterns—all in one configuration file.
+Also, other input types (e.g. current clamp) can be used if the stimulus time
+refers to the overall simulation time.
+
+When 'tstop' is the same for all simulations, you can also use the 'n_runs'
+option in the 'run' section. Internally, this creates a list for 'tstop'
+where each entry has the same value, repeated 'n_runs' times.
+
+Here are examples of valid options:
+
+.. code:: json
+
+    {
+        "run": {
+            "tstop": [1500, 2500, 3500],
+        },
+        "inputs": {
+            "LGN_spikes": {
+                "input_type": "spikes",
+                "module": "sonata",
+                "input_file": [
+                    "./inputs/lgn_spikes0.h5",
+                    "./inputs/lgn_spikes1.h5",
+                    "./inputs/lgn_spikes2.h5"
+                ],
+                "node_set": {"population": "lgn"}
+            }
+        },
+        "output": {
+            "log_file": "log.txt",
+            "spikes_file": [
+                "spikes0.h5",
+                "spikes1.h5",
+                "spikes2.h5"
+            ],
+            "output_dir": "./output"
+        }
+    }
+
+
+In this example, 3 simulations will be run. Each simulation will have a different
+duration, and will be stored separately. The assumption here is that the LGN input
+has durations that corresponds to the simulation durations.
+
+
+.. code:: json
+
+    {
+        "run": {
+            "duration": 3000,
+            "n_runs": 2
+        },
+        "inputs": {
+            "LGN_spikes": {
+                "input_type": "spikes",
+                "module": "sonata",
+                "input_file": [
+                    "./inputs/lgn_spikes0.h5",
+                    "./inputs/lgn_spikes1.h5"
+                ],
+                "node_set": {"population": "lgn"}
+            },
+            "BKG_spikes": {
+                "input_type": "spikes",
+                "module": "sonata",
+                "input_file": [
+                    "./inputs/bkg_spikes.h5"
+                ],
+                "node_set": {"population": "bkg"}
+            }
+        },
+        "outputs": {
+            "log_file": "log.txt",
+            "spikes_file": [
+                "spikes0.h5",
+                "spikes1.h5"
+            ],
+            "spikes_file_csv": [
+                "spikes0.csv",
+                "spikes1.csv"
+            ],
+            "output_dir": "./output"
+        }
+    }
+
+
+In this example, 2 simulations with the same duration will be run. The LGN input
+will be distinct for the two simulations, but the BKG spikes is a single file.
+If the BKG spikes file has sufficiently long duration (6 s in this case), it will
+continue into the second simulation. The output files can be multiple types, each
+with a corresponding list of filenames.
