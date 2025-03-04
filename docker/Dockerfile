@@ -51,6 +51,10 @@ RUN mkdir -p ${WORK_DIR}
 # ENV NEST_VER=2.20.0
 # ENV NEST_INSTALL_DIR=${BUILD_DIR}/nest/build
 
+### Install NESTML and iCSD to additional tutorials
+RUN pip install pygsl nestml
+RUN pip install quantities neo
+
 # RUN cd ${BUILD_DIR} \
 #     && conda install -y gsl cython \
 #     && wget --quiet https://github.com/nest/nest-simulator/archive/v${NEST_VER}.tar.gz -O nest.tar.gz \

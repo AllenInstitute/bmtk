@@ -1,0 +1,91 @@
+{
+  "manifest": [
+    {
+      "type": "manifest_version",
+      "value": "0.3.0"
+    },
+    {
+      "key": "BASEDIR",
+      "type": "dir",
+      "spec": "."
+    },
+    {
+      "key": "sessions",
+      "type": "file",
+      "spec": "sessions.csv",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "probes",
+      "type": "file",
+      "spec": "probes.csv",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "channels",
+      "type": "file",
+      "spec": "channels.csv",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "units",
+      "type": "file",
+      "spec": "units.csv",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "session_data",
+      "type": "dir",
+      "spec": "session_%d",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "session_nwb",
+      "type": "file",
+      "spec": "session_%d.nwb",
+      "parent_key": "session_data"
+    },
+    {
+      "key": "session_analysis_metrics",
+      "type": "file",
+      "spec": "session_%d_analysis_metrics.csv",
+      "parent_key": "session_data"
+    },
+    {
+      "key": "probe_lfp_nwb",
+      "type": "file",
+      "spec": "probe_%d_lfp.nwb",
+      "parent_key": "session_data"
+    },
+    {
+      "key": "movie_dir",
+      "type": "dir",
+      "spec": "natural_movie_templates",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "typewise_analysis_metrics",
+      "type": "file",
+      "spec": "%s_analysis_metrics.csv",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "natural_movie",
+      "type": "file",
+      "spec": "natural_movie_%d.h5",
+      "parent_key": "movie_dir"
+    },
+    {
+      "key": "natural_scene_dir",
+      "type": "dir",
+      "spec": "natural_scene_templates",
+      "parent_key": "BASEDIR"
+    },
+    {
+      "key": "natural_scene",
+      "type": "file",
+      "spec": "natural_scene_%d.tiff",
+      "parent_key": "natural_scene_dir"
+    }
+  ]
+}

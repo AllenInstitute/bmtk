@@ -1,0 +1,246 @@
+// Author: Etay Hay, 2011
+//    Models of Neocortical Layer 5b Pyramidal Cells Capturing a Wide Range of
+//    Dendritic and Perisomatic Active Properties
+//    (Hay et al., PLoS Computational Biology, 2011) 
+//
+// Template for models of L5 Pyramidal Cell
+
+begintemplate L5PCtemplate
+  public init
+  public locateSites, getLongestBranch
+  public soma, dend, apic, axon, getAbsSecIndex
+  public all, somatic, apical, axonal, basal, nSecSoma, nSecApical, nSecBasal, nSecAxonal, nSecAll, nSecAxonalOrig, SecSyn, distribute_channels
+  objref SecSyn, this
+  objref all, somatic, apical, axonal, basal
+  strdef tstr
+
+//$s1 - morphology file name
+proc init() {localobj nl,import
+	all = new SectionList()
+	somatic = new SectionList()
+	basal = new SectionList()
+	apical = new SectionList()
+	axonal = new SectionList()
+	forall delete_section()
+
+  nl = new Import3d_Neurolucida3()
+  nl.quiet = 1
+  nl.input($s1)
+  import = new Import3d_GUI(nl, 0)
+  import.instantiate(this)
+  geom_nseg()
+  biophys()
+	forsec this.all {
+		if(diam == 0){
+	    diam =  1
+	    printf("Error : Morphology problem with section [%s] 0 diam \n", secname())
+		}
+  }
+}
+
+create soma[1], dend[1], apic[1], axon[1]
+
+proc geom() {
+}
+
+proc geom_nseg() {local nSec, L1, L2, D1, D2, nSeg1, nSeg2
+  soma area(.5) // make sure diam reflects 3d points
+  nSec = 0
+  forsec all {
+    nseg = 1 + 2*int(L/40)
+    nSec = nSec + 1
+  }
+
+  nSecAll = nSec
+  nSec = 0
+  forsec somatic { nSec = nSec + 1}
+  nSecSoma	= 	nSec
+  nSec = 0
+  forsec apical { nSec = nSec + 1}
+  nSecApical= 	nSec
+  nSec = 0
+  forsec basal { nSec = nSec + 1}
+  nSecBasal	= 	nSec
+  nSec = 0
+  forsec axonal { nSec = nSec + 1}
+  nSecAxonalOrig = nSecAxonal	= 	nSec
+}
+
+proc biophys() {localobj bp
+	delete_axon()
+	area(0.5)
+	distance()
+	access soma
+
+  bp = new L5PCbiophys()
+  bp.biophys(this)
+}
+
+// deleting axon, keeping only first 60 micrometers
+proc delete_axon(){
+    forsec axonal{delete_section()}
+    create axon[2]
+    access axon[0]{
+      L= 30
+      diam = 1
+      nseg = 1+2*int(L/40)
+      all.append()
+      axonal.append()
+    }
+    access axon[1]{
+      L= 30
+      diam = 1
+      nseg = 1+2*int(L/40)
+      all.append()
+      axonal.append()
+    }
+
+  nSecAxonal = 2
+  connect axon(0), soma(0.5)
+  connect axon[1](0), axon[0](1) 
+  access soma
+}
+
+proc distribute_channels()	{local dist,val,base,maxLength
+	base = $8
+	soma distance()
+	maxLength = getLongestBranch($s1)
+
+	forsec $s1		{
+		if(0==strcmp($s2,"Ra")){
+			Ra = $8
+		} else {
+			for(x) {
+				if ($3==3) {
+					dist = distance(x)
+				} else {
+					dist = distance(x)/maxLength
+				}
+				val = calculate_distribution($3,dist,$4,$5,$6,$7,$8)
+				sprint(tstr,"%s(%-5.10f) = %-5.10f",$s2,x,val)
+				execute(tstr)
+			}
+		}
+	}
+}
+
+// $1 is the distribution type:
+//     0 linear, 1 sigmoid, 2 exponential
+//     3 step for absolute distance (in microns)
+func calculate_distribution()	{local value
+	if ($1==0)	{value = $3 + $2*$4}
+	if ($1==1) {value = $3 + ($4/(1+exp(($2-$5)/$6)))}
+  	if ($1==2) {value = $3 + $6*exp($4*($2-$5))}
+	if ($1==3) {
+		if (($2 > $5) && ($2 < $6)) {
+			value = $3
+		} else {
+			value = $4
+		}
+	}
+	value = value*$7
+	return value
+}
+
+// $s1 section
+func getLongestBranch(){local maxL,d localobj distallist,sref
+    sprint(tstr,"%s distance()",$s1)
+    execute(tstr,this)    
+    
+  	if(0==strcmp($s1,"axon")){
+      sprint(tstr,"%s[0] distance(1)",$s1)
+      execute(tstr,this)    
+  	}
+
+		maxL = 0
+		d = 0
+		distallist = new SectionList()
+		forsec $s1 {
+			sref = new SectionRef()
+			if (sref.nchild==0) distallist.append()
+		}
+		forsec distallist{
+			d = distance(1)
+			if(maxL<d) maxL = d
+		}
+		// for the soma case
+		if (maxL == 0) {
+      $s1 {
+        maxL = L
+      }
+    }
+		return maxL
+	}
+
+// $s1 section
+// $2 distance x in micrometers
+// return list of [1,2] vectors  - of the appropriate section and the location in each vector
+obfunc locateSites() {local maxL,site,d0,d1,siteX,i localobj vv,ll
+	ll = new List()
+
+  sprint(tstr,"%s distance()",$s1)
+  execute(tstr,this)    
+    
+	if(0==strcmp($s1,"axon")){
+    sprint(tstr,"%s[0] distance(1)",$s1)
+    execute(tstr,this)    
+	}
+
+	maxL = getLongestBranch($s1)
+	site = $2
+	i = 0
+	forsec $s1 {
+    if (distance(0) < distance(1)) {
+  		d0 = distance(0)
+  		d1 = distance(1)
+  	} else {
+  		d1 = distance(0)
+  		d0 = distance(1)
+  	}
+
+    if (site <= d1 && site >= d0) {
+      siteX = (site-d0)/(d1-d0)
+      secNum = i
+      vv = new Vector()
+      ll.append(vv.append(secNum,siteX))
+		}
+		i = i+1
+	}
+  return ll
+}
+
+func getAbsSecIndex(){ local nAbsInd, index  localobj str,strObj
+    strObj  =  new StringFunctions()
+    str     =  new String()
+    nAbsInd = 0
+    index   = 0
+    if(strObj.substr($s1, "soma") > 0) {
+        strObj.tail($s1, "soma", str.s)
+        if(sscanf(str.s, "%*c%d", &index) < 0) {
+            index = 0
+        }
+        nAbsInd = index
+    }else if (strObj.substr($s1, "axon") >0) {
+        strObj.tail($s1, "axon", str.s)
+        if(sscanf(str.s, "%*c%d", &index) < 0) {
+            index = 0
+        }
+        nAbsInd = nSecSoma + index
+    }else if (strObj.substr($s1, "dend") >0) {
+        strObj.tail($s1, "dend", str.s)
+        if(sscanf(str.s, "%*c%d", &index) < 0) {
+            index = 0
+        }
+        nAbsInd = nSecSoma + nSecAxonalOrig + index
+    }else if (strObj.substr($s1, "apic") > 0) {
+        strObj.tail($s1, "apic", str.s)
+        if(sscanf(str.s, "%*c%d", &index) < 0) {
+            index = 0
+        }
+        nAbsInd = nSecSoma + nSecAxonalOrig + nSecBasal + index
+    }
+    return nAbsInd
+}
+
+
+endtemplate L5PCtemplate

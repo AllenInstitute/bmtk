@@ -16,7 +16,7 @@ class CellVarRecorder(object):
     _io = io
 
     class DataTable(object):
-        """A small struct to keep track of different \*/data (and buffer) tables"""
+        r"""A small struct to keep track of different \*/data (and buffer) tables"""
         def __init__(self, var_name):
             self.var_name = var_name
             # If buffering data, buffer_block will be an in-memory array and will write to data_block during when

@@ -48,7 +48,7 @@ def create_ff_mov(frame_rate, tst, tend, xrng, yrng):
 ##################################################
 def create_grating_movie_list(gr_dir_name):
     gr_fnames = os.listdir(gr_dir_name)
-    gr_fnames_ord = sorted(gr_fnames, key=lambda x: (int(re.sub('\D', '', x)), x))
+    gr_fnames_ord = sorted(gr_fnames, key=lambda x: (int(re.sub(r'\D', '', x)), x))
 
     gr_mov_list = []
     for fname in gr_fnames_ord[:5]:

@@ -1,0 +1,479 @@
+begintemplate Biophys
+
+public biophys
+
+proc biophys(){
+	// Hay lab
+	if (strcmp($s2, "HL23PN1") == 0){
+		forsec $o1.all {
+			insert pas
+			Ra = 100
+			cm = 1
+			e_pas = -80
+			g_pas = 5e-5
+			insert Ih
+			gbar_Ih = 1e-4
+		}
+		forsec $o1.somatic {
+			insert SK
+			insert CaDynamics
+			insert Ca_LVA
+			insert Ca_HVA
+			insert K_T
+			insert K_P
+			insert Kv3_1
+			insert NaTg
+			ek = -85
+			ena = 50
+			gamma_CaDynamics_E2 = 0.0005
+			vshiftm_NaTg = 13
+			vshifth_NaTg = 15
+			slopem_NaTg = 7
+		}
+
+		forsec $o1.apical {
+			cm = 2
+		}
+		forsec $o1.basal {
+			cm = 2
+		}
+		$o1.distribute_channels("apic","gbar_Ih",2,-0.8696,3.6161,0.0,2.0870,$o1.soma.gbar_Ih)
+
+		forsec $o1.axonal {
+			insert SK
+			insert Ca_LVA
+			insert Ca_HVA
+			insert K_T
+			insert K_P
+			insert Nap
+			insert Kv3_1
+			insert NaTg
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			gamma_CaDynamics_E2 = 0.0005
+		}
+
+		$o1.distribute_channels("axon","decay_CaDynamics",0,1.000000,0.000000,0.000000,0.000000,79.1000000000)
+		$o1.distribute_channels("axon","gbar_SK",0,1.000000,0.000000,0.000000,0.000000,0.0346000000)
+		$o1.distribute_channels("axon","gbar_Ca_LVA",0,1.000000,0.000000,0.000000,0.000000,0.0002120000)
+		$o1.distribute_channels("axon","gbar_Ca_HVA",0,1.000000,0.000000,0.000000,0.000000,0.0000305000)
+		$o1.distribute_channels("axon","gbar_Kv3_1",0,1.000000,0.000000,0.000000,0.000000,0.8270000000)
+		$o1.distribute_channels("axon","gbar_K_T",0,1.000000,0.000000,0.000000,0.000000,0.0900000000)
+		$o1.distribute_channels("axon","gbar_K_P",0,1.000000,0.000000,0.000000,0.000000,0.2790000000)
+		$o1.distribute_channels("axon","gbar_Nap",0,1.000000,0.000000,0.000000,0.000000,0.0013800000)
+		$o1.distribute_channels("axon","gbar_NaTg",0,1.000000,0.000000,0.000000,0.000000,0.4860000000)
+		$o1.distribute_channels("soma","decay_CaDynamics",0,1.000000,0.000000,0.000000,0.000000,510.0000000000)
+		$o1.distribute_channels("soma","gbar_Ca_LVA",0,1.000000,0.000000,0.000000,0.000000,0.0000000000)
+		$o1.distribute_channels("soma","gbar_Ca_HVA",0,1.000000,0.000000,0.000000,0.000000,0.0005640000)
+		$o1.distribute_channels("soma","gbar_Kv3_1",0,1.000000,0.000000,0.000000,0.000000,0.0635000000)
+		$o1.distribute_channels("soma","gbar_SK",0,1.000000,0.000000,0.000000,0.000000,0.0000000000)
+		$o1.distribute_channels("soma","gbar_K_T",0,1.000000,0.000000,0.000000,0.000000,0.0508000000)
+		$o1.distribute_channels("soma","gbar_K_P",0,1.000000,0.000000,0.000000,0.000000,0.0001870000)
+		$o1.distribute_channels("soma","gbar_NaTg",0,1.000000,0.000000,0.000000,0.000000,0.2390000000)
+	}
+	if (strcmp($s2, "HL23MN1") == 0){
+		forsec $o1.all {
+			insert pas
+			Ra = 133.859093627
+			cm = 1
+			e_pas = -84.73198852539
+			g_pas = 2.25e-5
+			insert Ih
+			gbar_Ih = 1.2e-4
+		}
+		forsec $o1.somatic {
+			insert SK
+			insert CaDynamics
+			insert Ca_LVA
+			insert Ca_HVA
+			insert K_T
+			insert K_P
+			insert Kv3_1
+			insert NaTg
+			ek = -85
+			ena = 50
+			gamma_CaDynamics_E2 = 0.0005
+			vshiftm_NaTg = 13
+			vshifth_NaTg = 15
+			slopem_NaTg = 7
+		}
+
+		forsec $o1.axonal {
+			insert SK
+			insert Ca_LVA
+			insert Ca_HVA
+			insert K_T
+			insert K_P
+			insert Nap
+			insert Kv3_1
+			insert NaTg
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			gamma_CaDynamics_E2 = 0.0005
+		}
+
+		$o1.distribute_channels("axon","decay_CaDynamics",0,1.000000,0.000000,0.000000,0.000000,20.0000000000)
+		$o1.distribute_channels("axon","gbar_SK",0,1.000000,0.000000,0.000000,0.000000,0.0002220000)
+		$o1.distribute_channels("axon","gbar_Ca_LVA",0,1.000000,0.000000,0.000000,0.000000,0.0329000000)
+		$o1.distribute_channels("axon","gbar_Ca_HVA",0,1.000000,0.000000,0.000000,0.000000,0.0006260000)
+		$o1.distribute_channels("axon","gbar_Kv3_1",0,1.000000,0.000000,0.000000,0.000000,0.9390000000)
+		$o1.distribute_channels("axon","gbar_K_T",0,1.000000,0.000000,0.000000,0.000000,0.0679000000)
+		$o1.distribute_channels("axon","gbar_K_P",0,1.000000,0.000000,0.000000,0.000000,0.0356000000)
+		$o1.distribute_channels("axon","gbar_Nap",0,1.000000,0.000000,0.000000,0.000000,0.0068700000)
+		$o1.distribute_channels("axon","gbar_NaTg",0,1.000000,0.000000,0.000000,0.000000,1.0000000000)
+		$o1.distribute_channels("soma","decay_CaDynamics",0,1.000000,0.000000,0.000000,0.000000,21.7000000000)
+		$o1.distribute_channels("soma","gbar_Ca_LVA",0,1.000000,0.000000,0.000000,0.000000,0.0003520000)
+		$o1.distribute_channels("soma","gbar_Ca_HVA",0,1.000000,0.000000,0.000000,0.000000,0.0073200000)
+		$o1.distribute_channels("soma","gbar_Kv3_1",0,1.000000,0.000000,0.000000,0.000000,0.7110000000)
+		$o1.distribute_channels("soma","gbar_SK",0,1.000000,0.000000,0.000000,0.000000,0.0003360000)
+		$o1.distribute_channels("soma","gbar_K_T",0,1.000000,0.000000,0.000000,0.000000,0.0402000000)
+		$o1.distribute_channels("soma","gbar_K_P",0,1.000000,0.000000,0.000000,0.000000,0.0197000000)
+		$o1.distribute_channels("soma","gbar_NaTg",0,1.000000,0.000000,0.000000,0.000000,0.2620000000)
+	}
+	// Allen ID 626170661
+	if (strcmp($s2, "HL23BN1") == 0){
+		forsec $o1.all {
+			insert pas
+			insert Ih
+			Ra = 100
+			cm = 2
+			e_pas = -83.85905159083714
+			g_pas = 0.00013276715388485768
+			gbar_Ih = 4.0286355749662496e-05
+		}
+		
+		forsec $o1.somatic {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert Im
+			insert SK
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.4999668678729633
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0005315169096865464
+			gbar_K_P = 0.01713385484501281
+			gbar_K_T = 0.0639088696383371
+			gbar_Kv3_1 = 2.9998799002509644
+			vshift_Kv3_1 = 0
+			gbar_Im = 0.0032868613326996676
+			gbar_SK = 2.9074984128489475e-06
+			gbar_Ca_HVA = 0.0005963580477926297
+			gbar_Ca_LVA = 0.04068051219830349
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 477.52284259122615
+		}
+		
+		forsec $o1.axonal {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert Im
+			insert SK
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.06497772772932814
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0004227598793218445
+			gbar_K_P = 0.01348368226376475
+			gbar_K_T = 0.053430438020626844
+			gbar_Kv3_1 = 0.894628255182179
+			vshift_Kv3_1 = 0
+			gbar_Im = 0.0032433844107431437
+			gbar_SK = 0.07857804528458547
+			gbar_Ca_HVA = 6.976985998831502e-05
+			gbar_Ca_LVA = 0.0026754479897141132
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 21.082144088397
+		}
+
+		// forsec $o1.basal {
+		// 	insert NaTg
+		// 	insert Nap
+		// 	insert K_P
+		// 	insert K_T
+		// 	insert Kv3_1
+		// 	insert Im
+		// 	insert SK
+		// 	insert Ca_HVA
+		// 	insert Ca_LVA
+		// 	insert CaDynamics
+		// }
+	}
+	if (strcmp($s2, "HL23VN1") == 0){
+		forsec $o1.all {
+			insert pas
+			insert Ih
+			Ra = 100
+			cm = 2
+			e_pas = -81.64099928563398
+			g_pas = 5.640407332265837e-05
+			gbar_Ih = 7.937538666539732e-05
+			shift1_Ih = 117.54696999889302
+			shift2_Ih = 3.460797910265395
+			shift3_Ih = -49.69676238671805
+			shift4_Ih = 58.27114333073568
+			shift5_Ih = 86.63729662000578
+			shift6_Ih = 281.49007535744454
+		}
+	
+		// forsec $o1.somatic {
+		// 	insert NaTg
+		// 	insert Nap
+		// 	insert K_P
+		// 	insert K_T
+		// 	insert Kv3_1
+		// 	insert SK
+		// 	insert Im
+		// 	insert Ca_HVA
+		// 	insert Ca_LVA
+		// 	insert CaDynamics
+		// 	ek = -85
+		// 	ena = 50
+		// 	gbar_NaTg = 0.11474659824436195
+		// 	vshiftm_NaTg = 13
+		// 	vshifth_NaTg = 15
+		// 	slopem_NaTg = 7
+		// 	slopeh_NaTg = 6
+		// 	gbar_Nap = 0.00047681727902698157
+		// 	gbar_K_P = 0.055957749184639055
+		// 	gbar_K_T = 0.09996880674736379
+		// 	gbar_Kv3_1 = 0.3788563067742772
+		// 	vshift_Kv3_1 = 0
+		// 	gbar_SK = 0.010560196535257488
+		// 	gbar_Im = 0.00034301521472746954
+		// 	gbar_Ca_HVA = 9.018554611915845e-05
+		// 	gbar_Ca_LVA = 0.0541616355609249
+		// 	gamma_CaDynamics = 0.0005
+		// 	decay_CaDynamics = 20.08804065219189
+		// }
+		//
+		// forsec $o1.axonal {
+		// 	insert NaTg
+		// 	insert Nap
+		// 	insert K_P
+		// 	insert K_T
+		// 	insert Kv3_1
+		// 	insert SK
+		// 	insert Im
+		// 	insert Ca_HVA
+		// 	insert Ca_LVA
+		// 	insert CaDynamics
+		// 	ek = -85
+		// 	ena = 50
+		// 	gbar_NaTg = 0.22734023408743798
+		// 	vshiftm_NaTg = 0
+		// 	vshifth_NaTg = 10
+		// 	slopem_NaTg = 9
+		// 	slopeh_NaTg = 6
+		// 	gbar_Nap = 0.006541044566273077
+		// 	gbar_K_P = 0.00421820957878577
+		// 	gbar_K_T = 0.037928705443776765
+		// 	gbar_Kv3_1 = 0.3196733124005582
+		// 	vshift_Kv3_1 = 0
+		// 	gbar_SK = 0.3804947699033776
+		// 	gbar_Im = 0.00017885126314180088
+		// 	gbar_Ca_HVA = 0.00024547511717151337
+		// 	gbar_Ca_LVA = 0.04299507068179599
+		// 	gamma_CaDynamics = 0.0005
+		// 	decay_CaDynamics = 25.229936800309066
+		// }
+	}
+	if (strcmp($s2, "HL4PN1") == 0){
+		forsec $o1.all {
+			insert pas
+			insert Ih
+			Ra = 100
+			cm = 1
+			e_pas = -92.20988602082443
+			g_pas = 2.496019938803455e-05
+			gbar_Ih = 3.923425401401172e-05
+			shift1_Ih = 224.81524109817627
+			shift2_Ih = 15.549405048102342
+			shift3_Ih = 51.004970487634765
+			shift4_Ih = 34.58507073356797
+			shift5_Ih = 92.39602997332304
+			shift6_Ih = 38.603169245772854
+		}
+		forsec $o1.apical {
+			cm = 1.75
+		}
+		forsec $o1.basal {
+			cm = 1.75
+		}
+		$o1.distribute_channels("apic","gbar_Ih",4,-0.8696,0.0031,0.0,2.0870,$o1.soma.gbar_Ih)
+		$o1.distribute_channels("dend","gbar_Ih",4,-0.8696,0.0031,0.0,2.0870,$o1.soma.gbar_Ih)
+		$o1.distribute_channels("axon","gbar_Ih",4,-0.8696,0.0031,0.0,2.0870,$o1.soma.gbar_Ih)
+
+		forsec $o1.somatic {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert SK
+			insert Im
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.45162251179862545
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0015800320564183347
+			gbar_K_P = 0.09857157410308227
+			gbar_K_T = 0.00022137399530109607
+			gbar_Kv3_1 = 0.277107453007135
+			vshift_Kv3_1 = 0
+			gbar_SK = 0.3566622775104453
+			gbar_Im = 0.0002993987916613973
+			gbar_Ca_HVA = 1.1501967667916403e-08
+			gbar_Ca_LVA = 0.004357365263342773
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 435.1670601322996
+		}
+		
+		forsec $o1.axonal {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert SK
+			insert Im
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.032257472930859954
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0006895353184589968
+			gbar_K_P = 0.08697896141698211
+			gbar_K_T = 0.04046361467898627
+			gbar_Kv3_1 = 0.7886318280246498
+			vshift_Kv3_1 = 0
+			gbar_SK = 0.00157409272881637
+			gbar_Im = 0.00022399456776878458
+			gbar_Ca_HVA = 1.1973335394266724e-05
+			gbar_Ca_LVA = 0.06346837616023718
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 134.26668638182747
+		}
+	}
+	
+	if (strcmp($s2, "HL5PN1") == 0){
+		forsec $o1.all {
+			insert pas
+			insert Ih
+			Ra = 100
+			cm = 0.9
+			e_pas = -88.05900508094575
+			g_pas = 1.082202245504852e-06
+			gbar_Ih = 1.737556184697235e-05
+			shift1_Ih = 144.76545935424588
+			shift2_Ih = 14.382865335237211
+			shift3_Ih = -28.179477866349245
+			shift4_Ih = 99.18311385307702
+			shift5_Ih = 16.42000098505615
+			shift6_Ih = 26.699880497099517
+		}
+		$o1.distribute_channels("apic","gbar_Ih",5,0.5,24,950,-285,$o1.soma.gbar_Ih)
+		$o1.distribute_channels("dend","gbar_Ih",5,0.5,24,950,-285,$o1.soma.gbar_Ih)
+		$o1.distribute_channels("axon","gbar_Ih",5,0.5,24,950,-285,$o1.soma.gbar_Ih)
+
+		forsec $o1.somatic {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert SK
+			insert Im
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.2868981428991897
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0005928501660669944
+			gbar_K_P = 0.630442269948701
+			gbar_K_T = 0.7534865864927842
+			gbar_Kv3_1 = 0.4595039202419757
+			vshift_Kv3_1 = 0
+			gbar_SK = 1.0429209585502295
+			gbar_Im = 0.00043980640140570256
+			gbar_Ca_HVA = 4.590237477358571e-06
+			gbar_Ca_LVA = 0.004922323805158312
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 424.5119756515562
+		}
+		
+		forsec $o1.axonal {
+			insert NaTg
+			insert Nap
+			insert K_P
+			insert K_T
+			insert Kv3_1
+			insert SK
+			insert Im
+			insert Ca_HVA
+			insert Ca_LVA
+			insert CaDynamics
+			ek = -85
+			ena = 50
+			gbar_NaTg = 0.0020817650993738114
+			vshiftm_NaTg = 0
+			vshifth_NaTg = 10
+			slopem_NaTg = 9
+			slopeh_NaTg = 6
+			gbar_Nap = 0.0030669969011709527
+			gbar_K_P = 0.10640803057846296
+			gbar_K_T = 0.6887341085216281
+			gbar_Kv3_1 = 1.4723945773672162
+			vshift_Kv3_1 = 0
+			gbar_SK = 0.018607376942477858
+			gbar_Im = 5.422509445418661e-06
+			gbar_Ca_HVA = 6.899898046124077e-06
+			gbar_Ca_LVA = 0.007967297071061932
+			gamma_CaDynamics = 0.0005
+			decay_CaDynamics = 447.5127627121552
+		}
+	}
+}
+
+
+endtemplate Biophys

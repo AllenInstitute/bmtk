@@ -1,0 +1,74 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output_lfp",
+    "$NETWORK_DIR": "$BASE_DIR/network_lfp",
+    "$COMPONENTS_DIR": "$BASE_DIR/components"
+  },
+  "target_simulator": "NEURON",
+  "run": {
+    "tstart": 0.0,
+    "tstop": 2000.0,
+    "dt": 0.1,
+    "dL": 20.0,
+    "spike_threshold": -15.0,
+    "nsteps_block": 5000
+  },
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80.0
+  },
+  "inputs": {
+    "virt_exc_spikes": {
+      "input_type": "spikes",
+      "module": "sonata",
+      "input_file": "$BASE_DIR/inputs/virt_spikes.h5",
+      "node_set": "thalamus"
+    }
+  },
+  "components": {
+    "filter_models_dir": "$COMPONENTS_DIR/filter_models",
+    "biophysical_neuron_models_dir": "$COMPONENTS_DIR/biophysical_neuron_models",
+    "mechanisms_dir": "$COMPONENTS_DIR/mechanisms",
+    "synaptic_models_dir": "$COMPONENTS_DIR/synaptic_models",
+    "morphologies_dir": "$COMPONENTS_DIR/morphologies",
+    "point_neuron_models_dir": "$COMPONENTS_DIR/point_neuron_models"
+  },
+  "output": {
+    "log_file": "log.txt",
+    "output_dir": "$OUTPUT_DIR",
+    "spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv"
+  },
+  "reports": {
+    "cortical_electrode": {
+      "cells": "all",
+      "variable_name": "v",
+      "module": "extracellular",
+      "electrode_positions": "$COMPONENTS_DIR/electrodes/linear_electrode.csv",
+      "electrode_channels": "all"
+    }
+  },
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/cortcol_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/cortcol_node_types.csv"
+      },
+      {
+        "nodes_file": "$NETWORK_DIR/thalamus_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/thalamus_node_types.csv"
+      }
+    ],
+    "edges": [
+      {
+        "edge_types_file": "$NETWORK_DIR/cortcol_cortcol_edge_types.csv",
+        "edges_file": "$NETWORK_DIR/cortcol_cortcol_edges.h5"
+      },
+      {
+        "edge_types_file": "$NETWORK_DIR/thalamus_cortcol_edge_types.csv",
+        "edges_file": "$NETWORK_DIR/thalamus_cortcol_edges.h5"
+      }
+    ]
+  }
+}
