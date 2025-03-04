@@ -1167,7 +1167,7 @@ computing environments.
         Interface (MPI). Including tips for installing MPI, running on slurm, and using singularity container.
 
     .. grid-item-card:: Running BMTK on the Neuroscience Gateway (NSG) 
-        :link: builder_guide 
+        :link: neuroscience_gateway.html 
 
         The Neuroscience Gateway is a tool for neuroscientists to access HPC resources for free. Guide shows how to 
         use BMTK with the NSG web and API interface to build networks and run large simulations.

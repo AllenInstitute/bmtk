@@ -124,6 +124,7 @@ html_sidebars = {
     "news_and_events": [],
     "contact_us": [],
     "how_to_cite": [],
+    # "installation": [],
 }
 
 # html_sidebars = {

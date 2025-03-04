@@ -5,7 +5,6 @@ Tutorials and Examples
 .. toctree::
     :hidden:
     :maxdepth: 2
-    :caption: A
     
     Builder: Using the Network Builder <tutorials/NetworkBuilder_Intro>
     BioNet: Single cell with current injection <tutorials/tutorial_01_single_cell_clamped>
