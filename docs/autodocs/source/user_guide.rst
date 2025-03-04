@@ -3,12 +3,10 @@
     :maxdepth: 3
     :caption: User Guide
 
-    installation
     Overview of BMTK <self>
     builder
     simulators_guide
     analyzer
-    tutorials
 
 
 ##########

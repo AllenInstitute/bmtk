@@ -2,6 +2,14 @@
 Installation Guide
 ##################
 
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    Installation Guide <self>
+    neuroscience_gateway
+
+
 **Users are encouraged to register** `here <https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools>`_ 
 **to receive updates and other communications, but registration is not required to use the package.** 
 
@@ -101,11 +109,13 @@ Then open a browser to 127.0.0.1:8888/. Any new files/notebooks should be saved 
 will be lost once the container is closed.
 
 
-Through Neuroscience Gateway (NSG)
-++++++++++++++++++++++++++++++++++
+`Through Neuroscience Gateway (NSG) <neuroscience_gateway.html>`_
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 The bmtk can be run through the Neuroscience Gateway for anyone who has an account.
 
-For running multi-core BioNet (NEURON-based) simulations on the NSG please refer to `Readme file <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg_template>`_.
+For running multi-core BioNet (NEURON-based) simulations on the NSG please refer to 
+`Readme file <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg>`_.
 
 
 Running Simulations
