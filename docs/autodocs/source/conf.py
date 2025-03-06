@@ -20,9 +20,32 @@ import os
 import sys
 import glob
 import shutil
+from pathlib import Path
+
 
 sys.path.insert(0, os.path.abspath('../../..'))
 import bmtk
+
+
+conf_path = Path(__file__).parent.resolve()
+
+
+# Location of where document "sources" are found. By default should be in the same path 
+# as the conf.py file.
+docs_source_path = conf_path
+
+# A list of jupyter notebook (ipynb) paths that that will be imported into the source folder
+# and converted to html. If you want to add a notebook tutorial that will show up in the bmtk 
+# documentation make sure it can be found in one of the path's below:
+# NOTE:
+#  - Avoid absolute paths or paths outside the bmtk repo, otherwise other people may not be able to 
+#    to fully rebuild documentation.
+#  - All notebooks will be copied to the "docs/autodocs/source/tutorials/" folder, so make sure 
+#    filenames are unique.
+notebook_paths = [
+    conf_path / '../../tutorial/*.ipynb',
+    conf_path / '../../tutorial/**/*.ipynb'
+]
 
 
 # -- General configuration ------------------------------------------------
@@ -227,15 +250,44 @@ texinfo_documents = [
 ]
 
 
-def copy_tutorials():
+def copy_tutorials(ipynb_dest='tutorials', static_dest='_static'):
+    """ In order for nbsphinx to convert .ipynb tutorials into html they must be first copied into 
+    the autodocs/source/ directory, along with any embedded images and associated files. 
+    """
+    # Create a folder to move all the jupyter-notebooks and images to.   
+    if not Path(ipynb_dest).is_absolute():
+        ipynb_dest = docs_source_path / ipynb_dest
+
+    if not Path(static_dest).is_absolute():
+        static_dest = ipynb_dest / static_dest
+
+    Path(ipynb_dest).mkdir(parents=True, exist_ok=True)
+    Path(static_dest).mkdir(parents=True, exist_ok=True)
+
+    notebook_folders = set()
+    for nbpath in notebook_paths:
+        nbpath = nbpath.as_posix() if isinstance(nbpath, Path) else nbpath
+        for ipynb_path in glob.glob(nbpath):
+            notebook_folders.add(Path(ipynb_path).parent.resolve())
+            shutil.copy(ipynb_path, ipynb_dest)
+
+    for nbfolder in notebook_folders:
+        static_subfolder = nbfolder / '_static'
+        if static_subfolder.exists():
+            shutil.copytree(static_subfolder, static_dest, dirs_exist_ok=True)
+
+
+def copy_tutorials_old():
     """In order for nbsphinx to convert .ipynb tutorials into html they must be first copied into 
     the autodocs/source/ directory, along with any embedded images and associated files. 
     """
     autodocs_src_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Get path of original .ipynb files
+    
     tut_src_dir = os.path.abspath('../tutorial')
-    tutorials = os.path.join(tut_src_dir, '*.ipynb')
+    tutorials = os.path.join(tut_src_dir, '**/*.ipynb')
+
 
     # Path to where .ipynb file will be moved to. To make things easier to manage any jupyter notebooks
     # imported will be placed in a separate tutorials/ direction that must be created on first use.
@@ -251,6 +303,8 @@ def copy_tutorials():
         #     continue
         if tut_fname[:2].isnumeric():
             tut_fname = tut_fname[3:]
+
+        print(ipynb_file)
 
         tut_dest_path = os.path.join(tut_dest_dir, tut_fname)
         shutil.copy(ipynb_file, tut_dest_path)
