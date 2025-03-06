@@ -1,0 +1,2426 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using Customized and External Cell and Channel Models in BioNet &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Ch_External_Models';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extending PointNet Networks and Simulation with External and Customized Models." href="Ch_NEST_Cusom_Models.html" />
+    <link rel="prev" title="Replaying Parts of a Simulation" href="bionet_disconnected_sims.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_spikes_input.html">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_extracellular.html">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Resources.html">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Using Customized and External Cell and Channel Models in BioNet</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Using-Customized-and-External-Cell-and-Channel-Models-in-BioNet">
+<h1>Using Customized and External Cell and Channel Models in BioNet<a class="headerlink" href="#Using-Customized-and-External-Cell-and-Channel-Models-in-BioNet" title="Link to this heading">#</a></h1>
+<p>Through the main tutorials, we’ve been using networks built off cell models downloaded from the <a class="reference external" href="https://celltypes.brain-map.org/data">Allen Cell-Types Database</a>. While the Allen Cell-Types Databases has a comprehensive and continuingly growing selection of optimized cell-type models to download and use, for many scientists, it may not meet their needs. BMTK supports incorporating many cell types and synaptic models into their simulations, including pre-built models from non-Allen Institute
+organizations. It also allows users multiple ways to create their customized models.</p>
+<p>This section will focus on single-cell spiking models, including conductance-based models with multiple channels and/or compartments per model. We do not recommend using Rates-based models with BioNet, and they will likely not work.</p>
+<p>The following section will show users multiple ways to import or create their own networks and simulations. Many of the multi-compartment biophysically detailed models developed for the NEURON simulator are written in <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/programming/hocsyntax.html">.hoc</a> format. However, another popular format is models written in <a class="reference external" href="https://docs.neuroml.org/Userdocs/NeuroMLv2.html">NeuroML v2</a>. In other cases, models may be written in Python. BioNet supports
+these options and allows users to readily implement other options, too.</p>
+<p>If you are unfamiliar with how and where to find cell and channel models that have been created by other scientists, two good options to start looking at are:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://modeldb.science/">ModelDB</a></p></li>
+<li><p><a class="reference external" href="https://v2.opensourcebrain.org/">Open Source Brain</a></p></li>
+</ol>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/01_opt_external_models">01_opt_external_models/</a></p>
+<section id="1.-Cell-Models">
+<h2>1. Cell Models<a class="headerlink" href="#1.-Cell-Models" title="Link to this heading">#</a></h2>
+<section id="1.1.-Example:-Loading-in-a-Simple-Hoc-Model">
+<h3>1.1. Example: Loading in a Simple Hoc Model<a class="headerlink" href="#1.1.-Example:-Loading-in-a-Simple-Hoc-Model" title="Link to this heading">#</a></h3>
+<section id="Step-1:">
+<h4>Step 1:<a class="headerlink" href="#Step-1:" title="Link to this heading">#</a></h4>
+<p><strong>Note</strong>: <em>This step has already been done in the current notebook and does not need to be repeated, but may be useful when initializing other examples</em></p>
+<p>The first thing we’ll do is to download and unpack the model files from ModelDB, which for the Hay L5PC models can be found at <a class="reference external" href="https://modeldb.science/139653">https://modeldb.science/139653</a>. At the site, you can use the download button to download a zip file with the appropriate .hoc (cell model), .mod (ion channels), and .asc (morphologies) files.</p>
+<div><p><img alt="4a43c391cee1467fabe8fa75e55124d9" class="no-scaled-link" src="../_images/modeldb_hay_screen.png" style="width: 900px;" /></p>
+</div><p>To run properly, we will need to move the following files from the download zip file into our <strong>components/</strong> folder so BMTK will be able to find them during the simulation:</p>
+<ul class="simple">
+<li><p>Move <strong>mod/</strong> folder =&gt; <strong>componets/mechanisms/mod/</strong>.</p></li>
+<li><p>Move <strong>morphologies/*.asc</strong> files =&gt; <strong>components/morphologies/</strong> folder.</p></li>
+<li><p>Move <strong>models/L5PCtemplate.hoc</strong> and <strong>models/L5PCbiophys4.hoc</strong> =&gt; <strong>componets/templates/</strong> folder (<em>note</em>: The zip file contains four different version of L5PCbiophys model stored in different hoc files. However, only one can be loaded into NEURON at a time, hence we are only moving one of the files and not all of them).</p></li>
+</ul>
+<p>The model contains customized ion channels in the <strong>components/mechanisms/mod/</strong> folder that require compiling using the <code class="docutils literal notranslate"><span class="pre">nrnivmod</span></code> command. In a shell or using jupyter notebook you’ll need to run the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>components/mechanisms<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>nrnivmodl<span class="w"> </span>modfiles
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/shared/workspace/docs/tutorial/01_opt_external_models/components/mechanisms
+Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/CaDynamics_E2.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ca_LVAst.mod&#34; &#34;modfiles/Cav2_1.mod&#34; &#34;modfiles/Cav3_1.mod&#34; &#34;modfiles/Cav3_2.mod&#34; &#34;modfiles/Cav3_3.mod&#34; &#34;modfiles/Gfluct.mod&#34; &#34;modfiles/HCN1_Angeloetal2007.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_Pst.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/K_Tst.mod&#34; &#34;modfiles/Kca11.mod&#34; &#34;modfiles/Kca22.mod&#34; &#34;modfiles/Kca31.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/Kir23.mod&#34; &#34;modfiles/Kv11.mod&#34; &#34;modfiles/Kv15.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv33.mod&#34; &#34;modfiles/Kv34.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/Kv43.mod&#34; &#34;modfiles/Leak.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTa_t.mod&#34; &#34;modfiles/NaTg.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaTs2_t.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/Nap_Et2.mod&#34; &#34;modfiles/Nav16.mod&#34; &#34;modfiles/PC_Gaba_det_vi_alfa1.mod&#34; &#34;modfiles/PURKINJE_Ampa_det_vi.mod&#34; &#34;modfiles/ProbAMPANMDA2.mod&#34; &#34;modfiles/ProbUDFsyn2.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/SK_E2.mod&#34; &#34;modfiles/SKv3_1.mod&#34; &#34;modfiles/cdp5_CAM.mod&#34; &#34;modfiles/epsp.mod&#34; &#34;modfiles/exp1isyn.mod&#34; &#34;modfiles/exp1syn.mod&#34; &#34;modfiles/stp1syn.mod&#34; &#34;modfiles/stp2syn.mod&#34; &#34;modfiles/stp3syn.mod&#34; &#34;modfiles/stp4syn.mod&#34; &#34;modfiles/stp5isyn.mod&#34; &#34;modfiles/stp5syn.mod&#34; &#34;modfiles/vecevent.mod&#34;
+
+COBJS=&#39;&#39;
+ -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.c
+gcc -O2   -I.   -I/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/include  -I/nrnwheel/openmpi/include -fPIC -c mod_func.c -o mod_func.o
+ =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
+g++ -O2 -DVERSION_INFO=&#39;8.0.0&#39; -std=c++11 -shared -fPIC  -I /opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/include -o ./libnrnmech.so -Wl,-soname,libnrnmech.so \
+  ./mod_func.o ./CaDynamics.o ./CaDynamics_E2.o ./Ca_HVA.o ./Ca_LVA.o ./Ca_LVAst.o ./Cav2_1.o ./Cav3_1.o ./Cav3_2.o ./Cav3_3.o ./Gfluct.o ./HCN1_Angeloetal2007.o ./Ih.o ./Im.o ./Im_v2.o ./K_P.o ./K_Pst.o ./K_T.o ./K_Tst.o ./Kca11.o ./Kca22.o ./Kca31.o ./Kd.o ./Kir23.o ./Kv11.o ./Kv15.o ./Kv2like.o ./Kv33.o ./Kv34.o ./Kv3_1.o ./Kv43.o ./Leak.o ./NaTa.o ./NaTa_t.o ./NaTg.o ./NaTs.o ./NaTs2_t.o ./NaV.o ./Nap.o ./Nap_Et2.o ./Nav16.o ./PC_Gaba_det_vi_alfa1.o ./PURKINJE_Ampa_det_vi.o ./ProbAMPANMDA2.o ./ProbUDFsyn2.o ./SK.o ./SK_E2.o ./SKv3_1.o ./cdp5_CAM.o ./epsp.o ./exp1isyn.o ./exp1syn.o ./stp1syn.o ./stp2syn.o ./stp3syn.o ./stp4syn.o ./stp5isyn.o ./stp5syn.o ./vecevent.o  -L/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/lib -lnrniv -Wl,-rpath,/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/lib
+rm -f ./.libs/libnrnmech.so ; mkdir -p ./.libs ; cp ./libnrnmech.so ./.libs/libnrnmech.so
+Successfully created x86_64/special
+</pre></div></div>
+</div>
+</section>
+<section id="Step-2:-Building-the-Network">
+<h4>Step 2: Building the Network<a class="headerlink" href="#Step-2:-Building-the-Network" title="Link to this heading">#</a></h4>
+<p>Building a network using the downloaded L5PC Hay model is very similar to how we built biophysically detailed network models in <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">previous tutorials</a>. We use the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> method to add a population of 1 or more L5PC <code class="docutils literal notranslate"><span class="pre">biophysical</span></code> cells and the <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> to connect them up with other cells. However, due to the model type and parameters, we will need to make some changes compared to how we
+utilize Allen-Cell Type models.</p>
+<ul class="simple">
+<li><p>We set <strong>model_template</strong>=<code class="docutils literal notranslate"><span class="pre">hoc:L5PCtemplate</span></code> instead of the Allen <code class="docutils literal notranslate"><span class="pre">ctdb:Biophys1</span></code> value. The name of the Hoc Template for loading this particular model comes from the components/templates/L5PCtemplate.hoc file</p></li>
+<li><p>In our Allen Cell-Types models, we had set the value <strong>model_processing</strong> to ‘aibs_perisomatic’, which told bmtk to call the special post-intialization directive <code class="docutils literal notranslate"><span class="pre">aibs_perisomatic</span></code>, which would modify each cell object in a specific manner. Although it is possible to create custom directives to update and modify each cell after the template has been loaded (see below), we don’t want to do so. Instead, we leave the model_processing attribute blank.</p></li>
+<li><p>In our Allen Cell-Types models, we also had a <strong>dynamics_params</strong> option that would update and add cell parameters after the cell had been initialized. However, for our L5PC Hay model, we have no current need to update the parameters (we’ll instead use the parameter values stored in the .hoc files), so we will not have any dynamics_params attributes.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;L5&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:L5PCtemplate&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;cell3.asc&#39;</span>
+<span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_L5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:No edges have been made for this network, skipping saving of edges file.
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">virt_exc</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;virt_exc&#39;</span><span class="p">)</span>
+<span class="n">virt_exc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span>
+<span class="p">)</span>
+<span class="n">conns</span> <span class="o">=</span> <span class="n">virt_exc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">virt_exc</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e20</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+
+<span class="n">virt_exc</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">virt_exc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_L5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Step-3:-Running-the-simulation">
+<h4>Step 3: Running the simulation<a class="headerlink" href="#Step-3:-Running-the-simulation" title="Link to this heading">#</a></h4>
+<p>Running the simulation with the downloaded L5PC models is no different than running the simulations with the Allen Cell-Types Database cell models. BMTK will be able to use the configuration <strong>components</strong> sections along with the <strong>model_template</strong> and <strong>morphology</strong> values to automatically load in our 10 L5PC cells. The results for these cells, including spikes, Vm traces, etc., will be saved in the same format and paths as our other examples.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.L5.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:09,287 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+numprocs=1
+2024-10-21 18:38:09,412 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:16,890 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:16,902 [INFO] Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:16,982 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:16,984 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:16,986 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:30,278 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:43,513 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:38:56,897 [INFO]     step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:10,212 [INFO]     step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:10,249 [INFO] Simulation completed in 53.27 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 53.27 seconds
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="1.2.-Example:-Modifying-Model-Initialization">
+<h3>1.2. Example: Modifying Model Initialization<a class="headerlink" href="#1.2.-Example:-Modifying-Model-Initialization" title="Link to this heading">#</a></h3>
+<p>If we search Open Source Brain, we can see their own more recent versions of <a class="reference external" href="https://v2.opensourcebrain.org/repositories/2180">L5 Pyramidal Cell models from the same lab</a>. Suppose we wanted to incorporate these newer models alongside the original L5 PC network created above. We would need to do the following:</p>
+<ol class="arabic simple">
+<li><p>Download the <a class="reference external" href="https://github.com/OpenSourceBrain/267587/tree/master/Single%20Cell%20Modelling/Current-Step%20Simulations/L5Pyr_young">files</a></p></li>
+<li><p>Move the morphology, mode, and model template files to their appropriate location</p></li>
+<li><p>Since these files also include new .mod files, we would have to recompile them:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>components/mechanisms<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>nrnivmodl<span class="w"> </span>modfiles
+</pre></div>
+</div>
+<p>The newer models have a different morphology file (<code class="docutils literal notranslate"><span class="pre">Hl5PN1.swc</span></code>) and HOC Template name (<code class="docutils literal notranslate"><span class="pre">HNTemplate</span></code>). So in order to add these new cells to the old one we can add the following call in our build script (<strong>build_network.L5_updated.py</strong>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:HNTemplate&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;HL5PN1.swc&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><em>Note: We’ll also modify the script to write the network to a different directory</em></p>
+<p>We could try to run the <strong>L5_updated</strong> model like before, but it would throw an error</p>
+<div class="alert alert-block alert-info"><p>⚠️ NEURON: init not enough arguments</p>
+</div><p>The Reason: <strong>We are not calling the HNTemplate correctly.</strong></p>
+<p>If we look through the code and the documentation, we can see that, to instantiate an HNTemplate cell model instance, we must pass two parameters: The morphology file and the cell-type (one of a preset number of string values that will determine how specific properties are set within the model). In this case, the call would look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">h</span><span class="o">.</span><span class="n">HNTemplate</span><span class="p">(</span><span class="n">morphology_file_path</span><span class="p">,</span> <span class="s2">&quot;HL5PN1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The built-in BMTK function that tries to load hoc files, <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/bmtk/simulator/bionet/default_setters/cell_models.py#L43">loadHOC</a>, does not know how to load this specific template. And even if it did, you may run into other models that require different, unseen ways of initialization.</p>
+<p>While it is possible to overwrite the <code class="docutils literal notranslate"><span class="pre">loadHOC</span></code> function, it is not ideal. To avoid breaking existing models, we would need to have multiple cases based on each possible template.</p>
+<p><strong>Solution</strong></p>
+<p>Instead of using one function to load in every template, we can create our own custom function to load the HNTemplate. To achieve this, BMTK uses a special <a class="reference external" href="https://peps.python.org/pep-0318/">python decorator</a> to assign to function users have written (in either the notebook or run_bionet.py script). Below, we show an example of how to do this using a custom function we’ll call loadHNTemplate():</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">neuron</span><span class="w"> </span><span class="kn">import</span> <span class="n">h</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">cell_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+
+<span class="nd">@cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;hoc:HNTemplate&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadHNTemplate</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling loadHNTemplate() for cell </span><span class="si">{</span><span class="n">cell</span><span class="p">[</span><span class="s2">&quot;node_id&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">, template </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">HNTemplate</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">],</span> <span class="s2">&quot;HL5PN1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hobj</span>
+</pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">&#64;cell_model</span></code> is a decorator we put at the front of our function. Using <code class="docutils literal notranslate"><span class="pre">directive=hoc:Template</span></code> and <code class="docutils literal notranslate"><span class="pre">model_type=biophysical</span></code> parameters indicates to BMTK that whenever a cell model needs to be built for a <em>biophysical</em>, <em>HNTemplate</em> hoc template, it will use this function.</p></li>
+<li><p>Our function requires three parameters;</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">cell</span></code> parameter contains attributes of each individual cell and can be used to extract properties like the morphology file, the node-id, coordinates, etc.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">template_name</span></code> is, in this case, just the string value “HNTemplate”</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">dynamics_params</span></code> is a dictionary from the <strong>dynamics_params</strong> json or hdf5. In this network, we never set the dynamics_params attributes, so the value will be None.</p></li>
+</ul>
+</li>
+<li><p>We need to return either a hoc-object or some other Python class built using the NEURON API.</p></li>
+<li><p>For a sanity check, we also included a log statement. We should only see this message for the 5 newer HNTemplate models, not for the other original “L5PCTemplate” cells.</p></li>
+</ul>
+<p>During simulation, this function will be called for every cell with matching “template_name” and “model_type”.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.L5_updated.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:10,266 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-21 18:39:10,335 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:14,153 [INFO] Calling loadHNTemplate() for cell 5, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Calling loadHNTemplate() for cell 5, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:14,377 [INFO] Calling loadHNTemplate() for cell 6, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Calling loadHNTemplate() for cell 6, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:14,596 [INFO] Calling loadHNTemplate() for cell 7, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Calling loadHNTemplate() for cell 7, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:14,813 [INFO] Calling loadHNTemplate() for cell 8, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Calling loadHNTemplate() for cell 8, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,043 [INFO] Calling loadHNTemplate() for cell 9, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Calling loadHNTemplate() for cell 9, template HNTemplate
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,258 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,282 [INFO] Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,346 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,347 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:15,348 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:35,798 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:39:56,404 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:17,730 [INFO]     step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:38,490 [INFO]     step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:38,524 [INFO] Simulation completed in 83.18 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 83.18 seconds
+</pre></div></div>
+</div>
+</section>
+<section id="1.3.-Example:-Loading-a-python-based-neuronal-model-into-your-simulation">
+<h3>1.3. Example: Loading a python-based neuronal model into your simulation<a class="headerlink" href="#1.3.-Example:-Loading-a-python-based-neuronal-model-into-your-simulation" title="Link to this heading">#</a></h3>
+<p>Often, rather than being written in old .hoc format, scientists may instead release their models written in Python. For example, in this <a class="reference external" href="https://github.com/OpenSourceBrain/267694/tree/main/mouse_model">mouse Purkinje cell model</a>, the model is itself saved in the <code class="docutils literal notranslate"><span class="pre">Purkinje_morph_1.Purkinje_Morph_1</span></code> Python class. In nearly the same manner as we did with the .hoc files above, we can import these Python-based single-cell models into our network to use with BMTK.</p>
+<p>As before, we must download the necessary files, but in this case, the *.py files, including the file containing the cell-model class/template, should be in the same directory as our <code class="docutils literal notranslate"><span class="pre">run_bionet.py</span></code> script so that we may import it. Also, the Python script expects the .asc morphology file to be hard-coded in the path <strong>./morphology/soma_10c.asc</strong>, so we’ll put it there instead of the normal components directory (unless you want to edit the file).</p>
+<p>When we build our population of Purkinje cells, the “model_template” will have schema value <code class="docutils literal notranslate"><span class="pre">python</span></code> and a value that is just the name of the resources, e.g., the python class <code class="docutils literal notranslate"><span class="pre">Purkinje_morph_1</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>net.add_nodes(
+    pop_name=&#39;Scnn1a&#39;,
+    model_type=&#39;biophysical&#39;,
+    model_template=&#39;python:Purkinje_morph_1&#39;,
+    spines_on=0
+)
+</pre></div>
+</div>
+<p>So that BMTK can load the template, we will once again register a special function using the <code class="docutils literal notranslate"><span class="pre">cell_model</span></code> decorator. The class can be built with or without dendritic spines, which we are required to pass in. The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method of <code class="docutils literal notranslate"><span class="pre">Purkinje_Morpho_1</span></code> will build the model for each given cell, which we will pass back to BTMK.</p>
+<p>Also, for good measure, we added some optional logging.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">Purkinje_morpho_1</span><span class="w"> </span><span class="kn">import</span> <span class="n">Purkinje_Morpho_1</span>
+
+<span class="nd">@bionet</span><span class="o">.</span><span class="n">cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;python:Purkinje_morph_1&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadPurkinjeModel</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading cell </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1">, tempalate </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">, with spines_on=</span><span class="si">{</span><span class="n">cell</span><span class="p">[</span><span class="s2">&quot;spines_on&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="n">Purkinje_Morpho_1</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;spines_on&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">cell</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.purkinje.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:38,556 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-21 18:40:38,613 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:38,614 [INFO] Loading cell 0, tempalate Purkinje_morph_1, with spines_on=0
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Loading cell 0, tempalate Purkinje_morph_1, with spines_on=0
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+3856 lines read
+indiv number 138
+2024-10-21 18:40:38,784 [INFO] Loading cell 1, tempalate Purkinje_morph_1, with spines_on=1
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Loading cell 1, tempalate Purkinje_morph_1, with spines_on=1
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+3856 lines read
+indiv number 138
+spine active!!
+dend_total_len 7680
+list_dend_complete 7680
+somma_location_spines 7680
+spines_placed 0
+spines_placed 500
+spines_placed 1000
+spines_placed 1500
+spines_placed 2000
+spines_placed 2500
+spines_placed 3000
+spines_placed 3500
+spines_placed 4000
+spines_placed 4500
+spines_placed 5000
+spines_placed 5500
+spines_placed 6000
+spines_placed 6500
+spines_placed 7000
+spines_placed 7500
+spines_syn:  spine_head_0
+spines_syn:  spine_head_5000
+spine_head_aa        between 0 - 0.3     -&gt; 0
+spine_head_aa_SC     between 0.3 - 0.75  -&gt; 1494
+spine_head_pf_SC     between 0.75 - 1.5  -&gt; 6184
+!!!!!!!!!!!!!!!       spine_total 7678        !!!!!!!!!!!!!!!
+2024-10-21 18:40:39,509 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:39,574 [INFO] Building virtual cell stimulations for virt_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:39,590 [INFO] Running simulation for 1000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 1000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:39,591 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:40:39,592 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:43:40,420 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,760 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,787 [INFO] Simulation completed in 5.0 minutes, 54.2 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 5.0 minutes, 54.2 seconds
+</pre></div></div>
+</div>
+</section>
+<section id="1.4.-Example:-Building-your-own-python-based-cell-models">
+<h3>1.4. Example: Building your own python-based cell models<a class="headerlink" href="#1.4.-Example:-Building-your-own-python-based-cell-models" title="Link to this heading">#</a></h3>
+<p>Another option is to build a cell instance yourself using the NEURON Python API. As with above, you just need to change the <strong>model_template</strong> parameter for the given cell(s) you want to build from scratch and create your own <code class="docutils literal notranslate"><span class="pre">&#64;cell_model</span></code> function that will be called prior to the simulation to generate individual NEURON cell instances for appropriate node in the network. The code can be put inside your <strong>run_bionet.py</strong> script or imported from another file in the same directory.</p>
+<p>The following example is a simple model taken from the <a class="reference external" href="https://neuron.yale.edu/neuron/docs/ball-and-stick-model-part-1">NEURON ball-and-stick tutorial</a> (See <em>build_network.ball_and_stick.py</em> file see how the network was created).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">neuron</span><span class="w"> </span><span class="kn">import</span> <span class="n">h</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BallAndStick</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_morphology</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_biophysics</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_morphology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soma</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Section</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dend</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Section</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dend&#39;</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">all</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="mf">12.6157</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_biophysics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="mi">100</span>    <span class="c1"># Axial resistance in Ohm * cm</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="mi">1</span>      <span class="c1"># Membrane capacitance in micro Farads / cm^2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;hh&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">soma</span><span class="p">:</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">hh</span><span class="o">.</span><span class="n">gnabar</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;gnabar&#39;</span><span class="p">]</span>  <span class="c1"># Sodium conductance in S/cm2</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">hh</span><span class="o">.</span><span class="n">gkbar</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;gkbar&#39;</span><span class="p">]</span>  <span class="c1"># Potassium conductance in S/cm2</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">hh</span><span class="o">.</span><span class="n">gl</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;gl&#39;</span><span class="p">]</span>    <span class="c1"># Leak conductance in S/cm2</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">hh</span><span class="o">.</span><span class="n">el</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;el&#39;</span><span class="p">]</span>     <span class="c1"># Reversal potential in mV</span>
+        <span class="c1"># Insert passive current in the dendrite                       # &lt;-- NEW</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>                                        <span class="c1"># &lt;-- NEW</span>
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dend</span><span class="p">:</span>                                          <span class="c1"># &lt;-- NEW</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;g_pas&#39;</span><span class="p">]</span>  <span class="c1"># Passive conductance in S/cm2  # &lt;-- NEW</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;e_pas&#39;</span><span class="p">]</span>    <span class="c1"># Leak reversal potential mV  # &lt;-- NEW</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;BallAndStick[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid</span><span class="p">)</span>
+
+<span class="nd">@bionet</span><span class="o">.</span><span class="n">cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;python:loadBAS&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadPurkinjeModel</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="n">bas_cell</span> <span class="o">=</span> <span class="n">BallAndStick</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Adding </span><span class="si">{</span><span class="n">bas_cell</span><span class="si">}</span><span class="s1"> to network&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bas_cell</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.ball_and_stick.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,816 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-21 18:46:33,859 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+NEURON: Biophys : a template cannot be redefined
+ in Biophys.hoc near line 1
+ begintemplate Biophys
+                     ^
+        xopen(&#34;Biophys.hoc&#34;)
+      execute1(&#34;{xopen(&#34;Bi...&#34;)
+    load_file(&#34;Biophys.hoc&#34;)
+NEURON: L5PCbiophys : a template cannot be redefined
+ in L5PCbiophys4.hoc near line 10
+ begintemplate L5PCbiophys
+                         ^
+        xopen(&#34;L5PCbiophy...&#34;)
+      execute1(&#34;{xopen(&#34;L5...&#34;)
+    load_file(&#34;L5PCbiophy...&#34;)
+NEURON: L5PCtemplate : a template cannot be redefined
+ in L5PCtemplate.hoc near line 8
+ begintemplate L5PCtemplate
+                          ^
+        xopen(&#34;L5PCtempla...&#34;)
+      execute1(&#34;{xopen(&#34;L5...&#34;)
+    load_file(&#34;L5PCtempla...&#34;)
+NEURON: HNTemplate : a template cannot be redefined
+ in HNTemplate.hoc near line 1
+ begintemplate HNTemplate
+                        ^
+        xopen(&#34;HNTemplate.hoc&#34;)
+      execute1(&#34;{xopen(&#34;HN...&#34;)
+    load_file(&#34;HNTemplate.hoc&#34;)
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,862 [INFO] Adding BallAndStick[0] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Adding BallAndStick[0] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,864 [INFO] Adding BallAndStick[1] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Adding BallAndStick[1] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,866 [INFO] Adding BallAndStick[2] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Adding BallAndStick[2] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,868 [INFO] Adding BallAndStick[3] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Adding BallAndStick[3] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,870 [INFO] Adding BallAndStick[4] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Adding BallAndStick[4] to network
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,872 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,935 [INFO] Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,974 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,975 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:46:33,976 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:49:33,651 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:52:27,649 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:55:22,206 [INFO]     step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:17,138 [INFO]     step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:17,161 [INFO] Simulation completed in 11.0 minutes, 43.19 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 11.0 minutes, 43.19 seconds
+</pre></div></div>
+</div>
+<p>For more information on how to build cells from scratch using NEURON see the <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/py_doc/modelspec/programmatic/topology.html">official documentation</a>.</p>
+</section>
+</section>
+<section id="2.-Modifying-an-existing-cell-model">
+<h2>2. Modifying an existing cell model<a class="headerlink" href="#2.-Modifying-an-existing-cell-model" title="Link to this heading">#</a></h2>
+<p>Very often, modelers may want to use an already existing cell model but make some minor changes of their own. For example, you may want to download a prebuilt channel mechanic (in the form of a .mod or .hoc file) to insert into a subset of an already existing network. You may want to edit the cell morphologies to add or remove sections of the neuron. You may want to adjust the channel densities based on the location of the section.</p>
+<p>One option to achieve this is to take an existing Hoc, Python, NeuroML, etc., cell model template and manually edit the file! This is <strong>NOT</strong> a good option for multiple reasons; your changes may lead to unintended side-effects - especially if you’re not familiar with the language or how it was created. On top of that, having to rebuild the network and have multiple versions of a Hoc/Python template can be tedious if you are trying to test and debug your changes on the fly.</p>
+<p><strong>Solution</strong></p>
+<p>SONATA and BMTK provide support for making changes to an already instantiated cell model using the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---optional-reserved-attributes">model_processing</a> attribute. When an attribute is defined for a subpopulation of cells, it defines a directive and/or function to call on said cell immediately after it has been initialized.</p>
+<p>In BMTK, implementing your own custom function for “model_processing” is done in the same manner as with cell-loading. You can use the <code class="docutils literal notranslate"><span class="pre">&#64;model_processing</span></code> decorator to a function that is inside or called in your <em>run_bionet.py</em> script.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionent</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_processing</span>
+
+<span class="nd">@model_processing</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_my_cell</span><span class="p">(</span><span class="n">hoc_obj</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="n">updated_hoc_obj</span> <span class="o">=</span> <span class="c1"># ... modify hoc object based on parameters stored in cell and/or dynamics params.</span>
+    <span class="k">return</span> <span class="n">updated_hoc_obj</span>
+</pre></div>
+</div>
+<p>Then, when building the cells (or by editing either the nodes.h5 or node_types.csv file), you can add a reference to the <code class="docutils literal notranslate"><span class="pre">process_my_cell</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:Biophys1&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;process_my_cell`,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>BMTK will also allow you to call multiple *model_process` functions in sequence by separating the calls by a comma:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:Biophys1&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;process_cell_1,process_cell_2`,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="2.1.-Example:-Adding-customized-mechanisms-into-an-existing-cell-model">
+<h3>2.1. Example: Adding customized mechanisms into an existing cell model<a class="headerlink" href="#2.1.-Example:-Adding-customized-mechanisms-into-an-existing-cell-model" title="Link to this heading">#</a></h3>
+<p>Besides cell models, repositories like ModelDB and Open Source Brain also contain a wide array of membrane density mechanisms (e.g., currents, and channels) that we may want to add to our own existing cell models. In NEURON, these are typically written as .mod files in the NMODL language and require pre-compilation using the <em>nrnivmodl</em> command.</p>
+<p>In this example, we will try downloading arbitrary sodium channel models and show how we can dynamically insert them into our L5 cells using the <code class="docutils literal notranslate"><span class="pre">&#64;model_processing</span></code> directive.</p>
+<section id="Step-1:-Downloading-and-compiling-mechanisms">
+<h4>Step 1: Downloading and compiling mechanisms<a class="headerlink" href="#Step-1:-Downloading-and-compiling-mechanisms" title="Link to this heading">#</a></h4>
+<p>First, we will find mechanisms models (e.g., .mod) files to use in our models. Here we <a class="reference external" href="https://modeldb.science/140249?tab=1">randomly choose sodium channels</a> from ModelDB. Click on the download button to download the files.</p>
+<p>We would then need to move the downloaded .mod files into the <em>components/mechansism/modfiles</em> and rerun the command <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">components/mechanisms</span> <span class="pre">&amp;&amp;</span> <span class="pre">nrnivmodl</span></code>. However, to make things more logical, BMTK allows us to have multiple <em>mechanisms</em> directories, so if it turns in the end, we don’t want to use the new mechanisms, they will be easier to delete. Instead, we will put the .mod files into <em>components/dLGN_mechanisms/modfiles</em>, and run <code class="docutils literal notranslate"><span class="pre">nrnivmodl</span></code> from the new directory. Then, to make sure
+BMTK knows where to find the new mechanisms, we need to update the components section of the SONATA config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;templates_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENTS_DIR/templates&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;$COMPONENTS_DIR/mechanisms&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;$COMPONENTS_DIR/dLGN_mechanisms&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="Step-2:-Setting-directive-for-a-population-of-neurons">
+<h4>Step 2: Setting directive for a population of neurons<a class="headerlink" href="#Step-2:-Setting-directive-for-a-population-of-neurons" title="Link to this heading">#</a></h4>
+<p>We need to make minor updates to our build network so that every subset of cells that will have these new mechanisms added will have model_processing attribute pointing to our customized post-initialization function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:L5PCtemplate&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;cell3.asc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;add_channels&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or if you don’t want to rebuild the entire network, you can also just add a <strong>model_processing</strong> to the node_types.csv.</p>
+<section id="Step-3:-Add-model_processing-function-and-run">
+<h5>Step 3: Add model_processing function and run<a class="headerlink" href="#Step-3:-Add-model_processing-function-and-run" title="Link to this heading">#</a></h5>
+<p>Now, we can add our customized <code class="docutils literal notranslate"><span class="pre">add_channels</span></code> function, which will be called for each applicable cell right before the simulation. Like with the <code class="docutils literal notranslate"><span class="pre">&#64;cell_model</span></code> directive, the function can be placed inside or imported into our <em>run_bionet.py</em> script, has a predefined signature, and should return an HOC instantiated cell object.</p>
+<p>Here, we will have our <code class="docutils literal notranslate"><span class="pre">add_channels</span></code> simply iterate through each section of the cell and insert the downloaded compiled IC channel:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>@bionet.model_processing
+def add_channels(hoc_obj, cell, dynamics_params):
+    for sec in hoc_obj.all:
+        if &#39;axon&#39; in sec.name():
+            continue
+
+        sec.insert(&#39;iahp&#39;)
+        setattr(sec, &#39;gkbar_iahp&#39;, 3.0e-04)
+        setattr(sec, &#39;taum_iahp&#39;, 0.5)
+
+    return hoc_obj
+</pre></div>
+</div>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>For most models, we can use the <code class="docutils literal notranslate"><span class="pre">.all</span></code> property to iterate through every section of the cell. Depending on the model, you may also have section iterators like <code class="docutils literal notranslate"><span class="pre">.soma</span></code>, <code class="docutils literal notranslate"><span class="pre">.axon</span></code>, <code class="docutils literal notranslate"><span class="pre">.dend</span></code>, <code class="docutils literal notranslate"><span class="pre">.apical</span></code>, <code class="docutils literal notranslate"><span class="pre">.basal</span></code>.</p></li>
+<li><p>We don’t want to insert IC channels into the axon sections. Unfortunately, there is no flag to indicate if a section is a soma, axon, dend, etc. So instead, we use the section’s <code class="docutils literal notranslate"><span class="pre">name</span></code> to spike axons (Typically, a section name for a HOC or Python template will be <strong>TemplateName[cell_id].axon[sec_num]</strong></p></li>
+<li><p>Next, we use the <code class="docutils literal notranslate"><span class="pre">.insert</span></code> command to insert the channel into our section</p></li>
+<li><p>We use the Python’ setattr’ function to change the default values of parameters. The specific mod file will determine which parameters can be changed and their range.</p></li>
+</ul>
+<p>You can run an example using:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ python run.added_channels.py config.added_channels.json
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="2.2.-Example:-Modifying-channel-conductance-in-an-instantiated-cell.">
+<h3>2.2. Example: Modifying channel conductance in an instantiated cell.<a class="headerlink" href="#2.2.-Example:-Modifying-channel-conductance-in-an-instantiated-cell." title="Link to this heading">#</a></h3>
+<p>Another thing we can also use the <code class="docutils literal notranslate"><span class="pre">&#64;model_processing</span></code> directive is to update intrinsic properties, or even the morphology and topology, of a given cell right before running a simulation.</p>
+<p>In this example, we will want to take an already existing model and modify the conductance of the hyperpolarization-activated channels (<strong>Ih</strong>) in the apical dendrites based on their distance from the soma. After some investigation, we find that the conductance for our model is controlled by the parameter <code class="docutils literal notranslate"><span class="pre">gbar_Ih</span></code>. So, we want to half this parameter for all sections that are at a certain arc-length distance from the soma. We define <code class="docutils literal notranslate"><span class="pre">model_processing</span></code> function <code class="docutils literal notranslate"><span class="pre">adjust_densities</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+
+<span class="nd">@bionet</span><span class="o">.</span><span class="n">model_processing</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">adjust_densities</span><span class="p">(</span><span class="n">hoc_obj</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="n">n_segs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_segs_updated</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hoc_obj</span><span class="o">.</span><span class="n">apic</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
+            <span class="n">n_segs</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="n">n_segs_updated</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">org_cond</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="s1">&#39;gbar_Ih&#39;</span><span class="p">)</span>
+                <span class="n">new_cond</span> <span class="o">=</span> <span class="n">org_cond</span><span class="o">*</span><span class="mf">0.5</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="s1">&#39;gbar_Ih&#39;</span><span class="p">,</span> <span class="n">new_cond</span><span class="p">)</span>
+
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n_segs_updated</span><span class="si">}</span><span class="s1"> out of </span><span class="si">{</span><span class="n">n_segs</span><span class="si">}</span><span class="s1"> apical dendritic segments updated.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hoc_obj</span>
+<br/></pre></div>
+</div>
+</div>
+<p>Some notes to consider about this function:</p>
+<ul class="simple">
+<li><p>To only iterate through the <strong>apic</strong> section types (which will ignore soma, axon, and basal section), we use <code class="docutils literal notranslate"><span class="pre">hoc_obj.apic</span></code> list instead of <code class="docutils literal notranslate"><span class="pre">hoc_obj.all</span></code> as we did with the previous example</p></li>
+<li><p>A section may be partitioned into one or more segments. Each section will have the same attributes and inserted mechanisms. However, the actual property values of each individual segment, like distance and conductance, may vary. Hence, we need to update each individual segment of each section using the code:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">hoc_obj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">section</span><span class="p">:</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">`h.distance(seg)</span></code> &lt;<a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html#distance">https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html#distance</a>&gt;`__ is a built-in NEURON function that measures arc-length from each segment to the soma, in microns. Only segments that are &gt;1000 um will have their Ih conductances reduced. The rest will be left to default value.</p></li>
+<li><p>We use the built-in Python functions <code class="docutils literal notranslate"><span class="pre">getattr</span></code> and <code class="docutils literal notranslate"><span class="pre">setattr</span></code> to fetch and set the gbar_Ih value of each segment object.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.modified_densities.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:17,186 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-21 18:58:17,220 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:17,979 [INFO] 262 out of 573 apical dendritic segments updated.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:262 out of 573 apical dendritic segments updated.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:17,982 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:18,045 [INFO] Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:18,065 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:18,067 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 18:58:18,068 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:01:19,953 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:04:13,908 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:07:06,708 [INFO]     step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:09:59,401 [INFO]     step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:09:59,432 [INFO] Simulation completed in 11.0 minutes, 41.37 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 11.0 minutes, 41.37 seconds
+</pre></div></div>
+</div>
+<section id="Help-with-investigating-and-updating-a-model">
+<h4>Help with investigating and updating a model<a class="headerlink" href="#Help-with-investigating-and-updating-a-model" title="Link to this heading">#</a></h4>
+<p>Trying to figure out what mechanisms, section types, and other parameters of instantiated HOC cell can be tricky, as can trying to figure out how to change an existing cell. A good place to start is by looking through the official NEURON documentation <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html">1</a> <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html">2</a>. One useful function is the
+<code class="docutils literal notranslate"><span class="pre">h.psection()</span></code> that will provide valuable information about each section/segment of a cell.</p>
+<p>Below, we can overwrite the previous version of <code class="docutils literal notranslate"><span class="pre">adjust_densities</span></code> with one that will print information about each section type (although only for the first section of each type - there are 1200+ sections in total, so we won’t try to print them all out). Not only is this helpful for inspecting the cell, it shows how useful it can be to change the way cells are processed on the fly.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+<span class="nd">@bionet</span><span class="o">.</span><span class="n">model_processing</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;adjust_densities&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_mechanisms</span><span class="p">(</span><span class="n">hoc_obj</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hoc_obj</span><span class="o">.</span><span class="n">apic</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">psection</span><span class="p">())</span>
+        <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">hoc_obj</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.modified_densities.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:09:59,446 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-21 19:09:59,464 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+L5PCtemplate[16].apic[0]
+{&#39;Ra&#39;: 100.0,
+ &#39;cell&#39;: L5PCtemplate[16],
+ &#39;cm&#39;: [2.0],
+ &#39;density_mechs&#39;: {&#39;CaDynamics_E2&#39;: {&#39;decay&#39;: [35.725651],
+                                     &#39;depth&#39;: [0.1],
+                                     &#39;gamma&#39;: [0.000637],
+                                     &#39;minCai&#39;: [0.0001]},
+                   &#39;Ca_HVA&#39;: {&#39;g&#39;: [0.0],
+                              &#39;gbar&#39;: [1e-05],
+                              &#39;h&#39;: [0.0],
+                              &#39;ica&#39;: [0.0],
+                              &#39;m&#39;: [0.0]},
+                   &#39;Ca_LVAst&#39;: {&#39;gCa_LVAst&#39;: [0.0],
+                                &#39;gCa_LVAstbar&#39;: [0.00141954],
+                                &#39;h&#39;: [0.0],
+                                &#39;ica&#39;: [0.0],
+                                &#39;m&#39;: [0.0]},
+                   &#39;Ih&#39;: {&#39;g&#39;: [0.0],
+                          &#39;gbar&#39;: [0.0001309879],
+                          &#39;ihcn&#39;: [0.0],
+                          &#39;m&#39;: [0.0],
+                          &#39;shift1&#39;: [154.9],
+                          &#39;shift2&#39;: [11.9],
+                          &#39;shift3&#39;: [0.0],
+                          &#39;shift4&#39;: [33.1],
+                          &#39;shift5&#39;: [6.43],
+                          &#39;shift6&#39;: [193.0]},
+                   &#39;Im&#39;: {&#39;g&#39;: [0.0], &#39;gbar&#39;: [1e-05], &#39;ik&#39;: [0.0], &#39;m&#39;: [0.0]},
+                   &#39;NaTs2_t&#39;: {&#39;gNaTs2_t&#39;: [0.0],
+                               &#39;gNaTs2_tbar&#39;: [0.021489],
+                               &#39;h&#39;: [0.0],
+                               &#39;ina&#39;: [0.0],
+                               &#39;m&#39;: [0.0]},
+                   &#39;SK_E2&#39;: {&#39;gSK_E2&#39;: [0.0],
+                             &#39;gSK_E2bar&#39;: [2e-06],
+                             &#39;ik&#39;: [0.0],
+                             &#39;z&#39;: [0.0]},
+                   &#39;SKv3_1&#39;: {&#39;gSKv3_1&#39;: [0.0],
+                              &#39;gSKv3_1bar&#39;: [0.001808],
+                              &#39;ik&#39;: [0.0],
+                              &#39;m&#39;: [0.0]},
+                   &#39;pas&#39;: {&#39;e&#39;: [-90.0], &#39;g&#39;: [6e-05], &#39;i&#39;: [0.0]}},
+ &#39;hoc_internal_name&#39;: &#39;__nrnsec_0x55555e538290&#39;,
+ &#39;ions&#39;: {&#39;ca&#39;: {&#39;cai&#39;: [5e-05],
+                 &#39;cao&#39;: [2.0],
+                 &#39;dica_dv_&#39;: [0.0],
+                 &#39;eca&#39;: [132.4579341637009],
+                 &#39;ica&#39;: [0.0]},
+          &#39;k&#39;: {&#39;dik_dv_&#39;: [0.0],
+                &#39;ek&#39;: [-85.0],
+                &#39;ik&#39;: [0.0],
+                &#39;ki&#39;: [54.4],
+                &#39;ko&#39;: [2.5]},
+          &#39;na&#39;: {&#39;dina_dv_&#39;: [0.0],
+                 &#39;ena&#39;: [50.0],
+                 &#39;ina&#39;: [0.0],
+                 &#39;nai&#39;: [10.0],
+                 &#39;nao&#39;: [140.0]}},
+ &#39;morphology&#39;: {&#39;L&#39;: 16.729761891618992,
+                &#39;diam&#39;: [8.118265357665159],
+                &#39;parent&#39;: L5PCtemplate[16].soma[0](0.5),
+                &#39;pts3d&#39;: [(-39.77000045776367,
+                           29.8799991607666,
+                           -24.969999313354492,
+                           9.550000190734863),
+                          (-39.77000045776367,
+                           29.8799991607666,
+                           -24.969999313354492,
+                           9.550000190734863),
+                          (-39.54999923706055,
+                           33.040000915527344,
+                           -26.06999969482422,
+                           8.640000343322754),
+                          (-38.86000061035156,
+                           37.06999969482422,
+                           -27.100000381469727,
+                           7.730000019073486),
+                          (-37.95000076293945,
+                           39.939998626708984,
+                           -27.56999969482422,
+                           7.730000019073486),
+                          (-37.5,
+                           42.2400016784668,
+                           -27.56999969482422,
+                           7.730000019073486),
+                          (-37.04999923706055,
+                           45.689998626708984,
+                           -29.020000457763672,
+                           7.730000019073486)],
+                &#39;trueparent&#39;: L5PCtemplate[16].soma[0](0.5)},
+ &#39;name&#39;: &#39;L5PCtemplate[16].apic[0]&#39;,
+ &#39;nseg&#39;: 1,
+ &#39;point_processes&#39;: {},
+ &#39;regions&#39;: set(),
+ &#39;species&#39;: set()}
+2024-10-21 19:10:00,357 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 19:10:00,363 [INFO] Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for virt_exc_spikes
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Cell-Models">1. Cell Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.1.-Example:-Loading-in-a-Simple-Hoc-Model">1.1. Example: Loading in a Simple Hoc Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:">Step 1:</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Building-the-Network">Step 2: Building the Network</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Running-the-simulation">Step 3: Running the simulation</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.2.-Example:-Modifying-Model-Initialization">1.2. Example: Modifying Model Initialization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.3.-Example:-Loading-a-python-based-neuronal-model-into-your-simulation">1.3. Example: Loading a python-based neuronal model into your simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.4.-Example:-Building-your-own-python-based-cell-models">1.4. Example: Building your own python-based cell models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Modifying-an-existing-cell-model">2. Modifying an existing cell model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.1.-Example:-Adding-customized-mechanisms-into-an-existing-cell-model">2.1. Example: Adding customized mechanisms into an existing cell model</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Downloading-and-compiling-mechanisms">Step 1: Downloading and compiling mechanisms</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Setting-directive-for-a-population-of-neurons">Step 2: Setting directive for a population of neurons</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Add-model_processing-function-and-run">Step 3: Add model_processing function and run</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.2.-Example:-Modifying-channel-conductance-in-an-instantiated-cell.">2.2. Example: Modifying channel conductance in an instantiated cell.</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Help-with-investigating-and-updating-a-model">Help with investigating and updating a model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/Ch_External_Models.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

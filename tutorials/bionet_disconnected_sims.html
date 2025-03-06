@@ -51,7 +51,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/bionet_disconnected_sims';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example Networks and Simulations" href="../examples.html" />
+    <link rel="next" title="Using Customized and External Cell and Channel Models in BioNet" href="Ch_External_Models.html" />
     <link rel="prev" title="Generating Spike Trains with a Refractory Period" href="spike_trains_refractory.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -362,6 +362,13 @@
 <li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Models.html">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_spikes_input.html">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_extracellular.html">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Resources.html">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
@@ -433,7 +440,7 @@
 <p>When simulating a bio-realistic network, cells will receive synaptic stimulation from both locally recurrent connections as well as feedforward connections from external inputs. Often when analyzing the results of full network activity we would like to know the contribution of only a subset of the synaptic activity. For example, how much the feedforward synapses, or only recurrent synapses between specific population of cells, contribute to the simulation results. Certain techniques, like
 running with only a subset of the full network, or using optogenetics/current-clamp to turn on-off subpopulations, can provide useful insights but do not tell the full story of a network simulation.</p>
 <p>Instead we can used the BMTK “replay” input module to disentangle subsections of simulation activity from the full network in BioNet/biophysically realistic simulations. The BMTK “replay” module let’s the user take a previous simulation, and replay a simulation using only activity from a subset of the synapses. This can be helpful in parameter tuning and optimization, and for very large networks can provide an efficient manner to replay small subsets of a full network.</p>
-<div><p><img alt="41377915cf0747a9a79d1876d169ea41" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
+<div><p><img alt="e50b3b6ba4fe486c852b38396838a9e5" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
 </div><div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>

@@ -1,0 +1,1124 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Recording Extracellular Potentials and Current Source Densities &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Ch_extracellular';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="External Resources for Large-Scale Network Modeling" href="Ch_External_Resources.html" />
+    <link rel="prev" title="Advanced Stimulus Options" href="Ch_advanced_stim.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Models.html">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_spikes_input.html">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Resources.html">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Recording Extracellular Potentials and Current Source Densities</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Recording-Extracellular-Potentials-and-Current-Source-Densities">
+<h1>Recording Extracellular Potentials and Current Source Densities<a class="headerlink" href="#Recording-Extracellular-Potentials-and-Current-Source-Densities" title="Link to this heading">#</a></h1>
+<p>Extracellular local field potential (LFP) recordings are among the most common electrophysiological recordings for studying brain function. Thus, many scientists might be interested in recording LFPs while simulating the activity of distinct brain areas to replicate or compare to in-vivo experimental recordings. This tutorial shows how to record extracellular LFPs with BioNet, modify the extracellular resistance, and calculate the current source density (CSD) generating the measured LFPs.</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/05_opt_extracellular">05_opt_extracellular/</a></p>
+<section id="1.-Example:-Recording-Extracellular-Local-Field-Potentials-(LFPs)">
+<h2>1. Example: Recording Extracellular Local Field Potentials (LFPs)<a class="headerlink" href="#1.-Example:-Recording-Extracellular-Local-Field-Potentials-(LFPs)" title="Link to this heading">#</a></h2>
+<p>A part of BioNet’s built-in functionality is the ability to record extracellular LFPs from morphologically detailed networks of cells. Like with in-vivo experiments, it involves placing one or more electrodes by the cells that will pick up the change of the extracellular potentials throughout the experiment/simulation. This can be useful for comparing simulations to actual experiment recordings taken from an M.E.A., neuronal probe, ECoG, or EEG. It can also be used to calculate the CSD, thus
+capturing the slow-reacting, non-spiking dynamics of your network.</p>
+<p><strong>Note:</strong> BMTK only supports capturing the LFPs for <code class="docutils literal notranslate"><span class="pre">biophysical</span></code> <strong>model_type</strong> cells. It will not work in PointNet since these are point-neuron cells, which cannot directly generate extracellular potentials - generated by spatially separated transmembrane currents. Nor will it work with BioNet/NEURON <code class="docutils literal notranslate"><span class="pre">point-neuron</span></code> models. If a network contains a mix of <code class="docutils literal notranslate"><span class="pre">biophysical</span></code> and <code class="docutils literal notranslate"><span class="pre">point-neuron</span></code> models, the <code class="docutils literal notranslate"><span class="pre">point-neuron</span></code> models will be ignored when collecting extracellular recordings.</p>
+<p>Also, <strong>NOTE</strong> that adding extracellular potential recordings to your network is computationally expensive. Expect simulations to take significantly longer than if you were just recording spikes or membrane voltages.</p>
+<section id="Step-1:-Building-a-Network-(Caveats)">
+<h3>Step 1: Building a Network (Caveats)<a class="headerlink" href="#Step-1:-Building-a-Network-(Caveats)" title="Link to this heading">#</a></h3>
+<p>Creating a network that is capable of recording LFPs is no different than the way you would normally create a SONATA-based network. And most of the time, we can dynamically add a recording electrode before any simulation. However, there are some requirements that we must be cognizant of:</p>
+<ol class="arabic simple">
+<li><p>Our network <strong>MUST</strong> have attributes <strong>x</strong>, <strong>y</strong>, <strong>z</strong> defined for all cells being recorded by our electrode (s). Variables like spiking events or membrane potential are spatially invariant, so the exact coordinates of each cell of the network are not required. With extracellular recordings, the distance between the cells and electrodes will be very important in determining LFP.</p></li>
+<li><p>You should also take care that <strong>rotation_angle_xaxis</strong>, <strong>rotation_angle_yaxis</strong>, and <strong>rotation_angle_zaxis</strong> are set properly. Especially if the cell is bipolar-like in morphology, it can make a big difference. However, if you want to use the default morphology from the <em>swc</em>, <em>asc</em>, <em>hoc</em>, etc, then not specifying the <strong>rotation_angles</strong> will just default rotations to 0.0</p></li>
+</ol>
+<p>In this example, we build our network cells like such:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">get_coords</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">y_range</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">300</span><span class="p">,</span> <span class="o">-</span><span class="mi">100</span><span class="p">])</span>
+<span class="n">cortcol</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+
+    <span class="c1"># Reserved SONATA keywords used during simulation</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;Scnn1a_485510712_params.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_485510712_morphology.swc&#39;</span><span class="p">,</span>
+
+    <span class="c1"># The x, y, z locations and orientations (in Euler angles) of each cell</span>
+    <span class="c1"># Here, rotation around the pia-to-white-matter axis is randomized</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+    <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="mf">3.646878266</span><span class="p">,</span>
+
+    <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;L23&#39;</span><span class="p">,</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In this particular example, we use a very simplified “cortical column” consisting of layers <code class="docutils literal notranslate"><span class="pre">L2/3</span></code>, <code class="docutils literal notranslate"><span class="pre">L4</span></code> (which receives most of the network inputs), and <code class="docutils literal notranslate"><span class="pre">L5</span></code> pyramidal cells surrounded by inhibitory interneurons. The cells are built in a column parallel to the <strong>y</strong> axis and centered at <strong>x=0</strong> and <strong>z=0</strong>.</p>
+<p>We can use VND to visualize our network to make sure the layering and rotation of our cells are correct:</p>
+<div><p><img alt="8968a33a787745d2a768e8ebacb09aee" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
+</div><p>The full script for this example can be found in the file <em>build_network.lfp.py</em>. We encourage you to make changes and test out the effects different cell types, synapses, and geometry have on LFP recordings. You can also try using a different network altogether.</p>
+</section>
+<section id="Step-2:-Adding-%22ecp%22-recordings-to-simulation-config.">
+<h3>Step 2: Adding “ecp” recordings to simulation config.<a class="headerlink" href="#Step-2:-Adding-%22ecp%22-recordings-to-simulation-config." title="Link to this heading">#</a></h3>
+<p>The next step is to open up our SONATA simulation configuration file (<em>config.lfp.json</em>) so that it contains the following in the “reports” section.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cortical_electrode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/electrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <strong>module</strong> should always be set to value <code class="docutils literal notranslate"><span class="pre">extracellular</span></code>, which tells BMTK what type of recording to apply.</p></li>
+<li><p>The <strong>variable_name</strong> should be set to <code class="docutils literal notranslate"><span class="pre">v</span></code>, which is the voltage just outside of every compartment membrane.</p></li>
+<li><p>Setting <strong>cells</strong> to all tells BMTK to record the extracellular potential of all (biophysical) cells in the model. You can use the <code class="docutils literal notranslate"><span class="pre">node_set</span></code> to select only a portion of cells to record from. For example, if you wanted to filter by specific node-ids:</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortcol&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">]</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<p>     or if you wanted to record from Layer 4 excitatory cells</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>electrode_positions</strong> will point to the csv file containing recording electrodes (see below)</p></li>
+<li><p>We set <strong>electrode_channels</strong> to <code class="docutils literal notranslate"><span class="pre">all</span></code> to indicate the use of all possible electrodes in the electrodes csv file.</p></li>
+</ul>
+</section>
+<section id="Step-3:-Creating-electrodes-file">
+<h3>Step 3: Creating electrodes file<a class="headerlink" href="#Step-3:-Creating-electrodes-file" title="Link to this heading">#</a></h3>
+<p>We must tell BioNet the location of all recording electrodes, which we specify in the file <em>./componets/electrodes/linear_electrodes.csv</em>. This is a simple space-separated file where each line represents the <code class="docutils literal notranslate"><span class="pre">channel_id</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, and <code class="docutils literal notranslate"><span class="pre">z</span></code> position for each channel that will be recording ecp from.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;components/electrodes/linear_electrode.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>channel</th>
+      <th>x_pos</th>
+      <th>y_pos</th>
+      <th>z_pos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>0.0</td>
+      <td>-100.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2</td>
+      <td>0.0</td>
+      <td>-200.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>0.0</td>
+      <td>-300.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4</td>
+      <td>0.0</td>
+      <td>-400.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>5</td>
+      <td>0.0</td>
+      <td>-500.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>6</td>
+      <td>0.0</td>
+      <td>-600.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7</td>
+      <td>0.0</td>
+      <td>-700.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>8</td>
+      <td>0.0</td>
+      <td>-800.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>In this example, an electrode array placed straight down the column will record the LFP at every 100-micron interval. Like with the placement of cells, we can use whatever coordinate framework for placing our network. In this case, we assume our column is centered at the axis. However, we could also use a global framework like the <a class="reference external" href="https://biccn.org/standards/common-coordinate-frameworks-biccn">CCF</a>. The important thing for BMTK is that the electrodes and cells must be in the same coordinate
+system.</p>
+</section>
+<section id="Step-4:-Running-the-simulation">
+<h3>Step 4: Running the simulation<a class="headerlink" href="#Step-4:-Running-the-simulation" title="Link to this heading">#</a></h3>
+<p>Now that we’ve updated our simulation configuration accordingly, we can run the simulation like we normally would (be mindful that it will likely take longer and use more resources than normal):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>components/mechanisms<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>nrnivmodl<span class="w"> </span>modfiles
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/shared/workspace/docs/tutorial/05_opt_extracellular/components/mechanisms
+Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/exp1isyn.mod&#34; &#34;modfiles/exp1syn.mod&#34; &#34;modfiles/stp1syn.mod&#34; &#34;modfiles/stp2syn.mod&#34; &#34;modfiles/stp3syn.mod&#34; &#34;modfiles/stp4syn.mod&#34; &#34;modfiles/stp5isyn.mod&#34; &#34;modfiles/stp5syn.mod&#34; &#34;modfiles/vecevent.mod&#34;
+
+COBJS=&#39;&#39;
+ -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.c
+gcc -O2   -I.   -I/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/include  -I/nrnwheel/openmpi/include -fPIC -c mod_func.c -o mod_func.o
+ =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
+g++ -O2 -DVERSION_INFO=&#39;8.0.0&#39; -std=c++11 -shared -fPIC  -I /opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/include -o ./libnrnmech.so -Wl,-soname,libnrnmech.so \
+  ./mod_func.o ./CaDynamics.o ./Ca_HVA.o ./Ca_LVA.o ./Ih.o ./Im.o ./Im_v2.o ./K_P.o ./K_T.o ./Kd.o ./Kv2like.o ./Kv3_1.o ./NaTa.o ./NaTs.o ./NaV.o ./Nap.o ./SK.o ./exp1isyn.o ./exp1syn.o ./stp1syn.o ./stp2syn.o ./stp3syn.o ./stp4syn.o ./stp5isyn.o ./stp5syn.o ./vecevent.o  -L/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/lib -lnrniv -Wl,-rpath,/opt/conda/envs/bmtk/lib/python3.9/site-packages/neuron/.data/lib
+rm -f ./.libs/libnrnmech.so ; mkdir -p ./.libs ; cp ./libnrnmech.so ./.libs/libnrnmech.so
+Successfully created x86_64/special
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.lfp.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Warning: no DISPLAY environment variable.
+--No graphics will be displayed.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-21 17:26:00,659 [INFO] Created log file
+2024-10-21 17:26:00,876 [INFO] Building cells.
+2024-10-21 17:26:04,530 [INFO] Building recurrent connections
+2024-10-21 17:26:05,813 [INFO] Building virtual cell stimulations for virt_exc_spikes
+2024-10-21 17:26:08,413 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2024-10-21 17:26:08,414 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2024-10-21 17:26:08,414 [INFO] Block save every 5000 steps
+2024-10-21 17:26:53,054 [INFO]     step:5000 t_sim:500.00 ms
+2024-10-21 17:27:38,462 [INFO]     step:10000 t_sim:1000.00 ms
+2024-10-21 17:28:26,600 [INFO]     step:15000 t_sim:1500.00 ms
+2024-10-21 17:29:10,021 [INFO]     step:20000 t_sim:2000.00 ms
+2024-10-21 17:29:10,085 [INFO] Simulation completed in 3.0 minutes, 1.672 seconds
+</pre></div></div>
+</div>
+</section>
+<section id="Step-5:-Analyzing-the-results">
+<h3>Step 5: Analyzing the results<a class="headerlink" href="#Step-5:-Analyzing-the-results" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">bmtk.analyzer.ecp</span></code> package of BMTK includes a number of tools for analyzing and visualizing the results of the electrode recordings:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.ecp</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_ecp</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.lfp.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cortical_electrode&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Ch_extracellular_13_0.png" src="../_images/tutorials_Ch_extracellular_13_0.png" />
+</div>
+</div>
+<p>But if you need to analyze the results yourself, they will be saved in the <em>output/cortical_electrode.h5</em> file, which is an HDF5 following SONATA format for <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">Extracellular reports</a>. The results are stored in the <code class="docutils literal notranslate"><span class="pre">/ecp/data</span></code> table that is <span class="math notranslate nohighlight">\(T-timestamps x N-channels\)</span> in size.</p>
+<div><p><img alt="cf61c9bff98c4098840199f2d7c311b6" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 500px;" /></p>
+</div><div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">channel_id</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;output_lfp/cortical_electrode.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">][()]</span> <span class="o">==</span> <span class="n">channel_id</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][:,</span> <span class="n">channel_idx</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Channel </span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Ch_extracellular_15_0.png" src="../_images/tutorials_Ch_extracellular_15_0.png" />
+</div>
+</div>
+</section>
+<section id="(Optional)-Finding-individual-contributions">
+<h3>(Optional) Finding individual contributions<a class="headerlink" href="#(Optional)-Finding-individual-contributions" title="Link to this heading">#</a></h3>
+<p>When each channel in the electrode calculates the ECP at each given time, it does so by taking the extracellular Vm of each cell, adjusting for distance and interstitual resistance, and summing the results over all recorded cells.</p>
+<p>Sometimes, for deeper analysis of a simulation, you may want to measure the individual contribution each cell has on the electrode. To do so in our simulation we just need to add the <strong>contributions_dir</strong> option to the simulation configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cortical_electrode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/electrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cell_contributions&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Now, when you run the simulation, it will add an extra directory <em>output_lfp/cell_contributions/</em> that will contain N SONATA Extracellular reports for each N individual cell (The file name of each h5 will correspond to the node_id of each cell).</p>
+<p>Be <strong>WARNED</strong> that adding the “contributions_dir” option will take up a lot of disk space for even moderately sized networks. Feel free to edit <em>config.lfp.json</em> and see how different cells and cell-types differ in their LFP signatures.</p>
+</section>
+</section>
+<section id="2.-Example:-Calculating-the-Current-Source-Density-(CSD)">
+<h2>2. Example: Calculating the Current Source Density (CSD)<a class="headerlink" href="#2.-Example:-Calculating-the-Current-Source-Density-(CSD)" title="Link to this heading">#</a></h2>
+<p>Scientists are often interested in estimating the current sources or CSD generating the measured LFPs. Calculating the CSD associated with simulated LFPs can also be useful for comparing simulations to experimental data. This example demonstrates how to compute the CSD from the simulated LFPs in the first example using the iCSD method from <a class="reference external" href="https://doi.org/10.1016/j.jneumeth.2005.12.005">Pettersen et al. 2006</a>. The iCSD methods can be applied to data recorded from multielectrode arrays with
+various geometries.</p>
+<p>iCSD methods are available in the py-iCSD toolbox, which is a translation of the core functionality of the CSDplotter MATLAB package to Python. The py-ICSD toolbox can be downloaded from <a class="github reference external" href="https://github.com/espenhgn/iCSD">espenhgn/iCSD</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;icsd_scripts/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>For the below scripts you will also need to install third party packages <a class="reference external" href="https://github.com/python-quantities/python-quantities">quantities</a> and <a class="reference external" href="https://github.com/NeuralEnsemble/python-neo">neo</a> to handle dimensional units and electrophysiology calculations, respectively</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">icsd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pq</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/shared/workspace/docs/tutorial/05_opt_extracellular/icsd_scripts/icsd.py:1292: SyntaxWarning: &#34;is not&#34; with a literal. Did you mean &#34;!=&#34;?
+  if f_type is not &#34;identity&#34; and f_order is None:
+</pre></div></div>
+</div>
+<section id="Step-1:-Setting-up-quantities-for-py-iCSD-toolbox">
+<h3>Step 1: Setting up quantities for py-iCSD toolbox<a class="headerlink" href="#Step-1:-Setting-up-quantities-for-py-iCSD-toolbox" title="Link to this heading">#</a></h3>
+<p>All inputs to the iCSD methods class instances are considered Quantity arrays. First, we need to patch quantities with the SI unit Siemens if it does not exist:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">definition</span><span class="p">,</span> <span class="n">u_symbol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;siemens&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;mS&#39;</span><span class="p">,</span> <span class="s1">&#39;uS&#39;</span><span class="p">,</span> <span class="s1">&#39;nS&#39;</span><span class="p">,</span> <span class="s1">&#39;pS&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;milli&#39;</span><span class="p">,</span> <span class="s1">&#39;micro&#39;</span><span class="p">,</span> <span class="s1">&#39;nano&#39;</span><span class="p">,</span> <span class="s1">&#39;pico&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;mS&#39;</span><span class="p">,</span> <span class="s1">&#39;uS&#39;</span><span class="p">,</span> <span class="s1">&#39;nS&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;µS&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">definition</span> <span class="o">=</span> <span class="n">lastdefinition</span> <span class="o">/</span> <span class="mi">1000</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">pq</span><span class="o">.</span><span class="n">UnitQuantity</span><span class="p">(</span>
+            <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;siemens&#39;</span><span class="p">,</span>
+            <span class="n">definition</span><span class="p">,</span>
+            <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
+            <span class="n">u_symbol</span><span class="o">=</span><span class="n">u_symbol</span><span class="p">))</span>
+    <span class="n">lastdefinition</span> <span class="o">=</span> <span class="n">definition</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Step-2:-Preparing-LFP-data-and-defining-parameters-for-the-CSD-calculation">
+<h3>Step 2: Preparing LFP data and defining parameters for the CSD calculation<a class="headerlink" href="#Step-2:-Preparing-LFP-data-and-defining-parameters-for-the-CSD-calculation" title="Link to this heading">#</a></h3>
+<p>The iCSD method considers the CSD to have cylindrical symmetry with a diameter <code class="docutils literal notranslate"><span class="pre">diam</span></code> specified by the user based on the geometry of your simulated network or the area captured by your experimental recordings. Here, we calculate the CSD assuming a homogenous conductivity <code class="docutils literal notranslate"><span class="pre">sigma</span></code> throughout the column and an infinite medium (i.e., the extracellular conductivity above the cortical surface is the same as the grey matter conductivity - <code class="docutils literal notranslate"><span class="pre">sigma_top</span> <span class="pre">=</span> <span class="pre">sigma</span></code>). However, you can use a different
+value for <code class="docutils literal notranslate"><span class="pre">sigma_top</span></code> if you use substances such as saline (with a high conductivity) or oil (with a very low conductivity) to prevent the brain from drying during your experiments.</p>
+<p>In addition to these parameters, you need to input the LFP data <code class="docutils literal notranslate"><span class="pre">lfp</span></code> with units in SI, the coordinates of the electrodes <code class="docutils literal notranslate"><span class="pre">coord_electrode</span></code>, and the type <code class="docutils literal notranslate"><span class="pre">f_type</span></code> and order <code class="docutils literal notranslate"><span class="pre">f_order</span></code> of the spatial filter to be applied to the estimated CSD. You must append the corresponding quantities to <code class="docutils literal notranslate"><span class="pre">lfp</span></code>, <code class="docutils literal notranslate"><span class="pre">coord_electrode</span></code>, <code class="docutils literal notranslate"><span class="pre">diam</span></code>, <code class="docutils literal notranslate"><span class="pre">sigma</span></code>, and <code class="docutils literal notranslate"><span class="pre">sigma_top</span></code> to convert them to Quantity arrays.</p>
+<p>Here, we will use the delta-iCSD method for calculating the CSD, using a Gaussian 3-point filter with a standard deviation equal to 1 (<code class="docutils literal notranslate"><span class="pre">sigma</span> <span class="pre">=</span> <span class="pre">1</span></code>). However, the py-iCSD toolbox also includes the step-iCSD, spline-iCSD, and std or standard CSD methods. More details on these methods can be found in <a class="reference external" href="https://doi.org/10.1016/j.jneumeth.2005.12.005">Pettersen et al. 2006</a>.</p>
+<p>These are examples of the input dictionaries for each method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">delta_input</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>          <span class="c1"># source diameter</span>
+    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>        <span class="c1"># extracellular conductivity</span>
+    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>    <span class="c1"># conductivity on top of cortex</span>
+    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
+    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
+<span class="p">}</span>
+<span class="n">step_input</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+    <span class="s1">&#39;h&#39;</span> <span class="p">:</span> <span class="n">h</span><span class="p">,</span>                <span class="c1"># source thickness</span>
+    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">&#39;tol&#39;</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>          <span class="c1"># Tolerance in numerical integration</span>
+    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">spline_input</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">&#39;num_steps&#39;</span> <span class="p">:</span> <span class="mi">201</span><span class="p">,</span>      <span class="c1"># Spatial CSD upsampling to N steps</span>
+    <span class="s1">&#39;tol&#39;</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>
+    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">std_input</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Getting the simulated LFPs and electrodes’ coordinates from the first example:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;output_lfp/cortical_electrode.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">][()]</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">lfp</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][()]</span>
+
+
+<span class="n">coord_ele</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;components/electrodes/linear_electrode.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Defining the input dictionary for the delta-iCSD method:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord_ele</span><span class="p">[</span><span class="s1">&#39;y_pos&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">1E-6</span><span class="p">)</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>      <span class="c1"># [um] --&gt; [m] linear probe - electrodes&#39; position in depth</span>
+<span class="n">diam</span> <span class="o">=</span> <span class="mf">800E-6</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                              <span class="c1"># [m] source diameter</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mf">100E-6</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                                 <span class="c1"># [m] distance between channels</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                          <span class="c1"># [S/m] or [1/(ohm*m)] extracellular conductivity</span>
+<span class="n">sigma_top</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                      <span class="c1"># [S/m] or [1/(ohm*m)] conductivity on top of cortex</span>
+
+<span class="n">delta_input</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="mf">1E-3</span><span class="o">*</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="c1">#[um] --&gt; [V]</span>
+        <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+        <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+        <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+        <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma_top</span><span class="p">,</span>
+        <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
+        <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Step-3:-Calculating-the-CSD">
+<h3>Step 3: Calculating the CSD<a class="headerlink" href="#Step-3:-Calculating-the-CSD" title="Link to this heading">#</a></h3>
+<p>First, we create the delta CSD-method class instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">csd_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">delta_icsd</span> <span class="o">=</span> <span class="n">icsd</span><span class="o">.</span><span class="n">DeltaiCSD</span><span class="p">(</span><span class="o">**</span><span class="n">delta_input</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The class methods get_csd() and filter_csd() are used below to get the raw and spatially filtered versions of the CSD estimates. The raw- and filtered CSD estimates are returned as Quantity arrays.</p>
+<p>In the comments below, we illustrate how to calculate the CSD using the other methods, considering their input dictionary is defined as shown in Step 2.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">csd_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">delta_icsd</span> <span class="o">=</span> <span class="n">icsd</span><span class="o">.</span><span class="n">DeltaiCSD</span><span class="p">(</span><span class="o">**</span><span class="n">delta_input</span><span class="p">),</span>
+
+    <span class="c1">#Other methods for computing CSD:</span>
+    <span class="c1">#step_icsd = icsd.StepiCSD(**step_input),</span>
+    <span class="c1">#spline_icsd = icsd.SplineiCSD(**spline_input),</span>
+    <span class="c1">#std_csd = icsd.StandardCSD(**std_input),</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">csd_obj</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">csd_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">csd_raw</span> <span class="o">=</span>  <span class="n">csd_obj</span><span class="o">.</span><span class="n">get_csd</span><span class="p">()</span>  <span class="c1"># num_channels x trial_duration</span>
+    <span class="n">csd_smooth</span> <span class="o">=</span> <span class="n">csd_obj</span><span class="o">.</span><span class="n">filter_csd</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span>  <span class="c1"># num_channels x trial_duration</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+discrete filter coefficients:
+b = [ 0.607 1.000 0.607 ],
+a = [ 2.213 ]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+
+<span class="n">lfp_data</span> <span class="o">=</span> <span class="n">lfp</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="mf">1E-3</span><span class="o">*</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span>
+
+<span class="c1">#plot LFP signal</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+          <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
+<span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;LFP (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">lfp_data</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;LFP&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
+
+<span class="c1">#plot raw csd estimate</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet_r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">csd_obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;CSD (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">csd_raw</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
+
+<span class="c1">#plot spatially filtered csd estimate</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet_r&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">csd_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;, filtered&#39;</span><span class="p">)</span>
+<span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;CSD (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">csd_smooth</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;timestep&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Text(0.5, 0, &#39;timestep&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Ch_extracellular_31_1.png" src="../_images/tutorials_Ch_extracellular_31_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Example:-Recording-Extracellular-Local-Field-Potentials-(LFPs)">1. Example: Recording Extracellular Local Field Potentials (LFPs)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Building-a-Network-(Caveats)">Step 1: Building a Network (Caveats)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Adding-%22ecp%22-recordings-to-simulation-config.">Step 2: Adding “ecp” recordings to simulation config.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Creating-electrodes-file">Step 3: Creating electrodes file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-4:-Running-the-simulation">Step 4: Running the simulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-5:-Analyzing-the-results">Step 5: Analyzing the results</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#(Optional)-Finding-individual-contributions">(Optional) Finding individual contributions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Example:-Calculating-the-Current-Source-Density-(CSD)">2. Example: Calculating the Current Source Density (CSD)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Setting-up-quantities-for-py-iCSD-toolbox">Step 1: Setting up quantities for py-iCSD toolbox</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Preparing-LFP-data-and-defining-parameters-for-the-CSD-calculation">Step 2: Preparing LFP data and defining parameters for the CSD calculation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Calculating-the-CSD">Step 3: Calculating the CSD</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/Ch_extracellular.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

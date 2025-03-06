@@ -1,0 +1,1344 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Advanced Methods for Driving your Network with Synapic Spike-trains &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Ch_advanced_spikes_input';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced Stimulus Options" href="Ch_advanced_stim.html" />
+    <link rel="prev" title="Extending PointNet Networks and Simulation with External and Customized Models." href="Ch_NEST_Cusom_Models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Models.html">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_extracellular.html">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Resources.html">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Advanced Methods for Driving your Network with Synapic Spike-trains</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Advanced-Methods-for-Driving-your-Network-with-Synapic-Spike-trains">
+<h1>Advanced Methods for Driving your Network with Synapic Spike-trains<a class="headerlink" href="#Advanced-Methods-for-Driving-your-Network-with-Synapic-Spike-trains" title="Link to this heading">#</a></h1>
+<p>BMTK is designed to build and simulate large-scale, realistic models of the nervous system. Most of these realistic simulations require the ability to recreate the kinds of synaptic input you would expect to see in vivo. To achieve this, modelers need to be able to generate the relevant spike trains that drive the synaptic stimuli of our simulations.</p>
+<p>We have other tutorials demonstrating how to generate realistic stimuli using FilterNet. We have also shown how to use the BMTK SpikeTrain and PoissonSpikeTrain classes to generate input spike trains. In these cases, users must generate SONATA spike-train files before running their simulations. However, BMTK has additional methods for users to generate and import spike-train stimuli into their simulations. It includes using other formats besides SONATA, importing experimental data, and more
+fine-grained control of how and where cells within a network receive synaptic stimuli.</p>
+<p>We will cover some of such methods in this tutorial.</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/03_opt_advanced_spiking_inputs">03_opt_advanced_spiking_inputs/</a></p>
+<section id="1.-Example:-Using-spikes-from-CSV">
+<h2>1. Example: Using spikes from CSV<a class="headerlink" href="#1.-Example:-Using-spikes-from-CSV" title="Link to this heading">#</a></h2>
+<p>In <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">Tutorial 2</a>, we demonstrated how to generate network spikes using the BMTK’s built-in PoissonSpikeGenerator class, which will produce a series of spike trains using the distribution parameters/functions we give it and save it to a SONATA spikes file using to <code class="docutils literal notranslate"><span class="pre">to_sonata</span></code> method. But BMTK also allows input spikes to be saved and loaded using a simpler space-separated CSV file, which, in many cases,
+can be easier to analyze and use with other programs.</p>
+<p>For example, in the <strong>network_simple_spikes/</strong> folder (built using <code class="docutils literal notranslate"><span class="pre">build_network.simple_spikes.py</span></code>), we have a set of 10 virtual nodes that synaptically drive our simulation. If we want each one to fire at a constant 10Hz firing rate over a 5-second interval, we can use PoissonSpikeGenerator’s <code class="docutils literal notranslate"><span class="pre">to_csv()</span></code> class to save the spikes as a CSV file.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
+
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">()</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">node_ids</span><span class="o">=</span><span class="s1">&#39;network_csv_spikes/inputs_nodes.h5&#39;</span><span class="p">,</span>
+    <span class="n">firing_rate</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+    <span class="n">population</span><span class="o">=</span><span class="s1">&#39;inputs&#39;</span>
+<span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/simple_spikes.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Now, we can use any text editor or CSV reader (like pandas) to read in our spikes for verification and analysis.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">spikes_inputs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;inputs/simple_spikes.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s quickly check that our csv file makes sense</span>
+<span class="n">n_nodes</span> <span class="o">=</span> <span class="n">spikes_inputs</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n_spikes</span> <span class="o">=</span> <span class="n">spikes_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of cells in spikes-file: </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5)&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Avg. number of spikes per cell: </span><span class="si">{</span><span class="n">n_spikes</span><span class="o">/</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5sec x 10Hz ~ 50)&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Min spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">&quot;timestamps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Max spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">&quot;timestamps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+
+<span class="n">spikes_inputs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of cells in spikes-file: 10 (expected: 5)
+Avg. number of spikes per cell: 50.1 (expected: 5sec x 10Hz ~ 50)
+Min spike-time: 17.593944539645307 ms
+Max spike-time: 4998.560456807771 ms
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>timestamps</th>
+      <th>population</th>
+      <th>node_ids</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>40.425085</td>
+      <td>inputs</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>326.168408</td>
+      <td>inputs</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>434.783000</td>
+      <td>inputs</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>821.277923</td>
+      <td>inputs</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>847.735538</td>
+      <td>inputs</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Then, when running the simulation, we can do so as we previously did with SONATA spike files, but the difference is that the <strong>module</strong> type for the given input must be changed from <code class="docutils literal notranslate"><span class="pre">sonata</span></code> to <code class="docutils literal notranslate"><span class="pre">csv</span></code>:</p>
+<p>```json “inputs”: { “csv_spikes”: { “input_type”: “spikes”, “module”: “csv”, “input_file”: “./inputs/simple_spikes.csv”, “node_set”: “inputs” } },</p>
+<section id="Creating-your-own-csv-file">
+<h3>Creating your own csv file<a class="headerlink" href="#Creating-your-own-csv-file" title="Link to this heading">#</a></h3>
+<p>You can create your own spike-train CSV file if you don’t want to use the <code class="docutils literal notranslate"><span class="pre">PoissonSpikeGenerator</span></code> class. As we can see from above, it needs to be a space-separated text file with columns <strong>timestamps</strong>, <strong>population</strong>, and <strong>node_ids</strong> (order doesn’t matter). Each row indicates a separate spike, with the <strong>population</strong> + <strong>node_ids</strong> columns indicating the node/cell that fired and <strong>timestamps</strong> (in milliseconds) indicating when it fired.</p>
+<p>For example, we can use the Python CSV writer class to create an example input file where each cell has an increasing firing rate.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;inputs/custom_spikes.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+    <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+
+    <span class="c1"># write the header</span>
+    <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;timestamps&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">])</span>
+
+    <span class="c1"># For node 0 we have it fire randomly at 1 Hz for 5 seconds, for node 1 at 2Hz, etc.</span>
+    <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5000.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">node_id</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)):</span>
+            <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">timestamp</span><span class="p">,</span> <span class="s1">&#39;inputs&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;inputs/custom_spikes.csv&#39;</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Ch_advanced_spikes_input_11_0.png" src="../_images/tutorials_Ch_advanced_spikes_input_11_0.png" />
+</div>
+</div>
+<p><strong>Remember</strong>: Biophysical models contain customized ion channels that require compiling using the <code class="docutils literal notranslate"><span class="pre">nrnivmod</span></code> command before running Bionet (see <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb">Tutorial 1</a> for more details). Ion channels are stored in the <strong>components/mechanisms/mod/</strong> folder. In a shell or using Jupyter notebook, you’ll need to run the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>components/mechanisms<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>nrnivmodl<span class="w"> </span>modfiles
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/opt/conda/bin/nrnivmodl:10: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+  from pkg_resources import working_set
+/home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms
+Mod files: &#34;modfiles/modfiles/CaDynamics.mod&#34; &#34;modfiles/modfiles/Ca_HVA.mod&#34; &#34;modfiles/modfiles/Ca_LVA.mod&#34; &#34;modfiles/modfiles/Ih.mod&#34; &#34;modfiles/modfiles/Im.mod&#34; &#34;modfiles/modfiles/Im_v2.mod&#34; &#34;modfiles/modfiles/K_P.mod&#34; &#34;modfiles/modfiles/K_T.mod&#34; &#34;modfiles/modfiles/Kd.mod&#34; &#34;modfiles/modfiles/Kv2like.mod&#34; &#34;modfiles/modfiles/Kv3_1.mod&#34; &#34;modfiles/modfiles/NaTa.mod&#34; &#34;modfiles/modfiles/NaTs.mod&#34; &#34;modfiles/modfiles/NaV.mod&#34; &#34;modfiles/modfiles/Nap.mod&#34; &#34;modfiles/modfiles/SK.mod&#34; &#34;modfiles/modfiles/exp1isyn.mod&#34; &#34;modfiles/modfiles/exp1syn.mod&#34; &#34;modfiles/modfiles/stp1syn.mod&#34; &#34;modfiles/modfiles/stp2syn.mod&#34; &#34;modfiles/modfiles/stp3syn.mod&#34; &#34;modfiles/modfiles/stp4syn.mod&#34; &#34;modfiles/modfiles/stp5isyn.mod&#34; &#34;modfiles/modfiles/stp5syn.mod&#34; &#34;modfiles/modfiles/vecevent.mod&#34;
+
+Creating &#39;x86_64&#39; directory for .o files.
+
+ -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
+Translating Ca_HVA.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Ca_HVA.c
+Translating Ca_LVA.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Ca_LVA.c
+Translating CaDynamics.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/CaDynamics.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
+Translating Im_v2.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Im_v2.c
+Translating Ih.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Ih.c
+Translating Im.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Im.c
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
+Translating K_P.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/K_P.c
+Translating K_T.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/K_T.c
+Translating Kd.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Kd.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
+Translating Kv2like.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Kv2like.c
+Translating Kv3_1.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Kv3_1.c
+Translating NaTa.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/NaTa.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
+Translating NaTs.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/NaTs.c
+Translating NaV.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/NaV.c
+Translating Nap.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/Nap.c
+NEURON&#39;s CVode method ignores conservation
+Notice: LINEAR is not thread safe.
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/exp1syn.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/exp1isyn.mod
+Translating SK.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/SK.c
+Translating exp1syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/exp1syn.c
+Translating exp1isyn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/exp1isyn.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp1syn.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp2syn.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp3syn.mod
+Translating stp1syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp1syn.c
+Translating stp2syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp2syn.c
+Translating stp3syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp3syn.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp4syn.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp5isyn.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/stp5syn.mod
+Translating stp4syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp4syn.c
+Translating stp5isyn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp5isyn.c
+Translating stp5syn.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/stp5syn.c
+Thread Safe
+Thread Safe
+Thread Safe
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
+ -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
+Translating vecevent.mod into /home/shared/bmtk-workshop/docs/tutorial/03_opt_advanced_spiking_inputs/components/mechanisms/x86_64/vecevent.c
+Notice: VERBATIM blocks are not thread safe
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> exp1isyn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> exp1syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp1syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp2syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp3syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp4syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp5isyn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> stp5syn.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
+ =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
+ =&gt; <span class="ansi-green-fg">LINKING</span> executable ./special LDFLAGS are:    -pthread
+Successfully created x86_64/special
+</pre></div></div>
+</div>
+<p>We can now run the simulation with our custom CSV input file.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">to_dataframe</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.csv_spikes.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.csv_spikes.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 00:02:57,330 [INFO] Created log file
+2024-10-24 00:02:57,418 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Warning: no DISPLAY environment variable.
+--No graphics will be displayed.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 00:02:58,097 [INFO] Building recurrent connections
+2024-10-24 00:02:58,102 [INFO] Building virtual cell stimulations for LGN_spikes_sonata
+2024-10-24 00:02:58,137 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2024-10-24 00:02:58,138 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2024-10-24 00:02:58,138 [INFO] Block save every 5000 steps
+2024-10-24 00:02:58,492 [INFO]     step:5000 t_sim:500.00 ms
+2024-10-24 00:02:58,839 [INFO]     step:10000 t_sim:1000.00 ms
+2024-10-24 00:02:59,176 [INFO]     step:15000 t_sim:1500.00 ms
+2024-10-24 00:02:59,514 [INFO]     step:20000 t_sim:2000.00 ms
+2024-10-24 00:02:59,549 [INFO] Simulation completed in 1.412 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Ch_advanced_spikes_input_15_3.png" src="../_images/tutorials_Ch_advanced_spikes_input_15_3.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="2.-Example:-Dynamically-generating-custom-spike-trains">
+<h2>2. Example: Dynamically generating custom spike-trains<a class="headerlink" href="#2.-Example:-Dynamically-generating-custom-spike-trains" title="Link to this heading">#</a></h2>
+<p>Pregenerating spike trains for your simulations inside an hdf5 or CSV file is computationally efficient and makes your results more accessible to reproduce and share. However, at times, it may be beneficial for users to generate spike trains dynamically during each simulation. If you are doing quick simulations and spot-checks, it can be cumbersome having to regenerate a file beforehand. Or if a user is running thousands of simulations or doing some kind of gradient search, the cost of
+potentially creating thousands of spike files beforehand may not be reasonable.</p>
+<p>BMTK also allows modelers to create their own special function, which will generate new spike trains at the start of each simulation. To do so, you only need to make changes to the configuration for a “spikes” input so that the <strong>module</strong> is set to value <code class="docutils literal notranslate"><span class="pre">function</span></code>, and instead of spikes_input, you specify a <strong>spikes_function</strong> parameter that will be the name of your custom function.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes_sonata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;spikes_function&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_spikes_generator&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For BMTK to know where to find the <code class="docutils literal notranslate"><span class="pre">my_spikes_generator</span></code>, you must then use the <code class="docutils literal notranslate"><span class="pre">&#64;spikes_generator</span></code> at the top of a given function in your run_bmtk.py script (or any python file imported into the run script). In the below example, we use the following to return spike trains for every cell in the <code class="docutils literal notranslate"><span class="pre">LGN</span></code> node_set to fire at a constant rate (although different rates for different models).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">spikes_generator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="nd">@spikes_generator</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_spikes_generator</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generating custom spike trains for </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">population_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tON&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tOFF&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+<br/></pre></div>
+</div>
+</div>
+<ul class="simple">
+<li><p>All <code class="docutils literal notranslate"><span class="pre">spikes_generator</span></code> functions must have parameters <code class="docutils literal notranslate"><span class="pre">node</span></code> and <code class="docutils literal notranslate"><span class="pre">sim</span></code>.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">node</span></code> allows you to access information about each node/cell like a dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sim</span></code> is a class containing information about a current simulation, including information like start time (<code class="docutils literal notranslate"><span class="pre">sim.tstart</span></code>), stop_time (<code class="docutils literal notranslate"><span class="pre">sim.tstop</span></code>), step size (<code class="docutils literal notranslate"><span class="pre">sim.dt</span></code>), among other properties.</p></li>
+</ul>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">spikes_generator</span></code> should return either a list or array of timestamps, in milliseconds, for each node.</p></li>
+<li><p>We include a logging statement for good measure. This is not required, but it is good for debugging and checking that our custom function is being called.</p></li>
+</ul>
+<p>When the simulation is running, the <code class="docutils literal notranslate"><span class="pre">my_spikes_generator</span></code> function will be called once for each node in the specified <strong>node_set</strong>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.spikes_generator.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 00:02:59,673 [INFO] Created log file
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-24 00:02:59,707 [INFO] Building cells.
+2024-10-24 00:03:06,517 [INFO] Building recurrent connections
+2024-10-24 00:03:06,532 [INFO] Building virtual cell stimulations for LGN_spikes_sonata
+2024-10-24 00:03:06,545 [INFO] Generating custom spike trains for 0 from LGN
+2024-10-24 00:03:06,549 [INFO] Generating custom spike trains for 28 from LGN
+2024-10-24 00:03:06,550 [INFO] Generating custom spike trains for 27 from LGN
+2024-10-24 00:03:06,551 [INFO] Generating custom spike trains for 14 from LGN
+2024-10-24 00:03:06,552 [INFO] Generating custom spike trains for 2 from LGN
+2024-10-24 00:03:06,553 [INFO] Generating custom spike trains for 38 from LGN
+2024-10-24 00:03:06,554 [INFO] Generating custom spike trains for 26 from LGN
+2024-10-24 00:03:06,555 [INFO] Generating custom spike trains for 15 from LGN
+2024-10-24 00:03:06,556 [INFO] Generating custom spike trains for 25 from LGN
+2024-10-24 00:03:06,557 [INFO] Generating custom spike trains for 16 from LGN
+2024-10-24 00:03:06,558 [INFO] Generating custom spike trains for 24 from LGN
+2024-10-24 00:03:06,568 [INFO] Generating custom spike trains for 17 from LGN
+2024-10-24 00:03:06,572 [INFO] Generating custom spike trains for 1 from LGN
+2024-10-24 00:03:06,573 [INFO] Generating custom spike trains for 39 from LGN
+2024-10-24 00:03:06,577 [INFO] Generating custom spike trains for 23 from LGN
+2024-10-24 00:03:06,578 [INFO] Generating custom spike trains for 18 from LGN
+2024-10-24 00:03:06,580 [INFO] Generating custom spike trains for 12 from LGN
+2024-10-24 00:03:06,581 [INFO] Generating custom spike trains for 22 from LGN
+2024-10-24 00:03:06,582 [INFO] Generating custom spike trains for 29 from LGN
+2024-10-24 00:03:06,583 [INFO] Generating custom spike trains for 11 from LGN
+2024-10-24 00:03:06,584 [INFO] Generating custom spike trains for 5 from LGN
+2024-10-24 00:03:06,585 [INFO] Generating custom spike trains for 35 from LGN
+2024-10-24 00:03:06,586 [INFO] Generating custom spike trains for 6 from LGN
+2024-10-24 00:03:06,587 [INFO] Generating custom spike trains for 36 from LGN
+2024-10-24 00:03:06,588 [INFO] Generating custom spike trains for 34 from LGN
+2024-10-24 00:03:06,589 [INFO] Generating custom spike trains for 7 from LGN
+2024-10-24 00:03:06,590 [INFO] Generating custom spike trains for 4 from LGN
+2024-10-24 00:03:06,591 [INFO] Generating custom spike trains for 33 from LGN
+2024-10-24 00:03:06,592 [INFO] Generating custom spike trains for 8 from LGN
+2024-10-24 00:03:06,593 [INFO] Generating custom spike trains for 32 from LGN
+2024-10-24 00:03:06,594 [INFO] Generating custom spike trains for 9 from LGN
+2024-10-24 00:03:06,595 [INFO] Generating custom spike trains for 37 from LGN
+2024-10-24 00:03:06,596 [INFO] Generating custom spike trains for 31 from LGN
+2024-10-24 00:03:06,597 [INFO] Generating custom spike trains for 10 from LGN
+2024-10-24 00:03:06,598 [INFO] Generating custom spike trains for 30 from LGN
+2024-10-24 00:03:06,599 [INFO] Generating custom spike trains for 3 from LGN
+2024-10-24 00:03:06,599 [INFO] Generating custom spike trains for 19 from LGN
+2024-10-24 00:03:06,601 [INFO] Generating custom spike trains for 13 from LGN
+2024-10-24 00:03:06,602 [INFO] Generating custom spike trains for 21 from LGN
+2024-10-24 00:03:06,602 [INFO] Generating custom spike trains for 20 from LGN
+2024-10-24 00:03:07,466 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2024-10-24 00:03:07,466 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2024-10-24 00:03:07,467 [INFO] Block save every 5000 steps
+2024-10-24 00:03:17,745 [INFO]     step:5000 t_sim:500.00 ms
+2024-10-24 00:03:28,232 [INFO]     step:10000 t_sim:1000.00 ms
+2024-10-24 00:03:38,876 [INFO]     step:15000 t_sim:1500.00 ms
+2024-10-24 00:03:49,440 [INFO]     step:20000 t_sim:2000.00 ms
+2024-10-24 00:03:49,465 [INFO] Simulation completed in 42.0 seconds
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Example:-Incorporating-real-data-with-NWB">
+<h2>3. Example: Incorporating real data with NWB<a class="headerlink" href="#3.-Example:-Incorporating-real-data-with-NWB" title="Link to this heading">#</a></h2>
+<p>You can use tools like FilterNet or PoissonSpikeGenerator to create theoretical-to-realistic synaptic stimuli onto a network from various modes. But better yet, when actual experimental data is available, it is often possible to just use that. Especially as more and more experimental electrophysiological data sets are being made publically available through resources like <a class="reference external" href="https://dandiarchive.org/">DANDI</a> or <a class="reference external" href="https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels">The Allen Brain
+Observatory</a>, we will want not only to use such data as a base-line for validating and comparing our models but to actually use the data within specific simulations. For example, when modeling a network of one population and/or region, we will want to use recordings of surrounding cells to help excite and inhibit our cells more realistically.</p>
+<p>Traditionally a major issue with using encorporating experimental ephys data into simulations is trying to parse the wide variety of different ways the data was stored. Luckily, the <a class="reference external" href="https://www.nwb.org/">Neurodata Without Borders (NWB)</a> has developed a field-adopted format for storing experimental data. BMTK can take these files and automatically insert them into simulations.</p>
+<p>In this example, we will take the previous model of the Mouse Primary Visual Cortex and add inputs that we know come from higher cortical regions (in this case, just the VisL and Hippocampal regions) along with the input from the LGN. For these added regions, we will use actual neuropixel recordings of activity from the region during drifting gratings.</p>
+<section id="Step-1:-Download-the-data">
+<h3>Step 1: Download the data<a class="headerlink" href="#Step-1:-Download-the-data" title="Link to this heading">#</a></h3>
+<p>The first step is to find experimental NWB that includes spiking events. For our example, we will use data from Allen Institute Visual Coding Data downloaded using the AllenSDK. We will get three experimental sessions that we know contain recordings of the VisL and hippocampus.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">allensdk.brain_observatory.ecephys.ecephys_project_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">EcephysProjectCache</span>
+
+<span class="n">cache</span> <span class="o">=</span> <span class="n">EcephysProjectCache</span><span class="o">.</span><span class="n">from_warehouse</span><span class="p">(</span>
+    <span class="n">manifest</span><span class="o">=</span><span class="s1">&#39;./ecephys_cache_dir/neuropixels.manifest.json&#39;</span>
+<span class="p">)</span>
+<span class="n">cache</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">(</span><span class="mi">715093703</span><span class="p">)</span>
+<span class="n">cache</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">(</span><span class="mi">798911424</span><span class="p">)</span>
+<span class="n">cache</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">(</span><span class="mi">754829445</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:downloading a 2723.916MiB file from http://api.brain-map.org//api/v2/well_known_file_download/1026124469
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d5560d86f71246e2902164419c8fd3ff", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;hdmf-common&#39; version 1.1.3 because version 1.8.0 is already loaded.
+  return func(args[0], **pargs)
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;core&#39; version 2.2.2 because version 2.7.0 is already loaded.
+  return func(args[0], **pargs)
+WARNING:root:downloading a 2731.587MiB file from http://api.brain-map.org//api/v2/well_known_file_download/1026124743
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "973df91bdbe5477a8a0f871fe56ef148", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;hdmf-common&#39; version 1.1.3 because version 1.8.0 is already loaded.
+  return func(args[0], **pargs)
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;core&#39; version 2.2.2 because version 2.7.0 is already loaded.
+  return func(args[0], **pargs)
+WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v2/well_known_file_download/1026124326
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d069576e2ebe4a7185cc8908033996a6", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;hdmf-common&#39; version 1.1.3 because version 1.8.0 is already loaded.
+  return func(args[0], **pargs)
+/opt/anaconda3/envs/biorealistic-v1/lib/python3.11/site-packages/hdmf/utils.py:668: UserWarning: Ignoring cached namespace &#39;core&#39; version 2.2.2 because version 2.7.0 is already loaded.
+  return func(args[0], **pargs)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;allensdk.brain_observatory.ecephys.ecephys_session.EcephysSession at 0x14959ae90&gt;
+</pre></div></div>
+</div>
+<p>By default, the NWB files will be downloaded into the <em>ecephys_cache_dir</em>. Since nwb files are essentially just structured HDF5 files, you can use tools like <a class="reference external" href="https://www.hdfgroup.org/downloads/hdfview/">HDFView</a> or <a class="reference external" href="https://www.h5py.org/">h5py</a> to read them once they have been downloaded.</p>
+</section>
+<section id="Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells.">
+<h3>Step 2: Connecting VISL and Hippocampal onto our V1 cells.<a class="headerlink" href="#Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells." title="Link to this heading">#</a></h3>
+<p>To simulate synaptic stimulation from the VisL and Hippocampal cell recordings onto our V1 model, we will need to create a population of virtual cells representing the new cells and synapses. Unfortunately, the electrophysiology data doesn’t include information about network geometry, so it is up to the modeler to decide how to connect the experimental data to our network.</p>
+<p>As we did before, we will separate node populations called ‘VISl’ and ‘Hippocampus’ and use the NetworkBuilder to create feedforward synaptic connections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">visl</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;VISl&#39;</span><span class="p">)</span>
+<span class="n">visl</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="n">n_visl_units</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+<span class="n">visl</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">visal</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">visp</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="n">connection_rule_e2e</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <em>./build_network.nwb_inputs.py</em> for the full script that builds the SONATA network found in <em>./network_nwb_inputs/</em></p>
+</section>
+<section id="Step-3:-Updating-the-configuration-file-to-include-NWB-data.">
+<h3>Step 3: Updating the configuration file to include NWB data.<a class="headerlink" href="#Step-3:-Updating-the-configuration-file-to-include-NWB-data." title="Link to this heading">#</a></h3>
+<p>Before we can run the simulation, we must update the SONATA configuration file so that the simulation:</p>
+<ol class="arabic simple">
+<li><p>Knows which .nwb files to fetch spiking data from.</p></li>
+<li><p>Knows how to map cells (e.g., NWB units) from our experimental data to cells (e.g., SONATA nodes) in our ‘VISl’ and ‘hippocampus’ populations.</p></li>
+<li><p>Know which interval of the experimental data to use in our simulation.</p></li>
+</ol>
+<p>The most straightforward way of doing this is to add the following to our configuration file (<em>config.nwb_inputs.json</em>) in the “inputs” section:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;hippo_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hippocampus&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;CA1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CA3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Po&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;visl_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISl&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISl&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>When importing extracellular electrophysiology NWB files into your simulation, the <strong>input_type</strong> and <strong>module</strong> will always be set to <code class="docutils literal notranslate"><span class="pre">spikes</span></code> and <code class="docutils literal notranslate"><span class="pre">ecephys_probe</span></code>, respectively.</p></li>
+<li><p>The <strong>node_set</strong> is the subset of cells in our network used as virtual cells that generate spikes.</p></li>
+<li><p>The <strong>input_file</strong> in the name of the nwb file(s) to use for spikes. To use data from multiple sessions, just use a list of files:</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_798911424/session_798911424.nwb&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_754829445/session_754829445.nwb&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <strong>units</strong> field tells us which units from the nwb file to take their spiking data from based on specific keywords and/or unit-id. In the Neuropixels NWB files, each unit has a field called “location” to determine which region the data came from, which we can use here to tell that our model’s “hippocampus” cells use any data coming from either the CA1, CA3 or Po regions.</p></li>
+<li><p><strong>mapping</strong> tells how to map NWB <strong>units</strong> -&gt; SONATA <strong>node_set</strong>. Setting the value to <code class="docutils literal notranslate"><span class="pre">sample</span></code> to do a random mapping without replacement. You can also use option <code class="docutils literal notranslate"><span class="pre">sample_with_replacment</span></code>, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option <code class="docutils literal notranslate"><span class="pre">units_map</span></code> (in which case <strong>units</strong> will point to a CSV file).</p></li>
+<li><p><strong>interval</strong> tells the simulation which time interval to fetch spikes from. Inside the NWB file, there is a stimulus table that marks the stimuli at any given epoch. We use this table to get only spikes recorded in which a “drifting grating” stimulus was present with a given orientation and frequency. You can also use the following option if you know the specific time.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;start_time_ms&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;end_time_ms&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>And finally, we are ready to run our simulation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.nwb_inputs.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Warning: no DISPLAY environment variable.
+--No graphics will be displayed.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 01:15:34,915 [INFO] Created log file
+2024-10-24 01:15:35,070 [INFO] Building cells.
+2024-10-24 01:15:41,349 [INFO] Building recurrent connections
+2024-10-24 01:15:41,362 [INFO] Building virtual cell stimulations for LGN_spikes_sonata
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/opt/conda/lib/python3.12/site-packages/hdmf/spec/namespace.py:535: UserWarning: Ignoring cached namespace &#39;hdmf-common&#39; version 1.1.3 because version 1.8.0 is already loaded.
+  warn(&#34;Ignoring cached namespace &#39;%s&#39; version %s because version %s is already loaded.&#34;
+/opt/conda/lib/python3.12/site-packages/hdmf/spec/namespace.py:535: UserWarning: Ignoring cached namespace &#39;core&#39; version 2.2.2 because version 2.7.0 is already loaded.
+  warn(&#34;Ignoring cached namespace &#39;%s&#39; version %s because version %s is already loaded.&#34;
+/opt/conda/lib/python3.12/site-packages/hdmf/spec/namespace.py:535: UserWarning: Ignoring cached namespace &#39;hdmf-common&#39; version 1.1.3 because version 1.8.0 is already loaded.
+  warn(&#34;Ignoring cached namespace &#39;%s&#39; version %s because version %s is already loaded.&#34;
+/opt/conda/lib/python3.12/site-packages/hdmf/spec/namespace.py:535: UserWarning: Ignoring cached namespace &#39;core&#39; version 2.2.2 because version 2.7.0 is already loaded.
+  warn(&#34;Ignoring cached namespace &#39;%s&#39; version %s because version %s is already loaded.&#34;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 01:15:45,144 [INFO] Building virtual cell stimulations for VISl_spikes_nwb
+2024-10-24 01:15:48,042 [INFO] Building virtual cell stimulations for Hipp_spikes_nwb
+2024-10-24 01:15:49,677 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2024-10-24 01:15:49,678 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2024-10-24 01:15:49,679 [INFO] Block save every 5000 steps
+2024-10-24 01:16:09,188 [INFO]     step:5000 t_sim:500.00 ms
+2024-10-24 01:16:28,971 [INFO]     step:10000 t_sim:1000.00 ms
+2024-10-24 01:16:48,778 [INFO]     step:15000 t_sim:1500.00 ms
+2024-10-24 01:17:08,752 [INFO]     step:20000 t_sim:2000.00 ms
+2024-10-24 01:17:08,814 [INFO] Simulation completed in 79.14 seconds
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-Example:-Forcing-spontaneous-synaptic-activity-within-a-network">
+<h2>4. Example: Forcing spontaneous synaptic activity within a network<a class="headerlink" href="#4.-Example:-Forcing-spontaneous-synaptic-activity-within-a-network" title="Link to this heading">#</a></h2>
+<p>So far, in this tutorial, we’ve focused on generating stimuli using synaptic inputs from outside our main modeled network. In other tutorials, we have used different types of input to drive a simulation, including current-clamps, voltage-clamps, and extracellular stimulation. While these can generate the kinds of stimuli we might see in experiments and living brains, they tend not to be very granular, especially when we want to study the secondary effects of activity within a network.</p>
+<p>One option that BMTK offers for having more granular control of internal network activity is forcing certain synapses to spontaneously fire at pre-determined times. This cannot only give us more control of network dynamics, which would be much harder to achieve using current clamps or feedforward spike trains, but it also lets us isolate external activity from recurrent activity.</p>
+<p>In BMTK, this is done by adding a new input type to the “inputs” section of the SONATA config with <strong>input_type</strong> and <strong>module</strong> called <code class="docutils literal notranslate"><span class="pre">syn_activity</span></code>. At the minimum, we must define the pre-synaptic cells that will spontaneously fire and a list of firing times:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;syn_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;precell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;timestamps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>precell_filter</strong> determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK sponataneous activity to apply on to synapses with a source-cell that has attributes <code class="docutils literal notranslate"><span class="pre">population==VISp</span></code> and <code class="docutils literal notranslate"><span class="pre">ei==e</span></code>. If you know exactly which cells you want to use, you can filter by <code class="docutils literal notranslate"><span class="pre">node_id</span></code>:</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>timestamps</strong> is a list of timestamps, in milliseconds, to activate the neuron following startup. If you have too many timestamps to add to the JSON directly, you can also pass in a string path to a txt file where each line is a timestamp.</p></li>
+</ul>
+<p>In the above example, all the synapses with VISp excitatory pre-synaptic connections will fire at the given timestamp. For further granular control, you can all set the <strong>postcell_filter</strong> too for filtering out synapses based on post-synaptic cells. For example, if you want spontaneous firing in exc -&gt; inh connections (the above example would also include exc -&gt; exc synapses:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;syn_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;precell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;postcell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;i&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;timestamps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.spont_syns.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2024-10-24 00:05:52,474 [INFO] Created log file
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2024-10-24 00:05:52,522 [INFO] Building cells.
+2024-10-24 00:06:09,970 [INFO] Building recurrent connections
+2024-10-24 00:06:11,573 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2024-10-24 00:06:11,574 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2024-10-24 00:06:11,574 [INFO] Block save every 5000 steps
+2024-10-24 00:06:49,734 [INFO]     step:5000 t_sim:500.00 ms
+2024-10-24 00:07:28,517 [INFO]     step:10000 t_sim:1000.00 ms
+2024-10-24 00:08:07,476 [INFO]     step:15000 t_sim:1500.00 ms
+2024-10-24 00:08:46,555 [INFO]     step:20000 t_sim:2000.00 ms
+2024-10-24 00:08:46,576 [INFO] Simulation completed in 2.0 minutes, 35.0 seconds
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Example:-Using-spikes-from-CSV">1. Example: Using spikes from CSV</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Creating-your-own-csv-file">Creating your own csv file</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Example:-Dynamically-generating-custom-spike-trains">2. Example: Dynamically generating custom spike-trains</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Example:-Incorporating-real-data-with-NWB">3. Example: Incorporating real data with NWB</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Download-the-data">Step 1: Download the data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells.">Step 2: Connecting VISL and Hippocampal onto our V1 cells.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Updating-the-configuration-file-to-include-NWB-data.">Step 3: Updating the configuration file to include NWB data.</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Example:-Forcing-spontaneous-synaptic-activity-within-a-network">4. Example: Forcing spontaneous synaptic activity within a network</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/Ch_advanced_spikes_input.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

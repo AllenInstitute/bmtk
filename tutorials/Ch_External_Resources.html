@@ -1,0 +1,671 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>External Resources for Large-Scale Network Modeling &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Ch_External_Resources';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tools for Modeling: The Brain Modeling Toolkit and SONATA data format" href="Mouse_L4.html" />
+    <link rel="prev" title="Recording Extracellular Potentials and Current Source Densities" href="Ch_extracellular.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Models.html">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_spikes_input.html">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_extracellular.html">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">External Resources for Large-Scale Network Modeling</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="External-Resources-for-Large-Scale-Network-Modeling">
+<h1>External Resources for Large-Scale Network Modeling<a class="headerlink" href="#External-Resources-for-Large-Scale-Network-Modeling" title="Link to this heading">#</a></h1>
+<p>Building, simulating, and analyzing large-scale network models can often be a resource intensive process. Although BMTK can often run simple-to-moderate network models using commerically available hardware - many scientists will find themselves quickly requiring access to High-Performance Computing (HPC) resources when the computational, memory, and/or storage requirements become greater than even the best modern laptops and desktops. When this happens you will have to rely on the resources of
+you institution’s computing resources or even on the many Cloud Computing Platforms.</p>
+<p>Beyond access to higher computing and memory resources, there are other benefits to using Cloud and HPC resources in your workflow! Using a shared environment can improve collaboration and replication, reducing the headaches and pitfalls when every one has to install the software requirements on their own machines.</p>
+<p>In this tutorial we provide a list of tools and resources that neuroscientists can take advantage of.</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/06_opt_hpc_resources">06_opt_hpc_resources/</a></p>
+<section id="1.-Neuroscience-Gateway-(NSG)">
+<h2>1. Neuroscience Gateway (NSG)<a class="headerlink" href="#1.-Neuroscience-Gateway-(NSG)" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="http://www.nsgportal.org/">The Neuroscience Gateway (NSG)</a> is an NSF funded project that provides HPC resouces for neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does NSG include BMTK,
+but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See <a class="reference external" href="https://nsgprod.sdsc.edu:8443/portal2/tools.action">https://nsgprod.sdsc.edu:8443/portal2/tools.action</a> for a list of available software.</p>
+<p>The Neuroscience Gateway can be accessed in two different ways, either through the Web Portal interface or through the REST API. The focus in this tutorial will be on using the Web Portal.</p>
+<section id="1.1.-Example:-Using-NSG-to-run-L4-Model-simulations">
+<h3>1.1. Example: Using NSG to run L4 Model simulations<a class="headerlink" href="#1.1.-Example:-Using-NSG-to-run-L4-Model-simulations" title="Link to this heading">#</a></h3>
+<p>As an example of how one can utilize NSG running BMTK we will take the <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb">existing Mouse V1 Layer 4 Model</a> network and use it to run simulations of the Expanse computing cluster.</p>
+<section id="Step-1:-(Register-and)-Log-in">
+<h4>Step 1: (Register and) Log-in<a class="headerlink" href="#Step-1:-(Register-and)-Log-in" title="Link to this heading">#</a></h4>
+<p>If you are planning to use NSG for your research you will first need to register an account at <a class="reference external" href="https://www.nsgportal.org/gest/reg.php">https://www.nsgportal.org/gest/reg.php</a>. It is freely available to most researchers, educators, and students working in the neuroscience field.</p>
+<p>After you have registered go ahead and log in to the <a class="reference external" href="https://nsgprod.sdsc.edu:8443/portal2">NSG Portal</a></p>
+</section>
+<section id="Step-2:-Packaging-the-environment-files">
+<h4>Step 2: Packaging the environment files<a class="headerlink" href="#Step-2:-Packaging-the-environment-files" title="Link to this heading">#</a></h4>
+<p>We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the run_pointnet.py python script to execute, plus any necessary SONATA and model files.</p>
+<p><strong>Remember</strong> to download the files from the <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb">Mouse V1 Layer 4 Model tutorial</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>zip<span class="w"> </span>-rq<span class="w"> </span>l4model.zip<span class="w"> </span>Ch6_l4model/
+</pre></div>
+</div>
+</section>
+<section id="Step-3:-Setting-Up-an-NSG-Folder">
+<h4>Step 3: Setting Up an NSG Folder<a class="headerlink" href="#Step-3:-Setting-Up-an-NSG-Folder" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>When you login you will be prompted to <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Folder</span></code> that can be used for running BMTK applications. Click on that button, we will give it a “Label” of <strong>bmtk_simulations</strong> and an appropiate description:</p></li>
+</ol>
+<div><p><img alt="c4a6458d0a41405395547d3e5d2cbdfd" class="no-scaled-link" src="../_images/nsgportal_initial_1.png" style="width: 805px;" /></p>
+</div><ol class="arabic simple" start="2">
+<li><p>Navagate to <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> and select the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> button. Provide an appropiate label (we’ll use Label <strong>pointnet_l4model</strong>) and click the <code class="docutils literal notranslate"><span class="pre">Choose</span> <span class="pre">File</span></code> button to upload the previously created zip file. Click <code class="docutils literal notranslate"><span class="pre">Save</span></code> to upload the file.</p></li>
+</ol>
+<div><p><img alt="dd26cddb243442adabd0c729c2368a51" class="no-scaled-link" src="../_images/nsgportal_data_folder_wdata.png" style="width: 805px;" /></p>
+</div></section>
+<section id="Step-4:-Setup-and-Run-Task">
+<h4>Step 4: Setup and Run Task<a class="headerlink" href="#Step-4:-Setup-and-Run-Task" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>Navigate to the <strong>bmtk_simulations</strong> &gt; <strong>Tasks</strong> folder and select <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Task</span></code> button.</p></li>
+<li><p>First give a <code class="docutils literal notranslate"><span class="pre">Description</span></code> for the task - we’ll call it <strong>pointnet_l4model</strong></p></li>
+</ol>
+<div><p><img alt="da4e477b0e64401cba800fbec40d3eac" class="no-scaled-link" src="../_images/nsgportal_task_summary_pannel_cropped.png" style="width: 805px;" /></p>
+</div><ol class="arabic simple" start="3">
+<li><p>Under the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code> panel choose the uploaded zip file for with the <strong>pointent_l4model</strong> Label and click <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code></p></li>
+</ol>
+<div><p><img alt="10522bdee0fd485a93451d72f3430f58" class="no-scaled-link" src="../_images/nsgportal_select_data_panel.png" style="width: 805px;" /></p>
+</div><ol class="arabic simple" start="4">
+<li><p>Under the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Tool</span></code> panel we select the <strong>Python on Expanse</strong> option</p></li>
+</ol>
+<div><p><img alt="c11f9fe3d5094b5d8308e6444d89e5e9" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted1.png" style="width: 805px;" /></p>
+</div><ol class="arabic simple" start="5">
+<li><p>Finally Select the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Parameters</span></code> Panel to give the run-time parameters. Enter the parameters as specified below and click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Parameters</span></code> button.</p></li>
+</ol>
+<div><p><img alt="6d280557546d467a945479e6ff465f19" class="no-scaled-link" src="../_images/nsgportal_set_parameters_panel1.png" style="width: 805px;" /></p>
+</div><ul class="simple">
+<li><p>Set <strong>Max Hours to Run: 1.0</strong> - Depending on the size of the network, the <strong>tstop</strong> and <strong>dt</strong>, and the number of Cores we may have to increase/decrease this value.</p></li>
+<li><p>Unselect <strong>Do you require nrnivmodl compilation</strong> - flag only applies to NEURON (eg. BioNet) applications.</p></li>
+<li><p>Set <strong>Enter Main Input Python Filename: run_pointnet.py</strong> - Entry python script to run.</p></li>
+<li><p>Set <strong>Enter sub-directory name: Ch6_l4model</strong> - This is required since the way we zipped up our data everything is under the <em>Ch6_l4model/</em> folder.</p>
+<ul>
+<li><p>To speed up the simulation we will run it parallelized using MPI with 8 processs.</p></li>
+<li><p>Set <strong>Enter Number of Nodes: 1</strong> - Since we are significantly less than the avaialbe cores/memory per node we can benefit from keeping all MPI Tasks on the same node.</p></li>
+<li><p>Set <strong>Enter Number of MPI Tasks per Node: 8</strong> and <strong>Enter Number of Cores per Node: 8</strong></p></li>
+<li><p>Set <strong>Enter Number of GB Memory per Node: 16</strong></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Notes: Building the Network and LGN Inputs</strong></p>
+<p>Running the <strong>run_pointnet.py</strong> script requires that the SONATA network files (<em>network/</em>) and lgn inputs (<em>inputs/spikes.gratings.90deg_4Hz.h5</em>) already exists. If they don’t, or you want to re-generate them, you can replace the <strong>Enter Main Input Python Filename:</strong> option with the <em>build_network.py</em> or <em>run_filternet.py</em> scripts.</p>
+<ol class="arabic simple" start="6">
+<li><p>Now that you have selected the data, the tool, and the parameters click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">Run</span> <span class="pre">Task</span></code> button to submit the task to the HPC.</p></li>
+</ol>
+</section>
+<section id="Fetching-the-Results">
+<h4>Fetching the Results<a class="headerlink" href="#Fetching-the-Results" title="Link to this heading">#</a></h4>
+<p>After clickin on <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">Run</span> <span class="pre">Task</span></code> the task will be submitted to the NSQ queue. Depending on current HPC usage and the requested resources there may be a delay between the time when a job is submitted and the time the task starts running. You can select the <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Status</span></code> button to see the <strong>Status</strong> of the current task.</p>
+<div><p><img alt="f0818bf759e84f5db1ee652a1ebde54f" class="no-scaled-link" src="../_images/nsgportal_tasks_panel_filled.png" style="width: 805px;" /></p>
+</div></section>
+</section>
+<section id="1.2.-Example:-Using-NSG-for-BioNet-(eg.-NEURON)-Simulations">
+<h3>1.2. Example: Using NSG for BioNet (eg. NEURON) Simulations<a class="headerlink" href="#1.2.-Example:-Using-NSG-for-BioNet-(eg.-NEURON)-Simulations" title="Link to this heading">#</a></h3>
+<p>The above tutorial will work when running <em>PointNet</em>, <em>FilterNet</em>, <em>Builder</em>, or <em>Analysis</em> components of BMTK. However running <em>BioNet</em> simulations require a slight changes to intialize a task properly since it requires using the NEURON simulation underneath. In this example we will show a how to run a multi-core BioNet simualation using the network generated in <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch3_multicells/3.%20Multipopulation%20biophysical.ipynb">bmtk-workshop Chapter
+3</a> taking note to highlight difference from the example above.</p>
+<section id="Step-1:-Packaging-Data">
+<h4>Step 1: Packaging Data<a class="headerlink" href="#Step-1:-Packaging-Data" title="Link to this heading">#</a></h4>
+<p>We first want to package the <em>Ch3_mutlicells/</em> folder into a single zip file so it will contain the python scripts and all necessary network and model files to run the full simulation. <strong>HOWEVER</strong> The modfiles stored in the <em>components/mechanisms/modfiles/</em> folder need to be moved to the root directory. NSG will need to compile these files before running the simulation and if they are stored under the <em>components/</em> sub-directory they will not be found.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cp<span class="w"> </span>-r<span class="w"> </span>../Ch3_multicells<span class="w"> </span>.
+$<span class="w"> </span>mv<span class="w"> </span>Ch3_multicells/components/mechanisms/modfiles/*<span class="w"> </span>Ch3_multicells/
+$<span class="w"> </span>zip<span class="w"> </span>-rq<span class="w"> </span>bionet_multicells.zip<span class="w"> </span>Ch3_multicells/
+</pre></div>
+</div>
+</section>
+<section id="Step-2:-Uploading-the-Data">
+<h4>Step 2: Uploading the Data<a class="headerlink" href="#Step-2:-Uploading-the-Data" title="Link to this heading">#</a></h4>
+<ol class="arabic simple">
+<li><p>Log into NSGPortal and either select <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Folder</span></code>, or select the existing <strong>bmtk_simulations</strong> folder if it exists.</p></li>
+<li><p>Under <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> folder select <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> to upload the created <em>bionet_multicells.zip</em> folder with an descriptive Label</p></li>
+</ol>
+<div><p><img alt="e190c82599214d489a2c9497b5c3fb4a" class="no-scaled-link" src="../_images/nsgportal_alldata_panel_multiple.png" style="width: 805px;" /></p>
+</div></section>
+<section id="Step-3:-Creating-and-Submitting-a-Task">
+<h4>Step 3: Creating and Submitting a Task<a class="headerlink" href="#Step-3:-Creating-and-Submitting-a-Task" title="Link to this heading">#</a></h4>
+<p>Under <strong>bmtk_simulations</strong> &gt; <strong>Tasks</strong> select the <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Task</span></code> button</p>
+<ol class="arabic simple">
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Task</span> <span class="pre">Summary</span></code> tab give the task an appropiate description (we’ll call it <strong>bionet_multicells</strong>)</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code> tab make sure to select the <strong>bionet_multicell</strong> data we uploaded in the previous step and click <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code>.</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Tool</span></code> tab choose option <strong>NEURON on Expanse</strong></p></li>
+</ol>
+<div><p><img alt="3117a8079ba6420fa0852cf5c7d7c316" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted2.png" style="width: 805px;" /></p>
+</div><ol class="arabic simple" start="4">
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Parameters</span></code> tab we can use the following setup, the click <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Parameters</span></code> button.</p></li>
+</ol>
+<div><p><img alt="5f4c5dd504884de1874c843ce254592d" class="no-scaled-link" src="../_images/nsgportal_set_parameters_bionet.png" style="width: 805px;" /></p>
+</div><p>The following parameters are important</p>
+<ul class="simple">
+<li><p>Make sure the select <strong>Do you required nrnivmodl compilation</strong> in order to compile the .mod file necessacary to run the models</p></li>
+<li><p>Set <strong>Enter Main Input Filename: run_bionet.py</strong> as this is the script to execute the BMTK simulation</p></li>
+<li><p>Make sure to select <strong>Please click here if your code is in python and not HOC</strong></p></li>
+<li><p>Due to the structure of the zip file we need to set <strong>Enter sub-directory name: Ch3_mutlicells</strong></p></li>
+</ul>
+<p>Other settings that can be adjusted:</p>
+<ul class="simple">
+<li><p>For a modest network <strong>Maximum Hours to Run: 0.5</strong> is plenty enough. But for longer simulations or larger networks you may need to increase this value otherwise the job will stop before BMTK has finished.</p></li>
+<li><p>We will set <strong>Number of MPI Tasks per Node</strong> and <strong>Number of Cores per Node</strong> to <strong>8</strong>, and <strong>Number of Nodes</strong> to <strong>1</strong> to parallelize the simulation on 8 cores.</p></li>
+<li><p>For current network <strong>Number of GB Memory per Node: 32</strong> will suffice.</p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p>Finally select <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">Run</span> <span class="pre">Task</span></code> to submit the Task to the queue.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#1.-Neuroscience-Gateway-(NSG)">1. Neuroscience Gateway (NSG)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.1.-Example:-Using-NSG-to-run-L4-Model-simulations">1.1. Example: Using NSG to run L4 Model simulations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-(Register-and)-Log-in">Step 1: (Register and) Log-in</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Packaging-the-environment-files">Step 2: Packaging the environment files</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Setting-Up-an-NSG-Folder">Step 3: Setting Up an NSG Folder</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-4:-Setup-and-Run-Task">Step 4: Setup and Run Task</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Fetching-the-Results">Fetching the Results</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#1.2.-Example:-Using-NSG-for-BioNet-(eg.-NEURON)-Simulations">1.2. Example: Using NSG for BioNet (eg. NEURON) Simulations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Packaging-Data">Step 1: Packaging Data</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Uploading-the-Data">Step 2: Uploading the Data</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Creating-and-Submitting-a-Task">Step 3: Creating and Submitting a Task</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/Ch_External_Resources.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

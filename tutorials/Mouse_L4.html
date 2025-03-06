@@ -1,0 +1,1656 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tools for Modeling: The Brain Modeling Toolkit and SONATA data format &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/Mouse_L4';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example Networks and Simulations" href="../examples.html" />
+    <link rel="prev" title="External Resources for Large-Scale Network Modeling" href="Ch_External_Resources.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_01_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_02_single_cell_syn.html">BioNet: Single cell with with synaptic input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_03_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_04_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_05_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_06_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_07_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="auditory_filternet.html">Auditory FilterNet: Generating stimuli from auditory input</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bionet_disconnected_sims.html">Replaying disconnected simulations in BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Models.html">Options for importing external models into BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_NEST_Cusom_Models.html">Options for importing external models into PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_spikes_input.html">Advanced options for spiking (synaptic) inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_advanced_stim.html">Advanced stimulus options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_extracellular.html">Recording Extracellular Potentials and Current Source Densities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Ch_External_Resources.html">External resources for large-scale network modeling</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Mouse V1 Layer IV example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tools for Modeling: The Brain Modeling Toolkit and SONATA data format</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Tools-for-Modeling:-The-Brain-Modeling-Toolkit-and-SONATA-data-format">
+<h1>Tools for Modeling: The Brain Modeling Toolkit and SONATA data format<a class="headerlink" href="#Tools-for-Modeling:-The-Brain-Modeling-Toolkit-and-SONATA-data-format" title="Link to this heading">#</a></h1>
+<p>source: <a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/modeling_tut_2021">AllenInstitute/bmtk</a></p>
+<p>This tutorial will show how to build and simulate a toy model of the mouse V1 cortical area network using the Brain Modeling Toolkit (BMTK) <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386">[Dai et al., PLOS Comp. Bio., 2020]</a>. Including how to modify and simulate larger more realistic visual cortical models released by the Allen Institute <a class="reference external" href="https://www.cell.com/neuron/pdf/S0896-6273(20)30067-2.pdf">[Billeh et al., Neuron, 2020]</a>. The tutorial will also
+briefly explain the SONATA data format <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007696">[Dai et al., PLOS Comp. Bio., 2020]</a> and how the BMTK uses the format to describe network models, simulations and results.</p>
+<p>In this tutorial we will show how to build and simulate a a modistly sized toy network based on the Mouse Primary Visual Cortex (V1) for Layer 4 (which is the primary layer of the L4 for receiving thamalic stimulus). The L4 model <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006535">[Arkhipov et al., PLOS Comp. Bio., 2018]</a>, further described <a class="reference external" href="https://portal.brain-map.org/explore/models/l4-mv1">here</a>, will have a full model that contains 45,000+ cells and
+millions of connections:</p>
+<p><img alt="Drawing" src="../_images/layer4_side_view.png" /> <img alt="Drawing" src="../_images/layer4_angled_view.png" /></p>
+<p>Building and running the actual L4 model can take many hours and will require access to HPC resources. The toy model we will build and simulate will have only 300 cells to allow us to build and simulate the model in a few minutes for most desktop and laptop machines.</p>
+<p>For more information about cortical modeling and simulation at the Allen Institute: <a class="reference external" href="https://portal.brain-map.org/explore/models">https://portal.brain-map.org/explore/models</a></p>
+<p>For more information and tutorials on using the BMTK: <a class="reference external" href="https://alleninstitute.github.io/bmtk">https://alleninstitute.github.io/bmtk</a></p>
+<section id="Installing-BMTK">
+<h2>Installing BMTK<a class="headerlink" href="#Installing-BMTK" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://alleninstitute.github.io/bmtk/installation.html">[https://alleninstitute.github.io/bmtk/installation.html]</a></p>
+<p>BMTK will require python 2.7 or 3.6+. You can clone the latest developement branch from <a class="github reference external" href="https://github.com/AllenInstitute/bmtk.git">AllenInstitute/bmtk.git</a>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>https://github.com/AllenInstitute/bmtk
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>bmtk
+$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Alternatively one can install using python’s pip utility:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>bmtk
+</pre></div>
+</div>
+<p>Or if you’re using a CONDA environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>kaeldai<span class="w"> </span>bmtk
+</pre></div>
+</div>
+<p>For simulation <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON</a> will also be required to be installed (including python bindings). To quickly install NEURON on your machine:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>neuron
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge neuron
+</pre></div>
+</div>
+<section id="The-BMTK-Docker-Image">
+<h3>The BMTK Docker Image<a class="headerlink" href="#The-BMTK-Docker-Image" title="Link to this heading">#</a></h3>
+<p>We have included a docker image that will come with BMTK, neuron, and a ready-to-use jupyter notebook server with this tutorial and it’s content already installed. To run the docker image</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">## Linux or OSX</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/home/shared/workspace<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>alleninstitute/bmtk<span class="w"> </span>jupyter
+
+<span class="c1">## Windows PowerShell</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span>:/home/shared/workspace<span class="w"> </span>-p<span class="w"> </span><span class="m">8888</span>:8888<span class="w"> </span>alleninstitute/bmtk<span class="w"> </span>jupyter
+</pre></div>
+</div>
+<p>Then open a web browser to <strong>127.0.0.1:8888/</strong>. This current tutorial can be found under the folder <em>tutorials/modeling_tut_2021/Mouse_L4.ipynb</em>.</p>
+</section>
+</section>
+<section id="Building-the-Network">
+<h2>Building the Network<a class="headerlink" href="#Building-the-Network" title="Link to this heading">#</a></h2>
+<p><img alt="9a7e588124f64f68953623fe9b054de3" src="../_images/bmtk_workflow_builder.png" /></p>
+<p>Before we can start simulation we must first build (or receive from a third party) the network model files. To create our toy network of 300 cells in BMTK we will use the <em>builder</em> component, which allows us to build heterogeneous, multi-graph networks and save them in the SONATA format.</p>
+<section id="Building-the-cells">
+<h3>Building the cells<a class="headerlink" href="#Building-the-cells" title="Link to this heading">#</a></h3>
+<p><img alt="c716753403ef42d4b6c61d985827c3d0" src="../_images/builder_add_nodes.png" /></p>
+<p>The first step is figuring out different cell types and parameters we want to use in our network. When we know that we can begin building our network model first by initializing the network using <em>bmtk.builder.networks.NetworkBuilder</em> plus calls to <em>add_nodes()</em> method</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="c1"># intialize a new population of cells called &quot;V1&quot;</span>
+<span class="n">v1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+
+<span class="c1"># Add a population of 80 &quot;Scnn1a&quot; type nodes</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+
+    <span class="c1"># Reserved SONATA keywords used during simulation</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+
+    <span class="c1"># The x, y, z locations of each cell in a column</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+
+    <span class="c1"># Euler rotations of the cells</span>
+    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_zaxis</span><span class="o">=-</span><span class="mf">3.646878266</span><span class="p">,</span>
+
+    <span class="c1"># Optional parameters</span>
+    <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The above call to add_nodes() will add <strong>N=80</strong> different individual cells to our network.</p>
+<p>The attributes <strong>model_type</strong>, <strong>model_template</strong>, <strong>dynamics_params</strong>, <strong>model_processing</strong> and <strong>morphology</strong> are SONATA reserved keywords that will instruct BMTK (or other SONATA compliant tools) how to build cell models during the simulation. In this model we are using biophysically realistic models, with dynamical parameters (.json) and morphology (.swc) that we can download from the <a class="reference external" href="https://celltypes.brain-map.org/data">Allen Cell Types Database</a>. We have already downloaded the
+required json and swc files and have saved them under <em>components/biophysical_neuron_templates</em> and <em>components/morphologies/</em>, respectively.</p>
+<p>Attributes <strong>x</strong>, <strong>y</strong>, <strong>z</strong> are used as the euclidian locations of the cells, while the <strong>rotation_angle</strong> parameters are used to orientat to rotations of cells. Note that for the x and y rotations we are passing in an array of size N, but the z rotation is defined by a scalar. SONATA and the BMTK Network Builder allows us to differentiate between attributes that are unique to each cell versus shared attributes. Each of the 80 cells will have unique x and y rotations, but share the same
+pre-calculated z rotatation</p>
+<p>The final remaining attributes are not reserved SONATA keywords, but rather optional attributes that will be helpful during analysis. The <strong>tuning_angle</strong> property (how well a cell is tuned for different stimulus grating) is an attribute shown is excitatory cells of the visual cortex and thus wouldn’t be applicable to other models or even non-exciatory cells-types</p>
+<p>We now can ad other cell-types to our model, including inhibitory PV (parvalbumin) cells, with future calls to <strong>add_nodes</strong>:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="c1"># Rorb excitatory cells</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Rorb&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;473863510_fit.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Rorb_325404214_m.swc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_zaxis</span><span class="o">=-</span><span class="mf">4.159763785</span><span class="p">,</span>
+    <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="p">)</span>
+
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="c1"># Nr5a1 excitatory cells</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Nr5a1&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;473863035_fit.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Nr5a1_471087815_m.swc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
+    <span class="n">rotation_angle_zaxis</span><span class="o">=-</span><span class="mf">4.159763785</span><span class="p">,</span>
+    <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="c1"># Parvalbuim inhibitory cells, note these don&#39;t have a tuning angle and ei=i</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV1&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472912177_fit.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Pvalb_470522102_m.swc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+    <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
+    <span class="n">rotation_angle_zaxis</span><span class="o">=-</span><span class="mf">2.539551891</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Creating-the-connections">
+<h3>Creating the connections<a class="headerlink" href="#Creating-the-connections" title="Link to this heading">#</a></h3>
+<p><img alt="bf82b2c2ce3c49af97d642d0438c18aa" src="../_images/builder_add_edges.png" /></p>
+<p>Now that we have our cells/nodes, we can go ahead and create the synapse/connectivity matrix using the <strong>add_edges</strong> method. We will want to call this method multiple times to add different connection types with different properties and rules. For each connection type we must select what subpopulation of cells to use for the source (pre-synaptic) and target (post-synaptic) cells. We can select our cells using any combination of attributes</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="c1">## Exc --&gt; Inh type connections.</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+
+    <span class="c1"># Each source (ei=&#39;e&#39;) cell will connect once to every target (e) cell</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+
+    <span class="c1"># SONATA keywords</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0006</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+
+    <span class="c1"># Special BMTK attributes specifying where to set target synape location</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e+20</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="c1">## Inh --&gt; Exc type connections.</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+
+    <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fee6d903c88&gt;
+</pre></div></div>
+</div>
+<p>The <strong>connection_rule</strong> parameter is used to determine the number of connections/synapses between each source and target cell. In the simplist case like above we can pass in a scalar value. You may also pass in a matrix of shape T x S (T=# or targets, S=# of sources), or use in a custom function.</p>
+<p>With a user defined function it will pass in a source and target, which can be used as dictionaries to access cell parameters, and expects to return the number of connections</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="o">&lt;</span><span class="n">my_connection_rule</span><span class="o">&gt;</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_params</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">N</span>
+</pre></div>
+</div>
+<p>For example for Inh –&gt; Inh connection we want there to be no connections if the cells have the same id, otherwise randomly select the number of synapses</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ignore_autapses</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="c1"># No synapses if source == target, otherwise randomize</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="c1">## Inh --&gt; Inh type connections.</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+
+    <span class="n">connection_rule</span><span class="o">=</span><span class="n">ignore_autapses</span><span class="p">,</span>
+
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.00015</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToInh.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e+20</span><span class="p">]</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fee6d903be0&gt;
+</pre></div></div>
+</div>
+<p>For Exc –&gt; Exc we want to test an theory that cells with closer <strong>tuning_angle</strong> are more likely to be connected with each other:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tuning_angle</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">max_syns</span><span class="p">):</span>
+    <span class="c1"># ignore autoapses</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># num of synapses is higher the closer the tuning_angles</span>
+    <span class="n">src_tuning</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
+    <span class="n">trg_tuning</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">src_tuning</span> <span class="o">-</span> <span class="n">trg_tuning</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span> <span class="o">-</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">p_dist</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">dist</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">max_syns</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p_dist</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+
+    <span class="n">connection_rule</span><span class="o">=</span><span class="n">tuning_angle</span><span class="p">,</span>
+    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_syns&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="c1"># pass in options to tuning_angle function</span>
+
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">3.0e-05</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+
+    <span class="c1"># Will allow us to use our own custom functions to set syn_weight during simulation</span>
+    <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;set_syn_weight&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fee6d90e0f0&gt;
+</pre></div></div>
+</div>
+<p>Other connection parameters, particularly <strong>syn_weight</strong> and <strong>delay</strong>, are scalar values and will be the same for each connection. There are multiple ways to set such values so it is customized for each connection. We will show one way of doing so later during the simulation stage, using the special BMTK <strong>weight_function</strong> keyword.</p>
+</section>
+<section id="Building-the-network">
+<h3>Building the network<a class="headerlink" href="#Building-the-network" title="Link to this heading">#</a></h3>
+<p><img alt="df2b36e1a6de4f79a95e0b5af3fa7fd7" src="../_images/builder_complete_network.png" /></p>
+<p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="External-Network">
+<h4>External Network<a class="headerlink" href="#External-Network" title="Link to this heading">#</a></h4>
+<p>BMTK and SONATA gives modelers the options to build different parts of a network piecewise. For example we may want to build models of thalamacortical and higher cortical areas that we can connect to our V1 model.</p>
+<p>Next we create a separate network of the LGN, an flat area of the Thalamus with exciatory cells that project onto the V1. As before we define our cells, connect them to the v1 network, then build and save them as SONATA files in the <em>network/</em> directory.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;lgn&#39;</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:sOFF_TF8&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;sOFF_TF8.json&#39;</span><span class="p">,</span>
+
+    <span class="c1"># Special keyword used to determine the location and size of unit in</span>
+    <span class="c1"># the receptive field</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:sON_TF8&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;sON_TF8.json&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="c1"># Select all LGN cells as the sources</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
+
+    <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0003</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;LGN_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="c1"># Select all LGN cells as the sources</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
+
+    <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;LGN_ExcToInh.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1e+20</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<p>Unlike the V1 cells, the LGN cells are <strong>model_type=virtual</strong>. In SONATA <em>virtual</em> cells are special type of cell models that can’t be recorded from, but can be used to synapse onto and stimulate other cells. There are essentially place-holders for spike trains (that will be set during the simulation).</p>
+<p>we have given the lgn special dynamics_params and model_template values, however these won’t be used during the V1 simulation. There parameter values are used by FilterNet module.</p>
+</section>
+</section>
+</section>
+<section id="Simulating-the-Network">
+<h2>Simulating the Network<a class="headerlink" href="#Simulating-the-Network" title="Link to this heading">#</a></h2>
+<p><img alt="eaf2791390064ec88fb2c61f32df503b" src="../_images/bmtk_workflow_simulator.png" /></p>
+<p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
+<p>Now that we have built the SONATA network models files (or recieved the files from another source), we can go ahead and setup a simulation to run. To simulate the multi-compartment cell models we will use the BioNet component of the BMTK - which uses the <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON</a> simulator libraries for simulating our network.</p>
+<p>Before we can do that there are still a few things that need to be taken care of, including setting up run-time parameters, choosing the stimulus, and deciding what to record.</p>
+<section id="Simulation-Directory-Structure">
+<h3>Simulation Directory Structure<a class="headerlink" href="#Simulation-Directory-Structure" title="Link to this heading">#</a></h3>
+<p>Almost all of the parameters required to initialize and run a full V1 simulation will be stored in a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file">SONATA base json configuration file</a>, in this case named <em>config.bionet.json</em>. If you need to (re)create the file the following command will create a template:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">bmtk</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">sim_setup</span>  \
+ <span class="o">--</span><span class="n">network</span> <span class="n">network</span>              \
+ <span class="o">--</span><span class="n">dt</span> <span class="mf">0.1</span>                       \
+ <span class="o">--</span><span class="n">tstop</span> <span class="mf">2000.0</span>                 \
+ <span class="o">--</span><span class="nb">compile</span><span class="o">-</span><span class="n">mechanisms</span>           \
+ <span class="o">--</span><span class="n">include</span><span class="o">-</span><span class="n">examples</span>             \
+ <span class="o">--</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">bionet</span><span class="o">.</span><span class="n">json</span>    \
+ <span class="n">bionet</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>Opening up the json with a text editor we can see the configuration is divided into different sections</p>
+<section id="%22networks%22">
+<h4>“networks”<a class="headerlink" href="#%22networks%22" title="Link to this heading">#</a></h4>
+<p>This section contains paths to the sonata network files we built above. We can use this to add or remove node populations and edges before running another simulation.</p>
+</section>
+<section id="%22components%22">
+<h4>“components”<a class="headerlink" href="#%22components%22" title="Link to this heading">#</a></h4>
+<p>Contains the paths to the different external files and parameters required to run a simulation; morphologies, electricophysicological parameters (eg. NeuroML files), synaptic model parameters, etc. Files that are not directly defined as a part of the SONATA files but used by specific simulator software (eg NEURON, NEST).</p>
+<p>The required files for this tutorial has already be created. In other cases one would likely have to spend a signficant amount of time creating the optimized parameter files.</p>
+</section>
+<section id="%22run%22">
+<h4>“run”<a class="headerlink" href="#%22run%22" title="Link to this heading">#</a></h4>
+<p>Run-time parameters and conditions, including simulation time and the time-step (all time values are in miliseconds).</p>
+</section>
+<section id="%22output%22">
+<h4>“output”<a class="headerlink" href="#%22output%22" title="Link to this heading">#</a></h4>
+<p>Paths and parameters used for simulation output and logging.</p>
+</section>
+<section id="%22reports%22">
+<h4>“reports”<a class="headerlink" href="#%22reports%22" title="Link to this heading">#</a></h4>
+<p>By default BMTK will record the V1 cell spikes into a file specified under <strong>outputs/spikes_file</strong>. For these types of models we can also record other parameters like membrane potential, calcium fluxuation, or extracellular electrical fields by adding to the “reports” section of the configuration file.</p>
+<p>For example the following can be used to record the soma membrane potential traces for our Scnn1a cells and save them in <em>output/membrane_potential.h5</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;pop_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scnn1a&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="%22inputs%22">
+<h4>“inputs”<a class="headerlink" href="#%22inputs%22" title="Link to this heading">#</a></h4>
+<p>This section can be used to specify one or more stimulus we want to use on our V1 model. Depending on the type of cell models being used, we can use spike trains, current clamps, voltage clamps, or extracellular electrodes.</p>
+<p>For our V1 network we created a population of LGN “virtual” cells that synapse onto our V1 cells and drive them with spike trains. All that is missing is a “spike-trains” file, which can be either a CSV, NWB, or SONATA HDF5 file. BMTK includes way to create spike-train files.</p>
+<p>The following will create a series of spike trains for the LGN cells using a Poisson distrubtion of 8 Hz:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
+
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
+    <span class="n">firing_rate</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>    <span class="c1"># We can also pass in a nonhomoegenous function/array</span>
+    <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>    <span class="c1"># Firing starts at 0 s up to 2 seconds</span>
+<span class="p">)</span>
+
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;inputs/lgn_spikes.poisson.h5&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/lgn_spikes.poisson.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>and update the “inputs” section</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/lgn_spikes.poisson.h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>BMTK also includes a tool FilterNet that allows us to turn movies and images into firing rates using optimized filter models, which we will do in future sections.</p>
+</section>
+</section>
+<section id="Running-the-simulation">
+<h3>Running the simulation<a class="headerlink" href="#Running-the-simulation" title="Link to this heading">#</a></h3>
+<p>Now that we have our configuration files as we need, we can go ahead and run a simulation. We can execute the <em>run_bionet.py</em> script using the command line option:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_bionet.py<span class="w"> </span>config.bionet.json
+</pre></div>
+</div>
+<p>Although this toy network is small enough to run most modern computers and laptops, for larger networks we may need to run the program on a cluster with cores. To do so</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span>&lt;N&gt;<span class="w"> </span>nrniv<span class="w"> </span>-mpi<span class="w"> </span>-python<span class="w"> </span>run_bionet.py<span class="w"> </span>config.bionet.json
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2021-06-24 11:23:10,647 [INFO] Created log file
+2021-06-24 11:23:10,780 [INFO] Building cells.
+2021-06-24 11:23:35,286 [INFO] Building recurrent connections
+2021-06-24 11:25:53,734 [INFO] Building virtual cell stimulations for LGN_spikes
+2021-06-24 11:26:18,614 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2021-06-24 11:26:18,615 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2021-06-24 11:26:18,616 [INFO] Block save every 5000 steps
+2021-06-24 11:27:47,544 [INFO]     step:5000 t_sim:500.00 ms
+2021-06-24 11:29:18,175 [INFO]     step:10000 t_sim:1000.00 ms
+2021-06-24 11:30:49,458 [INFO]     step:15000 t_sim:1500.00 ms
+2021-06-24 11:32:21,530 [INFO]     step:20000 t_sim:2000.00 ms
+2021-06-24 11:32:21,593 [INFO] Simulation completed in 6.0 minutes, 2.979 seconds
+</pre></div></div>
+</div>
+<p>As specified in the “output” and “reports” section, the results of the simulation will be saved in different files in the <em>output</em> directory. The spike-trains files, <em>spikes.h5</em>, and membrane potentials, <em>membrane_potential.h5</em> are <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#output-file-formats">SONATA output data formatted file</a> and can be read and analyized by any tools that can read SONATA.</p>
+<p>Using BMTK to display the results:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="c1"># Plot the spike trains raster</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_34_0.png" src="../_images/tutorials_Mouse_L4_34_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
+
+<span class="c1"># Plot the membrane potential trace</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_35_0.png" src="../_images/tutorials_Mouse_L4_35_0.png" />
+</div>
+</div>
+<section id="Cell-perturbations">
+<h4>Cell perturbations<a class="headerlink" href="#Cell-perturbations" title="Link to this heading">#</a></h4>
+<p>A usefull tool in network neuroscience is the ability to stimuluate or depress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on a multiple neurons by adding the following to the “inputs” section of the configuration file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;pop_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nr5a1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L4&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Will reset BioNet and the NEURON simulator. Required if we want</span>
+<span class="c1"># to run the simulator multiple times in the same notebook.</span>
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2021-06-24 11:33:07,574 [INFO] Created log file
+Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
+2021-06-24 11:33:07,675 [INFO] Building cells.
+2021-06-24 11:34:58,720 [INFO] Building recurrent connections
+2021-06-24 11:37:23,018 [INFO] Building virtual cell stimulations for LGN_spikes
+2021-06-24 11:37:49,440 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2021-06-24 11:37:49,441 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2021-06-24 11:37:49,442 [INFO] Block save every 5000 steps
+2021-06-24 11:40:57,854 [INFO]     step:5000 t_sim:500.00 ms
+2021-06-24 11:44:23,932 [INFO]     step:10000 t_sim:1000.00 ms
+2021-06-24 11:47:32,163 [INFO]     step:15000 t_sim:1500.00 ms
+2021-06-24 11:50:43,726 [INFO]     step:20000 t_sim:2000.00 ms
+2021-06-24 11:50:43,783 [INFO] Simulation completed in 12.0 minutes, 54.34 seconds
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_39_0.png" src="../_images/tutorials_Mouse_L4_39_0.png" />
+</div>
+</div>
+</section>
+<section id="Recording-ECP">
+<h4>Recording ECP<a class="headerlink" href="#Recording-ECP" title="Link to this heading">#</a></h4>
+<p>The configuration has been set-up to record spike-trains and the membrane potentials of a subset of cells. BioNet also includes the ability to record the extracelluar potential using a simulated electrode, which will allow us to find the ECP and even the local field potential.</p>
+<p>First we must add the following to the “inputs” section</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/devices/linear_electrode.csv&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <em>devices/linear_electrode.csv</em> file is what we use to specify the electrode and all the recording channels. for this simulation the electrode will be placed through the center of the V1 column with recording channels at every 100 microns (the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> coordinates of the electrode should be in the same space as the cells).</p>
+<p><img alt="1ca20001c0e643a9add87650ac938318" src="../_images/v1_neuropixel_probe.png" /></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>channel</p></th>
+<th class="head"><p>x_pos</p></th>
+<th class="head"><p>y_pos</p></th>
+<th class="head"><p>z_pos</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0.0</p></td>
+<td><p>0</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>0.0</p></td>
+<td><p>100</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>0.0</p></td>
+<td><p>200</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>0.0</p></td>
+<td><p>300</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>0.0</p></td>
+<td><p>400</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>0.0</p></td>
+<td><p>500</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>0.0</p></td>
+<td><p>600</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>0.0</p></td>
+<td><p>700</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-even"><td><p>8</p></td>
+<td><p>0.0</p></td>
+<td><p>800</p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>9</p></td>
+<td><p>0.0</p></td>
+<td><p>900</p></td>
+<td><p>0.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Now we can run the simulation as before:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Will reset BioNet and the NEURON simulator. Required if we want</span>
+<span class="c1"># to run the simulator multiple times in the same notebook.</span>
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2021-06-24 12:04:20,572 [INFO] Created log file
+2021-06-24 12:04:20,722 [INFO] Building cells.
+2021-06-24 12:04:49,375 [INFO] Building recurrent connections
+2021-06-24 12:07:39,111 [INFO] Building virtual cell stimulations for LGN_spikes
+2021-06-24 12:08:06,819 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2021-06-24 12:08:06,820 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2021-06-24 12:08:06,820 [INFO] Block save every 5000 steps
+2021-06-24 12:26:10,664 [INFO]     step:5000 t_sim:500.00 ms
+2021-06-24 12:43:55,769 [INFO]     step:10000 t_sim:1000.00 ms
+2021-06-24 13:01:19,182 [INFO]     step:15000 t_sim:1500.00 ms
+2021-06-24 13:19:58,561 [INFO]     step:20000 t_sim:2000.00 ms
+2021-06-24 13:19:58,629 [INFO] Simulation completed in 71.0 minutes, 51.81 seconds
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.ecp</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_ecp</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;ecp&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_43_0.png" src="../_images/tutorials_Mouse_L4_43_0.png" />
+</div>
+</div>
+</section>
+<section id="Adjusting-the-synaptic-weights">
+<h4>Adjusting the synaptic weights<a class="headerlink" href="#Adjusting-the-synaptic-weights" title="Link to this heading">#</a></h4>
+<p>Currently the synaptic weights, eg <strong>syn_weight</strong> property, are set to the same for each edge-type. There are multiple ways to make it so the synaptic weights are nonhomogenous. We can calculate and store nonhomogeneous synaptic weights inside the SONATA edges files. Or we can adjust the weights before each simulation - which is a bit less efficent but will give us greater flexiblity as we try to optimize the weights.</p>
+<p>for Exc –&gt; Exc edges we had a BMTK special keyword <strong>weight_function</strong>=’set_syn_weight’, which allows us to create user-defined functions to adjust the synaptic weights during the initialization of the simulation. BMTK will look for a function with with signature</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="o">&lt;</span><span class="n">function_name</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where <strong>edge_props</strong>, <strong>source</strong>, <strong>target</strong> are dictionary-like objects that can be used to fetch edges-properties, source cell properties, and target-cell properties.</p>
+<p>For our function we want to rewrite it so the <strong>syn_weight</strong> value is readjusted based on the distance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Will reset BioNet and the NEURON simulator. Required if we want</span>
+<span class="c1"># to run the simulator multiple times in the same notebook.</span>
+<span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="c1"># fetch base-line syn_weight value stored in edge_types properties</span>
+    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s2">&quot;syn_weight&quot;</span><span class="p">]</span>
+
+    <span class="c1"># get the coords for the pre/post-synaptic cell and calculate distance</span>
+    <span class="n">src_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]])</span>
+    <span class="n">trg_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">target</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]])</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">src_coords</span> <span class="o">-</span> <span class="n">trg_coords</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">syn_weight</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">syn_weight</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="mf">0.165</span><span class="o">*</span><span class="n">dist</span> <span class="o">+</span> <span class="mf">10.0</span><span class="p">)</span>
+
+
+<span class="c1"># This will register our function so BMTK can find it</span>
+<span class="n">bionet</span><span class="o">.</span><span class="n">add_weight_function</span><span class="p">(</span><span class="n">set_syn_weight</span><span class="p">)</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+2021-06-24 14:04:25,042 [INFO] Created log file
+2021-06-24 14:04:25,147 [INFO] Building cells.
+2021-06-24 14:04:49,026 [INFO] Building recurrent connections
+2021-06-24 14:07:13,852 [INFO] Building virtual cell stimulations for LGN_spikes
+2021-06-24 14:07:38,980 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2021-06-24 14:07:38,980 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2021-06-24 14:07:38,980 [INFO] Block save every 5000 steps
+2021-06-24 14:09:05,559 [INFO]     step:5000 t_sim:500.00 ms
+2021-06-24 14:10:31,855 [INFO]     step:10000 t_sim:1000.00 ms
+2021-06-24 14:11:59,001 [INFO]     step:15000 t_sim:1500.00 ms
+2021-06-24 14:13:24,835 [INFO]     step:20000 t_sim:2000.00 ms
+2021-06-24 14:13:24,894 [INFO] Simulation completed in 5.0 minutes, 45.91 seconds
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_47_0.png" src="../_images/tutorials_Mouse_L4_47_0.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="Generating-realistic-stimulus">
+<h2>Generating realistic stimulus<a class="headerlink" href="#Generating-realistic-stimulus" title="Link to this heading">#</a></h2>
+<p>To drive our network model we have been using external “LGN” virtual cells that fire at a constant rate. This can be useful for testing some fundamental properties of the network. However to better optimize our model it will be useful to simulate it against more realistic stimulus.</p>
+<p>FilterNet is a component of the BMTK that allows us to project an image or movie onto one or more neurons to produce spike trains. Using FilterNet with the “LGN” network we can create spike-train files using various types of visual stimulus, which can then be used as input for simulating the V1 model.</p>
+<p><img alt="Drawing" src="../_images/filternet_lnp.png" /></p>
+<section id="FilterNet-Directory-Structure">
+<h3>FilterNet Directory Structure<a class="headerlink" href="#FilterNet-Directory-Structure" title="Link to this heading">#</a></h3>
+<p>FilterNet simulation directory is structured the same as BioNet, using a json configuration file to specify the paths and parameters required to run a full simulation. The configuration and model files are already set-up, but when building a simulation from scratch one can create directory template using the command line tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.sim_setup<span class="w">    </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>network<span class="w">                 </span><span class="se">\</span>
+<span class="w">  </span>--tstop<span class="w"> </span><span class="m">2000</span>.0<span class="w">                    </span><span class="se">\</span>
+<span class="w">  </span>--include-examples<span class="w">                </span><span class="se">\</span>
+<span class="w">  </span>--config<span class="o">=</span>config.filternet.json<span class="w">    </span><span class="se">\</span>
+<span class="w">  </span>filternet<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Controlling the FilterNet simulation is done through <em>config.filternet.json</em>, which has the same format used by <em>config.bionet.json</em>, except with some noticeable changes.</p>
+<section id="id2">
+<h4>“networks”<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
+<p>We only want to run FilterNet against the LGN nodes (and FilterNet currently doesn’t support recurrent networks), which is reflected by the “network” sections in the configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/LGN_nodes.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/LGN_node_types.csv&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h4>“output”<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
+<p>Like in BioNet, FilterNet will produce a SONATA formated spike-trains file, but for our “LGN” nodes only. The location of the output is controlled by the “output” section of the configuration file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn_spikes.flash.h5&quot;</span>
+<span class="p">},</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h4>“inputs”<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
+<p>The “inputs” section of the configuration file determines which type of stimulus we want to project onto LGN cells. Although we can use any user-created movie (described below), FilterNet also comes with options for easily creating special stimulus types that are common in experiments testing the visual system.</p>
+<p>One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 to 1500 ms seconds</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="Running-the-Simulation">
+<h3>Running the Simulation<a class="headerlink" href="#Running-the-Simulation" title="Link to this heading">#</a></h3>
+<p>Now that we have our configuration file setup we can run filternet. In the command line this can be done by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_filternet.py<span class="w"> </span>config.filernet.json
+</pre></div>
+</div>
+<p>For every large networks that would require multiple processors to complete in a reasonable amount of time we can use the command</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-n<span class="w"> </span>&lt;N&gt;<span class="w"> </span>python<span class="w"> </span>run_filternet.py<span class="w"> </span>config.filernet.json
+</pre></div>
+</div>
+<p>Or through the following code:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">filternet</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.filternet.json&#39;</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2021-06-24 14:16:06,482 [WARNING] Directory ./inputs already exists.
+2021-06-24 14:16:06,483 [INFO] Created log file
+2021-06-24 14:16:07,970 [INFO] Building cells.
+2021-06-24 14:16:11,337 [INFO] Evaluating rates.
+2021-06-24 14:16:33,327 [INFO] Done.
+</pre></div></div>
+</div>
+<p>Once completed it will create the spikes-file lgn_results/lgn_spikes.flash.h5. This file follows the same format as the spike-trains file generated by BioNet. To see how our LGN ON/OFF cells responded to the full-field flash:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.filternet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_54_0.png" src="../_images/tutorials_Mouse_L4_54_0.png" />
+</div>
+</div>
+<section id="Using-the-results-for-the-V1-model">
+<h4>Using the results for the V1 model<a class="headerlink" href="#Using-the-results-for-the-V1-model" title="Link to this heading">#</a></h4>
+<p>To use the results to test our V1 model with more realistic stimulus, we just need to open <em>config.bionet.json</em> and edit the “inputs” section so the <strong>input_file</strong> is changed from <em>./inputs/lgn_spikes.h5</em> to <em>./lgn_results/lgn_spikes.flash.h5</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/spikes.flash.h5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then just rereun the BioNet code as above and see what happens when we use the new stimulus.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.flash.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_Mouse_L4_56_0.png" src="../_images/tutorials_Mouse_L4_56_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="More-Stimulus-Types">
+<h3>More Stimulus Types<a class="headerlink" href="#More-Stimulus-Types" title="Link to this heading">#</a></h3>
+<p>Besides Full-Field Flashes, FilterNet also can generate other types of pre-set visual stimuli. However for more advanced stimuli one will have to create their own movies.</p>
+<p>To do so first you will need to create a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.save.html">numpy npy or npz file</a> - eg a 3-dimensional matrix consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the “inputs” section accordingly (make sure frame_rate is correct).</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="Simulating-across-different-levels-of-Resultion">
+<h2>Simulating across different levels of Resultion<a class="headerlink" href="#Simulating-across-different-levels-of-Resultion" title="Link to this heading">#</a></h2>
+<p>So far we’ve been running a simulation using multi-compartment models of cells using the BioNet component of the BMTK. Often in modeling we want to test different types of models, for both computational and scientific reasons.</p>
+<section id="Point-neuron-models">
+<h3>Point-neuron models<a class="headerlink" href="#Point-neuron-models" title="Link to this heading">#</a></h3>
+<p>With PointNet, we can run our network using point-neuron based models using the <a class="reference external" href="https://www.nest-simulator.org/">NEST</a> simulator libraries. PointNet will also use the same SONATA network files and configuration format for describing a network and initializing a simulation, so we can compare the same network across different levels of resolution. However certain properties, like <strong>syn_weight</strong>, <strong>model_template</strong>, and <strong>dynamics_params</strong> will need to be adjusted. For more information see the
+<a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_pointnet_modeling.html">PointNet tutorial</a>.</p>
+</section>
+<section id="Population-based-firing-rate-models">
+<h3>Population based firing rate models<a class="headerlink" href="#Population-based-firing-rate-models" title="Link to this heading">#</a></h3>
+<p>With PopNet we can simulate the different cell-types as singular populations using the <a class="reference external" href="http://alleninstitute.github.io/dipde/">DipDE</a> simulator. Just like BioNet and PointNet it utilizes the SONATA formats. However instead of recording spike-trains for individual cells, PopNet will record the firing-rate dynamics over the course of the simulation. For more information see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_population_modeling.html">PopNet tutorial</a>.</p>
+</section>
+</section>
+<section id="Additional-Resources">
+<h2>Additional Resources<a class="headerlink" href="#Additional-Resources" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://alleninstitute.github.io/bmtk">https://alleninstitute.github.io/bmtk</a></p>
+<p><a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/modeling_tut_2021">AllenInstitute/bmtk</a></p>
+<section id="Additional-Tutorials">
+<h3>Additional Tutorials<a class="headerlink" href="#Additional-Tutorials" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Network Builder</strong> - <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_NetworkBuilder_Intro.html">https://alleninstitute.github.io/bmtk/tutorial_NetworkBuilder_Intro.html</a></p></li>
+<li><p><strong>BioNet</strong> - <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_single_pop.html">https://alleninstitute.github.io/bmtk/tutorial_single_pop.html</a></p></li>
+<li><p><strong>FilterNet</strong> - <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_filter_models.html">https://alleninstitute.github.io/bmtk/tutorial_filter_models.html</a></p></li>
+<li><p><strong>PointNet</strong> - <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_pointnet_modeling.html">https://alleninstitute.github.io/bmtk/tutorial_pointnet_modeling.html</a></p></li>
+<li><p><strong>PopNet</strong> - <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_population_modeling.html">https://alleninstitute.github.io/bmtk/tutorial_population_modeling.html</a></p></li>
+</ul>
+</section>
+<section id="Examples">
+<h3>Examples<a class="headerlink" href="#Examples" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples">AllenInstitute/bmtk</a></p></li>
+</ul>
+</section>
+<section id="Mouse-Layer-4-Model">
+<h3>Mouse Layer 4 Model<a class="headerlink" href="#Mouse-Layer-4-Model" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="http://portal.brain-map.org/explore/models/l4-mv1">http://portal.brain-map.org/explore/models/l4-mv1</a></p></li>
+</ul>
+</section>
+<section id="Mouse-Full-V1-Model">
+<h3>Mouse Full V1 Model<a class="headerlink" href="#Mouse-Full-V1-Model" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="http://portal.brain-map.org/explore/models/mv1-all-layers">http://portal.brain-map.org/explore/models/mv1-all-layers</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Installing-BMTK">Installing BMTK</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#The-BMTK-Docker-Image">The BMTK Docker Image</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-the-Network">Building the Network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-the-cells">Building the cells</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Creating-the-connections">Creating the connections</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Building-the-network">Building the network</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#External-Network">External Network</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulating-the-Network">Simulating the Network</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulation-Directory-Structure">Simulation Directory Structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22networks%22">“networks”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22components%22">“components”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22run%22">“run”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22output%22">“output”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22reports%22">“reports”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22inputs%22">“inputs”</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-the-simulation">Running the simulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Cell-perturbations">Cell perturbations</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Recording-ECP">Recording ECP</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Adjusting-the-synaptic-weights">Adjusting the synaptic weights</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generating-realistic-stimulus">Generating realistic stimulus</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FilterNet-Directory-Structure">FilterNet Directory Structure</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">“networks”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">“output”</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">“inputs”</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-the-Simulation">Running the Simulation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Using-the-results-for-the-V1-model">Using the results for the V1 model</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#More-Stimulus-Types">More Stimulus Types</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulating-across-different-levels-of-Resultion">Simulating across different levels of Resultion</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Point-neuron-models">Point-neuron models</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Population-based-firing-rate-models">Population based firing rate models</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Additional-Resources">Additional Resources</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Additional-Tutorials">Additional Tutorials</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Examples">Examples</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Mouse-Layer-4-Model">Mouse Layer 4 Model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Mouse-Full-V1-Model">Mouse Full V1 Model</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/tutorials/Mouse_L4.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
