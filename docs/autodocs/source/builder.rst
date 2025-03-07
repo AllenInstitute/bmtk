@@ -1,104 +1,254 @@
+#######################################################
 Building brain network models with BMTK Network Builder
-=======================================================
+#######################################################
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   builder_features
+
 
 .. figure:: _static/images/bmtk_architecture_builder_highlight.jpg
    :scale: 40%
 
-The class for building a brain network is :py:class:`bmtk.builder.NetworkBuilder <bmtk.builder.network.Network>`. This
-should be used whether one is building a biophysically detailed network for BioNet, a point-neuron network for PointNet,
-A filter-based lnp network for FitlerNet, or a population-level network for PopNet. In general, it can be used to build
-any type of heterogeneous parameter multi-graph.
+The BMTK Network Builder (:py:class:`bmtk.builder.NetworkBuilder <bmtk.builder.network.Network>`) is a submodule
+of BMTK that allows for building and saving of brain network models across different levels-of-resolutions. It is a 
+Python library that allows for the creation larg-scale, detailed, heterogeneous networks with only a few function calls.
 
-The process of building the network can break down into four parts:
+Although an integral component of BMTK to help witht the early phase of the modeling and simulation workflow, The 
+BMTK Network Builder can be used indepedently of the BMTK `Simulation <simulators_guide>`_ and 
+`Analysis <analyzer.html>`_ submodules. That is to say, that while you can use the Network Builder to create models that
+will be simulated with one of the BMTK simulators engines (eg. BioNet, PointNet, etc). You can use the BMTK Network 
+Builder to **create models that will be ran using other simulation and analysis tools**, and the BMTK Simulators are 
+capable of **running networks that were created by other tools**. It does this by utilizing the 
+`SONATA Network File Format <sonata.html>`_. Thus the final product of a BMTK Network Builder is a set of files
+representing the network model: cells, synapses, models, channel mechanisms, and any other properites and attributes 
+that the modeler requires.
 
-1. Initialize the Network. Here all one needs is a unique name to identify the population of nodes - usually, the region
-   being model
+The process of building a full network model can usually be broken down into four primary steps:
+
+.. grid:: 2
+
+   .. grid-item::
+      :columns: 4
+
+      1. Initialize the Network(s). Here all one needs is a unique name to identify the population of nodes - usually, 
+      the region being model
+
+      2. Create the nodes (ie. cells) using the :py:meth:`add_nodes() <bmtk.builder.network.Network.add_nodes>` method. 
+      For different types/models of cells we can use separate calls to add_nodes (often with different model parameters).
+
+      3. Create Connection rules between different subsets of nodes using :py:meth:`add_edges() <bmtk.builder.network.Network.add_edges>`
+      method.
+      
+      4. Finally use :py:meth:`build() <bmtk.builder.network.Network.build>` and :py:meth:`save() <bmtk.builder.network.Network.save>`
+      methods to build and save the model to the file
+
+   .. grid-item::
+      :columns: 8
+
+      .. figure:: _static/images/builder_steps_w_code.png
+         :scale: 60%
+
+
+1. Instantiation of Network(s)
+==============================
+
+First step is to instantiate a cell population network using the `NetworkBuilder` class. Each network instance will 
+have a unique **population_name** (choosen by user) and one or more cells (next section). If perferable, you may also
+instantiate mutliple **networks**. In such case each **network** will contains it's own unique set of cells (and their
+properties), although you can create connections between and within populations. 
+
+A modeler can choose to have a single population with many different nodes, node-types, regions, etc. Or they may choose
+to split a model into different logical networks. The former can lead to fewer files and some efficencies during 
+simulation and analysis. While the later can make it significantly easier to remove and/or add parts of a network during
+optimzation and perturbation tasks.
+
+For example when creating a model of the auditory pathway we may divide it into 3 different network populations.
 
 .. code:: python
 
    from bmtk.builder import NetworkBuilder
 
-   net = NetworkBuilder("network_name")
+   net_coch = NetworkBuilder("Cochlea")
+   net_aud1 = NetworkBuilder("AUD1")
+   net_aud2 = NetworkBuilder("AUD2")
+   
+Each individual *net* will have their own unique cells, cell-models, and attributes. But we can still connect them 
+together into one simulation.
 
 
-2. Create the nodes (ie. cells) using the :py:meth:`add_nodes() <bmtk.builder.network.Network.add_nodes>` method. For
-   different types/models of cells we can use separate calls to add_nodes (often with different model parameters).
 
-.. code:: python
+2. Building Nodes
+=================
 
-   net.add_nodes(N=80, model_type='Biophysical', ei='exc')
-   net.add_nodes(N=20, model_type='IntFire', ei='inh', vrest=-50.0)
+.. raw:: html
 
-.. figure:: _static/images/builder_add_nodes.jpg
-   :scale: 80%
-
-
-3. Create Connection rules between different subsets of nodes using :py:meth:`add_edges() <bmtk.builder.network.Network.add_edges>`
-   method.
-
-.. code:: python
-
-   net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'}, connection_rule=my_conn_func, synaptic_model='e2i')
-   net.add_edges(source={'ei': inh}, target={'ei': 'exc'}, connection_rule=1, synaptic_model='i2e')
-
-.. figure:: _static/images/builder_add_edges.jpg
-   :scale: 75%
+   <div style="text-align: left; clear: both;">
+      <img src="_static/images/builder_add_nodes.jpg"  style="width: 30%;" />
+   </div>
 
 
-4. Finally use :py:meth:`build() <bmtk.builder.network.Network.build>` and :py:meth:`save() <bmtk.builder.network.Network.save>`
-   methods to build and save the model to the file
+Next step will be to add one or more population of nodes to a **network** using the ``add_nodes()`` method. For most 
+models each node is a single cell, although at some resolutions a node can represent a population of cells (see 
+`PopNet <popnet.html>`_).
 
-.. code:: python
+When you call the ``add_nodes()`` method you must pass in the value  of **N** number of individual nodes, along with any
+parameters and attributes that will be required to describe/instantiate the cells.
 
-   net.build()
-   net.save(output_dir='/path/to/network/output/')
+.. card:: example
+  :class-card: .user-guide-example sd-border-2
+  
+  Here we create a network to represent our VISP (primary visual cortex model) and call ``add_nodes()`` method to add 100 
+  cells. 
 
+  .. code:: python
+      
+      from bmtk.builder import NetworkBuilder
+      from bmtk.builder.auxi.node_params import positions_columinar
+      import numpy as np
 
-.. figure:: _static/images/builder_complete_network.jpg
-   :scale: 100%
+      n_nodes = 100
+      
+      net = Network("VISp")
+      coords = positions_columinar(N=n_nodes, center=[0, 10.0, 0], max_radius=50.0, height=200.0)
+      net.add(
+         N=n_nodes,
+         model_type='biophysical',
+         morphology='Pyr.swc',
+         x=coords[0],
+         y=coords[1],
+         z=coords[2],
+         rotation_angle_xaxis=np.linspace(0.0, 360.0, n_nodes),
+         rotation_angle_yaxis=np.random.rand(0.0, 360.0, n_nodes),
+         rotation_angle_zaxis=np.random.rand(0.0, 360.0, n_nodes),
+      )
 
-
-Building Nodes
---------------
-In BMTK and SONATA a node usually is synonymous with a cell (although a node can be used to represent a population of
-cells with `PopNet <./popnet.html>`_). To add a group of nodes to a network is to use the
-:py:meth:`NetworkBuilder.add_nodes() <bmtk.builder.network.Network.add_nodes>`.
-
-The only thing that is required is an integer value N for the number of individual nodes. The modeler can also pass in
-any parameter they want to describe their model - although SONATA/BMTK does contain a number of reserved node parameters
-that will be useful in generating an instantiable model.
-
-.. code:: python
-
-   net.add(N=100, model_type='biophysical', dynamics_params='rorb_params.json', morphology='rorb.swc')
-
-In the above example, all 100 nodes share the same values for ``model_type``, ``dynamics_params``, and ``morphology``.
-To have unique parameter values for each N node you only need to pass in a list or array of size N. In the below example
-the ``rotation_angle_xaxis`` and ``rotation_angle_yaxis`` will be unique for every node
+Other than the **N** parameter we can use whatever parameters we want into the ` `add_nodes()`` method. Some parameters 
+are SONATA reserved keywords, like **model_type** and **morphology** and will be recognized by BMTK and other tools. But 
+modelers can also define their own parameters as they deem appropiate.
 
 .. code:: python
 
    net.add(
-      N=100,
-      rotation_angle_xaxis=np.linspace(0.0, 360.0, 100),
-      rotation_angle_yaxis=np.random.rand(0.0, 360.0, 100),
-      model_type='biophysical',
-      ...
+         N=10,
+         parameter1='my_string',
+         parameter2=1.0,
+         parameter3=range(0, 100, 10),
+         ...
    )
 
+You can also call ``add_nodes()`` as many times as you like with different number of cells and different parameters.
 
-If a parameter requires compounded data you can use a tuple or a list of tuples. For example, we may want to represent a
-cell’s position by a range:
+.. card:: example
+  :class-card: .user-guide-example sd-border-2
+  
+  Here we make two calls to ``add_nodes()``, first time adding 100 *biophysical* nodes followed by 50 *point* nodes. 
+  Certain parameters, like **morphology** or **rotation_angle** don't apple to *point*-type neurons so are not called.
 
+  .. code:: python
+      
+      net.add(
+         N=100,
+         model_type='biophysical',
+         morphology='pyr_cell.swc',
+         x=coords[0:100, 'x'],
+         y=coords[0:100, 'y'],
+         z=coords[0:100, 'z'],
+         rotation_angle_xaxis=np.linspace(0.0, 360.0, n_nodes),
+         rotation_angle_yaxis=np.random.rand(0.0, 360.0, n_nodes),
+         rotation_angle_zaxis=np.random.rand(0.0, 360.0, n_nodes),
+      )
+
+      net.add(
+         N=50,
+         model_type='point',
+         x=coords[100:150, 'x'],
+         y=coords[100:150, 'y'],
+         z=coords[100:150, 'z'],
+         v_reset=-60.0,
+         v_threshold=20.0,
+      )
+
+
+Unique vs Shared Attributes (Nodes vs Node Types) 
+-------------------------------------------------
+
+When you call ``add_nodes()`` there are multiple ways to assign values to nodes/cells, which can affect not only how 
+properties are stored by also how they are assigned to individual cells. 
+
+First option is to pass in a scalar value; a `string`, `character`, `number` (float, ints, and numpy types) , `boolean`.
+In such case the key-value pair is assigned to all **N** cells. This is called a **node-type** or **cell-type** 
+property. 
+
+Alternatively you may pass in a list type (includin python lists, numpy arrays, and pandas sequences) of size **N** 
+which will assign each cell the cooresponding index value in the list. These are **node** properties.
+
+For example the following will add 1000 cells that have two properties **loc_region** and **loc_order**. For all 
+cells the **loc_region** property is the same value (`Layer2/3`). But the **loc_order** will be different for each cell.
 
 .. code:: python
 
-   net.add(N=100,
-           pos_with_jitter=[(p-rand(), p+rand()) for p in positions],
-           ...)
+   net.add(
+      N=1000,
+      loc_region="Layer2/3",
+      loc_order=range(1000)
+   )
+
+If you need to store a list of values as a **node-type** property, you may do so by passing in a 
+`python tuple <https://www.w3schools.com/python/python_tuples.asp>`_. A common example is when a **node-type** property 
+is a ranged value (eg. `depth_microns=(250, 500)`) or a list of possible values. In the following all 1000 cells are 
+still assigned the same **loc_region** value, but by passing in a length-3 tuple we indicate that it can be one of 
+three values:
+
+.. code:: python
+
+   net.add(
+      N=1000,
+      loc_region=("Layer2/3", "Layer4", "Layer5"),
+      loc_order=range(1000)
+   )
+
+Reserved Node Parameters
+------------------------
+
+As mentioned above the modeler can use any parameters and values they require to represent their models. The following
+are parameters that will be recognized and used by the BMTK simulator (but not necessarily required). For a complete
+list see `SONATA <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes>`_:
+
+
+.. dropdown:: reserved SONATA keywords for nodes
+
+   .. csv-table::
+      :header: "Name", "Description", "type"
+      :widths: 20, 40, 10
+
+      "x (or y, z)", "x (or y, z) positions of soma in world coordinates", float
+      "rotation_angle_xaxis (or y, z)", "rotation of the morphology around the soma", float
+      "model_type", "level of representation of neurons (biophysical, point_neuron, virtual)", string
+      "model_template", "String name of the template to create (eg, ctdb:Biophys1.hoc, nest:glif_lif, etc)", string
+      "model_processing", "Directive or function that will be applied to neuron model after creation. For Allen Cell Types models use aibs_perisomatic or aibs_allactive", string
+      "dynamics_params", "Channel and mechanism parameters for neuron, usually a name of a json or NeuronML file. Will overwrite model_template.", string path to file or dict
+      "morphology", "Name of the detailed morphology file (usually SWC).", string path to file
+
+
+.. admonition:: note about "node_id" and "node_type_id" properties
+
+   The BMTK Network Builder will automatically assign each cell within a network population a unique identifer 
+   (`node_id`) as-well-as assign it to a specific **node-type** (`node_type_id`). However, if for some reason you 
+   need to assign the `node_id` and or `node_type_id` properties manually you are able to do so:
+
+   .. code:: python
+
+      net.add_nodes(N=10, node_id=range(0, 10), node_type_id=0)
+      net.add_nodes(N=20, node_id=range(10, 30), node_type_id=1)
+
+   **WE DO NOT RECOMMEND DOING SO**, as if there are clashing or inconsistent `ids` it can affect simulations.
+
 
 Node Representation
-+++++++++++++++++++
+-------------------
 When :py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` is called, each node will be given a unique
 **node_id** value, and each type model (eg each call to add_nodes) will also be given a **node_type_id**. It is possible
 to set the **node_id** and **node_type_id** parameter yourself but it’s generally not a good idea.
@@ -114,66 +264,87 @@ their properties accessed like a dictionary. For example to get all biophysicall
       ...
 
 
-Useful Node Parameters
-++++++++++++++++++++++
-As mentioned above the modeler can use any parameters and values they require to represent their models. The following
-are parameters that will be recognized and used by the BMTK simulator (but not necessarily required). For a complete
-list see `SONATA <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes>`_:
+
+3. Building Edges
+=================
+
+.. raw:: html
+
+   <div style="text-align: left; clear: both;">
+      <img src="_static/images/builder_add_edges.jpg"  style="width: 30%;" />
+   </div>
+
+After creating population of nodes we can go ahead and start creating edges between them by using the 
+:py:meth:`NetworkBuilder.add_edges() <bmtk.builder.network.Network.add_edges>` method. For most models each edge 
+represents a synapse/junction between a *source* and *target* cell. Although for certain cases you may have edges
+that connect two population of cells (see `PopNet <popnet.html>`_).
+
+BMTK and SONATA is designed for storing and simulating *heterogeneous* and *highly optimized* network models, which 
+means that every synaptic connection in a network may have different parameters. But rather than having to define the 
+millions or billions of possible synapses manually, BMTK's ``add_edges()`` allows users to create rules and functions 
+for how different subsets of cells will be connected. To create of set of directed edges between two subsets of cells 
+you use the following:
+
+* **source** and **target** parameters which can be used to filter out sub-populations of cells.
+* The **connectivity_rule** parameter which can set how many connections are there between each source/target pair of cells.
+* Zero or more attributes to describe the connections.
+
+.. card:: example
+  :class-card: .user-guide-example sd-border-2
+
+  .. code:: python
+
+     net.add_edges(
+           source={'ei': 'inh'},                                 # 1
+           target={'ei': 'exc', 'ephys_type': 'fast_spiking'},
+           connection_rule=my_connection_func,                   # 2
+           dynamic_parameters='i2e.json',                        # 3
+           synaptic_model='alphaSyn',
+           syn_weight=1.34e-05,
+           delay=2.0
+      )
+
+  1. parameters ``source`` and ``target`` are used to filter out the subset of nodes used pre-and post-synapse, respectively.
+     In this case, the source population consists of all inhibitory (ei=inh) neurons, while the target population consists
+     only of excitatory (ei=exc) fast-spiking neurons. If the source or target is not specified then all possible nodes will
+     be used.
+
+  2. ``connection_rule`` is used to determine the number of connections between each source and the target node. If the value
+     is given as an integer N then all possible source/target pairs with have N different connections. You can also pass
+     in a list-of-list or a matrix. But usually, a user-defined function is used, which will be better described in the
+     next section.
+
+  3. ``dynamic_parameters``, ``synaptic_model``, ``syn_weight``, and ``delay`` are all shared connection parameters. Like
+     with nodes, modelers can choose whatever parameters they deem best to represent their network. A list of useful
+     parameters pre-defined by BMTK and SONATA is described below.
 
 
-.. csv-table::
-   :header: "Name", "Description"
-   :widths: 20, 40
-
-   "x (or y, z)", "x positions of soma in world coordinates"
-   "rotation_angle_xaxis (or y, z)", "rotation of the morphology around the soma"
-   "model_type", "level of representation of neurons (biophysical, point_neuron, virtual)"
-   "model_template", "String name of the template to create (eg, ctdb:Biophys1.hoc, nest:glif_lif, etc)"
-   "model_processing", "Directive or function that will be applied to neuron model after creation. For Allen Cell Types models use aibs_perisomatic or aibs_allactive"
-   "dynamics_params", "Channel and mechanism parameters for neuron, usually a name of a json or NeuronML file. Will overwrite model_template."
-   "morphology", "Name of the detailed morphology file (usually SWC)."
-
-
-Building Edges
---------------
-
-To define different types of edges between two subsets of nodes you should use the
-:py:meth:`NetworkBuilder.add_edges() <bmtk.builder.network.Network.add_edges>` method. Then once
-:py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` method is called the the actual connections will
-be instantiated based on the **connectivity_rule** property the user defines. A typical call to add_edges would be the following
+The **source** and **target** may be between subsets of cells within a single population, or it may be two different 
+populations. For example you may have a separate population for **VISp** and **Thamalmus** cells, and want to create 
+connections from the Thalamus `ON-OFF` cells onto the VISp exciatory cells. The method call will look mostly the same,
+except instead of passing in dictionaries to filter the **source** and **target** we used the 
+:py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` method:
 
 .. code:: python
 
-   net.add_edges(
-         source={'ei': 'inh'},                                 # 1
-         target={'ei': 'exc', 'ephys_type': 'fast_spiking'},
-         connection_rule=my_connection_func,                   # 2
-         dynamic_parameters='i2e.json',                        # 3
+   net_visp.add_edges(
+         source=net_thalamus.nodes(model='on-off'),
+         target=net_visp.nodes(ei='exc'),
+         connection_rule=my_connection_func, 
+         dynamic_parameters='on_off_exc.json',
          synaptic_model='alphaSyn',
          syn_weight=1.34e-05,
          delay=2.0
    )
 
-1. parameters ``source`` and ``target`` are used to filter out the subset of nodes used pre-and post-synapse, respectively.
-   In this case, the source population consists of all inhibitory (ei=inh) neurons, while the target population consists
-   only of excitatory (ei=exc) fast-spiking neurons. If the source or target is not specified then all possible nodes will
-   be used.
+The Network Builder is also capable of creating multi-graph networks where there are multiple **edge-types** between 
+each source/target pair. To do so you just need to call ``add_edges()`` multiple times with different properties and/or 
+attribute values.
 
-2. ``connection_rule`` is used to determine the number of connections between each source and the target node. If the value
-   is given as an integer N then all possible source/target pairs with have N different connections. You can also pass
-   in a list-of-list or a matrix. But usually, a user-defined function is used, which will be better described in the
-   next section.
-
-3. ``dynamic_parameters``, ``synaptic_model``, ``syn_weight``, and ``delay`` are all shared connection parameters. Like
-   with nodes, modelers can choose whatever parameters they deem best to represent their network. A list of useful
-   parameters pre-defined by BMTK and SONATA is described below.
-
-Also, like the nodes, it is possible to have unique values for every individual edge, but it is a little more difficult.
-See the section on ConnectionMap for more info.
 
 Connection rules
-++++++++++++++++
-The connection_rule parameter of add_edges() method will usually be a user-defined function (but may also be an integer,
+----------------
+The connection_rule parameter of ``add_edges()`` method will usually be a user-defined function (but may also be an integer,
 list-of-lists, or matrix). The function’s first two parameters will be source and target, Node objects whose properties
 can be accessed like a dictionary. It should return an integer N for the number of connections between the source and
 target, 0 or None if there is no connection.
@@ -236,7 +407,8 @@ There is also an **all_to_one** iterator option that will pair each source node 
 
 
 Individual Edge Properties (The ConnectionMap)
-++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------
+
 Sometimes it is necessary for each edge to have unique property values. For example, the individual syn_weight value for
 each synapse may vary depending on the location and type of the pre-and post-synaptic nodes. With nodes,
 you can pass in a list or array of size N for each N node. But when edges are built using a connection_rule function
@@ -292,68 +464,35 @@ and ``dtypes`` parameters take a list, and our rule function now returns two val
       dtypes=[str, float]
    )
 
-
-Intra-Network Connections
-+++++++++++++++++++++++++
-Both BMTK and SONATA support a network to be built piecemeal and combined into one at simulation time. A cortical
-the region will receive inputs from many other regions, and a modeler may want to test the dynamics when different
-combinations of inputs are turned on and off. Instead of building multiple models of the region with different inputs,
-instead, we can build the nodes, recurrent and inter-network connections each region independently and turn them on and
-off during the simulation (see `simulation config <./simulators.html#configuration-files>`_)
-
-Creating connections between two different networks is very similar to creating recurrent connections and still use the
-add_edges method. The main difference is for our ``source`` or ``target`` argument, instead of using a dictionary we must
-use the :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` method of another network. For example, we
-have two networks called **LGN** and **V1** and we want to create a connection type from LGN’s excitatory neurons (ei=exc)
-V1’s pyramidal cells
-
-.. code:: python
-
-   v1 = NetworkBuilder('V1')
-   ... # Build V1 network
-
-   lgn = NetworkBuilder('LGN')
-   lgn.add_nodes(N=30000, model_type='virtual', ei='exc')
-   lgn.add_edges(
-      source={'ei': 'exc'},                  # dict indicates source population coming from lgn_net
-      target=v1.nodes('model_type': 'pyr'),  # target population coming form V1 network
-      connection_rule=input_conn_fnc,
-      ...
-   )
-   lgn.build()
-
-When creating intra-network connections the :py:meth:`NetworkBuilder.import() <bmtk.builder.network.Network.import>`
-method can be very useful.
-
-Edge Accessor methods
-+++++++++++++++++++++
-
-:py:meth:`NetworkBuilder.edges() <bmtk.builder.network.Network.edges>`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The method will return an iterator of edges filtered by edge and/or node properties. Each edge will be
-represented using a :py:class:`Edge <bmtk.builder.edge.Edge>` object
-
-
 Useful Edge Parameters
-++++++++++++++++++++++
+----------------------
 
-.. csv-table::
-   :header: "Name", "Description"
-   :widths: 20, 40
+.. dropdown:: reserved SONATA keywords for edges
 
-   "syn_weight", "synaptic weight"
-   "delay", "synaptic delay, in ms"
-   "model_template", "String name of the template to create an object from parameters in dynamics_params"
-   "dynamics_params", "dynamic parameter overrides for edges"
-   "efferent_section_id", "location of (NEURON) section where the connection will target"
-   "efferent_section_pos", "distance within the (NEURON) section where synapse will target"
-   "target_sections", "A list of neuronal sections where the synapse will target (soma, axon, apical, basal). When used in place of section_id, BioNet will randomly select a section on the target neuron"
-   "distance_range", "A range in um of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron."
-   "weight_function", "Name of the detailed morphology file (usually SWC)."
+   .. csv-table::
+      :header: "Name", "Description"
+      :widths: 20, 40
 
-Saving and Building
--------------------
+      "syn_weight", "synaptic weight"
+      "delay", "synaptic delay, in ms"
+      "model_template", "String name of the template to create an object from parameters in dynamics_params"
+      "dynamics_params", "dynamic parameter overrides for edges"
+      "efferent_section_id", "location of (NEURON) section where the connection will target"
+      "efferent_section_pos", "distance within the (NEURON) section where synapse will target"
+      "target_sections", "A list of neuronal sections where the synapse will target (soma, axon, apical, basal). When used in place of section_id, BioNet will randomly select a section on the target neuron"
+      "distance_range", "A range in um of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron."
+      "weight_function", "Name of the detailed morphology file (usually SWC)."
+
+
+4. Building and Saving the Model
+================================
+
+.. raw:: html
+
+   <div style="text-align: left; clear: both;">
+      <img src="_static/images/builder_complete_network.jpg"  style="width: 30%;" />
+   </div>
+
 Once all calls to add_nodes and ad_edges have been made, use the build() method to actually complete and fully
 instantiate the network. Certain accessor functions, like
 :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` and
@@ -382,6 +521,106 @@ Opening the HDF5 file will require a hdf browser like HDFView, or a library like
    :scale: 90%
 
 
+Additional Resources and Guides
+===============================
+
+Tutorials and Guides
+---------------------
+
+.. grid:: 1 1 4 4
+    :gutter: 1
+
+    .. grid-item-card::  
+        :link: tutorials/NetworkBuilder_Intro.html
+
+        **BMTK Builder** - A Quick Introduction
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        A step-by-step workable notebook that goes through the process of building a small but 
+        usable biophysical network model.
+
+
+    .. grid-item-card::  
+        :link: tutorials/tutorial_04_multi_pop.html
+
+        **Multi-Population Recurrent Networks with BioNet**
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        Notebook example showing the full processes of:
+        
+        1. Building a biophysical network with multiple cells and cell-types.
+        2. Executing network model with *BioNet*.
+        3. Analyzing simulation results.
+
+    .. grid-item-card::  
+        :link: tutorials/tutorial_05_pointnet_modeling.html
+
+        **Multi-Population Recurrent Networks with PointNet**
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        An example of building and simualting a network of **point** neurons and 
+        running simulations on the model using *PointNet*
+
+    .. grid-item-card::  
+        :link: tutorials/cell_placement.html
+
+        **Cell-Placement Guide**
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        A useful guide on different ways to generate coordinates for cells when building a 
+        model. Including using **NRRD** files downloaded from the Allen 
+        `Common Coordinate Framework <https://community.brain-map.org/c/how-to/mouse-connectivity-atlas/31#API-DownloadAtlas3-DReferenceModels>`_
+
+
 
 Advanced Features
 -----------------
+
+.. grid:: 1 1 5 5
+   :gutter: 1
+
+   .. grid-item-card::  
+      :link: builder_features.html#iterating-and-filter-nodes-from-a-network-using-nodes-method
+
+      Getting node and cell properties from a network
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * Filter and find specific subpopulations of nodes with-in a network.
+      * Filter and find edges based on edge and source/target node properties. 
+      * Get name, status, and various properties of a network.
+
+
+   .. grid-item-card::  
+      :link: builder_features.html#importing-existing-nodes
+
+      Importing Nodes into a network
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * How to import nodes from existing SONATA network files into your new network.
+
+   .. grid-item-card::  
+      :link: builder_features.html#options-for-setting-synapse-location
+
+      Advanced options for designating synaptic locations
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+      * How to easily set post-synaptic (afferent) synaptic locations on morphological detailed cells.
+
+   .. grid-item-card::  
+        :link: builder_features.html#options-for-saving-network-to-sonata
+
+        Options for Saving network to file
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+        * Manually setting file path 
+        * How to write multiple networks to a single file.
+        * How to sort and index edges
+        * File Compression
+        
+   .. grid-item-card::  
+      :link: builder_features.html#options-for-saving-network-to-sonata
+
+      Parallizgin Network Building with MPI
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+      * How to build a network faster on a cluster or multi-core computer using MPI (Message Passing Interface)

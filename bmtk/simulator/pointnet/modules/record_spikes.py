@@ -99,24 +99,15 @@ class SpikesMod(SimulatorMod):
 
     def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None,
                  cache_to_disk=True, compression='gzip'):
-        def _get_path(file_name):
-            # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
-            if file_name is None:
-                return None
 
-            if os.path.isabs(file_name):
-                return file_name
-            else:
-                abs_tmp = os.path.abspath(tmp_dir)
-                abs_fname = os.path.abspath(file_name)
-                if not abs_fname.startswith(abs_tmp):
-                    return os.path.join(tmp_dir, file_name)
-                else:
-                    return file_name
-
-        self._csv_fname = _get_path(spikes_file_csv)
-        self._h5_fname = _get_path(spikes_file)
-        self._nwb_fname = _get_path(spikes_file_nwb)
+        self._run_counter = 0
+        # store the file names in the raw format, accepting lists as well.
+        # self._csv_fname = _get_path(spikes_file_csv)
+        # self._h5_fname = _get_path(spikes_file)
+        # self._nwb_fname = _get_path(spikes_file_nwb)
+        self._csv_fname_raw = spikes_file_csv
+        self._h5_fname_raw = spikes_file
+        self._nwb_fname_raw = spikes_file_nwb
 
         self._tmp_dir = tmp_dir
         self._tmp_file_base = 'tmp_spike_times'
@@ -130,8 +121,39 @@ class SpikesMod(SimulatorMod):
         self._sort_order = sort_order.none if not spikes_sort_order else sort_order_lu[spikes_sort_order]
 
         self._spike_detector = None
+        self._nest_output_connected = False
 
     def initialize(self, sim):
+        # if the fnames are list, then we'll use the next file in the list
+        def _get_path(file_name, tmp_dir):
+            # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
+            if file_name is None:
+                return None
+
+            if os.path.isabs(file_name):
+                return file_name
+            else:
+                abs_tmp = os.path.abspath(tmp_dir)
+                abs_fname = os.path.abspath(file_name)
+                if not abs_fname.startswith(abs_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
+                
+        def _get_next(file_name, counter):
+            if isinstance(file_name, list):
+                if counter >= len(file_name):
+                    raise Exception('Number of output files is less than number of runs')
+                return _get_path(file_name[counter], self._tmp_dir)
+            else:
+                return _get_path(file_name, self._tmp_dir)
+            
+        self._csv_fname = _get_next(self._csv_fname_raw, self._run_counter)
+        self._h5_fname = _get_next(self._h5_fname_raw, self._run_counter)
+        self._nwb_fname = _get_next(self._nwb_fname_raw, self._run_counter)
+        self._run_counter += 1
+
+
         # Now this function takes care of initializing the spike_writer.
         self._spike_writer = SpikeTrains(cache_dir=self._tmp_dir, cache_to_disk=self._cache_to_disk)
         self._spike_writer.delimiter = '\t'
@@ -140,7 +162,10 @@ class SpikesMod(SimulatorMod):
         self._spike_writer.compression = self._compression
         
         self._spike_detector = create_spike_detector(self._spike_labels)
-        nest.Connect(sim.net.gid_map.gids, self._spike_detector)
+        if not self._nest_output_connected:
+            nest.Connect(sim.net.gid_map.gids, self._spike_detector)
+            self._nest_output_connected = True
+
 
     def finalize(self, sim):
         # convert NEST gdf files into SONATA spikes/ format

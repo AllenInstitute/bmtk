@@ -1,0 +1,49 @@
+{
+  "manifest": {
+	"$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/inputs"
+  },
+
+  "target_simulator":"NEST",
+
+  "run": {
+    "tstop": 3000.0,
+    "n_runs": 4,
+    "dt": 0.1
+  },
+
+  "inputs": {
+    "LGN_spikes": {
+      "input_type": "spikes",
+      "module": "sonata",
+      "input_file": [
+        "$INPUT_DIR/lgn_spikes.h5",
+        "$INPUT_DIR/lgn_spikes.h5",
+        "$INPUT_DIR/lgn_spikes.h5",
+        "$INPUT_DIR/lgn_spikes.h5"
+      ],
+      "node_set": "lgn"
+    }
+  },
+
+  "output": {
+    "log_file": "log.txt",
+    "spikes_file": [
+      "spikes0.h5",
+      "spikes1.h5",
+      "spikes2.h5",
+      "spikes3.h5"
+    ],
+    "spikes_file_csv": [
+      "spikes0.csv",
+      "spikes1.csv",
+      "spikes2.csv",
+      "spikes3.csv"],
+    "output_dir": "$OUTPUT_DIR",
+    "overwrite_output_dir": true
+  },
+
+
+  "network": "config.circuit.json"
+}

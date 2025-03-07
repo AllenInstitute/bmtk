@@ -397,7 +397,7 @@ class ConfigParser(object):
         :return: json rvalue with resolved variables. Won't resolve variables that don't exist in manifest.
         """
         ret_val = json_str
-        variables = [m for m in re.finditer('\$\{?[\w]+\}?', json_str)]
+        variables = [m for m in re.finditer(r'\$\{?[\w]+\}?', json_str)]
         for var in variables:
             var_key = var.group()
             # change $VAR or ${VAR} --> VAR
@@ -433,11 +433,18 @@ class ConfigParser(object):
             output_dir = conf['output']['output_dir']
             for k, file_path in conf['output'].items():
                 if k == 'log_file' or k.startswith('spikes_file'):
-                    if os.path.isabs(file_path) or file_path.startswith(output_dir):
-                        # Skip if spikes/log file is an absolute path or already exists in a output_dir sub-dir
-                        continue
-                    else:
-                        conf['output'][k] = os.path.join(output_dir, file_path)
+                    def check_path(file_path):
+                        # recursive check if file_path is a list
+                        if isinstance(file_path, list):
+                            return [check_path(fp) for fp in file_path]
+                        if os.path.isabs(file_path) or file_path.startswith(output_dir):
+                            # Skip if spikes/log file is an absolute path or already exists in a output_dir sub-dir
+                            # continue
+                            return file_path
+                        else:
+                            # conf['output'][k] = os.path.join(output_dir, file_path)
+                            return os.path.join(output_dir, file_path)
+                    conf['output'][k] = check_path(file_path)
 
         if 'node_sets' not in conf and 'node_sets_file' in conf:
             # Load in node_sets_file json if a reference to it exists

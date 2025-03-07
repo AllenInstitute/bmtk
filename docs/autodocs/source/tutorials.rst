@@ -5,7 +5,6 @@ Tutorials and Examples
 .. toctree::
     :hidden:
     :maxdepth: 2
-    :caption: A
     
     Builder: Using the Network Builder <tutorials/NetworkBuilder_Intro>
     BioNet: Single cell with current injection <tutorials/tutorial_01_single_cell_clamped>
@@ -26,36 +25,41 @@ Basic Usage
 .. grid:: 1 1 3 3
     :gutter: 1
 
-    .. grid-item-card::  Overview 
+    .. grid-item-card::  Overview
+        :link: user_guide.html
 
         A high level look at the BMTK workflow, SONATA data-format, and how to 
         create an environment for network modeling and simulation
 
 
     .. grid-item-card:: Building Networks models with the BMTK NetworkBuilder 
-        :link: tutorial_NetworkBuilder_Intro.html
+        :link: builder.html
 
         Using the BMTK NetworkBuilder to create SONATA based network models for use in simulation and analysis
 
        
     .. grid-item-card:: Simulating biologically detailed networks
+        :link: bionet.html
 
         How to use BMTK BioNet to run simulations of networks of biophyscially realistic compartmental
         cell models.        
 
 
     .. grid-item-card:: Simulating point-neuron networks with PointNet
+        :link: pointnet.html
 
         How to use BMTK PointNet for running simulation of single point-neuron models.
 
 
     .. grid-item-card:: Generating releastic sensory stimuli with FilterNet
+        :link: filternet.html
 
         Use BMTK FilterNet to convert stimuli into a series of spikes for analysis and network 
         stimuli.
 
 
     .. grid-item-card:: Analyzing simulation results
+        :link: analyzer.html
 
         How to use bmtk to fetch data from simulation results, plot and get statistics.
 

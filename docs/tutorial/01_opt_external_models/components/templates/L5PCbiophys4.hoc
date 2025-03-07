@@ -1,0 +1,106 @@
+// Author: Etay Hay, 2011
+//    Models of Neocortical Layer 5b Pyramidal Cells Capturing a Wide Range of
+//    Dendritic and Perisomatic Active Properties
+//    (Hay et al., PLoS Computational Biology, 2011) 
+//
+// Model of L5 Pyramidal Cell, constrained both for BAC firing and Current Step Firing
+//    with AP initiation in the axon
+
+
+begintemplate L5PCbiophys
+public biophys
+
+proc biophys() {
+	forsec $o1.all {
+	  insert pas
+		cm = 1
+		Ra = 100
+		e_pas = -90
+	}
+
+  forsec $o1.axonal {
+  	insert Im 
+  	insert Ca_LVAst 
+  	insert Ca_HVA
+  	insert CaDynamics_E2 
+  	insert SKv3_1 
+  	insert SK_E2 
+  	insert K_Tst 
+  	insert K_Pst 
+  	insert Nap_Et2 
+  	insert NaTa_t 
+		ek = -85
+		ena = 50
+    insert Ih
+  	gbar_Ih = 0.0001 
+		g_pas = 3e-5
+  	gImbar_Im = 0.013322 
+  	decay_CaDynamics_E2 = 277.300774 
+  	gamma_CaDynamics_E2 = 0.000525 
+  	gCa_LVAstbar_Ca_LVAst = 0.000813 
+  	gCa_HVAbar_Ca_HVA = 0.000222 
+  	gSKv3_1bar_SKv3_1 = 0.473799 
+  	gSK_E2bar_SK_E2 = 0.000047 
+  	gK_Tstbar_K_Tst = 0.077274 
+  	gK_Pstbar_K_Pst = 0.188851 
+  	gNap_Et2bar_Nap_Et2 = 0.005834 
+  	gNaTa_tbar_NaTa_t = 3.89618 
+	}
+
+  forsec $o1.somatic {
+  	insert Im 
+  	insert Ca_LVAst 
+  	insert Ca_HVA
+  	insert CaDynamics_E2 
+  	insert SK_E2 
+  	insert SKv3_1 
+  	insert NaTs2_t 
+		ek = -85
+		ena = 50
+    insert Ih
+  	gbar_Ih = 0.0001 
+		g_pas = 3e-5
+  	gImbar_Im = 0.000008 
+  	decay_CaDynamics_E2 = 294.679571 
+  	gamma_CaDynamics_E2 = 0.000509 
+  	gCa_LVAstbar_Ca_LVAst = 0.000557 
+  	gCa_HVAbar_Ca_HVA = 0.000644 
+  	gSK_E2bar_SK_E2 = 0.09965 
+  	gSKv3_1bar_SKv3_1 = 0.338029 
+  	gNaTs2_tbar_NaTs2_t = 0.998912 
+  }
+
+	forsec $o1.apical {
+    insert CaDynamics_E2 
+  	insert SK_E2 
+  	insert Ca_LVAst 
+  	insert Ca_HVA 
+  	insert SKv3_1 
+  	insert NaTs2_t 
+  	insert Im 
+    insert Ih
+		ek = -85
+		ena = 50
+		cm = 2
+		g_pas = 6e-5
+  	decay_CaDynamics_E2 = 35.725651 
+  	gamma_CaDynamics_E2 = 0.000637 
+  	gSK_E2bar_SK_E2 = 0.000002 
+  	gCa_HVAbar_Ca_HVA = 0.000701 
+  	gSKv3_1bar_SKv3_1 = 0.001808 
+  	gNaTs2_tbar_NaTs2_t = 0.021489 
+  	gImbar_Im = 0.00099 
+	}
+
+	$o1.distribute_channels("apic","gbar_Ih",2,-0.8696,3.6161,0.0,2.0870,0.00010000000) 
+  $o1.distribute_channels("apic","gCa_LVAstbar_Ca_LVAst",3,1.000000,0.010000,700.000000,900.000000,0.1419540000) 
+	
+  forsec $o1.basal {
+    insert Ih
+  	gbar_Ih = 0.0001 
+		cm = 2
+		g_pas = 6e-5
+	}
+}
+
+endtemplate L5PCbiophys

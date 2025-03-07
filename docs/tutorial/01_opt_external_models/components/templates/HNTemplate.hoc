@@ -1,0 +1,506 @@
+begintemplate HNTemplate
+
+public init, delete_axon, insertChannel, distribute, geom_nseg, geom_nsec
+public set_parameters, locateSites, getLongestBranch, distribute_channels
+public distributeSyn, connect2target, createArtificialSyn, InitConnections
+public initRand, indexSections, cell_name
+public all, apical, basal, somatic, axonal,  nSecAll, nSecSoma, nSecApical, nSecBasal, cell_name
+public soma, dend, apic, axon, myelin, rList, cons, synlist, OUprocess, fih, rslist
+public position, xoffset, yoffset, zoffset, xloc, yloc, zloc, diamval
+
+objref synlist, cons, rList, rd1, sref, this, segCounts, sf, OUprocess, fih, rslist
+objref all, somatic, apical, axonal, basal
+strdef tstr, cell_name
+
+proc init() { localobj nl,imprt, bp
+	all     = new SectionList()
+		somatic = new SectionList()
+		basal   = new SectionList()
+		apical  = new SectionList()
+		axonal  = new SectionList()
+		forall delete_section()
+	cell_name = $s2
+	stimThreshold = 0
+	synlist = new List()
+	OUprocess = new List()
+	rslist = new List()
+	cons = new List()
+
+	//load morphology
+	sf = new StringFunctions()
+	if (sf.substr($s1, ".asc") != -1){
+		nl = new Import3d_Neurolucida3()
+	} else{
+		nl = new Import3d_SWC_read()
+	}
+		nl.quiet = 1
+		nl.input($s1)
+		imprt = new Import3d_GUI(nl, 0)
+		imprt.instantiate(this)
+
+		geom_nseg()
+		// delete_axon(3,1.75,1,1)
+		delete_axon() // For plotting network shape plot only
+	bp = new Biophys()
+	bp.biophys(this, $s2)
+	initRand(1005)
+	forsec this.all {
+		if(diam == 0){
+			diam =  1
+			printf("Error : Morphology problem with section [%s] 0 diam \n", secname())
+		}
+		}
+	lengthA = 0
+	lengthB = 0
+	forsec "apic" {
+		lengthA = lengthA + L
+	}
+	forsec "dend" {
+		lengthB = lengthB + L
+	}
+	pA = lengthA/(lengthA + lengthB)
+}
+
+create soma[1], dend[1], apic[1], axon[1], myelin[1]
+
+proc geom_nseg() {local nSec, L1, L2, D1, D2, nSeg1, nSeg2
+	soma area(.5) // make sure diam reflects 3d points
+	nSec = 0
+	forsec all {
+		nseg = 1 + 2*int(L/40)
+		nSec = nSec + 1
+	}
+
+	nSecAll = nSec
+	nSec = 0
+	forsec somatic { nSec = nSec + 1}
+	nSecSoma	= 	nSec
+	nSec = 0
+	forsec apical { nSec = nSec + 1}
+	nSecApical= 	nSec
+	nSec = 0
+	forsec basal { nSec = nSec + 1}
+	nSecBasal	= 	nSec
+	nSec = 0
+	forsec axonal { nSec = nSec + 1}
+	nSecAxonalOrig = nSecAxonal	= 	nSec
+}
+
+proc delete_axon(){
+	nsec = 0
+	forsec axonal{
+		nsec = nsec + 1
+	}
+	if (nsec == 0){
+		ais_diams1 = 1
+		ais_diams2 = 1
+	} else if (nsec == 1){
+		ais_diams1 = axon[0].diam
+		ais_diams2 = axon[0].diam
+	} else {
+		ais_diams1 = axon[0].diam
+		ais_diams2 = axon[0].diam
+		soma distance(0,0.5)
+		forsec axonal{
+			if (distance(1,0.5) > 60){
+				ais_diams2 = diam
+				break
+			}
+		}
+	}
+	
+	forsec axonal{delete_section()}
+	create axon[2]
+	access axon[0]{
+		L= 30
+		nseg = 1//+2*int(L/10)
+		diam = ais_diams1
+		all.append()
+		axonal.append()
+	}
+	access axon[1]{
+		L= 30
+		nseg = 1//+2*int(L/10)
+		diam = ais_diams2
+		all.append()
+		axonal.append()
+	}
+
+	nSecAxonal = 2
+	connect axon[0](0), soma[0](1)
+	connect axon[1](0), axon[0](1)
+	access soma
+}
+
+func getLongestBranch(){local maxL,d localobj distallist,sref
+		sprint(tstr,"%s distance()",$s1)
+		execute(tstr,this)
+
+		if(0==strcmp($s1,"axon")){
+		sprint(tstr,"%s[0] distance(1)",$s1)
+		execute(tstr,this)
+		}
+
+	maxL = 0
+	d = 0
+	distallist = new SectionList()
+	forsec $s1 {
+		sref = new SectionRef()
+		if (sref.nchild==0) distallist.append()
+	}
+	forsec distallist{
+		d = distance(1)
+		if(maxL<d) maxL = d
+	}
+	// for the soma case
+	if (maxL == 0) {
+		$s1 {
+			maxL = L
+		}
+		}
+	return maxL
+}
+
+obfunc locateSites() {local maxL,site,d0,d1,siteX,i localobj vv,ll
+	ll = new List()
+
+	sprint(tstr,"%s distance()",$s1)
+	execute(tstr,this)
+
+	if(0==strcmp($s1,"axon")){
+		sprint(tstr,"%s[0] distance(1)",$s1)
+		execute(tstr,this)
+	}
+
+	maxL = getLongestBranch($s1)
+	site = $2
+	i = 0
+	forsec $s1 {
+		if (distance(0) < distance(1)) {
+			d0 = distance(0)
+			d1 = distance(1)
+		} else {
+			d1 = distance(0)
+			d0 = distance(1)
+		}
+
+		if (site <= d1 && site >= d0) {
+		siteX = (site-d0)/(d1-d0)
+		secNum = i
+		vv = new Vector()
+		ll.append(vv.append(secNum,siteX))
+		}
+		i = i+1
+	}
+	return ll
+}
+
+proc distribute_channels()	{local dist,val,base,maxLength
+	base = $8
+	soma distance()
+	maxLength = getLongestBranch($s1)
+
+	forsec $s1		{
+		if(0==strcmp($s2,"Ra")){
+			Ra = $8
+		} else {
+			for(x) {
+				if (($3==3) || ($3==4) || ($3==5)) {
+					dist = distance(x)
+				} else {
+					dist = distance(x)/maxLength
+				}
+				val = calculate_distribution($3,dist,$4,$5,$6,$7,$8)
+				sprint(tstr,"%s(%-5.10f) = %-5.10f",$s2,x,val)
+				execute(tstr)
+			}
+		}
+	}
+}
+
+// $1 is the distribution type:
+//     0 linear, 1 sigmoid, 2 exponential
+//     3 step for absolute distance (in microns)
+//		 4 exponential with absolute distance (compatible with bluepyopt)
+//		 5 sigmoidal with absolute distance
+func calculate_distribution()	{local value
+	if ($1==0)	{value = $3 + $2*$4}
+	if ($1==1) {value = $3 + ($4/(1+exp(($2-$5)/$6)))}
+	if ($1==2) {value = $3 + $6*exp($4*($2-$5))}
+	if ($1==3) {
+		if (($2 > $5) && ($2 < $6)) {
+			value = $3
+		} else {
+			value = $4
+		}
+	}
+	if ($1==4) {value = $3 + $6*exp($4*($2-$5))}
+	if ($1==5) {value = $3 + ($4/(1+exp(($2-$5)/$6)))}
+	value = value*$7
+	return value
+}
+
+// shift cell location - Random
+// proc position(){ local i
+// 	xoffset = rd1.repick()*600 - 300 //int($1/10)*60 - 300// Option for grid placement
+// 	yoffset = rd1.repick()*600 - 300 //($1%10)*60 - 300// Option for grid placement
+// 	zoffset = 0
+// 	// Find first coordinate to first subtract it to a somatic coordinate of (0,0,0)
+// 	soma x = x3d(0)
+// 	soma y = y3d(0)
+// 	soma z = z3d(0)
+// 	soma for i=0,n3d()-1 {
+// 		// fprint("\nCoordinates: (%g,%g,%g)",x3d(i), y3d(i), z3d(i))
+// 		xloc = x3d(i)+xoffset-x
+// 		yloc = y3d(i)+yoffset-y
+// 		zloc = z3d(i)+zoffset-z
+// 		diamval = diam3d(i)
+// 		pt3dchange(i, xloc, yloc, zloc, diamval)
+// 	}
+// 	define_shape() // shifts all the other sections in line with somatic section
+// }
+
+// Shift Cell Location - Manual
+
+proc position() { local i
+	soma for i = 0, n3d()-1 { // ith point of number of 3d locations stored in the currently accessed section
+		pt3dchange(i, $1+x3d(i), $2+y3d(i), $3+z3d(i), diam3d(i)) // Change the ith 3-d point info, Returns the x/y/z coordinate of the ith point in the 3-d list of the currently accessed section.
+	}
+	define_shape()
+}
+// pt3dstyle() // use if visualization gets wee-woo
+
+
+//========================================================================================
+//============================== synapse related functions ===============================
+//========================================================================================
+
+// $1 some number that is function of the cell index
+// Have each cell with unique sites, but certain portion of inputs identical to root cell
+proc initRand() {
+	rList = new List() //for stochastic synapses
+	rd1 = new Random($1) // unique to this cell
+	rd1.uniform(0,1)
+}
+
+proc connect2target() { //$o1 target point process, $o2 returned NetCon
+	soma $o2 = new NetCon(&v(1), $o1)
+	$o2.threshold = -30
+}
+
+double siteVec[2]
+proc createArtificialSyn() {local sitenum,OUni,i localobj sl
+	strdef treename,cmd2
+	PYR = $2
+	for(i=0;i<10;i+=1){
+
+		if (i<5){
+			treename = "dend"
+			relpos = 0.5
+			sl = locateSites(treename,relpos*getLongestBranch(treename))
+			siteVec[0] = sl.o[i].x[0]
+			siteVec[1] = sl.o[i].x[1]
+		}else{
+			if (PYR==0){
+				// If not a pyramidal cell, stop at 5 OU processes
+				break
+			}
+			treename = "apic"
+			relpos = (i-5)*0.2 + 0.1 // [0.1, 0.3, 0.5, 0.7, 0.9]
+			sl = locateSites(treename,relpos*getLongestBranch(treename))
+			sitenum = int((sl.count()-1))
+			siteVec[0] = sl.o[sitenum].x[0]
+			siteVec[1] = sl.o[sitenum].x[1]
+		}
+
+		sprint(cmd2,"access %s[siteVec[0]]",treename)
+		execute(cmd2,this)
+
+		sprint(cmd2,"%s[siteVec[0]] sref = new SectionRef()",treename)
+		execute(cmd2,this)
+
+		sref {
+			OUprocess.append(new Gfluct2(siteVec[1]))
+			OUni = OUprocess.count()-1 // OU object index
+
+			// Set OU parameters
+			OUprocess.o[OUni].E_e = 0// time constant of excitatory conductance
+			OUprocess.o[OUni].E_i = -80 // time constant of inhibitory conductance
+			OUprocess.o[OUni].g_e0 = 0.001*exp(relpos) //60 // average excitatory conductance
+			OUprocess.o[OUni].g_i0 = 0.005*exp(relpos) // average inhibitory conductance
+			OUprocess.o[OUni].tau_e = 65 // time constant of excitatory conductance
+			OUprocess.o[OUni].tau_i = 20 // time constant of inhibitory conductance
+			OUprocess.o[OUni].std_e = 0.001*exp(relpos) // standard dev of excitatory conductance
+			OUprocess.o[OUni].std_i = 0.005*exp(relpos) // standard dev of inhibitory conductance
+			// OUprocess.o[OUni].new_seed($1*10+i) // This appears to not be threadsafe
+				 rslist.append(new Random($1*10+i))
+				 rslist.o[OUni].normal(0,1)
+				 OUprocess.o[OUni].noiseFromRandom(rslist.o[OUni])
+		}
+		// fprint("\nOU Process #%g Set",$1*10+i)
+	}
+}
+
+obfunc distributeSyn() {local sitenum,syni,preconi,i localobj sl,nilstim
+	if ((strcmp($o1.cell_name, "HL23PN1") == 0)){
+		EsynConductance = 0.00047
+		NsynE = 5
+		NsynI = 0
+		if ((strcmp(cell_name, "HL23MN1") == 0)){
+			EsynConductance = 0.00032
+			NsynE = 8
+			NsynI = 0
+		}
+	}
+	if (strcmp($o1.cell_name, "HL23MN1") == 0){
+		IsynConductance = 0.028
+		NsynE = 0
+		NsynI = 12
+	}
+	strdef treename,cmd2
+	for(i=0;i<(NsynE+NsynI);i+=1){
+		if (rd1.repick()<pA){
+			treename = "apic"
+		} else {
+			treename = "dend"
+		}
+		if (strcmp($o1.cell_name, "HL23MN1") == 0){
+			treename = "apic"
+		}
+		sl = locateSites(treename,rd1.repick()*getLongestBranch(treename))
+
+		sitenum = int((sl.count()-1)*rd1.repick())
+		siteVec[0] = sl.o[sitenum].x[0]
+		siteVec[1] = sl.o[sitenum].x[1]
+		//print siteVec[0]
+
+		sprint(cmd2,"access %s[siteVec[0]]",treename)
+		execute(cmd2,this)
+		sprint(cmd2,"%s[siteVec[0]] sref = new SectionRef()",treename)
+		execute(cmd2,this)
+
+		if (i<NsynE){
+			sref {
+				synlist.append(new ProbAMPANMDA2(siteVec[1]))
+				syni = synlist.count()-1 //synapse index
+				rList.append(new Random(int(1000000*rd1.repick())))
+				rList.o[syni].negexp(1)
+				synlist.o[syni].setRNG(rList.o[syni])
+				synlist.o[syni].tau_r_AMPA = 0.3
+				synlist.o[syni].tau_d_AMPA = 3
+				synlist.o[syni].tau_r_NMDA = 2
+				synlist.o[syni].tau_d_NMDA = 65
+				synlist.o[syni].e = 0
+				synlist.o[syni].Dep = 25
+				synlist.o[syni].Fac = 100
+				synlist.o[syni].Use = 0.6
+				synlist.o[syni].u0 = 0
+				synlist.o[syni].gmax = EsynConductance
+
+				access $o1.soma
+				$o1.cons.append(new NetCon(&v(1), synlist.o[syni]))
+				preconi = $o1.cons.count()-1 //connection index
+				$o1.cons.o[preconi].threshold = $2
+				$o1.cons.o[preconi].delay = $3
+				$o1.cons.o[preconi].weight = $4
+			}
+		} else {
+			sref {
+				synlist.append(new ProbUDFsyn2(siteVec[1]))
+				syni = synlist.count()-1 //synapse index
+				rList.append(new Random(int(1000000*rd1.repick())))
+				rList.o[syni].negexp(1)
+				synlist.o[syni].setRNG(rList.o[syni])
+				synlist.o[syni].tau_r = 1
+				synlist.o[syni].tau_d = 2
+				synlist.o[syni].e = -80
+				synlist.o[syni].Dep = 100
+				synlist.o[syni].Fac = 0
+				synlist.o[syni].Use = 0.25
+				synlist.o[syni].u0 = 0
+				synlist.o[syni].gmax = IsynConductance
+
+				access $o1.soma
+				$o1.cons.append(new NetCon(&v(1), synlist.o[syni]))
+				preconi = $o1.cons.count()-1 //connection index
+				$o1.cons.o[preconi].threshold = $2
+				$o1.cons.o[preconi].delay = $3
+				$o1.cons.o[preconi].weight = $4
+			}
+		}
+	}
+	return synlist
+}
+
+double siteVec[2]
+proc InitConnections(){local sitenum,syni,jj,preconi localobj sl, nilstim
+	strdef cmd2,treename,SynType,Target
+
+	NumSyns = $1
+	SynType = $s2
+	Target = $s3
+	synConductance = $4
+
+	for(jj=0;jj<NumSyns;jj+=1){
+		if (strcmp("both",Target)==0){
+			if (rd1.repick()<pA){
+				treename = "apic"
+			} else {
+				treename = "dend"
+			}
+		} else {
+			treename = Target
+		}
+
+		sl = locateSites(treename,rd1.repick()*getLongestBranch(treename))
+
+		sitenum = int((sl.count()-1)*rd1.repick())
+		siteVec[0] = sl.o[sitenum].x[0]
+		siteVec[1] = sl.o[sitenum].x[1]
+
+		sprint(cmd2,"access %s[siteVec[0]]",treename)
+		execute(cmd2,this)
+
+		sprint(cmd2,"%s[siteVec[0]] sref = new SectionRef()",treename)
+		execute(cmd2,this)
+
+		if (strcmp("E",SynType)==0){
+			sref {
+				synlist.append(new ProbAMPANMDA2(siteVec[1]))
+				syni = synlist.count()-1 //synapse index
+				rslist.append(new Random(int(1000000*rd1.repick())))
+				rslist.o[syni].negexp(1)
+				synlist.o[syni].setRNG(rslist.o[syni])
+				synlist.o[syni].tau_r_AMPA = 0.3
+				synlist.o[syni].tau_d_AMPA = 3
+				synlist.o[syni].tau_r_NMDA = 2
+				synlist.o[syni].tau_d_NMDA = 65
+				synlist.o[syni].e = 0
+				synlist.o[syni].Dep = 670
+				synlist.o[syni].Fac = 17
+				synlist.o[syni].Use = 0.46
+				synlist.o[syni].u0 = 0
+				synlist.o[syni].gmax = synConductance
+			}
+		}
+		if  (strcmp("I",SynType)==0){
+			sref {
+				synlist.append(new ProbUDFsyn2(siteVec[1]))
+				syni = synlist.count()-1 //synapse index
+				rslist.append(new Random(int(1000000*rd1.repick())))
+				rslist.o[syni].negexp(1)
+				synlist.o[syni].setRNG(rslist.o[syni])
+				synlist.o[syni].tau_r = 1
+				synlist.o[syni].tau_d = 20
+				synlist.o[syni].e = -80
+				synlist.o[syni].Dep = 100
+				synlist.o[syni].Fac = 0
+				synlist.o[syni].Use = 0.25
+				synlist.o[syni].u0 = 0
+				synlist.o[syni].gmax = synConductance
+			}
+		}
+	}
+}
+
+endtemplate HNTemplate

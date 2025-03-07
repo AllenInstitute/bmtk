@@ -21,10 +21,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
+from bmtk.simulator.pointnet.gids import GidPool
 from bmtk.simulator.pointnet.modules.sim_module import SimulatorMod
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.utils.reports.spike_trains import SpikeTrains
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
+import nest
 
 
 class SpikesInputsMod(SimulatorMod):
@@ -34,9 +36,34 @@ class SpikesInputsMod(SimulatorMod):
         self._module = module
         self._params = kwargs
         self._spike_trains = None
+        self._run_counter = 0
+        self._warned = False
 
     def initialize(self, sim):
         io.log_info('Build virtual cell stimulations for {}'.format(self._name))
+        
+        # if input_file is a list, then we'll load each file in the list
+        if isinstance(self._params['input_file'], list):
+            # if run_counter is greater than the length of the input_file list, then 
+            # raise an error
+            if self._run_counter >= len(self._params['input_file']):
+                # raise Exception('Number of input_files is less than number of runs')
+                # just warn instead of raising an exception
+                if not self._warned:
+                    io.log_warning('Number of input_files is less than number of runs')
+                    self._warned = True
+                return
+            input_path = self._params['input_file'][self._run_counter]
+            t_offset = nest.GetKernelStatus('biological_time')
+            # reset the virtual spike map to redifine the spikes
+            sim.net._virtual_ids_map = {}
+            sim.net._virtual_gids = GidPool()
+        else:
+            input_path = self._params['input_file']
+            t_offset = 0.0
+        self._run_counter += 1
+
+            
         
         node_set = sim.net.get_node_set(self._params['node_set'])
        
@@ -58,9 +85,10 @@ class SpikesInputsMod(SimulatorMod):
                 )
         else:
             self._spike_trains = SpikeTrains.load(
-                path=self._params['input_file'], 
+                # path=self._params['input_file'], 
+                path=input_path,
                 file_type=self._module, 
                 **self._params
             )
 
-        sim.net.add_spike_trains(self._spike_trains, node_set, sim.get_spike_generator_params())
+        sim.net.add_spike_trains(self._spike_trains, node_set, sim.get_spike_generator_params(), t_offset=t_offset)
