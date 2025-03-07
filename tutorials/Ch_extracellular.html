@@ -482,7 +482,7 @@ capturing the slow-reacting, non-spiking dynamics of your network.</p>
 </div>
 <p>In this particular example, we use a very simplified “cortical column” consisting of layers <code class="docutils literal notranslate"><span class="pre">L2/3</span></code>, <code class="docutils literal notranslate"><span class="pre">L4</span></code> (which receives most of the network inputs), and <code class="docutils literal notranslate"><span class="pre">L5</span></code> pyramidal cells surrounded by inhibitory interneurons. The cells are built in a column parallel to the <strong>y</strong> axis and centered at <strong>x=0</strong> and <strong>z=0</strong>.</p>
 <p>We can use VND to visualize our network to make sure the layering and rotation of our cells are correct:</p>
-<div><p><img alt="8968a33a787745d2a768e8ebacb09aee" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
+<div><p><img alt="e5e3502d9af0419a831788a8249fb3d0" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
 </div><p>The full script for this example can be found in the file <em>build_network.lfp.py</em>. We encourage you to make changes and test out the effects different cell types, synapses, and geometry have on LFP recordings. You can also try using a different network altogether.</p>
 </section>
 <section id="Step-2:-Adding-%22ecp%22-recordings-to-simulation-config.">
@@ -731,7 +731,7 @@ Warning: no DISPLAY environment variable.
 </div>
 </div>
 <p>But if you need to analyze the results yourself, they will be saved in the <em>output/cortical_electrode.h5</em> file, which is an HDF5 following SONATA format for <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">Extracellular reports</a>. The results are stored in the <code class="docutils literal notranslate"><span class="pre">/ecp/data</span></code> table that is <span class="math notranslate nohighlight">\(T-timestamps x N-channels\)</span> in size.</p>
-<div><p><img alt="cf61c9bff98c4098840199f2d7c311b6" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 500px;" /></p>
+<div><p><img alt="82da857557d9496ca731103d16c3b80c" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 500px;" /></p>
 </div><div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>

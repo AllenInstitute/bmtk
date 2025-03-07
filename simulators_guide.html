@@ -1594,21 +1594,257 @@ search methods for optimizing network and simulations.</p>
 </div>
 </div>
 </section>
-<section id="id1">
-<h3>Inputs<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<section id="inputs-for-simulations">
+<h3>Inputs for Simulations<a class="headerlink" href="#inputs-for-simulations" title="Link to this heading">#</a></h3>
 <p>BMTK supports using a wide variety of inputs and stimulus when running a simulation. Please see the following guides
 for built-in “inputs” types and how to use them in your simulations.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-4 sd-row-cols-lg-5 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Current Clamp (IClamp) Stimulus</div>
+<ul class="simple">
+<li><p class="sd-card-text">Add excitatory or inhibitory current clamping to one or more select cells.</p></li>
+<li><p class="sd-card-text">Create multiple stimulus square-wave blocks.</p></li>
+<li><p class="sd-card-text">Using files and/or functions to create more complex current patterns.</p></li>
+<li><p class="sd-card-text">How to choose locations along a cell’s morphology (BioNet).</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="current_clamps.html"><span>current_clamps.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Voltage Clamping</div>
+<ul class="simple">
+<li><p class="sd-card-text">Inject a voltage clamp into one or more select cells.</p></li>
+<li><p class="sd-card-text">Input in the form of a square-block, or more complex patterns using files or functions.</p></li>
+<li><p class="sd-card-text">How to select location to insert clamp (BioNet).</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html#voltage-clamp"><span>bionet.html#voltage-clamp</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Advanced Spiking Options</div>
+<ul class="simple">
+<li><p class="sd-card-text">How to create you’re own pregenerated spike-train files using SONATA, CSV, or NWB files.</p></li>
+<li><p class="sd-card-text">Write your own python function to dynamically generate input spike-trains before or during simulation.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/Ch_advanced_spikes_input.html"><span>tutorials/Ch_advanced_spikes_input.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Importing Spike Stimulus from NWB Extracellular Electrophysiology Probe Data</div>
+<ul class="simple">
+<li><p class="sd-card-text">Use NWB 2.0 files to insert experimental spike-sorted recordings into a simulation.</p></li>
+<li><p class="sd-card-text">How to query and map NWB units onto simulation cells.</p></li>
+<li><p class="sd-card-text">How to select events only from specific epochs, trials or intervals.</p></li>
+<li><p class="sd-card-text">Use DANDI to automatically query and select experiments from multiple labs and experiments.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="ecephys_probe.html"><span>ecephys_probe.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Allen Cell-Types Database intracellular Sweeps</div>
+<ul class="simple">
+<li><p class="sd-card-text">Use Allen Cell-Types intracullar experimental stimuli (sweep) for simulation stimulus.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/Ch_advanced_stim.html#4.-Example:-Using-sweep-data-from-the-Allen-Cell-Types-Database"><span>tutorials/Ch_advanced_stim.html#4.-Example:-Using-sweep-data-from-the-Allen-Cell-Types-Database</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Replaying Previous Simulation Recordings</div>
+<ul class="simple">
+<li><p class="sd-card-text">Use activity of previous recurrent recordings for input to simulation.</p></li>
+<li><p class="sd-card-text">Allows you to capture and separate out network activity not generated by external stimulus.</p></li>
+<li><p class="sd-card-text">Can also select subpopulations of cells and synapses to segment subnetwork and motif activity within a larger network.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/bionet_disconnected_sims.html"><span>tutorials/bionet_disconnected_sims.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Extracellular Stimulation with BioNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Produce extracullar field with an extracullar electrode or mesh.</p></li>
+<li><p class="sd-card-text">How to set channel location and extracellular resistance.</p></li>
+<li><p class="sd-card-text">Use a constant field, sin wave, or your own custom voltage function.</p></li>
+<li><p class="sd-card-text">How to use COMSOL physical simulator to simulate with complex field dynamics.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html#extracellular-stimulation"><span>bionet.html#extracellular-stimulation</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Spontaneous Firing of Synapses</div>
+<ul class="simple">
+<li><p class="sd-card-text">Have synapses activiate without external pre-synaptic activity.</p></li>
+<li><p class="sd-card-text">Can fire at regular, random, or pre-generated periods.</p></li>
+<li><p class="sd-card-text">Choose cells based on pre, post, and/or connectivity attributes.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html#spontaneous-firing"><span>bionet.html#spontaneous-firing</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Generating Spikes from Movies in FilterNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">How to generate custom movies for FilterNet stimulus.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="filternet.html#inputs"><span>filternet.html#inputs</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Pregenerated Movies in FilterNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Static Images and slide-shows.</p></li>
+<li><p class="sd-card-text">Drifting Gratings.</p></li>
+<li><p class="sd-card-text">Full-Field Flashes.</p></li>
+<li><p class="sd-card-text">Looming movie.</p></li>
+<li><p class="sd-card-text">Gaussian noise.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="filternet.html#inputs"><span>filternet.html#inputs</span></a></div>
+</div>
+</div>
+</div>
 </section>
 <section id="reports">
 <h3>Reports<a class="headerlink" href="#reports" title="Link to this heading">#</a></h3>
 <p>Modelers can choose which variables and changes in a simulation to record using the “reports” section. See following
 guides for further information how to implement such output.</p>
-</section>
-<section id="useful-options-and-scripts">
-<h3>Useful Options and Scripts<a class="headerlink" href="#useful-options-and-scripts" title="Link to this heading">#</a></h3>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-4 sd-row-cols-lg-5 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Advanced Options for Spikes recordings</div>
+<ul class="simple">
+<li><p class="sd-card-text">Record spikes from select subset of cells</p></li>
+<li><p class="sd-card-text">Saving to SONATA, CSV, and NWB 2.0 formats.</p></li>
+<li><p class="sd-card-text">Sorting, indexing, and compression options</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html#spikes"><span>bionet.html#spikes</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Contigous Membrane Recordings</div>
+<ul class="simple">
+<li><p class="sd-card-text">Recording of membrane voltage, calcium concentration, and other ions/variables.</p></li>
+<li><p class="sd-card-text">Selecting subsets of cells to record from.</p></li>
+<li><p class="sd-card-text">Selecting morphological areas of cells to record from (BioNet).</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="bionet.html#spikes"><span>bionet.html#spikes</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Recording Synaptic Variables</div>
+<ul class="simple">
+<li><p class="sd-card-text">Record weight changes in STP and STDP synapses</p></li>
+<li><p class="sd-card-text">Recording synaptic variables over the course of a simulation.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="pointnet.html#recording-synaptic-weights"><span>pointnet.html#recording-synaptic-weights</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Firing Rate Dynamics in FilterNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Get the original firing rate dynamics in response to receptive field stimuli in FilterNet.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="filternet.html"><span>filternet.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Population Firing Rate Dynamics in PopNet</div>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="popnet.html"><span>popnet.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Recording Extracullar Field in BioNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Recording single and group cell contribution to a extracullar electrode or mesh.</p></li>
+<li><p class="sd-card-text">Setting extracullar resistance.</p></li>
+<li><p class="sd-card-text">Calculating Current Source Density.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/Ch_extracellular.html"><span>tutorials/Ch_extracellular.html</span></a></div>
+</div>
+</div>
+</div>
 </section>
 <section id="advanced-features">
 <h3>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading">#</a></h3>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-4 sd-row-cols-lg-5 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Imported and Custom Cell Models in BioNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Importing NEURON HOC template cell models into network simulation.</p></li>
+<li><p class="sd-card-text">Overwriting and appending to default cell model parameters and mechanisms.</p></li>
+<li><p class="sd-card-text">Writing custom cell models in Python.</p></li>
+<li><p class="sd-card-text">Importing customized channel and ion mechanism into existing models.</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/Ch_External_Models.html"><span>tutorials/Ch_External_Models.html</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Imported and Custom Cell Models in PointNet</div>
+<ul class="simple">
+<li><p class="sd-card-text">Using Built-in NEST cell models.</p></li>
+<li><p class="sd-card-text">Overridding cell model instantiation.</p></li>
+<li><p class="sd-card-text">Custom cell models with NESTML</p></li>
+</ul>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/Ch_NEST_Cusom_Models.html"><span>tutorials/Ch_NEST_Cusom_Models.html</span></a></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 </section>
@@ -1656,9 +1892,8 @@ guides for further information how to implement such output.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-engines">Simulation Engines</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-resources-and-guides">Additional Resources and Guides</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exectuion-and-run-options">Exectuion and Run Options</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Inputs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inputs-for-simulations">Inputs for Simulations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reports">Reports</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#useful-options-and-scripts">Useful Options and Scripts</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced Features</a></li>
 </ul>
 </li>
