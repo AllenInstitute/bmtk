@@ -1189,8 +1189,8 @@ computing environments.
         search methods for optimizing network and simulations. 
 
 
-Inputs
-^^^^^^
+Inputs for Simulations
+^^^^^^^^^^^^^^^^^^^^^^
 
 BMTK supports using a wide variety of inputs and stimulus when running a simulation. Please see the following guides 
 for built-in "inputs" types and how to use them in your simulations.
@@ -1275,10 +1275,62 @@ Reports
 Modelers can choose which variables and changes in a simulation to record using the "reports" section. See following 
 guides for further information how to implement such output.
 
+.. grid:: 1 1 4 5
+    :gutter: 1
 
-Useful Options and Scripts
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+    .. grid-item-card:: Advanced Options for Spikes recordings
+        :link: bionet.html#spikes
+
+        * Record spikes from select subset of cells
+        * Saving to SONATA, CSV, and NWB 2.0 formats.
+        * Sorting, indexing, and compression options
+
+    .. grid-item-card:: Contigous Membrane Recordings
+        :link: bionet.html#spikes
+
+        * Recording of membrane voltage, calcium concentration, and other ions/variables.
+        * Selecting subsets of cells to record from.
+        * Selecting morphological areas of cells to record from (BioNet).
+
+    .. grid-item-card:: Recording Synaptic Variables
+        :link: pointnet.html#recording-synaptic-weights
+
+        * Record weight changes in STP and STDP synapses
+        * Recording synaptic variables over the course of a simulation.
+
+    .. grid-item-card:: Firing Rate Dynamics in FilterNet
+        :link: filternet.html
+
+        * Get the original firing rate dynamics in response to receptive field stimuli in FilterNet.
+
+    .. grid-item-card:: Population Firing Rate Dynamics in PopNet
+        :link: popnet.html
+
+    .. grid-item-card:: Recording Extracullar Field in BioNet 
+        :link: tutorials/Ch_extracellular.html
+
+        * Recording single and group cell contribution to a extracullar electrode or mesh.
+        * Setting extracullar resistance.
+        * Calculating Current Source Density.
 
 
 Advanced Features
 ^^^^^^^^^^^^^^^^^
+
+.. grid:: 1 1 4 5
+    :gutter: 1
+
+    .. grid-item-card:: Imported and Custom Cell Models in BioNet
+        :link: tutorials/Ch_External_Models.html
+
+        * Importing NEURON HOC template cell models into network simulation.
+        * Overwriting and appending to default cell model parameters and mechanisms.
+        * Writing custom cell models in Python.
+        * Importing customized channel and ion mechanism into existing models.
+
+    .. grid-item-card:: Imported and Custom Cell Models in PointNet
+        :link: tutorials/Ch_NEST_Cusom_Models.html
+
+        * Using Built-in NEST cell models.
+        * Overridding cell model instantiation.
+        * Custom cell models with NESTML
