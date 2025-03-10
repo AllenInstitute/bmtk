@@ -54,3 +54,13 @@ News Letter
         <iframe src=https://t.e2ma.net/webview/zck93h/61d3fee64f76feac08e86bd3c83a56cf width="80%" height="600" frameborder="0"></iframe>
 
 
+
+Previous News Letters
+^^^^^^^^^^^^^^^^^^^^^
+
+* `September 2024 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20September%202024.pdf>`__
+
+* `April 2024 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20April%202024.pdf>`__
+
+* `2023 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%202023.pdf>`__
+
