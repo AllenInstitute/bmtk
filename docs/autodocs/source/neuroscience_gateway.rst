@@ -49,8 +49,7 @@ After you have registered go ahead and log in to the `NSG Portal <https://nsgpro
 Step 2: Packaging the environment files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the 
-an `configuration files, network files, components, inputs, and any other necessacary files to execute your BMTK 
+We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the `configuration files, network files, components, inputs, and any other necessary files to execute your BMTK 
 simulation run script <simulators_guide.html#setting-up-the-environment>`__.
 
 In our example if we have all files stored in `Ch6_l4model <https://github.com/AllenInstitute/bmtk-workshop/tree/main/Ch6_l4model/>`__ 
@@ -75,7 +74,7 @@ that button, we will give it a "Label" of **bmtk_simulations** and an appropiate
     </div>
     <br clear="left">
 
-2. Navagate to **bmtk_simulations** > **Data** and select the ``Upload Data`` button. Provide an appropiate label (we'll 
+2. Navigate to **bmtk_simulations** > **Data** and select the ``Upload Data`` button. Provide an appropiate label (we'll 
 use Label **pointnet_l4model**) and click the ``Choose File`` button to upload the previously created zip file. Click 
 ``Save`` to upload the file.
 
@@ -147,7 +146,7 @@ Step 4: Setup and Run Task
 
 * To speed up the simulation we will run it parallelized using MPI with 8 processs. 
   
-  * Set **Enter Number of Nodes: 1** - Since we are significantly less than the avaialbe cores/memory per node we can 
+  * Set **Enter Number of Nodes: 1** - Since we are significantly less than the available cores/memory per node we can 
     benefit from keeping all MPI Tasks on the same node.
   
   * Set **Enter Number of MPI Tasks per Node: 8** and **Enter Number of Cores per Node: 8**
@@ -171,8 +170,8 @@ Example 2: Using NSG for *BioNet* (eg. NEURON) Simulations
 **********************************************************
 
 The above tutorial will work when running *PointNet*, *FilterNet*, *Builder*, or *Analysis* components of BMTK. However 
-running *BioNet* simulations require a slight changes to intialize a task properly since it requires using the NEURON 
-simulation underneath. In this example we will show a how to run a multi-core BioNet simualation using the network 
+running *BioNet* simulations require a slight changes to initialize a task properly since it requires using the NEURON 
+simulation underneath. In this example we will show a how to run a multi-core BioNet simulation using the network 
 generated in `Chapter 3 <https://github.com/AllenInstitute/bmtk-workshop/tree/main/Ch3_multicells/3.%20Multipopulation%20biophysical.ipynb>`__ of 
 the BMTK tutorial taking note to highlight difference from the example above.
 
