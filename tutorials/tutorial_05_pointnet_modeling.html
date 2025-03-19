@@ -1372,7 +1372,7 @@ can read using hdf5 or bmtk like below:</p>
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Bionet</span></a>.</p>
 <p>The <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells">‘point_120cells’ network</a> in the BMTK examples folder consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows:</p>
-<p><img alt="d7a097592d6a4e15b4290d45628aafea" src="../_images/raster_120cells_orig.png" /></p>
+<p><img alt="41ce2f5e478841e7bcefed247e4f6be0" src="../_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1416,7 +1416,7 @@ can read using hdf5 or bmtk like below:</p>
 </pre></div>
 </div>
 <p>After we rerun the simulation:</p>
-<p><img alt="19bffec3664348249e1b347f518c6903" src="../_images/raster_120cells_perturbed.png" /></p>
+<p><img alt="e958e0e7564a4eb3b77cb7e588f0404f" src="../_images/raster_120cells_perturbed.png" /></p>
 </section>
 </section>
 </section>

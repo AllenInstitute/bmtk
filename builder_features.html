@@ -425,13 +425,13 @@
   <section id="network-builder-features-and-options">
 <h1>Network Builder Features and Options<a class="headerlink" href="#network-builder-features-and-options" title="Link to this heading">#</a></h1>
 <section id="networkbuilder-methods">
-<h2>NetworkBuilder methods<a class="headerlink" href="#networkbuilder-methods" title="Link to this heading">#</a></h2>
-<section id="iterating-and-filter-nodes-from-a-network-using-nodes-method">
-<h3>Iterating and Filter Nodes from a Network using <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method<a class="headerlink" href="#iterating-and-filter-nodes-from-a-network-using-nodes-method" title="Link to this heading">#</a></h3>
+<h2>NetworkBuilder Methods<a class="headerlink" href="#networkbuilder-methods" title="Link to this heading">#</a></h2>
+<section id="iterating-and-filtering-nodes-from-a-network-using-the-nodes-method">
+<h3>Iterating and Filtering Nodes from a Network using the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> Method<a class="headerlink" href="#iterating-and-filtering-nodes-from-a-network-using-the-nodes-method" title="Link to this heading">#</a></h3>
 <p>You can use the The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method
 of the <code class="docutils literal notranslate"><span class="pre">NetworkBuilder</span></code> class to iterate over the nodes stored in a network. The <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method
 returns an iterable list which contains dictionaries of the properties of each individual cell that will
-be created by each call to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code></p>
+be created by each call to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
@@ -455,7 +455,7 @@ be created by each call to <code class="docutils literal notranslate"><span clas
 ...
 </pre></div>
 </div>
-<p>You can also filter by property values by passing in value into parameter.</p>
+<p>You can also filter by property values by passing in a condition as a parameter.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
@@ -490,15 +490,15 @@ be created by each call to <code class="docutils literal notranslate"><span clas
 </div>
 <p>The above will return only the 10 nodes from the two calls with <code class="docutils literal notranslate"><span class="pre">ei=='exc'</span></code>. If you want to filter by multiple
 properties in the format <code class="docutils literal notranslate"><span class="pre">prop1==A</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop2==B</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop3==C</span></code> you can just pass in multiple key-value pairs into the
-<code class="docutils literal notranslate"><span class="pre">nodes()</span></code> parameters. For example if we want to find only those cells that are <strong>excitatory point</strong> neuron cells from
-the example above</p>
+<code class="docutils literal notranslate"><span class="pre">nodes()</span></code> parameters. For example if we want to find only those cells that are <strong>excitatory point</strong> neurons from
+the example above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">)))</span>
 </pre></div>
 </div>
 </section>
 <section id="iterating-and-filtering-edges-using-the-edges-method">
-<h3>Iterating and Filtering Edges using the edges() method<a class="headerlink" href="#iterating-and-filtering-edges-using-the-edges-method" title="Link to this heading">#</a></h3>
-<p>Simular to the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code> method
+<h3>Iterating and Filtering Edges using the edges() Method<a class="headerlink" href="#iterating-and-filtering-edges-using-the-edges-method" title="Link to this heading">#</a></h3>
+<p>Similar to the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code> method
 allows you to iterate and filter all the edges/synapses generated by each call to <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code>. When called
 with no parameters it will return a list of all edges/synapses in a dictionary like format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
@@ -546,7 +546,7 @@ with no parameters it will return a list of all edges/synapses in a dictionary l
     <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The following small network will display the following like the following (<strong>note that the order of edges
+<p>BMTK will display the edge parameters from an example small network as follows: (<strong>note that the order of edges
 may be different</strong>)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5</span>
 <span class="mi">1</span>
@@ -561,8 +561,8 @@ may be different</strong>)</p>
 <p class="admonition-title">Important</p>
 <p>Before the <code class="docutils literal notranslate"><span class="pre">edges()</span></code> method is called the <a class="reference external" href="builder.html#building-and-saving-the-model">connectivity matrix needs to be created</a>
 which is equivalent to calling the <code class="docutils literal notranslate"><span class="pre">build()</span></code> method. For very large networks this can take a long amount of time
-and memory. And if you call <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> or <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> after it will need to rebuild the network.</p>
-<p>As such it is highly recommend to not call <code class="docutils literal notranslate"><span class="pre">edge()</span></code> iterator until after all calls to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> and
+and memory. Also note that you will need to rebuild the network if you call <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> or <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> afterwards.</p>
+<p>As such it is highly recommend to not call the <code class="docutils literal notranslate"><span class="pre">edge()</span></code> iterator until after all calls to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> are completed.</p>
 </div>
 <p>The easiest way to filter only certain edges by query is, like with the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, add key-value parameters to
@@ -582,7 +582,7 @@ the method. If more than one parameter is called then it will be treated as a lo
 </div>
 <p>You can also filter edges by either source and/or target properties using the <strong>source_nodes</strong> and
 <strong>target_nodes</strong> parameters, respectively. Use the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> iterator to create filters for nodes
-(this will work even if a source/target set of nodes comes from a differnt population - as long as the edges
+(this will work even if a source/target set of nodes comes from a different population - as long as the edge
 still exists).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We should expect &lt;= 50 inh -&gt; exc edges.</span>
 <span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
@@ -628,7 +628,7 @@ still exists).</p>
 <section id="connector-functions">
 <h2>Connector Functions<a class="headerlink" href="#connector-functions" title="Link to this heading">#</a></h2>
 <section id="options-for-setting-synapse-location">
-<h3>Options for setting synapse location<a class="headerlink" href="#options-for-setting-synapse-location" title="Link to this heading">#</a></h3>
+<h3>Options for Setting Synapse Location<a class="headerlink" href="#options-for-setting-synapse-location" title="Link to this heading">#</a></h3>
 <p>When creating a network with morphologically realistic cells, the location of the afferent synapses along a given cell
 dendrites/soma is often very important. However trying to manually place each synapse quickly becomes an intractable
 problem even for small networks. Also with simulators like NEURON it is very difficult to know the name/identifier of
@@ -637,13 +637,13 @@ each dendritic branch and segment prior to simulation.</p>
 when using the <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> calls.</p>
 <section id="target-sections-and-distance-range-properties">
 <h4>“target_sections” and “distance_range” properties<a class="headerlink" href="#target-sections-and-distance-range-properties" title="Link to this heading">#</a></h4>
-<p>The easiest and most efficient solution is add properties <strong>target_section</strong> and <strong>distance_range</strong> when calling the
+<p>The easiest and most efficient solution is to add the properties <strong>target_section</strong> and <strong>distance_range</strong> when calling the
 <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method. <strong>target_section</strong> is a list of of one or more cell section names as defined in the SWC
 format (<em>axon</em>, <em>somatic</em>, <em>basal</em>, <em>apical</em>, <em>dend</em>, <em>other</em>). while <strong>distance_range</strong> is a vector of two values - the
 start and end distance (both inclusive) in arc-length a segment has to be away from the hilt of the soma.</p>
-<p>For example we want to create edges that on connect to <em>apical</em> or <em>basal</em> dendritic sections that are between 50-200
-microns away from the soma. (If you want to have it go to the end of the dendrite you can use a large number like
-<code class="docutils literal notranslate"><span class="pre">[50.0,</span> <span class="pre">1.0e20]</span></code>.</p>
+<p>For example, we want to create edges that only connect to <em>apical</em> or <em>basal</em> dendritic sections that are between 50-200
+microns away from the soma. (If you want connections at the end of the dendrite you can use a large number like
+<code class="docutils literal notranslate"><span class="pre">[50.0,</span> <span class="pre">1.0e20]</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
     <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyramidal.swc&#39;</span><span class="p">),</span>
@@ -654,21 +654,21 @@ microns away from the soma. (If you want to have it go to the end of the dendrit
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>At the beggining of each simulation <em>BioNet</em> will see the <strong>target_section</strong> and <strong>distance_range</strong> parameters and use
-them to find every morphology segment that matches, choose one at random, and create a synapse.</p>
-<p>There are two potential issues when using this method for assigning synapse locations</p>
+<p>At the beginning of each simulation, <em>BioNet</em> will see the <strong>target_section</strong> and <strong>distance_range</strong> parameters and use
+them to find every morphology segment that matches, then choose one at random and create a synapse.</p>
+<p>There are two potential issues when using this method for assigning synapse locations:</p>
 <p>1. <strong>target_section</strong> and <strong>distance_range</strong> are not SONATA reserved keywords, meaning other tools will likely not be
 able to use these parameters to regenerate synaptic locations.
 2. Since the synapses are generated by <em>BioNet</em> dynamically before each simulation, it could lead to issues with
-reproducability of network results.</p>
+reproducibility of network results.</p>
 </section>
-<section id="explicity-setting-afferent-synapse-section-and-position">
-<h4>Explicity setting afferent synapse section and position<a class="headerlink" href="#explicity-setting-afferent-synapse-section-and-position" title="Link to this heading">#</a></h4>
-<p>The more reproducable alternative is to set the parameters <strong>afferent_section_id</strong> and <strong>afferent_section_pos</strong>, which
+<section id="explicitly-setting-afferent-synapse-section-and-position">
+<h4>Explicitly setting afferent synapse section and position<a class="headerlink" href="#explicitly-setting-afferent-synapse-section-and-position" title="Link to this heading">#</a></h4>
+<p>The more reproducible alternative is to set the parameters <strong>afferent_section_id</strong> and <strong>afferent_section_pos</strong>, which
 are reserve SONATA keywords recognized by other tools, for every synapse. To help with this you can use the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method. Point to this method
 in the <code class="docutils literal notranslate"><span class="pre">add_properties()</span></code> call and choose the <strong>target_section</strong> and <strong>distance_range</strong>, like above. When build() is
-called it will choose appropiate synapse location and store them in the SONATA file.</p>
+called it will choose appropriate synapse location and store them in the SONATA file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">rand_syn_locations</span>
 
 <span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
@@ -694,7 +694,7 @@ called it will choose appropiate synapse location and store them in the SONATA f
 </div>
 <p>When <code class="docutils literal notranslate"><span class="pre">build()</span></code> is called on the previous code it will load the ‘pyramidal.swc’ file with NEURON
 to determine how the simulator will generate and name all the branches and segments. If you prefer
-you can use the <code class="docutils literal notranslate"><span class="pre">SWCReader</span></code> class inside your script to access information about availabe sections
+you can use the <code class="docutils literal notranslate"><span class="pre">SWCReader</span></code> class inside your script to access information about available sections
 and segments (including x, y, z coordinates):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet.swc_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SWCReader</span>
 
@@ -709,7 +709,7 @@ and segments (including x, y, z coordinates):</p>
 </section>
 </section>
 <section id="built-in-connection-rules">
-<h3>Built-in connection rules<a class="headerlink" href="#built-in-connection-rules" title="Link to this heading">#</a></h3>
+<h3>Built-in Connection Rules<a class="headerlink" href="#built-in-connection-rules" title="Link to this heading">#</a></h3>
 <p>The BMTK Network Builder includes a number of built-in functions that you can use for the
 <strong>connection_rule</strong> option when using <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method.</p>
 <p><a class="reference internal" href="bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.edge_connectors.distance_connector" title="bmtk.builder.auxi.edge_connectors.distance_connector"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bmtk.builder.auxi.edge_connector.distance_connector()</span></code></a>
@@ -719,16 +719,16 @@ to have more connections between them (will rule-out self-connections).</p>
 choose at random if two cells share a connection or not.</p>
 </section>
 </section>
-<section id="options-for-saving-network-to-sonata">
-<h2>Options for Saving Network to SONATA<a class="headerlink" href="#options-for-saving-network-to-sonata" title="Link to this heading">#</a></h2>
+<section id="options-for-saving-a-network-to-sonata-format">
+<h2>Options for Saving a Network to SONATA format<a class="headerlink" href="#options-for-saving-a-network-to-sonata-format" title="Link to this heading">#</a></h2>
 <section id="network-file-name-and-path">
-<h3>network file name and path<a class="headerlink" href="#network-file-name-and-path" title="Link to this heading">#</a></h3>
-<p>By default when you when have a population network with name “NETNAME” and call <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> or
-<code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code> the Builder will by default save it to file names <em>NETNAME_nodes.h5</em> and
-<em>NETNAME_nodes.csv</em>. Similarly for edges from populations “NETSRC” to “NETTRG” will be saved by default
-under file names <em>NETSRC_to_NETTRG_edges.h5</em> and <em>NETSRC_to_NETTRG_edge_types.csv</em>.</p>
-<p>To change the file names use the <strong>node[_type]s_file_name</strong> and <strong>edge[_types]_file_name</strong> parameters. You can use
-absolute file paths, and when using relative file paths it will place it under the <strong>output_dir</strong> option</p>
+<h3>Network File Name and Path<a class="headerlink" href="#network-file-name-and-path" title="Link to this heading">#</a></h3>
+<p>By default, when you when have a network with name “NETNAME” and call <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> or
+<code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code>, the Builder will save it to file names <em>NETNAME_nodes.h5</em> and
+<em>NETNAME_nodes.csv</em>. Similarly, edges from populations “NETSRC” to “NETTRG” will be saved by default
+to file names <em>NETSRC_to_NETTRG_edges.h5</em> and <em>NETSRC_to_NETTRG_edge_types.csv</em>.</p>
+<p>To change the file names, use the <strong>node[_type]s_file_name</strong> and <strong>edge[_types]_file_name</strong> parameters. You can use
+absolute file paths, and when using relative file paths, it will place it under the <strong>output_dir</strong> option:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will save the network nodes and edges files into &quot;network/custom-*&quot; file-name.</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
@@ -741,10 +741,10 @@ absolute file paths, and when using relative file paths it will place it under t
 </div>
 </section>
 <section id="append-mode">
-<h3>append mode<a class="headerlink" href="#append-mode" title="Link to this heading">#</a></h3>
-<p>When the <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> method is called it will by default overwrite any existing SONATA h5 and csv files if
+<h3>Append Mode<a class="headerlink" href="#append-mode" title="Link to this heading">#</a></h3>
+<p>When the <code class="docutils literal notranslate"><span class="pre">NetworkBuilder.save()</span></code> method is called it will by default overwrite any existing SONATA .h5 and .csv files if
 they already exist (you can change this behavior by setting <code class="docutils literal notranslate"><span class="pre">force_overwrite=False</span></code>). The SONATA format does allow
-you to save multiple nodes and edges populations in the save files - although each population must have a unique name.,
+you to save multiple nodes and edges populations in the same files - although each population must have a unique name.
 With BMTK you must set the <strong>mode</strong> parameter to <code class="docutils literal notranslate"><span class="pre">a</span></code> or <code class="docutils literal notranslate"><span class="pre">append</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumes network/shared-nodes.h5 already exists and user wants to append another node population into it.</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
@@ -757,9 +757,9 @@ With BMTK you must set the <strong>mode</strong> parameter to <code class="docut
 </section>
 <section id="sorting-of-edges">
 <h3>Sorting of Edges<a class="headerlink" href="#sorting-of-edges" title="Link to this heading">#</a></h3>
-<p>By default when the NetworkBuilder saves the SONATA edges file the edges are sorted by “target_node_id” (ie. all the
+<p>By default, the edges are sorted by “target_node_id” when the NetworkBuilder saves the SONATA edges file (ie. all the
 edges with post-synapse node 0 comes before edges with post-synapse node 1). The <strong>sort_by</strong> parameter in the <code class="docutils literal notranslate"><span class="pre">save()</span></code>
-method allows you to choose between sorting by</p>
+method allows you to choose between sorting by:</p>
 <ul class="simple">
 <li><p>“target_node_id” - Group and sort by post-synaptic node-id</p></li>
 <li><p>“source_node_id” - Group and sort by pre-synaptic node-id</p></li>
@@ -774,24 +774,24 @@ method allows you to choose between sorting by</p>
 </section>
 <section id="edges-indexing">
 <h3>Edges Indexing<a class="headerlink" href="#edges-indexing" title="Link to this heading">#</a></h3>
-<p>SONATA edges formats allows the addition of indices which can be used to quickly search for edges based on either
-the target_node_id, source_node_id, or edge_type_id. By default BMTK Network Builder will create indices for
+<p>SONATA edges formats allows the addition of indices, which can be used to quickly search for edges based on either
+the target_node_id, source_node_id, or edge_type_id. By default, the BMTK Network Builder will create indices for
 both target_node_id and source_node_id. This can be changed using the <strong>index_by</strong> parameter.</p>
-<p>To build an edges file with <strong>No indexes</strong></p>
+<p>To build an edges file with <strong>No indexes</strong>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">index_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>To build an edges file with only <strong>target_node_id indices</strong></p>
+<p>To build an edges file with only <strong>target_node_id indices</strong>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">)</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Or to build an edges file with <strong>all indexing options</strong></p>
+<p>Or to build an edges file with <strong>all indexing options</strong>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_type_id&#39;</span><span class="p">)</span>
     <span class="o">...</span>
@@ -802,16 +802,16 @@ both target_node_id and source_node_id. This can be changed using the <strong>in
 <section id="file-compression">
 <h3>File Compression<a class="headerlink" href="#file-compression" title="Link to this heading">#</a></h3>
 <p>the <a class="reference external" href="https://support.hdfgroup.org/documentation/hdf5-docs/hdf5_topics/UsingCompressionInHDF5.html">HDF5 Format allows for data-sets to be compressed inside the file</a>.
-To save an hdf5 file with a compression use the <strong>compression</strong> option (<strong>note</strong> that the options for compression may
-vary depending on machine on hdf5/h5py libraries installed).</p>
-<p>To save with GZIP compression</p>
+To save an hdf5 file with compression, use the <strong>compression</strong> option (<strong>note</strong> that the options for compression may
+vary depending on machine or hdf5/h5py libraries installed).</p>
+<p>To save with GZIP compression:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>To ensure no compression use the <code class="docutils literal notranslate"><span class="pre">None</span></code> option.</p>
+<p>To ensure no compression use the <code class="docutils literal notranslate"><span class="pre">None</span></code> option:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
     <span class="n">compression</span><span class="o">=</span><span class="kc">None</span>
     <span class="o">...</span>
@@ -823,18 +823,18 @@ vary depending on machine on hdf5/h5py libraries installed).</p>
 <section id="options-for-optimization-of-network-building">
 <h2>Options for Optimization of Network Building<a class="headerlink" href="#options-for-optimization-of-network-building" title="Link to this heading">#</a></h2>
 <section id="iterators">
-<h3>iterators<a class="headerlink" href="#iterators" title="Link to this heading">#</a></h3>
+<h3>Iterators<a class="headerlink" href="#iterators" title="Link to this heading">#</a></h3>
 </section>
 <section id="building-with-multiple-cores">
-<h3>Building with multiple cores<a class="headerlink" href="#building-with-multiple-cores" title="Link to this heading">#</a></h3>
-<p>When running on a computer or cluster with <a class="reference external" href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> installed
-the BMTK Network Builder can automatically parallelize the bulding of the network. Just make sure to call
-the script with the approiate command for your system (eg. <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>, <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code>, <code class="docutils literal notranslate"><span class="pre">srun</span></code>, etc).</p>
+<h3>Building with Multiple Cores<a class="headerlink" href="#building-with-multiple-cores" title="Link to this heading">#</a></h3>
+<p>When running on a computer or cluster with <a class="reference external" href="https://en.wikipedia.org/wiki/Message_Passing_Interface">MPI</a> installed,
+the BMTK Network Builder can automatically parallelize building the network. Just make sure to call
+the script with the appropriate command for your system (eg. <code class="docutils literal notranslate"><span class="pre">mpirun</span></code>, <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code>, <code class="docutils literal notranslate"><span class="pre">srun</span></code>, etc).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Split building of script across 10 cores</span>
 $<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span><span class="m">10</span><span class="w"> </span>python<span class="w"> </span>build_network.py
 </pre></div>
 </div>
-<p>The resulting SONATA network file will be similar to as if run in single core python. There is no need for the user
+<p>The resulting SONATA network file will be similar to the file created with a single core. There is no need for the user
 to change their code.</p>
 <p>The one <strong>exception</strong> is when passing is parameters to either the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> or <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> methods that rely
 on randomized values. For example</p>
@@ -850,8 +850,8 @@ on randomized values. For example</p>
 <p>In such cases, when not taking extra precautions, each rank/core will generate different values for each cell’s (x, y, z)
 coordinates, and BMTK will not know which values to save into the final file. The Network Builder will by default check
 if values are different across ranks and throw an error if needed.</p>
-<p>The simplest solution is to make sure to hard-code the random seed. This will better ensure that each take a random
-numbers are generated they produce the same values across all ranks.</p>
+<p>The simplest solution is to make sure to hard-code the random seed. This will better ensure that the same random
+numbers are generated across all ranks.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
@@ -863,7 +863,7 @@ numbers are generated they produce the same values across all ranks.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Another option is to use the <strong>mpi4py</strong> <code class="docutils literal notranslate"><span class="pre">Bcast</span></code> function to generate values to generate inputs on one rank then
+<p>Another option is to use the <strong>mpi4py</strong> <code class="docutils literal notranslate"><span class="pre">Bcast</span></code> function to generate values on one rank then
 send them to all the others.</p>
 </section>
 </section>
@@ -892,32 +892,32 @@ send them to all the others.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#networkbuilder-methods">NetworkBuilder methods</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filter-nodes-from-a-network-using-nodes-method">Iterating and Filter Nodes from a Network using <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filtering-edges-using-the-edges-method">Iterating and Filtering Edges using the edges() method</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#networkbuilder-methods">NetworkBuilder Methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filtering-nodes-from-a-network-using-the-nodes-method">Iterating and Filtering Nodes from a Network using the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> Method</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterating-and-filtering-edges-using-the-edges-method">Iterating and Filtering Edges using the edges() Method</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-existing-nodes">Importing Existing Nodes</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connector-functions">Connector Functions</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-setting-synapse-location">Options for setting synapse location</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-setting-synapse-location">Options for Setting Synapse Location</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#target-sections-and-distance-range-properties">“target_sections” and “distance_range” properties</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#explicity-setting-afferent-synapse-section-and-position">Explicity setting afferent synapse section and position</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#explicitly-setting-afferent-synapse-section-and-position">Explicitly setting afferent synapse section and position</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-connection-rules">Built-in connection rules</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-connection-rules">Built-in Connection Rules</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-saving-network-to-sonata">Options for Saving Network to SONATA</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-file-name-and-path">network file name and path</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#append-mode">append mode</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-saving-a-network-to-sonata-format">Options for Saving a Network to SONATA format</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#network-file-name-and-path">Network File Name and Path</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#append-mode">Append Mode</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sorting-of-edges">Sorting of Edges</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#edges-indexing">Edges Indexing</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#file-compression">File Compression</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options-for-optimization-of-network-building">Options for Optimization of Network Building</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterators">iterators</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-multiple-cores">Building with multiple cores</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterators">Iterators</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-multiple-cores">Building with Multiple Cores</a></li>
 </ul>
 </li>
 </ul>

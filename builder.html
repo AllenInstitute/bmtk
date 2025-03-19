@@ -428,29 +428,29 @@
 </a>
 </figure>
 <p>The BMTK Network Builder (<code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.NetworkBuilder</span></code>) is a submodule
-of BMTK that allows for building and saving of brain network models across different levels-of-resolutions. It is a
-Python library that allows for the creation larg-scale, detailed, heterogeneous networks with only a few function calls.</p>
-<p>Although an integral component of BMTK to help witht the early phase of the modeling and simulation workflow, The
-BMTK Network Builder can be used indepedently of the BMTK <a class="reference external" href="simulators_guide">Simulation</a> and
-<a class="reference external" href="analyzer.html">Analysis</a> submodules. That is to say, that while you can use the Network Builder to create models that
-will be simulated with one of the BMTK simulators engines (eg. BioNet, PointNet, etc). You can use the BMTK Network
+of BMTK that allows for building and saving brain network models across different levels-of-resolution. It is a
+Python library that allows for the creation large-scale, detailed, heterogeneous networks with only a few function calls.</p>
+<p>Although an integral component of BMTK is to help with the early phase of the modeling and simulation workflow, The
+BMTK Network Builder can be used independently of the BMTK <a class="reference external" href="simulators_guide">Simulation</a> and
+<a class="reference external" href="analyzer.html">Analysis</a> submodules. That is to say, while you can use the Network Builder to create models that
+will be simulated with one of the BMTK simulators engines (eg. BioNet, PointNet, etc), you can also use the BMTK Network
 Builder to <strong>create models that will be ran using other simulation and analysis tools</strong>, and the BMTK Simulators are
 capable of <strong>running networks that were created by other tools</strong>. It does this by utilizing the
 <a class="reference external" href="sonata.html">SONATA Network File Format</a>. Thus the final product of a BMTK Network Builder is a set of files
-representing the network model: cells, synapses, models, channel mechanisms, and any other properites and attributes
+representing the network model: cells, synapses, models, channel mechanisms, and any other properties and attributes
 that the modeler requires.</p>
 <p>The process of building a full network model can usually be broken down into four primary steps:</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
 <div class="sd-col sd-d-flex-column sd-col-4 sd-col-xs-4 sd-col-sm-4 sd-col-md-4 sd-col-lg-4 docutils">
-<p>1. Initialize the Network(s). Here all one needs is a unique name to identify the population of nodes - usually,
-the region being model</p>
+<p>1. Initialize the network(s). Here all one needs is a unique name to identify the population of nodes - usually,
+the region being model.</p>
 <p>2. Create the nodes (ie. cells) using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_nodes()</span></code> method.
 For different types/models of cells we can use separate calls to add_nodes (often with different model parameters).</p>
 <p>3. Create Connection rules between different subsets of nodes using <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_edges()</span></code>
 method.</p>
 <p>4. Finally use <code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code>
-methods to build and save the model to the file</p>
+methods to build and save the model to a file.</p>
 </div>
 <div class="sd-col sd-d-flex-column sd-col-8 sd-col-xs-8 sd-col-sm-8 sd-col-md-8 sd-col-lg-8 docutils">
 <figure class="align-default">
@@ -463,14 +463,14 @@ methods to build and save the model to the file</p>
 <section id="instantiation-of-network-s">
 <h2>1. Instantiation of Network(s)<a class="headerlink" href="#instantiation-of-network-s" title="Link to this heading">#</a></h2>
 <p>First step is to instantiate a cell population network using the <cite>NetworkBuilder</cite> class. Each network instance will
-have a unique <strong>population_name</strong> (choosen by user) and one or more cells (next section). If perferable, you may also
-instantiate mutliple <strong>networks</strong>. In such case each <strong>network</strong> will contains it’s own unique set of cells (and their
+have a unique <strong>population_name</strong> (chosen by the user) and one or more cells (next section). If preferable, you may also
+instantiate multiple <strong>networks</strong>. In such a case each <strong>network</strong> will contain its own unique set of cells (and their
 properties), although you can create connections between and within populations.</p>
-<p>A modeler can choose to have a single population with many different nodes, node-types, regions, etc. Or they may choose
-to split a model into different logical networks. The former can lead to fewer files and some efficencies during
-simulation and analysis. While the later can make it significantly easier to remove and/or add parts of a network during
-optimzation and perturbation tasks.</p>
-<p>For example when creating a model of the auditory pathway we may divide it into 3 different network populations.</p>
+<p>A modeler can choose to create a single population with many different nodes, node-types, regions, etc., or they may choose
+to create a network with multiple populations. The former can lead to fewer files and some efficiencies during
+simulation and analysis, while the latter can make it significantly easier to remove and/or add parts of a network during
+optimization and perturbation tasks.</p>
+<p>For example, when creating a model of the auditory pathway we may divide it into 3 different network populations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="n">net_coch</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;Cochlea&quot;</span><span class="p">)</span>
@@ -478,8 +478,8 @@ optimzation and perturbation tasks.</p>
 <span class="n">net_aud2</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;AUD2&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Each individual <em>net</em> will have their own unique cells, cell-models, and attributes. But we can still connect them
-together into one simulation.</p>
+<p>Creating an individual <em>net</em> makes it easy to assign unique cells, cell-models, and attributes to each population. We can still connect them
+together and run all networks in one simulation.</p>
 </section>
 <section id="building-nodes">
 <h2>2. Building Nodes<a class="headerlink" href="#building-nodes" title="Link to this heading">#</a></h2>
@@ -494,16 +494,16 @@ parameters and attributes that will be required to describe/instantiate the cell
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 example</div>
-<p class="sd-card-text">Here we create a network to represent our VISP (primary visual cortex model) and call <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> method to add 100
+<p class="sd-card-text">Here we create a network to represent the mouse primary visual cortex (VISp) and call <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> method to add 100
 cells.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.node_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">positions_columinar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.node_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">positions_columnar</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">n_nodes</span> <span class="o">=</span> <span class="mi">100</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">&quot;VISp&quot;</span><span class="p">)</span>
-<span class="n">coords</span> <span class="o">=</span> <span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">200.0</span><span class="p">)</span>
+<span class="n">coords</span> <span class="o">=</span> <span class="n">positions_columnar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">200.0</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
@@ -519,9 +519,9 @@ cells.</p>
 </div>
 </div>
 </div>
-<p>Other than the <strong>N</strong> parameter we can use whatever parameters we want into the ` <cite>add_nodes()`</cite> method. Some parameters
+<p>Other than the <strong>N</strong> parameter we can use whatever parameters we want in the ` <cite>add_nodes()`</cite> method. Some parameters
 are SONATA reserved keywords, like <strong>model_type</strong> and <strong>morphology</strong> and will be recognized by BMTK and other tools. But
-modelers can also define their own parameters as they deem appropiate.</p>
+modelers can also define their own parameters as they deem appropriate.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
       <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
       <span class="n">parameter1</span><span class="o">=</span><span class="s1">&#39;my_string&#39;</span><span class="p">,</span>
@@ -536,8 +536,8 @@ modelers can also define their own parameters as they deem appropiate.</p>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 example</div>
-<p class="sd-card-text">Here we make two calls to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code>, first time adding 100 <em>biophysical</em> nodes followed by 50 <em>point</em> nodes.
-Certain parameters, like <strong>morphology</strong> or <strong>rotation_angle</strong> don’t apple to <em>point</em>-type neurons so are not called.</p>
+<p class="sd-card-text">Here we make two calls to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code>. First we add 100 <em>biophysical</em> nodes, followed by 50 <em>point</em> nodes.
+Certain parameters, like <strong>morphology</strong> or <strong>rotation_angle</strong> don’t apply to <em>point</em>-type neurons so are not called.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
@@ -566,13 +566,13 @@ Certain parameters, like <strong>morphology</strong> or <strong>rotation_angle</
 <section id="unique-vs-shared-attributes-nodes-vs-node-types">
 <h3>Unique vs Shared Attributes (Nodes vs Node Types)<a class="headerlink" href="#unique-vs-shared-attributes-nodes-vs-node-types" title="Link to this heading">#</a></h3>
 <p>When you call <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> there are multiple ways to assign values to nodes/cells, which can affect not only how
-properties are stored by also how they are assigned to individual cells.</p>
+properties are stored but also how they are assigned to individual cells.</p>
 <p>First option is to pass in a scalar value; a <cite>string</cite>, <cite>character</cite>, <cite>number</cite> (float, ints, and numpy types) , <cite>boolean</cite>.
 In such case the key-value pair is assigned to all <strong>N</strong> cells. This is called a <strong>node-type</strong> or <strong>cell-type</strong>
 property.</p>
-<p>Alternatively you may pass in a list type (includin python lists, numpy arrays, and pandas sequences) of size <strong>N</strong>
-which will assign each cell the cooresponding index value in the list. These are <strong>node</strong> properties.</p>
-<p>For example the following will add 1000 cells that have two properties <strong>loc_region</strong> and <strong>loc_order</strong>. For all
+<p>Alternatively you may pass in a list type (including python lists, numpy arrays, and pandas sequences) of size <strong>N</strong>,
+which will assign each cell the corresponding index value in the list. These are <strong>node</strong> properties.</p>
+<p>For example, the following will add 1000 cells that have two properties <strong>loc_region</strong> and <strong>loc_order</strong>. For all
 cells the <strong>loc_region</strong> property is the same value (<cite>Layer2/3</cite>). But the <strong>loc_order</strong> will be different for each cell.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -616,7 +616,7 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 </thead>
 <tbody>
 <tr class="row-even"><td><p class="sd-card-text">x (or y, z)</p></td>
-<td><p class="sd-card-text">x (or y, z) positions of soma in world coordinates</p></td>
+<td><p class="sd-card-text">x (or y, z) positions of soma in cartesian coordinates</p></td>
 <td><p class="sd-card-text">float</p></td>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text">rotation_angle_xaxis (or y, z)</p></td>
@@ -628,7 +628,7 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 <td><p class="sd-card-text">string</p></td>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text">model_template</p></td>
-<td><p class="sd-card-text">String name of the template to create (eg, ctdb:Biophys1.hoc, nest:glif_lif, etc)</p></td>
+<td><p class="sd-card-text">String name of the neuron model template (eg, ctdb:Biophys1.hoc, nest:glif_lif, etc)</p></td>
 <td><p class="sd-card-text">string</p></td>
 </tr>
 <tr class="row-even"><td><p class="sd-card-text">model_processing</p></td>
@@ -636,7 +636,7 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 <td><p class="sd-card-text">string</p></td>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text">dynamics_params</p></td>
-<td><p class="sd-card-text">Channel and mechanism parameters for neuron, usually a name of a json or NeuronML file. Will overwrite model_template.</p></td>
+<td><p class="sd-card-text">Channel and mechanism parameters for neuron, usually a name of a JSON or NeuronML file. Will overwrite model_template.</p></td>
 <td><p class="sd-card-text">string path to file or dict</p></td>
 </tr>
 <tr class="row-even"><td><p class="sd-card-text">morphology</p></td>
@@ -649,24 +649,23 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 </div>
 </details><div class="admonition-note-about-node-id-and-node-type-id-properties admonition">
 <p class="admonition-title">note about “node_id” and “node_type_id” properties</p>
-<p>The BMTK Network Builder will automatically assign each cell within a network population a unique identifer
-(<cite>node_id</cite>) as-well-as assign it to a specific <strong>node-type</strong> (<cite>node_type_id</cite>). However, if for some reason you
+<p>The BMTK Network Builder will automatically assign a unique identifier(<cite>node_id</cite>) and a specific <strong>node-type</strong> (<cite>node_type_id</cite>) to each cell within a network population. However, if for some reason you
 need to assign the <cite>node_id</cite> and or <cite>node_type_id</cite> properties manually you are able to do so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">node_type_id</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">node_type_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>WE DO NOT RECOMMEND DOING SO</strong>, as if there are clashing or inconsistent <cite>ids</cite> it can affect simulations.</p>
+<p><strong>WE DO NOT RECOMMEND DOING SO</strong>, because clashing or inconsistent <cite>ids</cite> can affect the simulation.</p>
 </div>
 </section>
 <section id="node-representation">
 <h3>Node Representation<a class="headerlink" href="#node-representation" title="Link to this heading">#</a></h3>
-<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is called, each node will be given a unique
-<strong>node_id</strong> value, and each type model (eg each call to add_nodes) will also be given a <strong>node_type_id</strong>. It is possible
+<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is called, each node is given a unique
+<strong>node_id</strong> value and each type model (eg. each call to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code>) will also be given a <strong>node_type_id</strong>. It is possible
 to set the <strong>node_id</strong> and <strong>node_type_id</strong> parameter yourself but it’s generally not a good idea.</p>
 <p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> will return an iterator of the nodes in a
 network. By default, it returns all nodes but one can filter by specific property values. The nodes themselves can have
-their properties accessed like a dictionary. For example to get all biophysically detailed inh neurons:</p>
+their properties accessed like a dictionary. For example to get all biophysically detailed inhibitory (inh) neurons:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">):</span>
    <span class="n">x</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;position_x&#39;</span><span class="p">]</span>
    <span class="o">...</span>
@@ -680,17 +679,17 @@ their properties accessed like a dictionary. For example to get all biophysicall
    <img src="_static/images/builder_add_edges.jpg"  style="width: 30%;" />
 </div><p>After creating population of nodes we can go ahead and start creating edges between them by using the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_edges()</span></code> method. For most models each edge
-represents a synapse/junction between a <em>source</em> and <em>target</em> cell. Although for certain cases you may have edges
-that connect two population of cells (see <a class="reference external" href="popnet.html">PopNet</a>).</p>
+represents a synapse/junction between a <em>source</em> and <em>target</em> cell. If using PopNet, edges connect two populations of
+cells (see <a class="reference external" href="popnet.html">PopNet</a>).</p>
 <p>BMTK and SONATA is designed for storing and simulating <em>heterogeneous</em> and <em>highly optimized</em> network models, which
 means that every synaptic connection in a network may have different parameters. But rather than having to define the
 millions or billions of possible synapses manually, BMTK’s <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> allows users to create rules and functions
-for how different subsets of cells will be connected. To create of set of directed edges between two subsets of cells
+for how different subsets of cells will be connected. To create a set of directed edges between two subsets of cells
 you use the following:</p>
 <ul class="simple">
-<li><p><strong>source</strong> and <strong>target</strong> parameters which can be used to filter out sub-populations of cells.</p></li>
-<li><p>The <strong>connectivity_rule</strong> parameter which can set how many connections are there between each source/target pair of cells.</p></li>
-<li><p>Zero or more attributes to describe the connections.</p></li>
+<li><p>The <strong>source</strong> and <strong>target</strong> parameters filter out sub-populations of cells.</p></li>
+<li><p>The <strong>connectivity_rule</strong> parameter sets the number of connections between each source/target pair of cells.</p></li>
+<li><p>Optional additional attributes to describe the connections.</p></li>
 </ul>
 <div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm user-guide-example sd-border-2 docutils">
 <div class="sd-card-body docutils">
@@ -708,23 +707,23 @@ example</div>
 </pre></div>
 </div>
 <ol class="arabic simple">
-<li><p class="sd-card-text">parameters <code class="docutils literal notranslate"><span class="pre">source</span></code> and <code class="docutils literal notranslate"><span class="pre">target</span></code> are used to filter out the subset of nodes used pre-and post-synapse, respectively.
-In this case, the source population consists of all inhibitory (ei=inh) neurons, while the target population consists
-only of excitatory (ei=exc) fast-spiking neurons. If the source or target is not specified then all possible nodes will
+<li><p class="sd-card-text">Parameters <code class="docutils literal notranslate"><span class="pre">source</span></code> and <code class="docutils literal notranslate"><span class="pre">target</span></code> are used to filter out the subset of nodes used pre- and post-synapse, respectively.
+In this case, the source population consists of all inhibitory (‘ei: ‘inh’) neurons, while the target population consists
+only of excitatory (‘ei’: ‘exc’) fast-spiking neurons. If the source or target is not specified then all possible nodes will
 be used.</p></li>
-<li><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">connection_rule</span></code> is used to determine the number of connections between each source and the target node. If the value
-is given as an integer N then all possible source/target pairs with have N different connections. You can also pass
-in a list-of-list or a matrix. But usually, a user-defined function is used, which will be better described in the
-next section.</p></li>
+<li><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">connection_rule</span></code> is used to determine the number of connections between each source and target node. If the value
+is given as an integer <strong>N</strong> then all possible source/target pairs will have <strong>N</strong> different connections. You can also pass
+in a list-of-list, a matrix, or a user-defined function. A user-defined function offers the most functionality and will be
+further described in the next section.</p></li>
 <li><p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">dynamic_parameters</span></code>, <code class="docutils literal notranslate"><span class="pre">synaptic_model</span></code>, <code class="docutils literal notranslate"><span class="pre">syn_weight</span></code>, and <code class="docutils literal notranslate"><span class="pre">delay</span></code> are all shared connection parameters. Like
-with nodes, modelers can choose whatever parameters they deem best to represent their network. A list of useful
+with nodes, modelers can choose whatever parameters they deem best represent their network. A list of useful
 parameters pre-defined by BMTK and SONATA is described below.</p></li>
 </ol>
 </div>
 </div>
-<p>The <strong>source</strong> and <strong>target</strong> may be between subsets of cells within a single population, or it may be two different
-populations. For example you may have a separate population for <strong>VISp</strong> and <strong>Thamalmus</strong> cells, and want to create
-connections from the Thalamus <cite>ON-OFF</cite> cells onto the VISp exciatory cells. The method call will look mostly the same,
+<p>The <strong>source</strong> and <strong>target</strong> may be between subsets of cells within a single population, or it may be between two different
+populations. For example, you may have a separate population for <strong>VISp</strong> and <strong>Thalamus</strong> cells, and want to create
+connections from the Thalamus <cite>ON-OFF</cite> cells onto the VISp excitatory cells. The method call will look mostly the same,
 except instead of passing in dictionaries to filter the <strong>source</strong> and <strong>target</strong> we used the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net_visp</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
@@ -743,10 +742,10 @@ each source/target pair. To do so you just need to call <code class="docutils li
 attribute values.</p>
 <section id="connection-rules">
 <h3>Connection rules<a class="headerlink" href="#connection-rules" title="Link to this heading">#</a></h3>
-<p>The connection_rule parameter of <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method will usually be a user-defined function (but may also be an integer,
-list-of-lists, or matrix). The function’s first two parameters will be source and target, Node objects whose properties
-can be accessed like a dictionary. It should return an integer N for the number of connections between the source and
-target, 0 or None if there is no connection.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">connection_rule</span></code> parameter of <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> method will usually be a user-defined function (but may also be an integer,
+list-of-lists, or matrix). The function’s first two parameters will be the source and target, Node objects whose properties
+can be accessed like a dictionary. It should return an integer <strong>N</strong> for the number of connections between the source and
+target. The value will be 0 or None if there is no connection.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_connection_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
    <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
@@ -761,7 +760,7 @@ target, 0 or None if there is no connection.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>If the connection_rule function requires additional arguments, use the connection_params option:</p>
+<p>If the connection_rule function requires additional arguments, use the <code class="docutils literal notranslate"><span class="pre">connection_params</span></code> option:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_connection_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_edges</span><span class="p">,</span> <span class="n">max_edges</span><span class="p">):</span>
    <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
@@ -777,13 +776,13 @@ target, 0 or None if there is no connection.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is executed my_connection_func() will be
-automatically called for all possible source/target pair of nodes and the connectivity matrix will be called.</p>
+<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is executed, <code class="docutils literal notranslate"><span class="pre">my_connection_func()</span></code> will be
+automatically called for all possible source/target pairs of nodes and the connectivity matrix will be called.</p>
 <p>Sometimes it may be more efficient or necessary to set all incoming (or outgoing) connections in one function. For
-example, we may need to limit the total number of synapses on a target. The <code class="docutils literal notranslate"><span class="pre">iterator</span></code> parameter allows the modeler to
+example, we may need to limit the total number of synapses onto a target. The <code class="docutils literal notranslate"><span class="pre">iterator</span></code> parameter allows the modeler to
 change the signature and return values of their connection_rule function. By setting <code class="docutils literal notranslate"><span class="pre">iterator</span></code> to <strong>all_to_one</strong>,
-instead of passing in a single source neuron it will pass in a list of all N source neurons, and will expect a
-corresponding list of size N</p>
+it will pass in a list of all <strong>N</strong> source neurons instead of passing in a single source neuron, and will expect a
+corresponding list of size <strong>N</strong>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bulk_connection_func</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
    <span class="n">syn_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">))</span>
@@ -797,13 +796,13 @@ corresponding list of size N</p>
 </section>
 <section id="individual-edge-properties-the-connectionmap">
 <h3>Individual Edge Properties (The ConnectionMap)<a class="headerlink" href="#individual-edge-properties-the-connectionmap" title="Link to this heading">#</a></h3>
-<p>Sometimes it is necessary for each edge to have unique property values. For example, the individual syn_weight value for
+<p>Sometimes it is necessary for each edge to have unique property values. For example, the individual <code class="docutils literal notranslate"><span class="pre">syn_weight</span></code> value for
 each synapse may vary depending on the location and type of the pre-and post-synaptic nodes. With nodes,
-you can pass in a list or array of size N for each N node. But when edges are built using a connection_rule function
-the exact number of connections will not be known in advance.</p>
-<p>each call to add_edges returns a <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap" title="bmtk.builder.connection_map.ConnectionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionMap</span></code></a> object. The
+you can pass in a list or array of size <strong>N</strong> for each node. But when edges are built using a connection_rule function
+the exact number of connections is not known in advance.</p>
+<p>Each call to <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> returns a <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap" title="bmtk.builder.connection_map.ConnectionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionMap</span></code></a> object. The
 <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties" title="bmtk.builder.connection_map.ConnectionMap.add_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ConnectionMap.add_properties()</span></code></a> method allows us to
-add individual properties for each edge using our own user defined functions. Like with our connection_rule function,
+add individual properties for each edge using our own user-defined functions. Like with our connection_rule function,
 the connection_map <code class="docutils literal notranslate"><span class="pre">rule</span></code> function takes in a source and target node and returns a corresponding value:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
    <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
@@ -830,8 +829,8 @@ the connection_map <code class="docutils literal notranslate"><span class="pre">
 </pre></div>
 </div>
 <p>It is also possible to set multiple parameters in a single function. For example, for each synapse, we may want to set
-the distance between the soma, and the neuronal area (soma, apical dendrites, basal dendrites, etc). To do so our <code class="docutils literal notranslate"><span class="pre">name</span></code>
-and <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> parameters take a list, and our rule function now returns two values</p>
+the distance between the soma and the neuronal area (soma, apical dendrites, basal dendrites, etc). To do so our <code class="docutils literal notranslate"><span class="pre">name</span></code>
+and <code class="docutils literal notranslate"><span class="pre">dtypes</span></code> parameters take a list, and our rule function now returns two values:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_target_location</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
    <span class="o">...</span>
    <span class="k">return</span> <span class="n">syn_region</span><span class="p">,</span> <span class="n">syn_dist</span>
@@ -882,7 +881,7 @@ and <code class="docutils literal notranslate"><span class="pre">dtypes</span></
 <td><p class="sd-card-text">A list of neuronal sections where the synapse will target (soma, axon, apical, basal). When used in place of section_id, BioNet will randomly select a section on the target neuron</p></td>
 </tr>
 <tr class="row-odd"><td><p class="sd-card-text">distance_range</p></td>
-<td><p class="sd-card-text">A range in um of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron.</p></td>
+<td><p class="sd-card-text">A range in :math:’mu’m of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron.</p></td>
 </tr>
 <tr class="row-even"><td><p class="sd-card-text">weight_function</p></td>
 <td><p class="sd-card-text">Name of the detailed morphology file (usually SWC).</p></td>
@@ -897,26 +896,26 @@ and <code class="docutils literal notranslate"><span class="pre">dtypes</span></
 <h2>4. Building and Saving the Model<a class="headerlink" href="#building-and-saving-the-model" title="Link to this heading">#</a></h2>
 <div style="text-align: left; clear: both;">
    <img src="_static/images/builder_complete_network.jpg"  style="width: 30%;" />
-</div><p>Once all calls to add_nodes and ad_edges have been made, use the build() method to actually complete and fully
+</div><p>Once all calls to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code> and <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> have been made, use the <code class="docutils literal notranslate"><span class="pre">build()</span></code> method to actually complete and fully
 instantiate the network. Certain accessor functions, like
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> and
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code> will not work until all the edges have been
-completed. Depending on the size of the network and the complexity of the connectivity rules, it can take anywhere from
+completed. Depending on the size of the network, the complexity of the connectivity rules, and the computational resources available, it can take anywhere from
 less than a second to days to build the full model.</p>
 <p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save(output_dir=’/path/to/output/net/’)</span></code> method will
-write the network to a disk in SONATA format at the given output_dir path. By default nodes and edges will be written to
-different files using the network names to determine the sonata file names. The
+write the network to a disk in SONATA format at the given <em>output_dir</em> path. By default nodes and edges will be written to
+different files using the network names as file names. The
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_edges()</span></code> functions may also used to only write
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_edges()</span></code> functions may also be used to only write
 out the nodes or the edges, respectively.</p>
 <section id="network-format">
 <h3>Network Format<a class="headerlink" href="#network-format" title="Link to this heading">#</a></h3>
-<p>This is a brief overview of how NetworkBuilder saves the network’s nodes and edges files. As mentioned BMTK uses the
-SONATA format, so more in-depth descriptions may be
+<p>This is a brief overview of how NetworkBuilder saves the network’s nodes and edges files. As mentioned, BMTK uses the
+SONATA format, and more in-depth descriptions may be
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#representing-networks-of-neurons">found here</a>.
 Opening the HDF5 file will require a hdf browser like HDFView, or a library like h5py. You can also use
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master/src/pysonata">pySONATA</a> or
-<a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a> which are API’s for reading in SONATA files</p>
+<a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a>, which are API’s for reading in SONATA files.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/sonata_structure.jpg"><img alt="_images/sonata_structure.jpg" src="_images/sonata_structure.jpg" style="width: 732.6px; height: 363.6px;" />
 </a>
@@ -961,7 +960,7 @@ usable biophysical network model.</p>
 <p class="sd-card-text"><strong>Multi-Population Recurrent Networks with PointNet</strong></p>
 </div>
 <div class="sd-card-body docutils">
-<p class="sd-card-text">An example of building and simualting a network of <strong>point</strong> neurons and
+<p class="sd-card-text">An example of building and simulating a network of <strong>point</strong> neurons and
 running simulations on the model using <em>PointNet</em></p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference external" href="tutorials/tutorial_05_pointnet_modeling.html"><span>tutorials/tutorial_05_pointnet_modeling.html</span></a></div>
@@ -992,7 +991,7 @@ model. Including using <strong>NRRD</strong> files downloaded from the Allen
 </div>
 <div class="sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">Filter and find specific subpopulations of nodes with-in a network.</p></li>
+<li><p class="sd-card-text">Filter and find specific subpopulations of nodes within a network.</p></li>
 <li><p class="sd-card-text">Filter and find edges based on edge and source/target node properties.</p></li>
 <li><p class="sd-card-text">Get name, status, and various properties of a network.</p></li>
 </ul>
@@ -1030,8 +1029,8 @@ model. Including using <strong>NRRD</strong> files downloaded from the Allen
 </div>
 <div class="sd-card-body docutils">
 <ul class="simple">
-<li><p class="sd-card-text">Manually setting file path</p></li>
-<li><p class="sd-card-text">How to write multiple networks to a single file.</p></li>
+<li><p class="sd-card-text">Manually setting the file path</p></li>
+<li><p class="sd-card-text">How to write multiple networks to a single file</p></li>
 <li><p class="sd-card-text">How to sort and index edges</p></li>
 <li><p class="sd-card-text">File Compression</p></li>
 </ul>

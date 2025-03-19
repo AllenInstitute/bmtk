@@ -409,8 +409,8 @@
                   
   <section id="running-bmtk-on-the-neuroscience-gateway-nsg">
 <h1>Running BMTK on the Neuroscience Gateway (NSG)<a class="headerlink" href="#running-bmtk-on-the-neuroscience-gateway-nsg" title="Link to this heading">#</a></h1>
-<p><a class="reference external" href="http://www.nsgportal.org/">The Neuroscience Gateway (NSG)</a> is an NSF funded project that provides HPC resouces for
-neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally.
+<p><a class="reference external" href="http://www.nsgportal.org/">The Neuroscience Gateway (NSG)</a> is an NSF funded project that provides HPC resources for
+neuroscientists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally.
 But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used
 for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does
 NSG include BMTK, but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See
@@ -438,8 +438,7 @@ researchers, educators, and students working in the neuroscience field.</p>
 </section>
 <section id="step-2-packaging-the-environment-files">
 <h4>Step 2: Packaging the environment files<a class="headerlink" href="#step-2-packaging-the-environment-files" title="Link to this heading">#</a></h4>
-<p>We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the
-an <a class="reference external" href="simulators_guide.html#setting-up-the-environment">configuration files, network files, components, inputs, and any other necessacary files to execute your BMTK
+<p>We will need to package all necessary files into a .zip folder to be uploaded to NSG. This will include the <a class="reference external" href="simulators_guide.html#setting-up-the-environment">configuration files, network files, components, inputs, and any other necessary files to execute your BMTK
 simulation run script</a>.</p>
 <p>In our example if we have all files stored in <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/tree/main/Ch6_l4model/">Ch6_l4model</a>
 then we could use the following command in a terminal:</p>
@@ -450,11 +449,11 @@ then we could use the following command in a terminal:</p>
 <section id="step-3-setting-up-an-nsg-folder">
 <h4>Step 3: Setting Up an NSG Folder<a class="headerlink" href="#step-3-setting-up-an-nsg-folder" title="Link to this heading">#</a></h4>
 <p>1. When you login you will be prompted to <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Folder</span></code> that can be used for running BMTK applications. Click on
-that button, we will give it a “Label” of <strong>bmtk_simulations</strong> and an appropiate description:</p>
+that button, we will give it a “Label” of <strong>bmtk_simulations</strong> and an appropriate description:</p>
 <div>
 <img src="./_static/_tutorial_images/nsgportal_initial_1.png" width="805" align="left" style="margin-left:26px"/>
 </div>
-<br clear="left"><p>2. Navagate to <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> and select the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> button. Provide an appropiate label (we’ll
+<br clear="left"><p>2. Navigate to <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> and select the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> button. Provide an appropriate label (we’ll
 use Label <strong>pointnet_l4model</strong>) and click the <code class="docutils literal notranslate"><span class="pre">Choose</span> <span class="pre">File</span></code> button to upload the previously created zip file. Click
 <code class="docutils literal notranslate"><span class="pre">Save</span></code> to upload the file.</p>
 <div>
@@ -495,9 +494,9 @@ cores we may have to increase/decrease this value.</p></li>
 <li><p>Set <strong>Enter Main Input Python Filename: run_pointnet.py</strong> - Entry python script to run.</p></li>
 <li><p>Set <strong>Enter sub-directory name: Ch6_l4model</strong> - This is required since the way we zipped up our data everything is
 under the <em>Ch6_l4model/</em> folder.</p></li>
-<li><p>To speed up the simulation we will run it parallelized using MPI with 8 processs.</p>
+<li><p>To speed up the simulation we will run it parallelized using MPI with 8 processes.</p>
 <ul>
-<li><p>Set <strong>Enter Number of Nodes: 1</strong> - Since we are significantly less than the avaialbe cores/memory per node we can
+<li><p>Set <strong>Enter Number of Nodes: 1</strong> - Since we are significantly less than the available cores/memory per node we can
 benefit from keeping all MPI Tasks on the same node.</p></li>
 <li><p>Set <strong>Enter Number of MPI Tasks per Node: 8</strong> and <strong>Enter Number of Cores per Node: 8</strong></p></li>
 <li><p>Set <strong>Enter Number of GB Memory per Node: 16</strong></p></li>
@@ -517,8 +516,8 @@ the task to the HPC.</p>
 <section id="example-2-using-nsg-for-bionet-eg-neuron-simulations">
 <span id="example-2-bionet"></span><h3>Example 2: Using NSG for <em>BioNet</em> (eg. NEURON) Simulations<a class="headerlink" href="#example-2-using-nsg-for-bionet-eg-neuron-simulations" title="Link to this heading">#</a></h3>
 <p>The above tutorial will work when running <em>PointNet</em>, <em>FilterNet</em>, <em>Builder</em>, or <em>Analysis</em> components of BMTK. However
-running <em>BioNet</em> simulations require a slight changes to intialize a task properly since it requires using the NEURON
-simulation underneath. In this example we will show a how to run a multi-core BioNet simualation using the network
+running <em>BioNet</em> simulations require a slight changes to initialize a task properly since it requires using the NEURON
+simulation underneath. In this example we will show a how to run a multi-core BioNet simulation using the network
 generated in <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/tree/main/Ch3_multicells/3.%20Multipopulation%20biophysical.ipynb">Chapter 3</a> of
 the BMTK tutorial taking note to highlight difference from the example above.</p>
 <section id="step-1-packaging-data">
@@ -549,7 +548,7 @@ folder with an descriptive Label</p></li>
 <h4>Step 3: Creating and Submitting a Task<a class="headerlink" href="#step-3-creating-and-submitting-a-task" title="Link to this heading">#</a></h4>
 <p>Under <strong>bmtk_simulations</strong> &gt; <strong>Tasks</strong> select the <cite>Create New Task</cite> button</p>
 <ol class="arabic simple">
-<li><p>In the <cite>Task Summary</cite> tab give the task an appropiate description (we’ll call it <strong>bionet_multicells</strong>)</p></li>
+<li><p>In the <cite>Task Summary</cite> tab give the task an appropriate description (we’ll call it <strong>bionet_multicells</strong>)</p></li>
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code> tab make sure to select the <strong>bionet_multicell</strong> data we uploaded in the previous step and
 click <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code>.</p></li>
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Tool</span></code> tab choose option <strong>NEURON on Expanse</strong></p></li>
@@ -565,7 +564,7 @@ click <code class="docutils literal notranslate"><span class="pre">Select</span>
 </div>
 <br clear="left"><p>The following parameters are important</p>
 <ul class="simple">
-<li><p>Make sure the select <strong>Do you required nrnivmodl compilation</strong> in order to compile the .mod file necessacary to run
+<li><p>Make sure the select <strong>Do you required nrnivmodl compilation</strong> in order to compile the .mod file necessary to run
 the models</p></li>
 <li><p>Set <strong>Enter Main Input Filename: run_bionet.py</strong> as this is the script to execute the BMTK simulation</p></li>
 <li><p>Make sure to select <strong>Please click here if your code is in python and not HOC</strong></p></li>
