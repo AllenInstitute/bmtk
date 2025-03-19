@@ -63,6 +63,7 @@ About BMTK
       .. grid-item::
 
          .. figure:: _static/images/v1_dg_500x333.gif
+            :scale: 150%
 
 
    **BMTK Workflow**
