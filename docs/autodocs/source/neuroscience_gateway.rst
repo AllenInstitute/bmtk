@@ -4,8 +4,8 @@ Running BMTK on the Neuroscience Gateway (NSG)
 
 
 
-`The Neuroscience Gateway (NSG) <http://www.nsgportal.org/>`__ is an NSF funded project that provides HPC resouces for 
-neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. 
+`The Neuroscience Gateway (NSG) <http://www.nsgportal.org/>`__ is an NSF funded project that provides HPC resources for 
+neuroscientists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. 
 But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used 
 for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does 
 NSG include BMTK, but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See 
@@ -49,7 +49,7 @@ After you have registered go ahead and log in to the `NSG Portal <https://nsgpro
 Step 2: Packaging the environment files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the `configuration files, network files, components, inputs, and any other necessary files to execute your BMTK 
+We will need to package all necessary files into a .zip folder to be uploaded to NSG. This will include the `configuration files, network files, components, inputs, and any other necessary files to execute your BMTK 
 simulation run script <simulators_guide.html#setting-up-the-environment>`__.
 
 In our example if we have all files stored in `Ch6_l4model <https://github.com/AllenInstitute/bmtk-workshop/tree/main/Ch6_l4model/>`__ 
@@ -65,7 +65,7 @@ Step 3: Setting Up an NSG Folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. When you login you will be prompted to ``Create New Folder`` that can be used for running BMTK applications. Click on 
-that button, we will give it a "Label" of **bmtk_simulations** and an appropiate description:
+that button, we will give it a "Label" of **bmtk_simulations** and an appropriate description:
 
 .. raw:: html
 
@@ -74,7 +74,7 @@ that button, we will give it a "Label" of **bmtk_simulations** and an appropiate
     </div>
     <br clear="left">
 
-2. Navigate to **bmtk_simulations** > **Data** and select the ``Upload Data`` button. Provide an appropiate label (we'll 
+2. Navigate to **bmtk_simulations** > **Data** and select the ``Upload Data`` button. Provide an appropriate label (we'll 
 use Label **pointnet_l4model**) and click the ``Choose File`` button to upload the previously created zip file. Click 
 ``Save`` to upload the file.
 
@@ -144,7 +144,7 @@ Step 4: Setup and Run Task
 * Set **Enter sub-directory name: Ch6_l4model** - This is required since the way we zipped up our data everything is 
   under the *Ch6_l4model/* folder.
 
-* To speed up the simulation we will run it parallelized using MPI with 8 processs. 
+* To speed up the simulation we will run it parallelized using MPI with 8 processes. 
   
   * Set **Enter Number of Nodes: 1** - Since we are significantly less than the available cores/memory per node we can 
     benefit from keeping all MPI Tasks on the same node.
@@ -212,7 +212,7 @@ Step 3: Creating and Submitting a Task
 
 Under **bmtk_simulations** > **Tasks** select the `Create New Task` button
 
-1. In the `Task Summary` tab give the task an appropiate description (we'll call it **bionet_multicells**)
+1. In the `Task Summary` tab give the task an appropriate description (we'll call it **bionet_multicells**)
 
 2. In the ``Select Data`` tab make sure to select the **bionet_multicell** data we uploaded in the previous step and 
    click ``Select Data``.
@@ -239,7 +239,7 @@ Under **bmtk_simulations** > **Tasks** select the `Create New Task` button
 
 The following parameters are important
 
-* Make sure the select **Do you required nrnivmodl compilation** in order to compile the .mod file necessacary to run 
+* Make sure the select **Do you required nrnivmodl compilation** in order to compile the .mod file necessary to run 
   the models
 
 * Set **Enter Main Input Filename: run_bionet.py** as this is the script to execute the BMTK simulation
