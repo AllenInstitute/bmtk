@@ -27,15 +27,15 @@ population-level firing rate models.
 .. figure:: _static/images/levels_of_resolution_noml.png
    :scale: 70%
 
-The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
-models. What BMTK does provide:
+The BMTK is not itself a simulator and utilizes existing simulators, like NEURON and NEST, to run different types of
+models. What BMTK does provide is a streamlined workflow to build, analyze, and store models efficiently:
 
 .. figure:: _static/images/bmtk_architecture.jpg
    :scale: 45%
 
 The BMTK Workflow and architecture
 ----------------------------------
-BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
+BMTK can readily scale to run models of single neurons, and even single compartments, for all different types of
 neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
 Generating the connectivity matrix could take hours or even days to complete. We can then test these optimized base-line 
 models against a large variety of conditions and stimuli and directly compare with existing in-vivo
@@ -45,10 +45,10 @@ recordings (see Allen Brain Observatory).
    :scale: 100%
 
 Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
-instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
-a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
+instantiated base-line version of the model is built and saved to a file so that each time a simulation runs it takes only
+a small fraction of the time to instantiate the simulation. Results are also saved automatically. BMTK and
 the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
-iterations of a simulation be done as fast as possible.
+iterations of a simulation can be done as fast as possible.
 
 As such BMTK can be broken into three major components:
 
