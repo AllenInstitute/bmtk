@@ -21,7 +21,7 @@ Documentation and Tutorials
 ---------------------------
 Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
 tutorials for using the BMTK in general and PopNet specific examples for:
-* `Building a simple two population model <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/06_population_modeling.ipynb>`_.
+* `Building a simple two population model <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/tutorial_06_population_modeling.ipynb>`_.
 
 About DiPDE
 ++++++++++++
@@ -40,8 +40,8 @@ The following are from previous tutorials, workshops, and presentations; and may
 
 Examples
 --------
-The AllenInstitute/bmtk repo contains a number of PopNet examples, many with pre-built networks and can be immediately ran. These
-tutorials will have the folder prefix *pop_* and to run them in the command-line simply call::
+The AllenInstitute/bmtk repository contains a number of PopNet examples, many with pre-built networks and can be run immediately. These
+tutorials will have the directory prefix *pop_* and to run them in the command-line, simply call::
 
   $ python run_popnet.py config.json
 
@@ -49,5 +49,5 @@ tutorials will have the folder prefix *pop_* and to run them in the command-line
 Current examples
 ++++++++++++++++
 * `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
-* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
+* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted>`_ - A conversion of our mouse cortex L4 spiking network into a population rates network.
 
