@@ -4,34 +4,34 @@ FilterNet
 .. figure:: _static/images/bmtk_architecture_filternet_highlight.jpg
    :scale: 40%
 
-FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
+FilterNet simulates the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
 uses neural filters to simulate firing rates and spike trains over a given time course and stimuli. It is based on a
 `linear-nonlinear-Poisson cascade model <https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model>`_
 with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
-optimized to closely mimic mammalian thalamic cells:
+optimized to mimic mammalian thalamic cells:
 
 
 .. figure:: _static/images/lnp_model.jpg
    :scale: 60%
 
 
-FilterNet is very useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
+FilterNet is useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
 PointNet, or PopNet. The procedure is as follows:
 
-1. Generate the receptive field network.
-2. Use FilterNet to play images and movies against the receptive field and generate responses for each unit.
-3. Connect the receptive field network created in step #1 to some higher-level cortical circuit.
-4. Use the spike trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.
+1. Generate filter neurons with a receptive field for each.
+2. Use FilterNet to play images and movies to the receptive fields and generate responses for each unit.
+3. Connect the filter neurons created in step #1 to another network of neurons to simulate.
+4. Use the spike trains generated in Step #2 to see how the network of neurons would respond to different stimuli.
 
 
 Inputs
 ------
-Currently, FilterNet allows for a number of different types of custom and pre-aligned types of stimuli. To change the
-type of stimuli requires updating the inputs section in the simulation_config.json file like above.
+Currently, FilterNet allows for a number of different types of custom and pre-defined types of stimuli. Changing the
+type of stimuli requires updating the inputs section in the *simulation_config.json* file.
 
 Movie
 +++++
-Allows playing a custom movie file in the form of a three-dimension matrix saved in a npy file.
+Allows playing a custom movie file in the form of a three-dimensional matrix saved in a npy file.
 
 .. code:: json
 
@@ -47,10 +47,10 @@ Allows playing a custom movie file in the form of a three-dimension matrix saved
       }
    }
 
-* movie: Link to a 3-dimensional (time, x, y) matrix representing a movie (where time is equal to the number of frames in the movie).
+* movie: Link to a 3-dimensional (time, y, x) matrix representing a movie (where time is equal to the number of frames in the movie).
 * frame_rate: frames per second
 * normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
-  * If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
+  * If set to true, FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
   * If the original movie has a unique range, users can specify the min/max contrast for the original movie ```"normalize": [0.0, 100.0]```
 * y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 * flip_y: Flip the y-axis of the movie (default: false).
@@ -82,9 +82,9 @@ Plays a drifting grating across the screen
 * grapy_screen_dur: displays an optional gray screen for a number of seconds before the grating starts. (default: 0)
 * cpd: spatial frequncy represented as cycles per degree. (default: 0.05)
 * temporal_f: temporal frequency in Hz. (default: 4.0)
-* theta: orientation angle, in degrees (default: 45.0)
+* theta: angle of the drifting gratings, in degrees (default: 45.0)
 * phase: temporal phase, in degrees (default: 0.0)
-* contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)
+* contrast: the maximum contrast, must be between 0 and 1.0 (default: 1.0)
 * degrees_per_pixel: sampling pitch of the movie in degrees per pixel (default: 1 / (cpd * 10))
 * y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 
@@ -144,9 +144,9 @@ Creates a spreading black field originating from the center.
 * y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 
 
-Optimizations Techniques
+Optimization Techniques
 ------------------------
-The time required to generate spikes will depending on the number of cells in the network, the stimulus type, complexity of the cell-models; among
+The time required to generate spikes will depend on the number of cells in the network, the stimulus type, complexity of the cell-models; among
 other factors. The full simulation time can take a few seconds to a few hours. The following options may sometimes be utilized in order to 
 significantly speed up the process.
 
@@ -180,3 +180,6 @@ environment:
 ```bash
 $ pip install numba
 ```
+
+If Numba is installed, FilterNet will automatically use it to compile some time-consuming functions.
+It will also detect if MPI is used simultaneously and will turn off Numba's parallelization to avoid conflicts.
