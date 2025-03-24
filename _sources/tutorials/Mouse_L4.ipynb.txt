@@ -8,9 +8,9 @@
     "\n",
     "source: https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/modeling_tut_2021\n",
     "\n",
-    "This tutorial will show how to build and simulate a toy model of the mouse V1 cortical area network using the Brain Modeling Toolkit (BMTK) [\\[Dai et al., PLOS Comp. Bio., 2020\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386). Including how to modify and simulate larger more realistic visual cortical models released by the Allen Institute [\\[Billeh et al., Neuron, 2020\\]](https://www.cell.com/neuron/pdf/S0896-6273(20)30067-2.pdf). The tutorial will also briefly explain the SONATA data format [\\[Dai et al., PLOS Comp. Bio., 2020\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007696) and how the BMTK uses the format to describe network models, simulations and results.\n",
+    "This tutorial will show how to build and simulate a toy model of the mouse V1 cortical area network using the Brain Modeling Toolkit (BMTK) [\\[Dai et al., PLOS Comp. Bio., 2020\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386), including how to modify and simulate larger more realistic visual cortical models released by the Allen Institute [\\[Billeh et al., Neuron, 2020\\]](https://www.cell.com/neuron/pdf/S0896-6273(20)30067-2.pdf). The tutorial will also briefly explain the SONATA data format [\\[Dai et al., PLOS Comp. Bio., 2020\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007696) and how the BMTK uses the format to describe network models, simulations and results.\n",
     "\n",
-    "In this tutorial we will show how to build and simulate a a modistly sized toy network based on the Mouse Primary Visual Cortex (V1) for Layer 4 (which is the primary layer of the L4 for receiving thamalic stimulus). The L4 model [\\[Arkhipov et al., PLOS Comp. Bio., 2018\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006535), further described [here](https://portal.brain-map.org/explore/models/l4-mv1), will have a full model that contains 45,000+ cells and millions of connections: \n",
+    "In this tutorial we will show how to build and simulate a modestly sized toy network based on the layer 4 of the mouse primary Visual cortex (V1) (which is the primary layer of the V1 for receiving thalamic stimulus). The L4 model [\\[Arkhipov et al., PLOS Comp. Bio., 2018\\]](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006535), further described [here](https://portal.brain-map.org/explore/models/l4-mv1), contains 45,000+ cells and millions of connections: \n",
     "\n",
     "<img src=\"_static/images/layer4_side_view.png\" alt=\"Drawing\" style=\"width: 300px; float: left\"/>\n",
     "<img src=\"_static/images/layer4_angled_view.png\" alt=\"Drawing\" style=\"width: 300px; float: left\"/>"
@@ -20,13 +20,13 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Building and running the actual L4 model can take many hours and will require access to HPC resources. The toy model we will build and simulate will have only 300 cells to allow us to build and simulate the model in a few minutes for most desktop and laptop machines.\n",
+    "Building and running the actual L4 model can take many hours and will require access to high-performance computing (HPC) resources. The toy model we will build and simulate will have only 300 cells to allow us to build and simulate the model in a few minutes for most desktop and laptop machines.\n",
     "\n",
     "For more information about cortical modeling and simulation at the Allen Institute:\n",
-    "https://portal.brain-map.org/explore/models\n",
+    "see: https://portal.brain-map.org/explore/models\n",
     "\n",
     "For more information and tutorials on using the BMTK:\n",
-    "https://alleninstitute.github.io/bmtk"
+    "see: https://alleninstitute.github.io/bmtk"
    ]
   },
   {
@@ -165,11 +165,11 @@
     "The attributes __model_type__, __model_template__, __dynamics_params__, __model_processing__ and __morphology__ are SONATA reserved keywords that will instruct BMTK (or other SONATA compliant tools) how to build cell models during the simulation. In this model we are using biophysically realistic models, with dynamical parameters (.json) and morphology (.swc) that we can download from the [Allen Cell Types Database](https://celltypes.brain-map.org/data). We have already downloaded the required json and swc files and have saved them under *components/biophysical_neuron_templates* and \n",
     "*components/morphologies/*, respectively.\n",
     "\n",
-    "Attributes __x__, __y__, __z__ are used as the euclidian locations of the cells, while the __rotation_angle__ parameters are used to orientat to rotations of cells. Note that for the x and y rotations we are passing in an array of size N, but the z rotation is defined by a scalar. SONATA and the BMTK Network Builder allows us to differentiate between attributes that are unique to each cell versus shared attributes. Each of the 80 cells will have unique x and y rotations, but share the same pre-calculated z rotatation\n",
+    "Attributes __x__, __y__, __z__ are used as the euclidian locations of the cells, while the __rotation_angle__ parameters are used to orentate the cells. Note that for the x and y rotations we are passing in an array of size N, but the z rotation is defined by a scalar. SONATA and the BMTK Network Builder allows us to differentiate between attributes that are unique to each cell versus shared attributes. Each of the 80 cells will have unique x and y rotations, but share the same pre-calculated z rotation.\n",
     "\n",
-    "The final remaining attributes are not reserved SONATA keywords, but rather optional attributes that will be helpful during analysis. The __tuning_angle__ property (how well a cell is tuned for different stimulus grating) is an attribute shown is excitatory cells of the visual cortex and thus wouldn't be applicable to other models or even non-exciatory cells-types\n",
+    "The final remaining attributes are not reserved SONATA keywords, but rather optional attributes that will be helpful during analysis. The __tuning_angle__ property (the angle in the visual space that a given cell is intended to prefer with respect to its visual responses) is an attribute that in this model is set for excitatory but not inhibitory cells. It wouldn't be applicable to many other models, especially those that do not have anything to do with the visual system.\n",
     "\n",
-    "We now can ad other cell-types to our model, including inhibitory PV (parvalbumin) cells, with future calls to __add_nodes__:"
+    "We now can ad other cell-types to our model, including inhibitory PV (parvalbumin) cells, with more calls to __add_nodes__:"
    ]
   },
   {
@@ -356,7 +356,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "For Exc --> Exc we want to test an theory that cells with closer __tuning_angle__ are more likely to be connected with each other:"
+    "For Exc --> Exc we want to implement the connection patterns in which cells with more similar __tuning_angle__ are more likely to be connected with each other:"
    ]
   },
   {
@@ -534,8 +534,6 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Finally we want to build our network and save the network files in SONATA format into the _network/_ directory. BMTK will intuit the names of the files.\n",
-    "\n",
     "Now that we have built the SONATA network models files (or recieved the files from another source), we can go ahead and setup a simulation to run. To simulate the multi-compartment cell models we will use the BioNet component of the BMTK - which uses the [NEURON](https://www.neuron.yale.edu/neuron/) simulator libraries for simulating our network. \n",
     "\n",
     "Before we can do that there are still a few things that need to be taken care of, including setting up run-time parameters, choosing the stimulus, and deciding what to record."
@@ -592,7 +590,7 @@
    "source": [
     "#### \"reports\"\n",
     "\n",
-    "By default BMTK will record the V1 cell spikes into a file specified under **outputs/spikes_file**. For these types of models we can also record other parameters like membrane potential, calcium fluxuation, or extracellular electrical fields by adding to the \"reports\" section of the configuration file. \n",
+    "By default BMTK will record the V1 cell spikes into a file specified under **outputs/spikes_file**. For these types of models we can also record other parameters like membrane potential, calcium concentration, or extracellular electrical fields by adding to the \"reports\" section of the configuration file. \n",
     "\n",
     "For example the following can be used to record the soma membrane potential traces for our Scnn1a cells and save them in *output/membrane_potential.h5*\n",
     "\n",
@@ -619,7 +617,7 @@
     "\n",
     "For our V1 network we created a population of LGN \"virtual\" cells that synapse onto our V1 cells and drive them with spike trains. All that is missing is a \"spike-trains\" file, which can be either a CSV, NWB, or SONATA HDF5 file. BMTK includes way to create spike-train files.\n",
     "\n",
-    "The following will create a series of spike trains for the LGN cells using a Poisson distrubtion of 8 Hz:"
+    "The following will create a series of spike trains for the LGN cells using a Poisson distribution with a mean firing rate of 8 Hz:"
    ]
   },
   {
@@ -671,7 +669,7 @@
     " $ python run_bionet.py config.bionet.json\n",
     "```\n",
     "\n",
-    "Although this toy network is small enough to run most modern computers and laptops, for larger networks we may need to run the program on a cluster with <N> cores. To do so \n",
+    "Although this toy network is small enough to run most modern computers and laptops, for larger networks we may need to run the program on a cluster with \\<N\\> cores. To do so \n",
     "\n",
     "```bash\n",
     " $ mpirun -np <N> nrniv -mpi -python run_bionet.py config.bionet.json\n",
@@ -767,7 +765,7 @@
    "source": [
     "from bmtk.analyzer.compartment import plot_traces\n",
     "\n",
-    "# Plot the membrane potential trace\n",
+    "# Plot the membrane potential trace, the blue represents the mean trace of all cells (in grey)\n",
     "_ = plot_traces(config_file='config.bionet.json', group_by='pop_name', report_name='membrane_potential')"
    ]
   },
@@ -777,7 +775,7 @@
    "source": [
     "#### Cell perturbations\n",
     "\n",
-    "A usefull tool in network neuroscience is the ability to stimuluate or depress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on a multiple neurons by adding the following to the \"inputs\" section of the configuration file:\n",
+    "A usefull tool in network neuroscience is the ability to stimulate or supress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on multiple neurons by adding the following to the \"inputs\" section of the configuration file:\n",
     "\n",
     "\n",
     "```json\n",
@@ -870,7 +868,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "#### Recording ECP\n",
+    "#### Recording extracellular potential (ECP)\n",
     "\n",
     "The configuration has been set-up to record spike-trains and the membrane potentials of a subset of cells. BioNet also includes the ability to record the extracelluar potential using a simulated electrode, which will allow us to find the ECP and even the local field potential.\n",
     "\n",
@@ -987,9 +985,9 @@
    "source": [
     "#### Adjusting the synaptic  weights\n",
     "\n",
-    "Currently the synaptic weights, eg __syn_weight__ property, are set to the same for each edge-type. There are multiple ways to make it so the synaptic weights are nonhomogenous. We can calculate and store nonhomogeneous synaptic weights inside the SONATA edges files. Or we can adjust the weights before each simulation - which is a bit less efficent but will give us greater flexiblity as we try to optimize the weights.\n",
+    "Currently the synaptic weights, eg __syn_weight__ property, are set to the same value for each edge-type. There are multiple ways to make it so the synaptic weights are nonhomogenous. We can calculate and store nonhomogenous synaptic weights inside the SONATA edges files. Or we can adjust the weights before each simulation - which is a bit less efficent but will give us greater flexiblity as we try to optimize the weights.\n",
     "\n",
-    "for Exc --> Exc edges we had a BMTK special keyword __weight_function__='set_syn_weight', which allows us to create user-defined functions to adjust the synaptic weights during the initialization of the simulation. BMTK will look for a function with with signature \n",
+    "for Exc --> Exc edges we had a BMTK special keyword __weight_function__='set_syn_weight', which allows us to create user-defined functions to adjust the synaptic weights during the initialization of the simulation. BMTK will look for a function with signature \n",
     "```python\n",
     "def <function_name>(edge_props, source, target)\n",
     "```\n",
@@ -1154,7 +1152,7 @@
     "\n",
     "The \"inputs\" section of the configuration file determines which type of stimulus we want to project onto LGN cells. Although we can use any user-created movie (described below), FilterNet also comes with options for easily creating special stimulus types that are common in experiments testing the visual system.\n",
     "\n",
-    "One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 to 1500 ms seconds\n",
+    "One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 and 1500 ms seconds\n",
     "\n",
     "```json\n",
     "  \"inputs\": {\n",
@@ -1165,7 +1163,7 @@
     "        \"col_size\": 240,\n",
     "        \"t_on\": 500.0,\n",
     "        \"t_off\": 1500.0,\n",
-    "        \"max_intensity\": -1.0,\n",
+    "        \"max_intensity\": 1.0,\n",
     "        \"frame_rate\": 1000.0\n",
     "    } \n",
     "  }\n",
@@ -1304,7 +1302,7 @@
     "\n",
     "Besides Full-Field Flashes, FilterNet also can generate other types of pre-set visual stimuli. However for more advanced stimuli one will have to create their own movies.\n",
     "\n",
-    "To do so first you will need to create a [numpy npy or npz file](https://numpy.org/doc/stable/reference/generated/numpy.save.html) - eg a 3-dimensional matrix consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the \"inputs\" section accordingly (make sure frame_rate is correct).\n",
+    "To do so first you will need to create a [numpy npy or npz file](https://numpy.org/doc/stable/reference/generated/numpy.save.html) - eg a 3-dimensional array consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the \"inputs\" section accordingly (make sure frame_rate is correct).\n",
     "\n",
     "```json\n",
     "  \"inputs\": {\n",
@@ -1322,16 +1320,16 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Simulating across different levels of Resultion\n",
+    "## Simulating across different levels of resolutions\n",
     "\n",
     "So far we've been running a simulation using multi-compartment models of cells using the BioNet component of the BMTK. Often in modeling we want to test different types of models, for both computational and scientific reasons. \n",
     "\n",
     "### Point-neuron models\n",
-    "With PointNet, we can run our network using point-neuron based models using the [NEST](https://www.nest-simulator.org/) simulator libraries. PointNet will also use the same SONATA network files and configuration format for describing a network and initializing a simulation, so we can compare the same network across different levels of resolution. However certain properties, like __syn_weight__, __model_template__, and __dynamics_params__ will need to be adjusted. For more information see the [PointNet tutorial](https://alleninstitute.github.io/bmtk/tutorial_pointnet_modeling.html).\n",
+    "With PointNet, we can run our network using point-neuron based models using the [NEST](https://www.nest-simulator.org/) simulator libraries. PointNet will also use the same SONATA network files and configuration format for describing a network and initializing a simulation, so we can compare the same network across different levels of resolution. However certain properties, like __syn_weight__, __model_template__, and __dynamics_params__ will need to be adjusted. For more information see the [PointNet tutorial](https://alleninstitute.github.io/bmtk/tutorials/tutorial_05_pointnet_modeling.html).\n",
     "\n",
     "\n",
     "### Population based firing rate models\n",
-    "With PopNet we can simulate the different cell-types as singular populations using the [DipDE](http://alleninstitute.github.io/dipde/) simulator. Just like BioNet and PointNet it utilizes the SONATA formats. However instead of recording spike-trains for individual cells, PopNet will record the firing-rate dynamics over the course of the simulation. For more information see the [PopNet tutorial](https://alleninstitute.github.io/bmtk/tutorial_population_modeling.html)."
+    "With PopNet we can simulate the different cell-types as singular populations using the [DipDE](http://alleninstitute.github.io/dipde/) simulator. Just like BioNet and PointNet it utilizes the SONATA formats. However instead of recording spike-trains for individual cells, PopNet will record the firing-rate dynamics over the course of the simulation. For more information see the [PopNet tutorial](https://alleninstitute.github.io/bmtk/tutorials/tutorial_06_population_modeling.html)."
    ]
   },
   {
@@ -1361,7 +1359,7 @@
     "\n",
     "### Examples\n",
     "\n",
-    "* https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples\n",
+    "* https://github.com/AllenInstitute/bmtk/tree/develop/examples\n",
     "\n",
     "\n",
     "\n",
@@ -1399,7 +1397,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.13"
+   "version": "3.10.16"
   }
  },
  "nbformat": 4,

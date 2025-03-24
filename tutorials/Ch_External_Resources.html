@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -437,19 +438,19 @@
                   
   <section id="External-Resources-for-Large-Scale-Network-Modeling">
 <h1>External Resources for Large-Scale Network Modeling<a class="headerlink" href="#External-Resources-for-Large-Scale-Network-Modeling" title="Link to this heading">#</a></h1>
-<p>Building, simulating, and analyzing large-scale network models can often be a resource intensive process. Although BMTK can often run simple-to-moderate network models using commerically available hardware - many scientists will find themselves quickly requiring access to High-Performance Computing (HPC) resources when the computational, memory, and/or storage requirements become greater than even the best modern laptops and desktops. When this happens you will have to rely on the resources of
-you institution’s computing resources or even on the many Cloud Computing Platforms.</p>
-<p>Beyond access to higher computing and memory resources, there are other benefits to using Cloud and HPC resources in your workflow! Using a shared environment can improve collaboration and replication, reducing the headaches and pitfalls when every one has to install the software requirements on their own machines.</p>
+<p>Building, simulating, and analyzing large-scale network models can often be a resource intensive process. Although BMTK can often run simple-to-moderate network models using commercially available hardware - many scientists will find themselves quickly requiring access to High-Performance Computing (HPC) resources when the computational, memory, and/or storage requirements become greater than even the best modern laptops and desktops. When this happens you will have to rely on the resources of
+you institution’s computing facilities or even on the Cloud Computing Platforms.</p>
+<p>Beyond access to more powerful computing and memory resources, there are other benefits to using Cloud and HPC resources in your workflow! Using a shared environment can improve collaboration and replication, reducing the headaches and pitfalls when every one has to install the software requirements on their own machines.</p>
 <p>In this tutorial we provide a list of tools and resources that neuroscientists can take advantage of.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/06_opt_hpc_resources">06_opt_hpc_resources/</a></p>
 <section id="1.-Neuroscience-Gateway-(NSG)">
 <h2>1. Neuroscience Gateway (NSG)<a class="headerlink" href="#1.-Neuroscience-Gateway-(NSG)" title="Link to this heading">#</a></h2>
 <p><a class="reference external" href="http://www.nsgportal.org/">The Neuroscience Gateway (NSG)</a> is an NSF funded project that provides HPC resouces for neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does NSG include BMTK,
-but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See <a class="reference external" href="https://nsgprod.sdsc.edu:8443/portal2/tools.action">https://nsgprod.sdsc.edu:8443/portal2/tools.action</a> for a list of available software.</p>
+but also other popular tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See <a class="reference external" href="https://nsgprod.sdsc.edu:8443/portal2/tools.action">https://nsgprod.sdsc.edu:8443/portal2/tools.action</a> for a list of available software.</p>
 <p>The Neuroscience Gateway can be accessed in two different ways, either through the Web Portal interface or through the REST API. The focus in this tutorial will be on using the Web Portal.</p>
 <section id="1.1.-Example:-Using-NSG-to-run-L4-Model-simulations">
 <h3>1.1. Example: Using NSG to run L4 Model simulations<a class="headerlink" href="#1.1.-Example:-Using-NSG-to-run-L4-Model-simulations" title="Link to this heading">#</a></h3>
-<p>As an example of how one can utilize NSG running BMTK we will take the <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb">existing Mouse V1 Layer 4 Model</a> network and use it to run simulations of the Expanse computing cluster.</p>
+<p>As an example of how one can utilize NSG running BMTK we will take the <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb">existing Mouse V1 Layer 4 Model</a> network and use it to run simulations on the Expanse computing cluster.</p>
 <section id="Step-1:-(Register-and)-Log-in">
 <h4>Step 1: (Register and) Log-in<a class="headerlink" href="#Step-1:-(Register-and)-Log-in" title="Link to this heading">#</a></h4>
 <p>If you are planning to use NSG for your research you will first need to register an account at <a class="reference external" href="https://www.nsgportal.org/gest/reg.php">https://www.nsgportal.org/gest/reg.php</a>. It is freely available to most researchers, educators, and students working in the neuroscience field.</p>
@@ -457,7 +458,7 @@ but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among o
 </section>
 <section id="Step-2:-Packaging-the-environment-files">
 <h4>Step 2: Packaging the environment files<a class="headerlink" href="#Step-2:-Packaging-the-environment-files" title="Link to this heading">#</a></h4>
-<p>We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the run_pointnet.py python script to execute, plus any necessary SONATA and model files.</p>
+<p>We will need to package all necessary files into a .zip folder to be uploaded to NSG. This will include the run_pointnet.py python script to execute, plus any necessary SONATA and model files.</p>
 <p><strong>Remember</strong> to download the files from the <a class="reference external" href="https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb">Mouse V1 Layer 4 Model tutorial</a>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>../<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>zip<span class="w"> </span>-rq<span class="w"> </span>l4model.zip<span class="w"> </span>Ch6_l4model/
 </pre></div>
@@ -468,11 +469,11 @@ but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among o
 <ol class="arabic simple">
 <li><p>When you login you will be prompted to <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Folder</span></code> that can be used for running BMTK applications. Click on that button, we will give it a “Label” of <strong>bmtk_simulations</strong> and an appropiate description:</p></li>
 </ol>
-<div><p><img alt="d5634852aef5483289ca396683aef390" class="no-scaled-link" src="../_images/nsgportal_initial_1.png" style="width: 805px;" /></p>
+<div><p><img alt="431641929f36498b9823e10ddfbbdf6c" class="no-scaled-link" src="../_images/nsgportal_initial_1.png" style="width: 805px;" /></p>
 </div><ol class="arabic simple" start="2">
 <li><p>Navagate to <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> and select the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> button. Provide an appropiate label (we’ll use Label <strong>pointnet_l4model</strong>) and click the <code class="docutils literal notranslate"><span class="pre">Choose</span> <span class="pre">File</span></code> button to upload the previously created zip file. Click <code class="docutils literal notranslate"><span class="pre">Save</span></code> to upload the file.</p></li>
 </ol>
-<div><p><img alt="8d4dfc0f9025484b96e00c74e0f18e82" class="no-scaled-link" src="../_images/nsgportal_data_folder_wdata.png" style="width: 805px;" /></p>
+<div><p><img alt="77b67c72463a4fe2839c533803d47492" class="no-scaled-link" src="../_images/nsgportal_data_folder_wdata.png" style="width: 805px;" /></p>
 </div></section>
 <section id="Step-4:-Setup-and-Run-Task">
 <h4>Step 4: Setup and Run Task<a class="headerlink" href="#Step-4:-Setup-and-Run-Task" title="Link to this heading">#</a></h4>
@@ -480,27 +481,27 @@ but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among o
 <li><p>Navigate to the <strong>bmtk_simulations</strong> &gt; <strong>Tasks</strong> folder and select <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Task</span></code> button.</p></li>
 <li><p>First give a <code class="docutils literal notranslate"><span class="pre">Description</span></code> for the task - we’ll call it <strong>pointnet_l4model</strong></p></li>
 </ol>
-<div><p><img alt="33805aaa018948b5a10eb5220cfd2867" class="no-scaled-link" src="../_images/nsgportal_task_summary_pannel_cropped.png" style="width: 805px;" /></p>
+<div><p><img alt="0bd29bec5d8a4cc9afb4e365f314a56d" class="no-scaled-link" src="../_images/nsgportal_task_summary_pannel_cropped.png" style="width: 805px;" /></p>
 </div><ol class="arabic simple" start="3">
 <li><p>Under the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code> panel choose the uploaded zip file for with the <strong>pointent_l4model</strong> Label and click <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code></p></li>
 </ol>
-<div><p><img alt="6ff4663444d945bf8570fab4a7a9793d" class="no-scaled-link" src="../_images/nsgportal_select_data_panel.png" style="width: 805px;" /></p>
+<div><p><img alt="5a0095b2f6024e7b89952a0ffe0663a4" class="no-scaled-link" src="../_images/nsgportal_select_data_panel.png" style="width: 805px;" /></p>
 </div><ol class="arabic simple" start="4">
 <li><p>Under the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Tool</span></code> panel we select the <strong>Python on Expanse</strong> option</p></li>
 </ol>
-<div><p><img alt="1a123852864f43f8aed032bc24910c37" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted1.png" style="width: 805px;" /></p>
+<div><p><img alt="37a3cf439f984ad5b80d086ea9e9a416" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted1.png" style="width: 805px;" /></p>
 </div><ol class="arabic simple" start="5">
 <li><p>Finally Select the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Parameters</span></code> Panel to give the run-time parameters. Enter the parameters as specified below and click the <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Parameters</span></code> button.</p></li>
 </ol>
-<div><p><img alt="0ac6160c00af4f4aa00b48aec7124f84" class="no-scaled-link" src="../_images/nsgportal_set_parameters_panel1.png" style="width: 805px;" /></p>
+<div><p><img alt="e5f323343e764fa69169915b8f0bceff" class="no-scaled-link" src="../_images/nsgportal_set_parameters_panel1.png" style="width: 805px;" /></p>
 </div><ul class="simple">
 <li><p>Set <strong>Max Hours to Run: 1.0</strong> - Depending on the size of the network, the <strong>tstop</strong> and <strong>dt</strong>, and the number of Cores we may have to increase/decrease this value.</p></li>
 <li><p>Unselect <strong>Do you require nrnivmodl compilation</strong> - flag only applies to NEURON (eg. BioNet) applications.</p></li>
 <li><p>Set <strong>Enter Main Input Python Filename: run_pointnet.py</strong> - Entry python script to run.</p></li>
 <li><p>Set <strong>Enter sub-directory name: Ch6_l4model</strong> - This is required since the way we zipped up our data everything is under the <em>Ch6_l4model/</em> folder.</p>
 <ul>
-<li><p>To speed up the simulation we will run it parallelized using MPI with 8 processs.</p></li>
-<li><p>Set <strong>Enter Number of Nodes: 1</strong> - Since we are significantly less than the avaialbe cores/memory per node we can benefit from keeping all MPI Tasks on the same node.</p></li>
+<li><p>To speed up the simulation we will run it parallelized using MPI with 8 processes.</p></li>
+<li><p>Set <strong>Enter Number of Nodes: 1</strong> - Since we use significantly less than the available cores/memory per node we can benefit from keeping all MPI Tasks on the same node.</p></li>
 <li><p>Set <strong>Enter Number of MPI Tasks per Node: 8</strong> and <strong>Enter Number of Cores per Node: 8</strong></p></li>
 <li><p>Set <strong>Enter Number of GB Memory per Node: 16</strong></p></li>
 </ul>
@@ -514,8 +515,8 @@ but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among o
 </section>
 <section id="Fetching-the-Results">
 <h4>Fetching the Results<a class="headerlink" href="#Fetching-the-Results" title="Link to this heading">#</a></h4>
-<p>After clickin on <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">Run</span> <span class="pre">Task</span></code> the task will be submitted to the NSQ queue. Depending on current HPC usage and the requested resources there may be a delay between the time when a job is submitted and the time the task starts running. You can select the <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Status</span></code> button to see the <strong>Status</strong> of the current task.</p>
-<div><p><img alt="0438897e73754285879eb8556d9cb566" class="no-scaled-link" src="../_images/nsgportal_tasks_panel_filled.png" style="width: 805px;" /></p>
+<p>After clicking on <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">Run</span> <span class="pre">Task</span></code> the task will be submitted to the NSQ queue. Depending on current HPC usage and the requested resources there may be a delay between the time when a job is submitted and the time the task starts running. You can select the <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">Status</span></code> button to see the <strong>Status</strong> of the current task.</p>
+<div><p><img alt="b4ad36d24f0a4e7686eddad817091e92" class="no-scaled-link" src="../_images/nsgportal_tasks_panel_filled.png" style="width: 805px;" /></p>
 </div></section>
 </section>
 <section id="1.2.-Example:-Using-NSG-for-BioNet-(eg.-NEURON)-Simulations">
@@ -537,7 +538,7 @@ $<span class="w"> </span>zip<span class="w"> </span>-rq<span class="w"> </span>b
 <li><p>Log into NSGPortal and either select <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">New</span> <span class="pre">Folder</span></code>, or select the existing <strong>bmtk_simulations</strong> folder if it exists.</p></li>
 <li><p>Under <strong>bmtk_simulations</strong> &gt; <strong>Data</strong> folder select <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code> to upload the created <em>bionet_multicells.zip</em> folder with an descriptive Label</p></li>
 </ol>
-<div><p><img alt="9b66107824204e19a189aeeac89379b9" class="no-scaled-link" src="../_images/nsgportal_alldata_panel_multiple.png" style="width: 805px;" /></p>
+<div><p><img alt="f78eb9e2e55e42bfad4a2e09c6878776" class="no-scaled-link" src="../_images/nsgportal_alldata_panel_multiple.png" style="width: 805px;" /></p>
 </div></section>
 <section id="Step-3:-Creating-and-Submitting-a-Task">
 <h4>Step 3: Creating and Submitting a Task<a class="headerlink" href="#Step-3:-Creating-and-Submitting-a-Task" title="Link to this heading">#</a></h4>
@@ -547,14 +548,14 @@ $<span class="w"> </span>zip<span class="w"> </span>-rq<span class="w"> </span>b
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code> tab make sure to select the <strong>bionet_multicell</strong> data we uploaded in the previous step and click <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Data</span></code>.</p></li>
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">Tool</span></code> tab choose option <strong>NEURON on Expanse</strong></p></li>
 </ol>
-<div><p><img alt="89fc7883ac6646c59c93ae420f47727d" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted2.png" style="width: 805px;" /></p>
+<div><p><img alt="014b3e18082e46c7a27716c73deb75f9" class="no-scaled-link" src="../_images/nsgportal_select_tool_panel_highlighted2.png" style="width: 805px;" /></p>
 </div><ol class="arabic simple" start="4">
 <li><p>In the <code class="docutils literal notranslate"><span class="pre">Set</span> <span class="pre">Parameters</span></code> tab we can use the following setup, the click <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">Parameters</span></code> button.</p></li>
 </ol>
-<div><p><img alt="a49145b076184776ab026623ebefa792" class="no-scaled-link" src="../_images/nsgportal_set_parameters_bionet.png" style="width: 805px;" /></p>
+<div><p><img alt="18391736f0bc4db180db13d08a41cfd2" class="no-scaled-link" src="../_images/nsgportal_set_parameters_bionet.png" style="width: 805px;" /></p>
 </div><p>The following parameters are important</p>
 <ul class="simple">
-<li><p>Make sure the select <strong>Do you required nrnivmodl compilation</strong> in order to compile the .mod file necessacary to run the models</p></li>
+<li><p>Make sure the select <strong>Do you require nrnivmodl compilation</strong> in order to compile the .mod file necessary to run the models</p></li>
 <li><p>Set <strong>Enter Main Input Filename: run_bionet.py</strong> as this is the script to execute the BMTK simulation</p></li>
 <li><p>Make sure to select <strong>Please click here if your code is in python and not HOC</strong></p></li>
 <li><p>Due to the structure of the zip file we need to set <strong>Enter sub-directory name: Ch3_mutlicells</strong></p></li>

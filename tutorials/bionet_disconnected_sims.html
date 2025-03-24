@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -439,8 +440,8 @@
 <h1>Replaying Parts of a Simulation<a class="headerlink" href="#Replaying-Parts-of-a-Simulation" title="Link to this heading">#</a></h1>
 <p>When simulating a bio-realistic network, cells will receive synaptic stimulation from both locally recurrent connections as well as feedforward connections from external inputs. Often when analyzing the results of full network activity we would like to know the contribution of only a subset of the synaptic activity. For example, how much the feedforward synapses, or only recurrent synapses between specific population of cells, contribute to the simulation results. Certain techniques, like
 running with only a subset of the full network, or using optogenetics/current-clamp to turn on-off subpopulations, can provide useful insights but do not tell the full story of a network simulation.</p>
-<p>Instead we can used the BMTK “replay” input module to disentangle subsections of simulation activity from the full network in BioNet/biophysically realistic simulations. The BMTK “replay” module let’s the user take a previous simulation, and replay a simulation using only activity from a subset of the synapses. This can be helpful in parameter tuning and optimization, and for very large networks can provide an efficient manner to replay small subsets of a full network.</p>
-<div><p><img alt="be9a02effbdf4cd3aab915451d410414" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
+<p>Instead we can use the BMTK “replay” input module to disentangle subsections of simulation activity from the full network in BioNet/biophysically realistic simulations. The BMTK “replay” module let’s the user take a previous simulation, and replay a simulation using only activity from a subset of the synapses. This can be helpful in parameter tuning and optimization, and for very large networks can provide an efficient manner to replay small subsets of a full network.</p>
+<div><p><img alt="8d94a69c62f6431994808b4644a810f1" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
 </div><div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -504,7 +505,7 @@ running with only a subset of the full network, or using optogenetics/current-cl
 </section>
 <section id="Simulation-with-Only-Feedforward-(Virtual)-Synaptic-Activity">
 <h2>Simulation with Only Feedforward (Virtual) Synaptic Activity<a class="headerlink" href="#Simulation-with-Only-Feedforward-(Virtual)-Synaptic-Activity" title="Link to this heading">#</a></h2>
-<p>One useful method for analyzing a full network is to run a simulation with only feedforward virtual networks without any recurrent connections. The network will be still be driven by virtual (pre-defined) spike inputs into the synapses of our primary contingent of cells, but the local cell-to-cell connectivity will be removed. This way we can see how much of our network is driven purely by the outside stimulation.</p>
+<p>One useful method for analyzing a full network is to run a simulation with only feedforward virtual networks without any recurrent connections. The network will still be driven by virtual (pre-defined) spike inputs into the synapses of our primary contingent of cells, but the local cell-to-cell connectivity will be removed. This way we can see how much of our network is driven purely by the outside stimulation.</p>
 <p>To run a simulation with virtual stimulation only we only need to edit the “networks” section of our simulation configuration to exclude the recurrent connectivity. Here we make a copy of <em>config.simulation.json</em> which we’ll name “<em>config.simulation_feedforward.json</em>” and update the “networks” sections to remove the recurrent (<em>internal_internal_edges</em> files) connections:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -591,10 +592,10 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <p>Next we would like to see the contributions of recurrently connectivity on the simulation. Unlike before we can’t just run a simulation with recurrent only connections and no external stimuli. Luckily, we can utilize the previous simulation results saved in the <em>previous_results/spikes.baseline.h5</em> and the “<strong>replay</strong>” module in BioNet to rerun a simulation with only recurrent connections acting on our cells.</p>
 </section>
-<section id="Simulations-with-Only-Recurrent-Synpatic-Activity">
-<h2>Simulations with Only Recurrent Synpatic Activity<a class="headerlink" href="#Simulations-with-Only-Recurrent-Synpatic-Activity" title="Link to this heading">#</a></h2>
+<section id="Simulations-with-Only-Recurrent-Synaptic-Activity">
+<h2>Simulations with Only Recurrent Synaptic Activity<a class="headerlink" href="#Simulations-with-Only-Recurrent-Synaptic-Activity" title="Link to this heading">#</a></h2>
 <p>Using the previous full simulation output <em>spikes.baseline.h5</em> spike-train file, we now want to re-run a simulation to see the contributions of only recurrent connections on the total output of the simulation. To do so we just have to make changes to the json configuration files.</p>
-<p>The first step is to make a copy of the <em>config.simulation.json</em> file, which we’ll rename to <em>config.simulation_recurrent.json</em>, then update the following sections:</p>
+<p>The first step is to make a copy of the <em>config.simulation.json</em> file, which we’ll rename to <em>config.simulation_recurrent.json</em>, then update the “networks”, “output”, and “inptus” sections as below.</p>
 <p>Since we don’t want feedforward virtual stimuli we can remove the <em>external</em> nodes and edges files from the “<strong>networks</strong>” section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -853,7 +854,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <img alt="../_images/tutorials_bionet_disconnected_sims_17_0.png" src="../_images/tutorials_bionet_disconnected_sims_17_0.png" />
 </div>
 </div>
-<p>We may also want to filter only by the pre-synaptic source cell (or post-synaptic target). For example if we want select only recurrent synapses that target either one of our PV cells, no matter the source-cell, we can use the following option:</p>
+<p>We may also want to filter only by the pre-synaptic source cell (or post-synaptic target). For example if we want to select only recurrent synapses that target either one of our PV cells, no matter the source-cell, we can use the following option:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1007,7 +1008,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Initial-Simulation-(Generating-a-Baseline-for-Synaptic-Activity)">Initial Simulation (Generating a Baseline for Synaptic Activity)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulation-with-Only-Feedforward-(Virtual)-Synaptic-Activity">Simulation with Only Feedforward (Virtual) Synaptic Activity</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulations-with-Only-Recurrent-Synpatic-Activity">Simulations with Only Recurrent Synpatic Activity</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulations-with-Only-Recurrent-Synaptic-Activity">Simulations with Only Recurrent Synaptic Activity</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Recreating-the-Whole-Simulation-(Validation-of-Synaptic-Activity-Summation)">Recreating the Whole Simulation (Validation of Synaptic Activity Summation)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#%22Replay%22-Options-for-Selecting-Subnets">“Replay” Options for Selecting Subnets</a></li>
 </ul>

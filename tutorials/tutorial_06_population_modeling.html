@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial 6: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_06_population_modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 7: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
-    <link rel="prev" title="Tutorial 5: Point-Neuron Network Models (with PointNet)" href="tutorial_05_pointnet_modeling.html" />
+    <link rel="next" title="Tutorial: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
+    <link rel="prev" title="Tutorial: Point-Neuron Network Models (with PointNet)" href="tutorial_05_pointnet_modeling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 6: Population Level Modeling (with PopNet)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Population Level Modeling (with PopNet)</span></li>
   </ul>
 </nav>
 </div>
@@ -432,8 +433,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Tutorial-6:-Population-Level-Modeling-(with-PopNet)">
-<h1>Tutorial 6: Population Level Modeling (with PopNet)<a class="headerlink" href="#Tutorial-6:-Population-Level-Modeling-(with-PopNet)" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Population-Level-Modeling-(with-PopNet)">
+<h1>Tutorial: Population Level Modeling (with PopNet)<a class="headerlink" href="#Tutorial:-Population-Level-Modeling-(with-PopNet)" title="Link to this heading">#</a></h1>
 <p>In this tutorial we will focus on modeling of populations and population firing rates. This is done with the PopNet simulator application of BMTK which uses the <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a> engine as a backend. We will first build our networks using the BMTK <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">NetworkBuilder</a> and save them into the <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master">SONATA data format</a>. Then we will show how to simulate the firing
 rates over a given interval.</p>
 <p>Requirements:</p>
@@ -447,11 +448,11 @@ rates over a given interval.</p>
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Link to this heading">#</a></h2>
 <section id="Option-1:-Converting-existing-networks">
 <h3>Option 1: Converting existing networks<a class="headerlink" href="#Option-1:-Converting-existing-networks" title="Link to this heading">#</a></h3>
-<p>Like BioNet for biophysically detailed modeling and PointNet with point-based networks, PopNet stores networks in the SONATA data format. PopNet supports simulating networks of individual cells at the population level. The first thing you have to do is modify the node-types and edge-types of an existing network to use Population level models (rather than models of individual cells).</p>
+<p>Like BioNet for biophysically detailed modeling and PointNet with point-based networks, PopNet works with networks in the SONATA data format. PopNet supports simulating networks of individual cells at the population level. The first thing you have to do is modify the node-types and edge-types of an existing network to use Population level models (rather than models of individual cells).</p>
 <div class="admonition warning">
 <p><strong>WARNING</strong> - Converting a network of individual nodes into population of nodes is good for a quick and naive simulation, but for faster and more reliable results it’s best to build a network from scratch (next section).</p>
 </div>
-<p>Here is the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_nodes">node-types csv file</a> of a network set to work with BioNet (for an example of the BioNet network, see <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_01_single_cell_clamped.html">tutorial 1</a>):</p>
+<p><a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_nodes">See the SONATA users guide for details</a> of a network set to work with BioNet (for an example of the BioNet network, see <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_03_single_pop.html">tutorial 3</a>):</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -647,12 +648,12 @@ rates over a given interval.</p>
 </div>
 <p>Some things to note:</p>
 <ul class="simple">
-<li><p><strong>model_type</strong> is now a population for all nodes, rather than individual biophysical/point types</p></li>
+<li><p>Each node in the network now corresponds to a a population rather than a cell, and therefore <strong>model_type</strong> is node “population”, rather than individual biophysical/point types</p></li>
 <li><p>We have set <strong>model_template</strong> to dipde:Internal which will tell the simulator to use special DiPDE model types</p></li>
 <li><p>We are using new <strong>dynamic_params</strong> files with parameters that have been adjusted to appropiate range for DiPDE models.</p></li>
 <li><p><strong>morophology_file</strong> and <strong>model_processing</strong>, which were used to set and processes individual cell morphologies, are no longer applicable.</p></li>
 </ul>
-<p>We must make similar adjustments to our <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_edges">edge_types.csv</a> files. Finally, when we run the simulation we must tell PopNet to cluster nodes together using the <strong>group_by</strong> property:</p>
+<p><a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#neuron_networks_edges">See SONATA specification for edges css files here</a>. Finally, when we run the simulation we must tell PopNet to cluster nodes together using the <strong>group_by</strong> property:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -817,7 +818,6 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 16:50:15,019 [WARNING] Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch06/output already exists.
 2022-08-09 16:50:15,020 [INFO] Created log file
 2022-08-09 16:50:15,054 [INFO] Building cells.
 2022-08-09 16:50:15,055 [INFO] Building recurrent connections

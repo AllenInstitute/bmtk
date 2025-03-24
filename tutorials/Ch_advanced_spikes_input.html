@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Advanced Methods for Driving your Network with Synapic Spike-trains &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Advanced Methods for Driving your Network with Synaptic Spike-trains &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -418,7 +419,7 @@
     
     <li class="breadcrumb-item"><a href="../ad_tutorials.html" class="nav-link">Additional Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Advanced Methods for Driving your Network with Synapic Spike-trains</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Advanced Methods for Driving your Network with Synaptic Spike-trains</span></li>
   </ul>
 </nav>
 </div>
@@ -435,17 +436,17 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Advanced-Methods-for-Driving-your-Network-with-Synapic-Spike-trains">
-<h1>Advanced Methods for Driving your Network with Synapic Spike-trains<a class="headerlink" href="#Advanced-Methods-for-Driving-your-Network-with-Synapic-Spike-trains" title="Link to this heading">#</a></h1>
+  <section id="Advanced-Methods-for-Driving-your-Network-with-Synaptic-Spike-trains">
+<h1>Advanced Methods for Driving your Network with Synaptic Spike-trains<a class="headerlink" href="#Advanced-Methods-for-Driving-your-Network-with-Synaptic-Spike-trains" title="Link to this heading">#</a></h1>
 <p>BMTK is designed to build and simulate large-scale, realistic models of the nervous system. Most of these realistic simulations require the ability to recreate the kinds of synaptic input you would expect to see in vivo. To achieve this, modelers need to be able to generate the relevant spike trains that drive the synaptic stimuli of our simulations.</p>
-<p>We have other tutorials demonstrating how to generate realistic stimuli using FilterNet. We have also shown how to use the BMTK SpikeTrain and PoissonSpikeTrain classes to generate input spike trains. In these cases, users must generate SONATA spike-train files before running their simulations. However, BMTK has additional methods for users to generate and import spike-train stimuli into their simulations. It includes using other formats besides SONATA, importing experimental data, and more
-fine-grained control of how and where cells within a network receive synaptic stimuli.</p>
+<p>We have other tutorials demonstrating how to generate realistic stimuli using <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_07_filter_models.html">FilterNet</a>. We have also shown how to use the <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_03_single_pop.html#Spike-Trains">BMTK SpikeTrain and PoissonSpikeTrain classes</a> to generate input spike trains. In these cases, users must generate SONATA spike-train files before running their simulations. However, BMTK has
+additional methods for users to generate and import spike-train stimuli into their simulations. It includes using other formats besides SONATA, importing experimental data, and more fine-grained control of how and where cells within a network receive synaptic stimuli.</p>
 <p>We will cover some of such methods in this tutorial.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/03_opt_advanced_spiking_inputs">03_opt_advanced_spiking_inputs/</a></p>
 <section id="1.-Example:-Using-spikes-from-CSV">
 <h2>1. Example: Using spikes from CSV<a class="headerlink" href="#1.-Example:-Using-spikes-from-CSV" title="Link to this heading">#</a></h2>
-<p>In <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">Tutorial 2</a>, we demonstrated how to generate network spikes using the BMTK’s built-in PoissonSpikeGenerator class, which will produce a series of spike trains using the distribution parameters/functions we give it and save it to a SONATA spikes file using to <code class="docutils literal notranslate"><span class="pre">to_sonata</span></code> method. But BMTK also allows input spikes to be saved and loaded using a simpler space-separated CSV file, which, in many cases,
-can be easier to analyze and use with other programs.</p>
+<p>In <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_02_single_cell_syn.html">Tutorial 2</a>, we demonstrated how to generate network spikes using the BMTK’s built-in PoissonSpikeGenerator class, which will produce a series of spike trains using the distribution parameters/functions we give it and save it to a SONATA spikes file using to <code class="docutils literal notranslate"><span class="pre">to_sonata</span></code> method. But BMTK also allows input spikes to be saved and loaded using a simpler space-separated CSV file, which, in many cases, can be
+easier to analyze and use with other programs.</p>
 <p>For example, in the <strong>network_simple_spikes/</strong> folder (built using <code class="docutils literal notranslate"><span class="pre">build_network.simple_spikes.py</span></code>), we have a set of 10 virtual nodes that synaptically drive our simulation. If we want each one to fire at a constant 10Hz firing rate over a 5-second interval, we can use PoissonSpikeGenerator’s <code class="docutils literal notranslate"><span class="pre">to_csv()</span></code> class to save the spikes as a CSV file.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -603,7 +604,7 @@ Max spike-time: 4998.560456807771 ms
 <img alt="../_images/tutorials_Ch_advanced_spikes_input_11_0.png" src="../_images/tutorials_Ch_advanced_spikes_input_11_0.png" />
 </div>
 </div>
-<p><strong>Remember</strong>: Biophysical models contain customized ion channels that require compiling using the <code class="docutils literal notranslate"><span class="pre">nrnivmod</span></code> command before running Bionet (see <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb">Tutorial 1</a> for more details). Ion channels are stored in the <strong>components/mechanisms/mod/</strong> folder. In a shell or using Jupyter notebook, you’ll need to run the following:</p>
+<p><strong>Remember</strong>: Biophysical models contain customized ion channels that require compiling using the <code class="docutils literal notranslate"><span class="pre">nrnivmod</span></code> command before running Bionet (see <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_01_single_cell_clamped.html">Tutorial 1</a> for more details). Ion channels are stored in the <strong>components/mechanisms/mod/</strong> folder. In a shell or using Jupyter notebook, you’ll need to run the following:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -821,7 +822,7 @@ potentially creating thousands of spike files beforehand may not be reasonable.<
 
 <span class="nd">@spikes_generator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_spikes_generator</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generating custom spike trains for </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">population_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generating custom spike trains for node </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">population_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tON&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tOFF&#39;</span><span class="p">:</span>
@@ -919,15 +920,15 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div></div>
 </div>
 </section>
-<section id="3.-Example:-Incorporating-real-data-with-NWB">
-<h2>3. Example: Incorporating real data with NWB<a class="headerlink" href="#3.-Example:-Incorporating-real-data-with-NWB" title="Link to this heading">#</a></h2>
-<p>You can use tools like FilterNet or PoissonSpikeGenerator to create theoretical-to-realistic synaptic stimuli onto a network from various modes. But better yet, when actual experimental data is available, it is often possible to just use that. Especially as more and more experimental electrophysiological data sets are being made publically available through resources like <a class="reference external" href="https://dandiarchive.org/">DANDI</a> or <a class="reference external" href="https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels">The Allen Brain
-Observatory</a>, we will want not only to use such data as a base-line for validating and comparing our models but to actually use the data within specific simulations. For example, when modeling a network of one population and/or region, we will want to use recordings of surrounding cells to help excite and inhibit our cells more realistically.</p>
-<p>Traditionally a major issue with using encorporating experimental ephys data into simulations is trying to parse the wide variety of different ways the data was stored. Luckily, the <a class="reference external" href="https://www.nwb.org/">Neurodata Without Borders (NWB)</a> has developed a field-adopted format for storing experimental data. BMTK can take these files and automatically insert them into simulations.</p>
-<p>In this example, we will take the previous model of the Mouse Primary Visual Cortex and add inputs that we know come from higher cortical regions (in this case, just the VisL and Hippocampal regions) along with the input from the LGN. For these added regions, we will use actual neuropixel recordings of activity from the region during drifting gratings.</p>
+<section id="3.-Example:-Incorporating-real-data-from-NWB-files">
+<h2>3. Example: Incorporating real data from NWB files<a class="headerlink" href="#3.-Example:-Incorporating-real-data-from-NWB-files" title="Link to this heading">#</a></h2>
+<p>You can use tools like FilterNet or PoissonSpikeGenerator to create theoretical-to-realistic synaptic stimuli onto a network from various modes. But better yet, when actual experimental data is available, it is often possible to use just that. Especially as more and more experimental electrophysiological data sets are being made publicly available through resources like <a class="reference external" href="https://dandiarchive.org/">DANDI</a> or <a class="reference external" href="https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels">The Allen Brain
+Observatory</a>, we will want not only to use such data as a base-line for validating our models and comparing them to experiments, but also to use the data within specific simulations. For example, when modeling a network of one population and/or region, we will want to use recordings of surrounding cells to help excite and inhibit our cells more realistically.</p>
+<p>Traditionally a major issue with encorporating experimental electrophysiology data into simulations is trying to parse the wide variety of different ways the data was stored. Luckily, the <a class="reference external" href="https://www.nwb.org/">Neurodata Without Borders (NWB)</a> has developed a format for storing experimental data, which has seen a substantial amount of adoption in the field. BMTK can take these files and automatically insert them into simulations.</p>
+<p>In this example, we will take the previous model of the Mouse Primary Visual Cortex and add inputs that we know come from higher cortical regions (in this case, just the VisL and subcortical regions) along with the input from the LGN. For these added regions, we will use actual Neuropixels recordings of activity from these regions during presentation of drifting gratings.</p>
 <section id="Step-1:-Download-the-data">
 <h3>Step 1: Download the data<a class="headerlink" href="#Step-1:-Download-the-data" title="Link to this heading">#</a></h3>
-<p>The first step is to find experimental NWB that includes spiking events. For our example, we will use data from Allen Institute Visual Coding Data downloaded using the AllenSDK. We will get three experimental sessions that we know contain recordings of the VisL and hippocampus.</p>
+<p>The first step is to find experimental NWB that includes spiking events. For our example, we will use data from <a class="reference external" href="https://observatory.brain-map.org/visualcoding/">Allen Institute Visual Coding dataset</a> downloaded using the AllenSDK. We will get three experimental sessions that we know contain recordings of the VisL and hippocampus.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -1015,8 +1016,8 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 </div>
 <p>By default, the NWB files will be downloaded into the <em>ecephys_cache_dir</em>. Since nwb files are essentially just structured HDF5 files, you can use tools like <a class="reference external" href="https://www.hdfgroup.org/downloads/hdfview/">HDFView</a> or <a class="reference external" href="https://www.h5py.org/">h5py</a> to read them once they have been downloaded.</p>
 </section>
-<section id="Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells.">
-<h3>Step 2: Connecting VISL and Hippocampal onto our V1 cells.<a class="headerlink" href="#Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells." title="Link to this heading">#</a></h3>
+<section id="Step-2:-Connecting-VISL-and-sub-cortical-area-onto-our-V1-cells.">
+<h3>Step 2: Connecting VISL and sub-cortical area onto our V1 cells.<a class="headerlink" href="#Step-2:-Connecting-VISL-and-sub-cortical-area-onto-our-V1-cells." title="Link to this heading">#</a></h3>
 <p>To simulate synaptic stimulation from the VisL and Hippocampal cell recordings onto our V1 model, we will need to create a population of virtual cells representing the new cells and synapses. Unfortunately, the electrophysiology data doesn’t include information about network geometry, so it is up to the modeler to decide how to connect the experimental data to our network.</p>
 <p>As we did before, we will separate node populations called ‘VISl’ and ‘Hippocampus’ and use the NetworkBuilder to create feedforward synaptic connections.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">visl</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;VISl&#39;</span><span class="p">)</span>
@@ -1043,7 +1044,7 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <ol class="arabic simple">
 <li><p>Knows which .nwb files to fetch spiking data from.</p></li>
 <li><p>Knows how to map cells (e.g., NWB units) from our experimental data to cells (e.g., SONATA nodes) in our ‘VISl’ and ‘hippocampus’ populations.</p></li>
-<li><p>Know which interval of the experimental data to use in our simulation.</p></li>
+<li><p>Know which time interval in the experimental data to use in our simulation.</p></li>
 </ol>
 <p>The most straightforward way of doing this is to add the following to our configuration file (<em>config.nwb_inputs.json</em>) in the “inputs” section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1095,7 +1096,7 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 </div>
 <ul class="simple">
 <li><p>The <strong>units</strong> field tells us which units from the nwb file to take their spiking data from based on specific keywords and/or unit-id. In the Neuropixels NWB files, each unit has a field called “location” to determine which region the data came from, which we can use here to tell that our model’s “hippocampus” cells use any data coming from either the CA1, CA3 or Po regions.</p></li>
-<li><p><strong>mapping</strong> tells how to map NWB <strong>units</strong> -&gt; SONATA <strong>node_set</strong>. Setting the value to <code class="docutils literal notranslate"><span class="pre">sample</span></code> to do a random mapping without replacement. You can also use option <code class="docutils literal notranslate"><span class="pre">sample_with_replacment</span></code>, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option <code class="docutils literal notranslate"><span class="pre">units_map</span></code> (in which case <strong>units</strong> will point to a CSV file).</p></li>
+<li><p><strong>mapping</strong> tells how to map NWB <strong>units</strong> -&gt; SONATA <strong>node_set</strong>. Setting the value to <code class="docutils literal notranslate"><span class="pre">sample</span></code> will result in a random mapping without replacement. You can also use option <code class="docutils literal notranslate"><span class="pre">sample_with_replacement</span></code>, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option <code class="docutils literal notranslate"><span class="pre">units_map</span></code> (in which case <strong>units</strong> will point to a CSV file).</p></li>
 <li><p><strong>interval</strong> tells the simulation which time interval to fetch spikes from. Inside the NWB file, there is a stimulus table that marks the stimuli at any given epoch. We use this table to get only spikes recorded in which a “drifting grating” stimulus was present with a given orientation and frequency. You can also use the following option if you know the specific time.</p></li>
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;start_time_ms&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;end_time_ms&quot;</span><span class="p">]</span>
@@ -1189,7 +1190,7 @@ Warning: no DISPLAY environment variable.
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>precell_filter</strong> determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK sponataneous activity to apply on to synapses with a source-cell that has attributes <code class="docutils literal notranslate"><span class="pre">population==VISp</span></code> and <code class="docutils literal notranslate"><span class="pre">ei==e</span></code>. If you know exactly which cells you want to use, you can filter by <code class="docutils literal notranslate"><span class="pre">node_id</span></code>:</p></li>
+<li><p><strong>precell_filter</strong> determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK spontaneous activity to apply to synapses with a source-cell that has attributes <code class="docutils literal notranslate"><span class="pre">population==VISp</span></code> and <code class="docutils literal notranslate"><span class="pre">ei==e</span></code>. If you know exactly which cells you want to use, you can filter by <code class="docutils literal notranslate"><span class="pre">node_id</span></code>:</p></li>
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
 </pre></div>
@@ -1287,9 +1288,9 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Example:-Dynamically-generating-custom-spike-trains">2. Example: Dynamically generating custom spike-trains</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Example:-Incorporating-real-data-with-NWB">3. Example: Incorporating real data with NWB</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Example:-Incorporating-real-data-from-NWB-files">3. Example: Incorporating real data from NWB files</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-1:-Download-the-data">Step 1: Download the data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Connecting-VISL-and-Hippocampal-onto-our-V1-cells.">Step 2: Connecting VISL and Hippocampal onto our V1 cells.</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-2:-Connecting-VISL-and-sub-cortical-area-onto-our-V1-cells.">Step 2: Connecting VISL and sub-cortical area onto our V1 cells.</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Step-3:-Updating-the-configuration-file-to-include-NWB-data.">Step 3: Updating the configuration file to include NWB data.</a></li>
 </ul>
 </li>

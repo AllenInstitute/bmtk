@@ -371,7 +371,8 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -438,14 +439,13 @@
   <section id="Tools-for-Modeling:-The-Brain-Modeling-Toolkit-and-SONATA-data-format">
 <h1>Tools for Modeling: The Brain Modeling Toolkit and SONATA data format<a class="headerlink" href="#Tools-for-Modeling:-The-Brain-Modeling-Toolkit-and-SONATA-data-format" title="Link to this heading">#</a></h1>
 <p>source: <a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/modeling_tut_2021">AllenInstitute/bmtk</a></p>
-<p>This tutorial will show how to build and simulate a toy model of the mouse V1 cortical area network using the Brain Modeling Toolkit (BMTK) <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386">[Dai et al., PLOS Comp. Bio., 2020]</a>. Including how to modify and simulate larger more realistic visual cortical models released by the Allen Institute <a class="reference external" href="https://www.cell.com/neuron/pdf/S0896-6273(20)30067-2.pdf">[Billeh et al., Neuron, 2020]</a>. The tutorial will also
+<p>This tutorial will show how to build and simulate a toy model of the mouse V1 cortical area network using the Brain Modeling Toolkit (BMTK) <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386">[Dai et al., PLOS Comp. Bio., 2020]</a>, including how to modify and simulate larger more realistic visual cortical models released by the Allen Institute <a class="reference external" href="https://www.cell.com/neuron/pdf/S0896-6273(20)30067-2.pdf">[Billeh et al., Neuron, 2020]</a>. The tutorial will also
 briefly explain the SONATA data format <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007696">[Dai et al., PLOS Comp. Bio., 2020]</a> and how the BMTK uses the format to describe network models, simulations and results.</p>
-<p>In this tutorial we will show how to build and simulate a a modistly sized toy network based on the Mouse Primary Visual Cortex (V1) for Layer 4 (which is the primary layer of the L4 for receiving thamalic stimulus). The L4 model <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006535">[Arkhipov et al., PLOS Comp. Bio., 2018]</a>, further described <a class="reference external" href="https://portal.brain-map.org/explore/models/l4-mv1">here</a>, will have a full model that contains 45,000+ cells and
-millions of connections:</p>
+<p>In this tutorial we will show how to build and simulate a modestly sized toy network based on the layer 4 of the mouse primary Visual cortex (V1) (which is the primary layer of the V1 for receiving thalamic stimulus). The L4 model <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006535">[Arkhipov et al., PLOS Comp. Bio., 2018]</a>, further described <a class="reference external" href="https://portal.brain-map.org/explore/models/l4-mv1">here</a>, contains 45,000+ cells and millions of connections:</p>
 <p><img alt="Drawing" src="../_images/layer4_side_view.png" /> <img alt="Drawing" src="../_images/layer4_angled_view.png" /></p>
-<p>Building and running the actual L4 model can take many hours and will require access to HPC resources. The toy model we will build and simulate will have only 300 cells to allow us to build and simulate the model in a few minutes for most desktop and laptop machines.</p>
-<p>For more information about cortical modeling and simulation at the Allen Institute: <a class="reference external" href="https://portal.brain-map.org/explore/models">https://portal.brain-map.org/explore/models</a></p>
-<p>For more information and tutorials on using the BMTK: <a class="reference external" href="https://alleninstitute.github.io/bmtk">https://alleninstitute.github.io/bmtk</a></p>
+<p>Building and running the actual L4 model can take many hours and will require access to high-performance computing (HPC) resources. The toy model we will build and simulate will have only 300 cells to allow us to build and simulate the model in a few minutes for most desktop and laptop machines.</p>
+<p>For more information about cortical modeling and simulation at the Allen Institute: see: <a class="reference external" href="https://portal.brain-map.org/explore/models">https://portal.brain-map.org/explore/models</a></p>
+<p>For more information and tutorials on using the BMTK: see: <a class="reference external" href="https://alleninstitute.github.io/bmtk">https://alleninstitute.github.io/bmtk</a></p>
 <section id="Installing-BMTK">
 <h2>Installing BMTK<a class="headerlink" href="#Installing-BMTK" title="Link to this heading">#</a></h2>
 <p><a class="reference external" href="https://alleninstitute.github.io/bmtk/installation.html">[https://alleninstitute.github.io/bmtk/installation.html]</a></p>
@@ -486,11 +486,11 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 </section>
 <section id="Building-the-Network">
 <h2>Building the Network<a class="headerlink" href="#Building-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="9da8f844a6ac40e2b4741f9a47c4c2c6" src="../_images/bmtk_workflow_builder.png" /></p>
+<p><img alt="7f19c6d52fa54ec488590dca2f9c7345" src="../_images/bmtk_workflow_builder.png" /></p>
 <p>Before we can start simulation we must first build (or receive from a third party) the network model files. To create our toy network of 300 cells in BMTK we will use the <em>builder</em> component, which allows us to build heterogeneous, multi-graph networks and save them in the SONATA format.</p>
 <section id="Building-the-cells">
 <h3>Building the cells<a class="headerlink" href="#Building-the-cells" title="Link to this heading">#</a></h3>
-<p><img alt="afe0a6ff55fe425a9b714195305a2b60" src="../_images/builder_add_nodes.png" /></p>
+<p><img alt="1f1c8ecc61dc4a8788710982ce9dd6e8" src="../_images/builder_add_nodes.png" /></p>
 <p>The first step is figuring out different cell types and parameters we want to use in our network. When we know that we can begin building our network model first by initializing the network using <em>bmtk.builder.networks.NetworkBuilder</em> plus calls to <em>add_nodes()</em> method</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -536,10 +536,10 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 <p>The above call to add_nodes() will add <strong>N=80</strong> different individual cells to our network.</p>
 <p>The attributes <strong>model_type</strong>, <strong>model_template</strong>, <strong>dynamics_params</strong>, <strong>model_processing</strong> and <strong>morphology</strong> are SONATA reserved keywords that will instruct BMTK (or other SONATA compliant tools) how to build cell models during the simulation. In this model we are using biophysically realistic models, with dynamical parameters (.json) and morphology (.swc) that we can download from the <a class="reference external" href="https://celltypes.brain-map.org/data">Allen Cell Types Database</a>. We have already downloaded the
 required json and swc files and have saved them under <em>components/biophysical_neuron_templates</em> and <em>components/morphologies/</em>, respectively.</p>
-<p>Attributes <strong>x</strong>, <strong>y</strong>, <strong>z</strong> are used as the euclidian locations of the cells, while the <strong>rotation_angle</strong> parameters are used to orientat to rotations of cells. Note that for the x and y rotations we are passing in an array of size N, but the z rotation is defined by a scalar. SONATA and the BMTK Network Builder allows us to differentiate between attributes that are unique to each cell versus shared attributes. Each of the 80 cells will have unique x and y rotations, but share the same
-pre-calculated z rotatation</p>
-<p>The final remaining attributes are not reserved SONATA keywords, but rather optional attributes that will be helpful during analysis. The <strong>tuning_angle</strong> property (how well a cell is tuned for different stimulus grating) is an attribute shown is excitatory cells of the visual cortex and thus wouldn’t be applicable to other models or even non-exciatory cells-types</p>
-<p>We now can ad other cell-types to our model, including inhibitory PV (parvalbumin) cells, with future calls to <strong>add_nodes</strong>:</p>
+<p>Attributes <strong>x</strong>, <strong>y</strong>, <strong>z</strong> are used as the euclidian locations of the cells, while the <strong>rotation_angle</strong> parameters are used to orentate the cells. Note that for the x and y rotations we are passing in an array of size N, but the z rotation is defined by a scalar. SONATA and the BMTK Network Builder allows us to differentiate between attributes that are unique to each cell versus shared attributes. Each of the 80 cells will have unique x and y rotations, but share the same pre-calculated z
+rotation.</p>
+<p>The final remaining attributes are not reserved SONATA keywords, but rather optional attributes that will be helpful during analysis. The <strong>tuning_angle</strong> property (the angle in the visual space that a given cell is intended to prefer with respect to its visual responses) is an attribute that in this model is set for excitatory but not inhibitory cells. It wouldn’t be applicable to many other models, especially those that do not have anything to do with the visual system.</p>
+<p>We now can ad other cell-types to our model, including inhibitory PV (parvalbumin) cells, with more calls to <strong>add_nodes</strong>:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -600,7 +600,7 @@ pre-calculated z rotatation</p>
 </section>
 <section id="Creating-the-connections">
 <h3>Creating the connections<a class="headerlink" href="#Creating-the-connections" title="Link to this heading">#</a></h3>
-<p><img alt="30564221803d4b55bd34d7953c20ba73" src="../_images/builder_add_edges.png" /></p>
+<p><img alt="cf37b6df806d475da9283eeaf4c0b9d1" src="../_images/builder_add_edges.png" /></p>
 <p>Now that we have our cells/nodes, we can go ahead and create the synapse/connectivity matrix using the <strong>add_edges</strong> method. We will want to call this method multiple times to add different connection types with different properties and rules. For each connection type we must select what subpopulation of cells to use for the source (pre-synaptic) and target (post-synaptic) cells. We can select our cells using any combination of attributes</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -695,7 +695,7 @@ pre-calculated z rotatation</p>
 &lt;bmtk.builder.connection_map.ConnectionMap at 0x7fee6d903be0&gt;
 </pre></div></div>
 </div>
-<p>For Exc –&gt; Exc we want to test an theory that cells with closer <strong>tuning_angle</strong> are more likely to be connected with each other:</p>
+<p>For Exc –&gt; Exc we want to implement the connection patterns in which cells with more similar <strong>tuning_angle</strong> are more likely to be connected with each other:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -745,7 +745,7 @@ pre-calculated z rotatation</p>
 </section>
 <section id="Building-the-network">
 <h3>Building the network<a class="headerlink" href="#Building-the-network" title="Link to this heading">#</a></h3>
-<p><img alt="334a479f415544768ab895ee0586a859" src="../_images/builder_complete_network.png" /></p>
+<p><img alt="ab2b6ff832dc49819f9e419c52cab57c" src="../_images/builder_complete_network.png" /></p>
 <p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -827,8 +827,7 @@ pre-calculated z rotatation</p>
 </section>
 <section id="Simulating-the-Network">
 <h2>Simulating the Network<a class="headerlink" href="#Simulating-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="07cb268695e64a549776c6bb3483d62e" src="../_images/bmtk_workflow_simulator.png" /></p>
-<p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
+<p><img alt="75b8e31bd8e544eab70ded6995b069af" src="../_images/bmtk_workflow_simulator.png" /></p>
 <p>Now that we have built the SONATA network models files (or recieved the files from another source), we can go ahead and setup a simulation to run. To simulate the multi-compartment cell models we will use the BioNet component of the BMTK - which uses the <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON</a> simulator libraries for simulating our network.</p>
 <p>Before we can do that there are still a few things that need to be taken care of, including setting up run-time parameters, choosing the stimulus, and deciding what to record.</p>
 <section id="Simulation-Directory-Structure">
@@ -864,7 +863,7 @@ pre-calculated z rotatation</p>
 </section>
 <section id="%22reports%22">
 <h4>“reports”<a class="headerlink" href="#%22reports%22" title="Link to this heading">#</a></h4>
-<p>By default BMTK will record the V1 cell spikes into a file specified under <strong>outputs/spikes_file</strong>. For these types of models we can also record other parameters like membrane potential, calcium fluxuation, or extracellular electrical fields by adding to the “reports” section of the configuration file.</p>
+<p>By default BMTK will record the V1 cell spikes into a file specified under <strong>outputs/spikes_file</strong>. For these types of models we can also record other parameters like membrane potential, calcium concentration, or extracellular electrical fields by adding to the “reports” section of the configuration file.</p>
 <p>For example the following can be used to record the soma membrane potential traces for our Scnn1a cells and save them in <em>output/membrane_potential.h5</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -882,7 +881,7 @@ pre-calculated z rotatation</p>
 <h4>“inputs”<a class="headerlink" href="#%22inputs%22" title="Link to this heading">#</a></h4>
 <p>This section can be used to specify one or more stimulus we want to use on our V1 model. Depending on the type of cell models being used, we can use spike trains, current clamps, voltage clamps, or extracellular electrodes.</p>
 <p>For our V1 network we created a population of LGN “virtual” cells that synapse onto our V1 cells and drive them with spike trains. All that is missing is a “spike-trains” file, which can be either a CSV, NWB, or SONATA HDF5 file. BMTK includes way to create spike-train files.</p>
-<p>The following will create a series of spike trains for the LGN cells using a Poisson distrubtion of 8 Hz:</p>
+<p>The following will create a series of spike trains for the LGN cells using a Poisson distribution with a mean firing rate of 8 Hz:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -919,7 +918,7 @@ pre-calculated z rotatation</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>run_bionet.py<span class="w"> </span>config.bionet.json
 </pre></div>
 </div>
-<p>Although this toy network is small enough to run most modern computers and laptops, for larger networks we may need to run the program on a cluster with cores. To do so</p>
+<p>Although this toy network is small enough to run most modern computers and laptops, for larger networks we may need to run the program on a cluster with &lt;N&gt; cores. To do so</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mpirun<span class="w"> </span>-np<span class="w"> </span>&lt;N&gt;<span class="w"> </span>nrniv<span class="w"> </span>-mpi<span class="w"> </span>-python<span class="w"> </span>run_bionet.py<span class="w"> </span>config.bionet.json
 </pre></div>
 </div>
@@ -982,7 +981,7 @@ pre-calculated z rotatation</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="c1"># Plot the membrane potential trace</span>
+<span class="c1"># Plot the membrane potential trace, the blue represents the mean trace of all cells (in grey)</span>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -996,7 +995,7 @@ pre-calculated z rotatation</p>
 </div>
 <section id="Cell-perturbations">
 <h4>Cell perturbations<a class="headerlink" href="#Cell-perturbations" title="Link to this heading">#</a></h4>
-<p>A usefull tool in network neuroscience is the ability to stimuluate or depress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on a multiple neurons by adding the following to the “inputs” section of the configuration file:</p>
+<p>A usefull tool in network neuroscience is the ability to stimulate or supress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on multiple neurons by adding the following to the “inputs” section of the configuration file:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
@@ -1071,8 +1070,8 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 </div>
 </section>
-<section id="Recording-ECP">
-<h4>Recording ECP<a class="headerlink" href="#Recording-ECP" title="Link to this heading">#</a></h4>
+<section id="Recording-extracellular-potential-(ECP)">
+<h4>Recording extracellular potential (ECP)<a class="headerlink" href="#Recording-extracellular-potential-(ECP)" title="Link to this heading">#</a></h4>
 <p>The configuration has been set-up to record spike-trains and the membrane potentials of a subset of cells. BioNet also includes the ability to record the extracelluar potential using a simulated electrode, which will allow us to find the ECP and even the local field potential.</p>
 <p>First we must add the following to the “inputs” section</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1091,7 +1090,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div>
 </div>
 <p>The <em>devices/linear_electrode.csv</em> file is what we use to specify the electrode and all the recording channels. for this simulation the electrode will be placed through the center of the V1 column with recording channels at every 100 microns (the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> coordinates of the electrode should be in the same space as the cells).</p>
-<p><img alt="d6a77dc7bdc94be2a4f9ba3bd4f48c2c" src="../_images/v1_neuropixel_probe.png" /></p>
+<p><img alt="189657d1effa410491532fbb404aca15" src="../_images/v1_neuropixel_probe.png" /></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>channel</p></th>
@@ -1216,8 +1215,8 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </section>
 <section id="Adjusting-the-synaptic-weights">
 <h4>Adjusting the synaptic weights<a class="headerlink" href="#Adjusting-the-synaptic-weights" title="Link to this heading">#</a></h4>
-<p>Currently the synaptic weights, eg <strong>syn_weight</strong> property, are set to the same for each edge-type. There are multiple ways to make it so the synaptic weights are nonhomogenous. We can calculate and store nonhomogeneous synaptic weights inside the SONATA edges files. Or we can adjust the weights before each simulation - which is a bit less efficent but will give us greater flexiblity as we try to optimize the weights.</p>
-<p>for Exc –&gt; Exc edges we had a BMTK special keyword <strong>weight_function</strong>=’set_syn_weight’, which allows us to create user-defined functions to adjust the synaptic weights during the initialization of the simulation. BMTK will look for a function with with signature</p>
+<p>Currently the synaptic weights, eg <strong>syn_weight</strong> property, are set to the same value for each edge-type. There are multiple ways to make it so the synaptic weights are nonhomogenous. We can calculate and store nonhomogenous synaptic weights inside the SONATA edges files. Or we can adjust the weights before each simulation - which is a bit less efficent but will give us greater flexiblity as we try to optimize the weights.</p>
+<p>for Exc –&gt; Exc edges we had a BMTK special keyword <strong>weight_function</strong>=’set_syn_weight’, which allows us to create user-defined functions to adjust the synaptic weights during the initialization of the simulation. BMTK will look for a function with signature</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="o">&lt;</span><span class="n">function_name</span><span class="o">&gt;</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1349,7 +1348,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="id4">
 <h4>“inputs”<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
 <p>The “inputs” section of the configuration file determines which type of stimulus we want to project onto LGN cells. Although we can use any user-created movie (described below), FilterNet also comes with options for easily creating special stimulus types that are common in experiments testing the visual system.</p>
-<p>One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 to 1500 ms seconds</p>
+<p>One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 and 1500 ms seconds</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
@@ -1358,7 +1357,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1457,7 +1456,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="More-Stimulus-Types">
 <h3>More Stimulus Types<a class="headerlink" href="#More-Stimulus-Types" title="Link to this heading">#</a></h3>
 <p>Besides Full-Field Flashes, FilterNet also can generate other types of pre-set visual stimuli. However for more advanced stimuli one will have to create their own movies.</p>
-<p>To do so first you will need to create a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.save.html">numpy npy or npz file</a> - eg a 3-dimensional matrix consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the “inputs” section accordingly (make sure frame_rate is correct).</p>
+<p>To do so first you will need to create a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.save.html">numpy npy or npz file</a> - eg a 3-dimensional array consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the “inputs” section accordingly (make sure frame_rate is correct).</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
@@ -1470,17 +1469,17 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 </section>
 </section>
-<section id="Simulating-across-different-levels-of-Resultion">
-<h2>Simulating across different levels of Resultion<a class="headerlink" href="#Simulating-across-different-levels-of-Resultion" title="Link to this heading">#</a></h2>
+<section id="Simulating-across-different-levels-of-resolutions">
+<h2>Simulating across different levels of resolutions<a class="headerlink" href="#Simulating-across-different-levels-of-resolutions" title="Link to this heading">#</a></h2>
 <p>So far we’ve been running a simulation using multi-compartment models of cells using the BioNet component of the BMTK. Often in modeling we want to test different types of models, for both computational and scientific reasons.</p>
 <section id="Point-neuron-models">
 <h3>Point-neuron models<a class="headerlink" href="#Point-neuron-models" title="Link to this heading">#</a></h3>
 <p>With PointNet, we can run our network using point-neuron based models using the <a class="reference external" href="https://www.nest-simulator.org/">NEST</a> simulator libraries. PointNet will also use the same SONATA network files and configuration format for describing a network and initializing a simulation, so we can compare the same network across different levels of resolution. However certain properties, like <strong>syn_weight</strong>, <strong>model_template</strong>, and <strong>dynamics_params</strong> will need to be adjusted. For more information see the
-<a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_pointnet_modeling.html">PointNet tutorial</a>.</p>
+<a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_05_pointnet_modeling.html">PointNet tutorial</a>.</p>
 </section>
 <section id="Population-based-firing-rate-models">
 <h3>Population based firing rate models<a class="headerlink" href="#Population-based-firing-rate-models" title="Link to this heading">#</a></h3>
-<p>With PopNet we can simulate the different cell-types as singular populations using the <a class="reference external" href="http://alleninstitute.github.io/dipde/">DipDE</a> simulator. Just like BioNet and PointNet it utilizes the SONATA formats. However instead of recording spike-trains for individual cells, PopNet will record the firing-rate dynamics over the course of the simulation. For more information see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorial_population_modeling.html">PopNet tutorial</a>.</p>
+<p>With PopNet we can simulate the different cell-types as singular populations using the <a class="reference external" href="http://alleninstitute.github.io/dipde/">DipDE</a> simulator. Just like BioNet and PointNet it utilizes the SONATA formats. However instead of recording spike-trains for individual cells, PopNet will record the firing-rate dynamics over the course of the simulation. For more information see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/tutorials/tutorial_06_population_modeling.html">PopNet tutorial</a>.</p>
 </section>
 </section>
 <section id="Additional-Resources">
@@ -1500,7 +1499,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="Examples">
 <h3>Examples<a class="headerlink" href="#Examples" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p><a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples">AllenInstitute/bmtk</a></p></li>
+<li><p><a class="github reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">AllenInstitute/bmtk</a></p></li>
 </ul>
 </section>
 <section id="Mouse-Layer-4-Model">
@@ -1574,7 +1573,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-the-simulation">Running the simulation</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Cell-perturbations">Cell perturbations</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Recording-ECP">Recording ECP</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Recording-extracellular-potential-(ECP)">Recording extracellular potential (ECP)</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Adjusting-the-synaptic-weights">Adjusting the synaptic weights</a></li>
 </ul>
 </li>
@@ -1594,7 +1593,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#More-Stimulus-Types">More Stimulus Types</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulating-across-different-levels-of-Resultion">Simulating across different levels of Resultion</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Simulating-across-different-levels-of-resolutions">Simulating across different levels of resolutions</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Point-neuron-models">Point-neuron models</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Population-based-firing-rate-models">Population based firing rate models</a></li>
 </ul>

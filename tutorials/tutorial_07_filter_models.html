@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial 7: Modeling the Visual Field (with FilterNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Modeling the Visual Field (with FilterNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_07_filter_models';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Chapter 8: Auditory Stimuli Inputs using FilterNet" href="auditory_filternet.html" />
-    <link rel="prev" title="Tutorial 6: Population Level Modeling (with PopNet)" href="tutorial_06_population_modeling.html" />
+    <link rel="next" title="Tutorial: Auditory Stimuli Inputs using FilterNet" href="auditory_filternet.html" />
+    <link rel="prev" title="Tutorial: Population Level Modeling (with PopNet)" href="tutorial_06_population_modeling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 7: Modeling the Visual Field (with FilterNet)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Modeling the Visual Field (with FilterNet)</span></li>
   </ul>
 </nav>
 </div>
@@ -432,14 +433,14 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Tutorial-7:-Modeling-the-Visual-Field-(with-FilterNet)">
-<h1>Tutorial 7: Modeling the Visual Field (with FilterNet)<a class="headerlink" href="#Tutorial-7:-Modeling-the-Visual-Field-(with-FilterNet)" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Modeling-the-Visual-Field-(with-FilterNet)">
+<h1>Tutorial: Modeling the Visual Field (with FilterNet)<a class="headerlink" href="#Tutorial:-Modeling-the-Visual-Field-(with-FilterNet)" title="Link to this heading">#</a></h1>
 <p>FilterNet is a part of the BMTK that simulates the effects of visual input onto cells in the LGN. It uses LGNModel as a backend, which uses neural-filters to simulate firing rates and spike-trains one may expect given a stimulus on (especially mouse) visual field. FilterNet supports a number of visual stimuli including static-gratings, moving-grating, full-field flashes, static images and even movies.</p>
-<p>Filternet uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson (lnp) model</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
+<p>Filternet employs a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson (lnp) model</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
 <img alt="FilterNet LNP" src="../_images/bmtk_lnp.png" />
 <section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Link to this heading">#</a></h2>
-<p>FilterNet is modeled on the mammalian LGN and expects a two-dimensional network of cells that can be mapped onto the receptive field. The default parameters of the filters are based on experimental recordings from the mouse LGN [Durant et. al, 2016, Billeh et. al, 2019] As our starting case we will have a simple network of 20 ON cells and 20 OFF cells with coordinates that correspond to the 240x120 movie we will be playing against it.</p>
+<p>FilterNet is modeled on the mammalian LGN and expects a two-dimensional network of cells that can be mapped onto the visual field. The default parameters of the filters are based on experimental recordings from the mouse LGN [<a class="reference external" href="https://doi.org/10.1523/JNEUROSCI.1741-16.2016">Durant et. al, 2016</a>, Billeh et. al, 2019] As our starting case we will have a simple network of 20 ON cells and 20 OFF cells with coordinates that correspond to the 240x120 movie we will be playing against it.</p>
 <section id="Set-nodes">
 <h3>Set nodes<a class="headerlink" href="#Set-nodes" title="Link to this heading">#</a></h3>
 <p>See <a class="reference internal" href="tutorial_02_single_cell_syn.html"><span class="doc">tutorial 2</span></a> and <a class="reference internal" href="tutorial_03_single_pop.html"><span class="doc">tutorial 3</span></a> for more details about .add_nodes() parameters.</p>
@@ -481,11 +482,11 @@
 </div>
 </section>
 </section>
-<section id="2.-Setup-the-simulation-enviornment">
-<h2>2. Setup the simulation enviornment<a class="headerlink" href="#2.-Setup-the-simulation-enviornment" title="Link to this heading">#</a></h2>
+<section id="2.-Setup-the-simulation-environment">
+<h2>2. Setup the simulation environment<a class="headerlink" href="#2.-Setup-the-simulation-environment" title="Link to this heading">#</a></h2>
 <p>The following will create the necessary python and configuration files to run a simulation, all placed in the <strong>sim_ch07</strong> directory.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_filternet</span>
@@ -498,18 +499,8 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-</pre></div></div>
-</div>
 <p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
-<p>By default the config file does not contain any stimulus so the firing rate will simply be at the baseline firing rate. To change this and play a certain type of movie/stimulus, which here we’ll use a movie with a bright flash full-screen for an extend period of time. To do so open up simulation_config.json and add the following inputs section:</p>
+<p>By default the config file does not contain any stimulus so the network will simply be active at the baseline firing rate. We will change this and play a certain type of movie/stimulus. Here we will use a movie with a bright full-screen flash for an extended period of time. To do so open up simulation_config.json and add the following inputs section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -558,7 +549,7 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2023-02-10 13:38:44,402 [WARNING] Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/output already exists.
+2023-02-10 13:38:44,402 [WARNING] Directory tutorial/sim_ch07/output already exists.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -566,7 +557,7 @@ WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-WARNING:FilterNetIOUtils:Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch07/output already exists.
+WARNING:FilterNetIOUtils:Directory tutorial/sim_ch07/output already exists.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -657,10 +648,10 @@ INFO:FilterNetIOUtils:Done.
 <h2>4. Additional information<a class="headerlink" href="#4.-Additional-information" title="Link to this heading">#</a></h2>
 <section id="Running-different-types-of-Stimuli">
 <h3>Running different types of Stimuli<a class="headerlink" href="#Running-different-types-of-Stimuli" title="Link to this heading">#</a></h3>
-<p>Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the type of stimuli requires updating the <em>inputs</em> section in the <strong>simulation_config.json</strong> file like above.</p>
+<p>Currently FilterNet allows for a number of different types of custom and pre-defined type of stimuli. To change the type of stimuli requires updating the <em>inputs</em> section in the <strong>simulation_config.json</strong> file like above.</p>
 <section id="Movie:">
 <h4>Movie:<a class="headerlink" href="#Movie:" title="Link to this heading">#</a></h4>
-<p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">npy file</a>.</p>
+<p>Allows playing a custom movie file in the form of a three-dimension array saved in a <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">npy file</a>.</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -676,7 +667,7 @@ INFO:FilterNetIOUtils:Done.
 </div>
 <p><em>parameters</em></p>
 <ul class="simple">
-<li><p><strong>movie</strong> - Link to a 3-dimensional (time, x, y) matrix representing a movie</p></li>
+<li><p><strong>movie</strong> - Link to a 3-dimensional (time, x, y) array representing a movie</p></li>
 <li><p><strong>frame_rate</strong> - frames per second</p></li>
 </ul>
 </section>
@@ -705,7 +696,7 @@ INFO:FilterNetIOUtils:Done.
 </div>
 <p><em>parameters</em></p>
 <ul class="simple">
-<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels.</p></li>
+<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and height dimensions of screen in pixels.</p></li>
 <li><p><strong>grapy_screen_dur</strong> - displays an optional gray screen for a number of seconds before the grating starts. (default: 0)</p></li>
 <li><p><strong>cpd</strong> - spatial frequncy represented as cycles per degree. (default: 0.05)</p></li>
 <li><p><strong>temporal_f</strong> - temporal frequency in Hz. (default: 4.0)</p></li>
@@ -716,7 +707,7 @@ INFO:FilterNetIOUtils:Done.
 </section>
 <section id="Full-field-flash:">
 <h4>Full field flash:<a class="headerlink" href="#Full-field-flash:" title="Link to this heading">#</a></h4>
-<p>Creates a bright (or dark) flash on a gray screen for a limited number of seconds</p>
+<p>Creates a bright (or dark) flash on a gray screen for a duration determined by <strong>t_on</strong> and <strong>t_off</strong> milliseconds</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -736,9 +727,9 @@ INFO:FilterNetIOUtils:Done.
 </div>
 <p><em>parameters</em></p>
 <ul class="simple">
-<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels.</p></li>
+<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and height dimensions of screen in pixels.</p></li>
 <li><p><strong>t_on</strong> - time (ms) from the beginning on when to start the flash</p></li>
-<li><p><strong>t_off</strong> - length (ms) of flash</p></li>
+<li><p><strong>t_off</strong> - duration (ms) of flash</p></li>
 <li><p><strong>max_intensity</strong> - intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to gray screen.</p></li>
 </ul>
 </section>
@@ -763,26 +754,27 @@ INFO:FilterNetIOUtils:Done.
 </div>
 <p><em>parameters</em></p>
 <ul class="simple">
-<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels.</p></li>
+<li><p><strong>row_size</strong>, <strong>col_size</strong> - width and height dimensions of screen in pixels.</p></li>
 <li><p><strong>frame_rate</strong> - frames per second</p></li>
-<li><p><strong>gray_screen_dur</strong> - durating of initial grey screen (seconds)</p></li>
+<li><p><strong>gray_screen_dur</strong> - duration of initial grey screen (seconds)</p></li>
 <li><p><strong>t_looming</strong> - time of looming movie (seconds).</p></li>
 </ul>
 </section>
 </section>
-<section id="Units">
-<h3>Units<a class="headerlink" href="#Units" title="Link to this heading">#</a></h3>
+<section id="Filter-Units">
+<h3>Filter Units<a class="headerlink" href="#Filter-Units" title="Link to this heading">#</a></h3>
 <section id="Simple-ON/OFF-cells:">
 <h4>Simple ON/OFF cells:<a class="headerlink" href="#Simple-ON/OFF-cells:" title="Link to this heading">#</a></h4>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>.</p>
-<p>There are also a number of special types (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
+<p>There are also a number of special types (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (<a class="reference external" href="https://doi.org/10.1523/JNEUROSCI.1741-16.2016">Durant et. al 2016</a>, <a class="reference external" href="https://doi.org/10.1016/j.neuron.2020.01.040">Billeh et. al 2019</a>).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="476605b0eae74101b592e354bc0d97db" class="no-scaled-link" src="../_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="b7a561246fc749e6ab07da4d84143287" class="no-scaled-link" src="../_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="16fdb24ded7e42f3ab0645f84b4802c9" class="no-scaled-link" src="../_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="19823733eb804f0ea1160cadc02611de" class="no-scaled-link" src="../_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="Parameters:">
 <h4>Parameters:<a class="headerlink" href="#Parameters:" title="Link to this heading">#</a></h4>
-<p>The parameters for the cells are by default set in the .json file pointed to by the <code class="docutils literal notranslate"><span class="pre">dynamic_params</span></code> parameter and are calculated from extracellular recordings from the mouse LGN (Durand et. al 2016, Billeh et. al, 2019). These parameters may be overridden to be unique to each cell by passing in a list of values in the call to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code>. For example to given every cell a randomized spontaneous firing rate using the spont_fr variable (see below) you would just add the following:</p>
+<p>The parameters for the cells are by default set in the .json file pointed to by the <code class="docutils literal notranslate"><span class="pre">dynamic_params</span></code> parameter and are calculated from extracellular recordings from the mouse LGN ((<a class="reference external" href="https://doi.org/10.1523/JNEUROSCI.1741-16.2016">Durant et. al 2016</a>, <a class="reference external" href="https://doi.org/10.1016/j.neuron.2020.01.040">Billeh et. al 2019</a>)). These parameters may be overridden to be unique to each cell by passing in a list of values in the call to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code>. For example to given every cell a randomized
+spontaneous firing rate using the spont_fr variable (see below) you would just add the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tON&#39;</span><span class="p">,</span>
@@ -799,7 +791,7 @@ INFO:FilterNetIOUtils:Done.
 <img alt="../_images/filternet_sfilt_params.png" src="../_images/filternet_sfilt_params.png" />
 <p><strong>temporal filter parameters</strong></p>
 <ul class="simple">
-<li><p><em>weights</em>: (float, float) - used to control amplitude of the the two bumps in cosine filter. The first value is used to set the major bump and must have weights[0] &gt; weights[1]</p></li>
+<li><p><em>weights</em>: (float, float) - used to control amplitude of the two bumps in cosine filter. The first value is used to set the major bump. The values used must satisfy the conditions weights[0] &gt; weights[1]</p></li>
 <li><p><em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first.</p></li>
 <li><p><em>delays</em>: (float, float) - controls the delays of the first and second bumps</p></li>
 </ul>
@@ -868,7 +860,7 @@ INFO:FilterNetIOUtils:Done.
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Set-nodes">Set nodes</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Setup-the-simulation-enviornment">2. Setup the simulation enviornment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.-Setup-the-simulation-environment">2. Setup the simulation environment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#3.-Run-the-simulation">3. Run the simulation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#4.-Additional-information">4. Additional information</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Running-different-types-of-Stimuli">Running different types of Stimuli</a><ul class="nav section-nav flex-column">
@@ -878,7 +870,7 @@ INFO:FilterNetIOUtils:Done.
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Looming:">Looming:</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Units">Units</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Filter-Units">Filter Units</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Simple-ON/OFF-cells:">Simple ON/OFF cells:</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Parameters:">Parameters:</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#Spatial-Mixture-cells">Spatial Mixture cells</a></li>

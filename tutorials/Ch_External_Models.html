@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -440,8 +441,8 @@
 <p>Through the main tutorials, we’ve been using networks built off cell models downloaded from the <a class="reference external" href="https://celltypes.brain-map.org/data">Allen Cell-Types Database</a>. While the Allen Cell-Types Databases has a comprehensive and continuingly growing selection of optimized cell-type models to download and use, for many scientists, it may not meet their needs. BMTK supports incorporating many cell types and synaptic models into their simulations, including pre-built models from non-Allen Institute
 organizations. It also allows users multiple ways to create their customized models.</p>
 <p>This section will focus on single-cell spiking models, including conductance-based models with multiple channels and/or compartments per model. We do not recommend using Rates-based models with BioNet, and they will likely not work.</p>
-<p>The following section will show users multiple ways to import or create their own networks and simulations. Many of the multi-compartment biophysically detailed models developed for the NEURON simulator are written in <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/programming/hocsyntax.html">.hoc</a> format. However, another popular format is models written in <a class="reference external" href="https://docs.neuroml.org/Userdocs/NeuroMLv2.html">NeuroML v2</a>. In other cases, models may be written in Python. BioNet supports
-these options and allows users to readily implement other options, too.</p>
+<p>The following section will show users multiple ways to import or create their own networks and simulations. Many of the multi-compartment biophysically detailed models developed for the NEURON simulator are written in <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/programming/hocsyntax.html">.hoc</a> format. Another popular format is <a class="reference external" href="https://docs.neuroml.org/Userdocs/NeuroMLv2.html">NeuroML v2</a>. In other cases, models may be written in Python. BioNet supports these options and allows
+users to readily implement other options, too.</p>
 <p>If you are unfamiliar with how and where to find cell and channel models that have been created by other scientists, two good options to start looking at are:</p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://modeldb.science/">ModelDB</a></p></li>
@@ -456,7 +457,7 @@ these options and allows users to readily implement other options, too.</p>
 <h4>Step 1:<a class="headerlink" href="#Step-1:" title="Link to this heading">#</a></h4>
 <p><strong>Note</strong>: <em>This step has already been done in the current notebook and does not need to be repeated, but may be useful when initializing other examples</em></p>
 <p>The first thing we’ll do is to download and unpack the model files from ModelDB, which for the Hay L5PC models can be found at <a class="reference external" href="https://modeldb.science/139653">https://modeldb.science/139653</a>. At the site, you can use the download button to download a zip file with the appropriate .hoc (cell model), .mod (ion channels), and .asc (morphologies) files.</p>
-<div><p><img alt="f3b223e206494e64bd68629e9594ee25" class="no-scaled-link" src="../_images/modeldb_hay_screen.png" style="width: 900px;" /></p>
+<div><p><img alt="91a594925bbb4eb78a8c245cde2281e7" class="no-scaled-link" src="../_images/modeldb_hay_screen.png" style="width: 900px;" /></p>
 </div><p>To run properly, we will need to move the following files from the download zip file into our <strong>components/</strong> folder so BMTK will be able to find them during the simulation:</p>
 <ul class="simple">
 <li><p>Move <strong>mod/</strong> folder =&gt; <strong>componets/mechanisms/mod/</strong>.</p></li>
@@ -493,8 +494,8 @@ Successfully created x86_64/special
 </section>
 <section id="Step-2:-Building-the-Network">
 <h4>Step 2: Building the Network<a class="headerlink" href="#Step-2:-Building-the-Network" title="Link to this heading">#</a></h4>
-<p>Building a network using the downloaded L5PC Hay model is very similar to how we built biophysically detailed network models in <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">previous tutorials</a>. We use the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> method to add a population of 1 or more L5PC <code class="docutils literal notranslate"><span class="pre">biophysical</span></code> cells and the <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> to connect them up with other cells. However, due to the model type and parameters, we will need to make some changes compared to how we
-utilize Allen-Cell Type models.</p>
+<p>Building a network using the downloaded L5PC Hay model is very similar to how we built biophysically detailed network models in <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/tutorial_02_single_cell_syn.ipynb">previous tutorials</a>. We use the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> method to add a population of 1 or more L5PC <code class="docutils literal notranslate"><span class="pre">biophysical</span></code> cells and the <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code> to connect them up with other cells. However, due to the model type and parameters, we will need to make some changes compared
+to how we utilize Allen-Cell Types Database models.</p>
 <ul class="simple">
 <li><p>We set <strong>model_template</strong>=<code class="docutils literal notranslate"><span class="pre">hoc:L5PCtemplate</span></code> instead of the Allen <code class="docutils literal notranslate"><span class="pre">ctdb:Biophys1</span></code> value. The name of the Hoc Template for loading this particular model comes from the components/templates/L5PCtemplate.hoc file</p></li>
 <li><p>In our Allen Cell-Types models, we had set the value <strong>model_processing</strong> to ‘aibs_perisomatic’, which told bmtk to call the special post-intialization directive <code class="docutils literal notranslate"><span class="pre">aibs_perisomatic</span></code>, which would modify each cell object in a specific manner. Although it is possible to create custom directives to update and modify each cell after the template has been loaded (see below), we don’t want to do so. Instead, we leave the model_processing attribute blank.</p></li>
@@ -770,7 +771,7 @@ INFO:NEURONIOUtils:Simulation completed in 53.27 seconds
 </section>
 <section id="1.2.-Example:-Modifying-Model-Initialization">
 <h3>1.2. Example: Modifying Model Initialization<a class="headerlink" href="#1.2.-Example:-Modifying-Model-Initialization" title="Link to this heading">#</a></h3>
-<p>If we search Open Source Brain, we can see their own more recent versions of <a class="reference external" href="https://v2.opensourcebrain.org/repositories/2180">L5 Pyramidal Cell models from the same lab</a>. Suppose we wanted to incorporate these newer models alongside the original L5 PC network created above. We would need to do the following:</p>
+<p>If we search Open Source Brain, we can see other more recent versions of <a class="reference external" href="https://v2.opensourcebrain.org/repositories/2180">L5 Pyramidal Cell models based on the original L5PC Hay model</a>. Suppose we wanted to incorporate these newer models alongside the original L5 PC network created above. We would need to do the following:</p>
 <ol class="arabic simple">
 <li><p>Download the <a class="reference external" href="https://github.com/OpenSourceBrain/267587/tree/master/Single%20Cell%20Modelling/Current-Step%20Simulations/L5Pyr_young">files</a></p></li>
 <li><p>Move the morphology, mode, and model template files to their appropriate location</p></li>
@@ -1142,7 +1143,7 @@ INFO:NEURONIOUtils:Simulation completed in 83.18 seconds
 
 <span class="nd">@bionet</span><span class="o">.</span><span class="n">cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;python:Purkinje_morph_1&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">loadPurkinjeModel</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
-    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading cell </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1">, tempalate </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">, with spines_on=</span><span class="si">{</span><span class="n">cell</span><span class="p">[</span><span class="s2">&quot;spines_on&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loading cell </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1">, template </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">, with spines_on=</span><span class="si">{</span><span class="n">cell</span><span class="p">[</span><span class="s2">&quot;spines_on&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">cell</span> <span class="o">=</span> <span class="n">Purkinje_Morpho_1</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;spines_on&#39;</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">cell</span>
 </pre></div>
@@ -1391,7 +1392,7 @@ INFO:NEURONIOUtils:Simulation completed in 5.0 minutes, 54.2 seconds
 <section id="1.4.-Example:-Building-your-own-python-based-cell-models">
 <h3>1.4. Example: Building your own python-based cell models<a class="headerlink" href="#1.4.-Example:-Building-your-own-python-based-cell-models" title="Link to this heading">#</a></h3>
 <p>Another option is to build a cell instance yourself using the NEURON Python API. As with above, you just need to change the <strong>model_template</strong> parameter for the given cell(s) you want to build from scratch and create your own <code class="docutils literal notranslate"><span class="pre">&#64;cell_model</span></code> function that will be called prior to the simulation to generate individual NEURON cell instances for appropriate node in the network. The code can be put inside your <strong>run_bionet.py</strong> script or imported from another file in the same directory.</p>
-<p>The following example is a simple model taken from the <a class="reference external" href="https://neuron.yale.edu/neuron/docs/ball-and-stick-model-part-1">NEURON ball-and-stick tutorial</a> (See <em>build_network.ball_and_stick.py</em> file see how the network was created).</p>
+<p>The following example is a simple model taken from the <a class="reference external" href="https://neuron.yale.edu/neuron/docs/ball-and-stick-model-part-1">NEURON ball-and-stick tutorial</a> (See <em>build_network.ball_and_stick.py</em> file check how the network was created).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -1897,7 +1898,7 @@ def add_channels(hoc_obj, cell, dynamics_params):
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">`h.distance(seg)</span></code> &lt;<a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html#distance">https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html#distance</a>&gt;`__ is a built-in NEURON function that measures arc-length from each segment to the soma, in microns. Only segments that are &gt;1000 um will have their Ih conductances reduced. The rest will be left to default value.</p></li>
+<li><p><a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html#distance">h.distance(seg)</a> is a built-in NEURON function that measures arc-length from each segment to the soma, in microns. Only segments that are &gt;1000 um will have their Ih conductances reduced. The rest will be left to default value.</p></li>
 <li><p>We use the built-in Python functions <code class="docutils literal notranslate"><span class="pre">getattr</span></code> and <code class="docutils literal notranslate"><span class="pre">setattr</span></code> to fetch and set the gbar_Ih value of each segment object.</p></li>
 </ul>
 <div class="nbinput docutils container">
@@ -2125,8 +2126,7 @@ INFO:NEURONIOUtils:Simulation completed in 11.0 minutes, 41.37 seconds
 </div>
 <section id="Help-with-investigating-and-updating-a-model">
 <h4>Help with investigating and updating a model<a class="headerlink" href="#Help-with-investigating-and-updating-a-model" title="Link to this heading">#</a></h4>
-<p>Trying to figure out what mechanisms, section types, and other parameters of instantiated HOC cell can be tricky, as can trying to figure out how to change an existing cell. A good place to start is by looking through the official NEURON documentation <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html">1</a> <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html">2</a>. One useful function is the
-<code class="docutils literal notranslate"><span class="pre">h.psection()</span></code> that will provide valuable information about each section/segment of a cell.</p>
+<p>Trying to figure out what mechanisms, section types, and other parameters of instantiated HOC cell can be tricky, as can trying to figure out how to change an existing cell. A good place to start is by looking through the official NEURON documentation <a class="reference external" href="https://www.neuron.yale.edu/neuron/static/new_doc/modelspec/programmatic/topology/geometry.html">1</a>. One useful function is the <code class="docutils literal notranslate"><span class="pre">h.psection()</span></code> that will provide valuable information about each section/segment of a cell.</p>
 <p>Below, we can overwrite the previous version of <code class="docutils literal notranslate"><span class="pre">adjust_densities</span></code> with one that will print information about each section type (although only for the first section of each type - there are 1200+ sections in total, so we won’t try to print them all out). Not only is this helpful for inspecting the cell, it shows how useful it can be to change the way cells are processed on the fly.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:

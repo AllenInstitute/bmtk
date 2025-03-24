@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -437,10 +438,10 @@
                   
   <section id="Tools-for-Generating-Cell-Placements">
 <h1>Tools for Generating Cell Placements<a class="headerlink" href="#Tools-for-Generating-Cell-Placements" title="Link to this heading">#</a></h1>
-<p>BMTK provides several tools to facilitate cell placement, although users are always welcome to place their neuronal somata according to their own custom generated positions. We provide functions for simple geometries and placement based on geometries or densities from *.nrrd files. Units can be placed with a minimum distance between them (please see second part of this tutorial).</p>
+<p>BMTK provides several tools to facilitate cell placement, although users are always welcome to place their neuronal somata according to their own custom generated positions. We provide functions for simple geometries and placement based on geometries or densities from *.nrrd files. Cells can be placed with a minimum distance between them (please see second part of this tutorial).</p>
 <section id="Generate-a-cylindrical-column-of-cell-positions">
 <h2>Generate a cylindrical column of cell positions<a class="headerlink" href="#Generate-a-cylindrical-column-of-cell-positions" title="Link to this heading">#</a></h2>
-<p>This function places random locations uniformly within a cylinder or cylindrical ring. Note that ‘y’ is the vertical axis.</p>
+<p>This function generates random positions uniformly within a cylinder or cylindrical ring. Note that ‘y’ axis is assumed to correspond to the height of the cylinder.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -500,7 +501,7 @@
 </section>
 <section id="Generate-an-ovoid-volume-of-cell-positions">
 <h2>Generate an ovoid volume of cell positions<a class="headerlink" href="#Generate-an-ovoid-volume-of-cell-positions" title="Link to this heading">#</a></h2>
-<p>Lastly, if an ellipsoid is desired, e.g., to simulate a nucleus, one can use the following function:</p>
+<p>Lastly, if an ellipsoid is desired, e.g., to simulate one of the many approximately ellipsoidal nuclei in the brain, one can use the following function:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -519,10 +520,9 @@
 </div>
 </div>
 </section>
-<section id="Generate-random-locations-according-to-an-NRRD-file">
-<h2>Generate random locations according to an NRRD file<a class="headerlink" href="#Generate-random-locations-according-to-an-NRRD-file" title="Link to this heading">#</a></h2>
-<p>We may want to place the units according to a file containing 3D location information, such as the <a class="reference external" href="https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels">Allen Brain Atlas Common Coordinate Framework</a>. You can obtain a structural mask that describes the extent of a structure of interest. Cells will be placed randomly within that structure at a density of max_dens. If the *.nrrd file contains varying cell densities, this function can also be used to
-place cells randomly according to that density raster.</p>
+<section id="Generate-positions-according-to-an-NRRD-file">
+<h2>Generate positions according to an NRRD file<a class="headerlink" href="#Generate-positions-according-to-an-NRRD-file" title="Link to this heading">#</a></h2>
+<p>We may want to place the units according to a file containing 3D location information, such as the <a class="reference external" href="https://atlas.brain-map.org/">Allen Brain Atlas Common Coordinate Framework</a>. You can obtain a structural mask that describes the extent of a structure of interest. Cells will be placed randomly within that structure at a density of max_dens. If the *.nrrd file contains varying cell densities, this function can also be used to place cells randomly according to that density raster.</p>
 <p>You will need to install the <code class="docutils literal notranslate"><span class="pre">pynrrd</span></code> library to use this function.</p>
 <p>Note that the units of cell density are in cells/mm3 while positions are in units of microns.</p>
 <p>If the structure is bilateral and only one half is desired for modeling, you can specify the axis along which to split it.</p>
@@ -812,7 +812,7 @@ Max density requested:127323.954
 <img alt="../_images/tutorials_cell_placement_22_1.png" src="../_images/tutorials_cell_placement_22_1.png" />
 </div>
 </div>
-<p>Once we are satisfied with the placement, we can pass them to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> as follows (based on the ellipsoid example directly above):</p>
+<p>Once we are satisfied with the resulting positions, we can pass them to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> as follows (based on the ellipsoid example directly above):</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -867,7 +867,7 @@ Max density requested:127323.954
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generate-a-cylindrical-column-of-cell-positions">Generate a cylindrical column of cell positions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generate-a-rectangular-prism-volume-of-cell-positions">Generate a rectangular prism volume of cell positions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generate-an-ovoid-volume-of-cell-positions">Generate an ovoid volume of cell positions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generate-random-locations-according-to-an-NRRD-file">Generate random locations according to an NRRD file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Generate-positions-according-to-an-NRRD-file">Generate positions according to an NRRD file</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Cell-placements-with-minimum-distance-between-units">Cell placements with minimum distance between units</a></li>
 </ul>
   </nav></div>

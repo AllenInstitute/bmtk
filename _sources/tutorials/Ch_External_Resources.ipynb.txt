@@ -13,9 +13,9 @@
    "id": "6a6332d1-d4a2-4461-857c-64f65fb3b666",
    "metadata": {},
    "source": [
-    "Building, simulating, and analyzing large-scale network models can often be a resource intensive process. Although BMTK can often run simple-to-moderate network models using commerically available hardware - many scientists will find themselves quickly requiring access to High-Performance Computing (HPC) resources when the computational, memory, and/or storage requirements become greater than even the best modern laptops and desktops. When this happens you will have to rely on the resources of you institution's computing resources or even on the many Cloud Computing Platforms.\n",
+    "Building, simulating, and analyzing large-scale network models can often be a resource intensive process. Although BMTK can often run simple-to-moderate network models using commercially available hardware - many scientists will find themselves quickly requiring access to High-Performance Computing (HPC) resources when the computational, memory, and/or storage requirements become greater than even the best modern laptops and desktops. When this happens you will have to rely on the resources of you institution's computing facilities or even on the Cloud Computing Platforms.\n",
     "\n",
-    "Beyond access to higher computing and memory resources, there are other benefits to using Cloud and HPC resources in your workflow! Using a shared environment can improve collaboration and replication, reducing the headaches and pitfalls when every one has to install the software requirements on their own machines.\n",
+    "Beyond access to more powerful computing and memory resources, there are other benefits to using Cloud and HPC resources in your workflow! Using a shared environment can improve collaboration and replication, reducing the headaches and pitfalls when every one has to install the software requirements on their own machines.\n",
     "\n",
     "In this tutorial we provide a list of tools and resources that neuroscientists can take advantage of.\n",
     "\n",
@@ -35,7 +35,7 @@
    "id": "1e8b4601-23fc-4283-b661-703d4acb45f5",
    "metadata": {},
    "source": [
-    "[The Neuroscience Gateway (NSG)](http://www.nsgportal.org/) is an NSF funded project that provides HPC resouces for neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does NSG include BMTK, but also other population tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See [https://nsgprod.sdsc.edu:8443/portal2/tools.action](https://nsgprod.sdsc.edu:8443/portal2/tools.action) for a list of available software.\n",
+    "[The Neuroscience Gateway (NSG)](http://www.nsgportal.org/) is an NSF funded project that provides HPC resouces for neuroscienists. It provides access to extensive CPU, GPU, and Memory resources that may not always be available locally. But just as important, NSG includes a wide variety of pre-installed computational neuroscience software that can be used for everything from modeling, data analysis, and even AI and ML applications. For modeling and simulation not only does NSG include BMTK, but also other popular tools like NEURON, NEST, Brian, PyNN, NetPyNE, among others. See [https://nsgprod.sdsc.edu:8443/portal2/tools.action](https://nsgprod.sdsc.edu:8443/portal2/tools.action) for a list of available software.\n",
     "\n",
     "The Neuroscience Gateway can be accessed in two different ways, either through the Web Portal interface or through the REST API. The focus in this tutorial will be on using the Web Portal."
    ]
@@ -47,7 +47,7 @@
    "source": [
     "### 1.1. Example: Using NSG to run L4 Model simulations <a class=\"anchor\" id=\"example-1\">\n",
     "\n",
-    "As an example of how one can utilize NSG running BMTK we will take the [existing Mouse V1 Layer 4 Model](https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb) network and use it to run simulations of the Expanse computing cluster. "
+    "As an example of how one can utilize NSG running BMTK we will take the [existing Mouse V1 Layer 4 Model](https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb) network and use it to run simulations on the Expanse computing cluster. "
    ]
   },
   {
@@ -69,7 +69,7 @@
    "source": [
     "#### Step 2: Packaging the environment files\n",
     "\n",
-    "We will need to package all necessacary files into a .zip folder to be uploaded to NSG. This will include the run_pointnet.py python script to execute, plus any necessary SONATA and model files.\n",
+    "We will need to package all necessary files into a .zip folder to be uploaded to NSG. This will include the run_pointnet.py python script to execute, plus any necessary SONATA and model files.\n",
     "\n",
     "**Remember** to download the files from the [Mouse V1 Layer 4 Model tutorial](https://github.com/AllenInstitute/bmtk-workshop/blob/main/Ch6_l4model/6.%20More%20Realistic%20Model%20and%20Advanced%20Features.ipynb)."
    ]
@@ -149,8 +149,8 @@
     "* Unselect **Do you require nrnivmodl compilation** - flag only applies to NEURON (eg. BioNet) applications.\n",
     "* Set **Enter Main Input Python Filename: run_pointnet.py** - Entry python script to run.\n",
     "* Set **Enter sub-directory name: Ch6_l4model** - This is required since the way we zipped up our data everything is under the *Ch6_l4model/* folder.\n",
-    "  * To speed up the simulation we will run it parallelized using MPI with 8 processs. \n",
-    "  * Set **Enter Number of Nodes: 1** - Since we are significantly less than the avaialbe cores/memory per node we can benefit from keeping all MPI Tasks on the same node.\n",
+    "  * To speed up the simulation we will run it parallelized using MPI with 8 processes. \n",
+    "  * Set **Enter Number of Nodes: 1** - Since we use significantly less than the available cores/memory per node we can benefit from keeping all MPI Tasks on the same node.\n",
     "  * Set **Enter Number of MPI Tasks per Node: 8** and **Enter Number of Cores per Node: 8**\n",
     "  * Set **Enter Number of GB Memory per Node: 16**\n",
     "\n",
@@ -169,7 +169,7 @@
    "source": [
     "#### Fetching the Results\n",
     "\n",
-    "After clickin on `Save and Run Task` the task will be submitted to the NSQ queue. Depending on current HPC usage and the requested resources there may be a delay between the time when a job is submitted and the time the task starts running. You can select the `View Status` button to see the **Status** of the current task.\n",
+    "After clicking on `Save and Run Task` the task will be submitted to the NSQ queue. Depending on current HPC usage and the requested resources there may be a delay between the time when a job is submitted and the time the task starts running. You can select the `View Status` button to see the **Status** of the current task.\n",
     "\n",
     "<div>\n",
     "  <img src=\"./_static/_tutorial_images/nsgportal_tasks_panel_filled.png\" width=\"805\" align=\"left\" style=\"margin-left:26px\"/>    \n",
@@ -258,7 +258,7 @@
     "\n",
     "The following parameters are important\n",
     "\n",
-    "* Make sure the select **Do you required nrnivmodl compilation** in order to compile the .mod file necessacary to run the models\n",
+    "* Make sure the select **Do you require nrnivmodl compilation** in order to compile the .mod file necessary to run the models\n",
     "* Set **Enter Main Input Filename: run_bionet.py** as this is the script to execute the BMTK simulation\n",
     "- Make sure to select **Please click here if your code is in python and not HOC**\n",
     "* Due to the structure of the zip file we need to set **Enter sub-directory name: Ch3_mutlicells**\n",

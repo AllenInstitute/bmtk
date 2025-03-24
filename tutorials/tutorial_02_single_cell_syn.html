@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial 2: Single Cell Simulation with External Feedfoward Input (with BioNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Single Cell Simulation with External Feedforward Input (with BioNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_02_single_cell_syn';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 3: Multi-Cell, Single Population Network (with BioNet)" href="tutorial_03_single_pop.html" />
-    <link rel="prev" title="Tutorial 1: Single Cell Simulation with Current Injection (with BioNet)" href="tutorial_01_single_cell_clamped.html" />
+    <link rel="next" title="Tutorial: Multi-Cell, Single Population Network (with BioNet)" href="tutorial_03_single_pop.html" />
+    <link rel="prev" title="Tutorial: Single Cell Simulation with Current Injection (with BioNet)" href="tutorial_01_single_cell_clamped.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 2: Single Cell Simulation with External Feedfoward Input (with BioNet)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Single Cell Simulation with External Feedforward Input (with BioNet)</span></li>
   </ul>
 </nav>
 </div>
@@ -432,8 +433,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Tutorial-2:-Single-Cell-Simulation-with-External-Feedfoward-Input-(with-BioNet)">
-<h1>Tutorial 2: Single Cell Simulation with External Feedfoward Input (with BioNet)<a class="headerlink" href="#Tutorial-2:-Single-Cell-Simulation-with-External-Feedfoward-Input-(with-BioNet)" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Single-Cell-Simulation-with-External-Feedforward-Input-(with-BioNet)">
+<h1>Tutorial: Single Cell Simulation with External Feedforward Input (with BioNet)<a class="headerlink" href="#Tutorial:-Single-Cell-Simulation-with-External-Feedforward-Input-(with-BioNet)" title="Link to this heading">#</a></h1>
 <p>In the previous tutorial we built a single cell and stimulated it with a current injection. In this example we will keep our single-cell network, but instead of stimulation by a step current, we’ll set-up an external network that synapses onto our cell.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter02">sources/chapter02/</a></p>
 <p><strong>Requirements:</strong></p>
@@ -476,7 +477,7 @@
 </pre></div>
 </div>
 </div>
-<p>Next we will create a collection of external spike-generating cells that will synapse onto our cell. To do this we create a second network which can represent thalamic input. We will call our network “mthalamus”, and it will consist of 10 cells. These cells are not biophysical but instead “virtual” cells. Virtual cells don’t have a morphology or the normal properties of a neuron, but rather act as spike generators.</p>
+<p>Next we will create a collection of external spike-generating cells that will synapse onto our cell. To do this we create a second network which can represent some external inputs (such as input from the thalamus to our cortical cell). We will call our network “mthalamus”, and it will consist of 10 cells. These cells are not biophysical but instead “virtual” cells. Virtual cells don’t have a morphology or the normal properties of a neuron, but rather act as spike generators.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -492,7 +493,7 @@
 </pre></div>
 </div>
 </div>
-<p>Now that we built our nodes, we want to create a connection between our 10 thalamic cells onto our cortex cell. To do so we use the <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> function like so:</p>
+<p>Now that we built our nodes (cells), we want to create a connection between our 10 thalamic cells onto our cortex cell. To do so we use the <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> function like so:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -526,13 +527,13 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Here we specify which set of nodes to use as sources and targets. Our source/pre-synaptic cells are all thamalus cells with the property “pop_name=tON”, which in this case is every thalamus cell (We could also use <code class="docutils literal notranslate"><span class="pre">source=thalamus.nodes()</span></code>, or <code class="docutils literal notranslate"><span class="pre">source={'level_of_detail':</span> <span class="pre">'filter'}</span></code>). The target/post-synaptic cells are all cell(s) of the “cortex” network.</p></li>
+<li><p>Here we specify which set of nodes to use as sources and targets. Our source/pre-synaptic cells are all thalmus cells with the property “pop_name=tON”, which in this case is every thalamus cell (We could also use <code class="docutils literal notranslate"><span class="pre">source=thalamus.nodes()</span></code>, or <code class="docutils literal notranslate"><span class="pre">source={'level_of_detail':</span> <span class="pre">'filter'}</span></code>). The target/post-synaptic cells are all cell(s) of the “cortex” network.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection_rule</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>The <em>connection_rule</em> parameter determines how many synapses exist between every source/target pair. In this very trivial case we are indicating that between every thamalic –&gt; cortical cell connection, there are 5 synaptic connections. In future tutorials we will show how we can create more complex customized rules.</p></li>
+<li><p>The <em>connection_rule</em> parameter determines how many synapses exist between every source/target pair. In this very trivial case we are indicating that for every thalamic –&gt; cortical cell connection, there are 5 synapses. In future tutorials we will show how we can create more complex customized rules.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
 <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
@@ -540,7 +541,7 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Here we are specifying the connection weight. For every connection in this edge-type, there is a connection strength of 1e-03 (units) and a connection delay of 2 ms. The weight function is used to adjust the weights before runtime. Later we will show how to create customized weight functions.</p></li>
+<li><p>Here we are specifying the connection weight. For every connection in this edge-type, there is a strength of 1e-03 and a synaptic delay of 2 ms. The weight function is used to adjust the weights before runtime. Later we will show how to create customized weight functions.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
 <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
@@ -690,8 +691,8 @@ Units: ms
 </pre></div>
 </div>
 <p>Or call the function directly in python:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_bionet</span>
@@ -709,113 +710,6 @@ Units: ms
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-/home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms
-Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/vecevent.mod&#34;
-
-COBJS=&#39;&#39;
- -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
- -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
- -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Translating Ca_LVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ca_LVA.c
-Translating Ca_HVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ca_HVA.c
-Translating CaDynamics.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/CaDynamics.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating Ih.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ih.c
-Translating Im.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Im.c
-Translating Im_v2.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Im_v2.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating K_P.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/K_P.c
-Translating Kd.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kd.c
-Translating K_T.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/K_T.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating Kv2like.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kv2like.c
-Translating Kv3_1.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kv3_1.c
-Translating Nap.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Nap.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating NaTs.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaTs.c
-Translating NaTa.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaTa.c
-Translating NaV.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaV.c
-Thread Safe
-Thread Safe
-NEURON&#39;s CVode method ignores conservation
-Notice: LINEAR is not thread safe.
-Translating SK.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/SK.c
-Translating vecevent.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/vecevent.c
-Notice: VERBATIM blocks are not thread safe
-Thread Safe
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
- -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
- -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
- -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
- =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
-Successfully created x86_64/special
-</pre></div></div>
 </div>
 </section>
 <section id="Add-input-network-parameters-to-config-file:">

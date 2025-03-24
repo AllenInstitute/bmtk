@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -584,8 +585,6 @@ Actual Firing Rate (Hz): 20.186666666666667
 
 <span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">firing_rate</span><span class="o">=</span><span class="n">fr_vec</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">fr_t</span><span class="p">)</span>
-<span class="c1"># Added an exception so this is no longer valid:</span>
-<span class="c1"># psg.add(node_ids=nodes, firing_rate=fr_vec, times=(start_time, end_time))</span>
 <span class="n">plot_isi</span><span class="p">(</span><span class="n">psg</span><span class="p">)</span>
 
 <span class="n">actual_fr</span> <span class="o">=</span> <span class="n">psg</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>

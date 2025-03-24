@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial 3: Multi-Cell, Single Population Network (with BioNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Multi-Cell, Single Population Network (with BioNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_03_single_pop';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 4: Multi-Population Recurrent Network (with BioNet)" href="tutorial_04_multi_pop.html" />
-    <link rel="prev" title="Tutorial 2: Single Cell Simulation with External Feedfoward Input (with BioNet)" href="tutorial_02_single_cell_syn.html" />
+    <link rel="next" title="Tutorial: Multi-Population Recurrent Network (with BioNet)" href="tutorial_04_multi_pop.html" />
+    <link rel="prev" title="Tutorial: Single Cell Simulation with External Feedforward Input (with BioNet)" href="tutorial_02_single_cell_syn.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 3: Multi-Cell, Single Population Network (with BioNet)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Multi-Cell, Single Population Network (with BioNet)</span></li>
   </ul>
 </nav>
 </div>
@@ -432,8 +433,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Tutorial-3:-Multi-Cell,-Single-Population-Network-(with-BioNet)">
-<h1>Tutorial 3: Multi-Cell, Single Population Network (with BioNet)<a class="headerlink" href="#Tutorial-3:-Multi-Cell,-Single-Population-Network-(with-BioNet)" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Multi-Cell,-Single-Population-Network-(with-BioNet)">
+<h1>Tutorial: Multi-Cell, Single Population Network (with BioNet)<a class="headerlink" href="#Tutorial:-Multi-Cell,-Single-Population-Network-(with-BioNet)" title="Link to this heading">#</a></h1>
 <p>In this tutorial, we will create a more complex network that contains multiple biophysical cells of the same cell-type (we will cover heterogenous networks in the next tutorial). The network will contain recurrent connections, as well as external input that provides input to the network.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter03">sources/chapter03/</a></p>
 <p>requirements:</p>
@@ -478,10 +479,10 @@
 <li><p><em>N</em> - Indicates the number of cells in our population.</p></li>
 <li><p><em>positions</em> - Sets the spatial location of each cell in the network. Here we define it by the <code class="docutils literal notranslate"><span class="pre">positions_columnar</span></code> built-in method, which will randomly place our cells in a column (users can define their own positions as shown here).</p></li>
 <li><p><em>rotation_angle_yaxis</em> - Sets the y angle for each cell. Here it is defined by a built-in function <code class="docutils literal notranslate"><span class="pre">xiter_random</span></code> that randomly assigns each cell a given y angle.</p></li>
-<li><p><em>rotation_angle_xaxis</em> - Sets the z angle for each cell. Here we assign a single value to each cell.</p></li>
+<li><p><em>rotation_angle_zaxis</em> - Sets the z angle for each cell. Here we assign a single value to each cell.</p></li>
 </ul>
 <p>See <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">tutorial 1</span></a> for a description of the other parameters.</p>
-<p><strong>Note</strong> - Here we define the y-axis by a function which returns a lists of values, but the z-axis is defined by a single value. This means that all cells will share the z-axis. we could alteratively give all cells the same y-axis rotation:</p>
+<p><strong>Note</strong> - Here we define the y-angle (that is, the angle or rotation around the y-axis) by a function which returns a lists of values, but the z-angle is defined by a single value. This means that all cells will share the z-angle. we could alteratively give all cells the same y-rotation angle:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">rotation_value</span>
 </pre></div>
 </div>
@@ -493,7 +494,7 @@
 </section>
 <section id="Set-edges">
 <h3>Set edges<a class="headerlink" href="#Set-edges" title="Link to this heading">#</a></h3>
-<p>Next we want to add recurrent edges. To create the connections we will use the built-in <code class="docutils literal notranslate"><span class="pre">distance_connector</span></code> function, which will assign the number of connections between two cells randomly (between range <em>nsyn_min</em> and <em>nsysn_max</em>) but weighted by distance. The other parameters, including the synaptic model (<em>AMPA_ExcToExc</em>) will be shared by all connections.</p>
+<p>Next we want to add recurrent edges. To create the connections we will use the built-in <code class="docutils literal notranslate"><span class="pre">distance_connector</span></code> function, which will assign the number of connections between two cells randomly (in the range <em>nsyn_min</em> and <em>nsysn_max</em>) but weighted by distance. The other parameters, including the synaptic model (<em>AMPA_ExcToExc</em>) will be shared by all connections.</p>
 <p>To use this, or to use customized connection functions, we must pass in the name of our connection function using the “connection_rule” parameter, and the function parameters through “connection_params” as a dictionary, which will looks something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection_rule</span><span class="o">=&lt;</span><span class="n">name_of_function</span><span class="o">&gt;</span>
 <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;param_arg1&#39;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s1">&#39;param_arg2&#39;</span><span class="p">:</span> <span class="n">val2</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
@@ -562,7 +563,7 @@
 </pre></div>
 </div>
 </div>
-<p>The input network doesn’t have recurrent connections, rather all the cells are feedforward onto the internal network. To connect the networks we create an edge with the thalamus nodes as the sources and the cortex nodes as the targets. This time we use the built-in <code class="docutils literal notranslate"><span class="pre">connect_random</span></code> connection rule, which will randomly assign each thalamus –&gt; cortex connection between 0 and 12 synaptic connections.</p>
+<p>The input network doesn’t have recurrent connections, rather all the cells are connected in a feedforward fashion onto the internal network. To connect the networks we create edges with the thalamus nodes as the sources and the cortex nodes as the targets. This time we use the built-in <code class="docutils literal notranslate"><span class="pre">connect_random</span></code> connection rule, which will randomly assign each thalamus –&gt; cortex connection between 0 and 12 synapses.</p>
 <p><strong>Note</strong> - If building the input network in a separate script you would need to reload the saved mcortex network cell files using the import function.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -591,7 +592,7 @@
 </section>
 <section id="Spike-Trains">
 <h3>Spike Trains<a class="headerlink" href="#Spike-Trains" title="Link to this heading">#</a></h3>
-<p>Next we need to create the individual spike trains for our thalamic filter cells. We will use a Poission distribution to create a random distribution of spikes for our 300 hundred cells, each firing at ~ 15 Hz over a 3 second window. Then we can save our spike trains as a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA file</a> under the <strong>sim_ch03/inputs</strong> directory.</p>
+<p>Next we need to create the individual spike trains for our thalamic filter cells. We will use a Poisson distribution of spikes for our 300 cells, each firing at ~ 15 Hz over a 3 second window. Then we can save our spike trains as a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA file</a> under the <strong>sim_ch03/inputs</strong> directory.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -693,8 +694,8 @@
 </pre></div>
 </div>
 <p>Or call the function directly in python:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_bionet</span>
@@ -712,111 +713,6 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-/home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms
-Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/vecevent.mod&#34;
-
-COBJS=&#39;&#39;
- -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
- -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
- -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
- -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Translating Ca_HVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Ca_HVA.c
-Translating CaDynamics.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/CaDynamics.c
-Translating Ca_LVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Ca_LVA.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating Ih.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Ih.c
-Translating Im_v2.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Im_v2.c
-Translating Im.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Im.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating Kd.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Kd.c
-Translating K_P.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/K_P.c
-Translating K_T.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/K_T.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating Kv2like.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Kv2like.c
-Translating Kv3_1.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Kv3_1.c
-Translating Nap.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/Nap.c
-Thread Safe
-Thread Safe
-Thread Safe
-Translating NaTs.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/NaTs.c
-Translating NaTa.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/NaTa.c
-Thread Safe
-Thread Safe
-Translating NaV.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/NaV.c
-NEURON&#39;s CVode method ignores conservation
-Notice: LINEAR is not thread safe.
-Translating SK.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/SK.c
-Translating vecevent.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch03/components/mechanisms/x86_64/vecevent.c
-Notice: VERBATIM blocks are not thread safe
-Thread Safe
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
- -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
- -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
- -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
- -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
- -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
- =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
-Successfully created x86_64/special
-</pre></div></div>
 </div>
 <p>It’s a good idea to check the configuration files <strong>sim_ch03/circuit_config.json</strong> and <strong>sim_ch03/simulation_config.json</strong>, especially to make sure that bmtk will know to use our generated spikes file (if you don’t see the below section in the simulation_config.json file, go ahead and add it).</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>

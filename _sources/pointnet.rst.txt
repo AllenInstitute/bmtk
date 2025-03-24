@@ -45,13 +45,14 @@ which plays a pre-recorded series of spikes throughout the simulation. You may u
 
 * module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file
 * `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
-* input_file: path or a list of paths to file contain spike-trains for one or mode node
+* input_file: a path to a file that contain spike-trains for one or more nodes. As a special case, a list of files can be provided
+  to run multiple simulations with a single configuration file. See `below <#running-multiple-simulations-with-a-single-config-file>`_ for more information.
 
 
 `Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes <ecephys_probe.html>`_
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-An increasing number of ECEPhys electrode experimental data are available to the public in NWB format, such as the 
+An increasing number of public ECEPhys electrode experimental data are available in the NWB format, such as the 
 `Allen Visual Coding - Neuropixels <https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html>`_ dataset or the many datasets available on
 `DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert this data into SONATA spike-trains to 
 encorpate into your simulations, the `ecephys_probe` spikes module can do this automatically; fetching spikes from ECEPhys units
@@ -83,7 +84,7 @@ See the `documentation <ecephys_probe.html>`__ for more information and advanced
 
 `Current Clamps <current_clamps.html>`_
 +++++++++++++++++++++++++++++++++++++++
-May use one step current clamp on multiple nodes, or multiple current injections to a single node.
+Users may apply one step current clamp on multiple nodes, or multiple current injections to a single node.
 
 .. code:: json
 
@@ -124,16 +125,16 @@ Used to record the time trace of specific cell variables, usually the membrane p
         }
     }
 
-* module: either multimeter_report or membrane_report, both the same
-* variable_name: name of the variable being recorded, will depend on the NEST cell model
+* module: either *multimeter_report* or *membrane_report*, which are interchangeable
+* variable_name: name of the variable being recorded; it will depend on the NEST cell model
 * cells: a `node_set <./simulators.html#node-sets>`_ defines what cells to record
 * file_name: name of the data file, under the “output_dir”. If not specified the the report title
-   will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”
+   will be used, i.e. “membrane_potential.h5”
 
 
 Recording Synaptic Weights
 ++++++++++++++++++++++++++
-Used to record the synaptic weight changes throughout the simulation lifetime. This tool is useful for measuring changes in plastic synapse models like 
+This module can be used to record the synaptic weight changes throughout the simulation lifetime. This tool is useful for measuring changes in plastic synapse models like 
 "stdp_synapse" or "tsodyks_synapses" (can also be used for static synapses though values will never change). To create a recorder, add the following 
 section to the "reports" section in the simulation config json:
 
@@ -186,17 +187,17 @@ Then make the following changes to the **edge_types.csv** file
 
 Running multiple simulations with a single config file
 ------------------------------------------------------
-PointNet now supports running multiple simulations using a single
-configuration file. This file can include multiple inputs and outputs
-without resetting the network. This functionality eliminates the need
-to create separate configuration files for each input file, and it allows
+PointNet supports running multiple simulations using a single
+configuration file. This file can include multiple inputs and outputs.
+This feature eliminates the need
+to create separate configuration files for each input/output file, and it allows
 similar simulations to run without the overhead of rebuilding the network
 each time. An example configuration file demonstrating this feature is
 located at 'examples/point_450glifs/config.multiplesimulation.json'. Currently,
-this feature is only available with the sonata spikes input type, but not with
+this feature is only available with the sonata spikes input type, not with
 the current clamp, NWB, and spontaneous noise input types.
 
-To use this functionality, you must maintain a consistent structure in
+To use this feature, you must maintain a consistent structure in
 the 'run' section for 'tstop' (or equivalently, 'duration'), in the
 'input' section for 'input_file', and in the 'output' section for
 'output_file'. You can still have multiple input and output items, but
@@ -229,7 +230,7 @@ continue into subsequent simulations.
 
 Combining these features, you can, for example, use a single background
 Poisson spike file with an extended duration alongside multiple short LGN
-input files with different patterns—all in one configuration file.
+input files with different patterns, all in one configuration file.
 Also, other input types (e.g. current clamp) can be used if the stimulus time
 refers to the overall simulation time.
 

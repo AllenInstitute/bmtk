@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Recording Extracellular Potentials and Current Source Densities" href="Ch_extracellular.html" />
-    <link rel="prev" title="Advanced Methods for Driving your Network with Synapic Spike-trains" href="Ch_advanced_spikes_input.html" />
+    <link rel="prev" title="Advanced Methods for Driving your Network with Synaptic Spike-trains" href="Ch_advanced_spikes_input.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -441,7 +442,7 @@
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/04_opt_advanced_inputs">04_opt_advanced_inputs/</a></p>
 <section id="1.-Example:-Advanced-IClamp-Options">
 <h2>1. Example: Advanced IClamp Options<a class="headerlink" href="#1.-Example:-Advanced-IClamp-Options" title="Link to this heading">#</a></h2>
-<p>By default you can insert a simple step current into your simulation by adding to the “inputs” section of your SONATA configuration file. For example, say we want to insert a .100 nA injection at for 1000 ms into the soma of our first cell:</p>
+<p>By default you can insert a simple step current into a cell in your simulation by adding a corresponding statement to the “inputs” section of your SONATA configuration file. For example, say we want to insert a 0.100 nA injection at t=500 ms, for the duration 1000 ms into the soma of our first cell:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;clamp&quot;</span><span class="p">,</span>
@@ -461,12 +462,12 @@
 </pre></div>
 </div>
 <ul>
-<li><p><strong>input_typ</strong> and <strong>module</strong> should always be set to values <code class="docutils literal notranslate"><span class="pre">clamp</span></code> and <code class="docutils literal notranslate"><span class="pre">IClamp</span></code>, respecitvely.</p></li>
+<li><p><strong>input_type</strong> and <strong>module</strong> should always be set to values <code class="docutils literal notranslate"><span class="pre">clamp</span></code> and <code class="docutils literal notranslate"><span class="pre">IClamp</span></code>, respectively.</p></li>
 <li><p>The <strong>node_set</strong> specifies what cell(s) we want to apply clamp to. In this case only cell with node-id #0 in the “net” population of cells.</p></li>
 <li><p><strong>amp</strong> is the amplitude of the clamp to apply, in nA.</p></li>
-<li><p><strong>delay</strong> and <strong>duration</strong> tells us when to start the clamp and how long to apply it for, both in ms. In this case it will be a current from 500 - 1500 ms after start of simulation.</p></li>
-<li><p><strong>section_name</strong>, <strong>section_index</strong>, and <strong>section_dist</strong> tells us exactly where on the cell to place the clamp. In this case at the center of the soma. (<em>If you leave section_index and section_dist blank BMTK will attempt to find a random avaialble place where to insert the clamp</em>)</p>
-<div class="alert alert-block alert-info"><p>NOTE: For PoinNet users section_name, section_index and section_dist is not applicable and can be removed.</p>
+<li><p><strong>delay</strong> and <strong>duration</strong> tell us when to start the clamp and how long to apply it for, both in ms. In this case it will be a current from 500 ms to 1500 ms after start of simulation.</p></li>
+<li><p><strong>section_name</strong>, <strong>section_index</strong>, and <strong>section_dist</strong> tells us exactly where on the cell to place the clamp. In this case at the center of the soma. (<em>If you leave section_index and section_dist blank BMTK will attempt to find a random available place where to insert the clamp</em>)</p>
+<div class="alert alert-block alert-info"><p>NOTE: For PoinNet users section_name, section_index and section_dist are not applicable and can be removed.</p>
 </div></li>
 </ul>
 <div class="nbinput docutils container">
@@ -590,8 +591,8 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </section>
 <section id="Selecting-different-placement">
 <h3>Selecting different placement<a class="headerlink" href="#Selecting-different-placement" title="Link to this heading">#</a></h3>
-<p>Besides the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, most morphologically detailed will also give you options to place a clamp at the <code class="docutils literal notranslate"><span class="pre">axon</span></code>, <code class="docutils literal notranslate"><span class="pre">dend</span></code> (aka <code class="docutils literal notranslate"><span class="pre">basal</span></code>, the basal dendrites), or the <code class="docutils literal notranslate"><span class="pre">apic</span></code> (the apical dendrites). However unlike the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, these other sections may be split into hundreds of different <strong>section_index</strong> (aka branches and compartments). If you do not know the specific section index for where you want to place the clamp you can use specify a range (in microns from the soma) of where to find
-select the current.</p>
+<p>Besides the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, most morphologically detailed models will also give you options to place a clamp at the <code class="docutils literal notranslate"><span class="pre">axon</span></code>, <code class="docutils literal notranslate"><span class="pre">dend</span></code> (dendrites), <code class="docutils literal notranslate"><span class="pre">basal</span></code> (the basal dendrites), or the <code class="docutils literal notranslate"><span class="pre">apic</span></code> (the apical dendrites). However unlike the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, these other sections may be split into hundreds of different <strong>section_index</strong> (aka branches and compartments). If you do not know the specific section index for where you want to place the clamp you can specify a range (in microns from the soma) of where
+you want BMTK to place it randomly.</p>
 <p>For example if we want to place the current at a random location on the apical or basal dendrites that is atleast 500 um away from the soma</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_apic&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -613,7 +614,7 @@ select the current.</p>
 <ul class="simple">
 <li><p>We are trying to find any section that is (500, <span class="math notranslate nohighlight">\(\infty\)</span>) away from the soma. However python doesn’t handle infinity values very well so we just use a distance, 1e20, that we know will cover all feasible segments</p></li>
 </ul>
-<div class="alert alert-block alert-info"><p>WARNING: As metioned before this won’t work on point-neurons or neurons with only a soma. Some models may not have an “apic” section and would thus fail.</p>
+<div class="alert alert-block alert-info"><p>WARNING: As mentioned before this won’t work on point-neurons or neurons with only a soma. Some morphologically detailed models may not have an “apic” section (or possibly other types of section too) and would thus fail if you attempt to insert an injection into such a section.</p>
 </div><div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -667,7 +668,7 @@ select the current.</p>
 </section>
 <section id="Adding-multiple-Clamps">
 <h3>Adding multiple Clamps<a class="headerlink" href="#Adding-multiple-Clamps" title="Link to this heading">#</a></h3>
-<p>If you need to add multiple current-clamps in sequence or in parallel to you simulation you can easily do it by adding multiple sections to the “inputs” sections:</p>
+<p>If you need to add multiple current-clamps (whether they overlap in time or not) to you simulation you can easily do it by adding multiple sections to the “inputs” sections:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
@@ -731,13 +732,13 @@ select the current.</p>
 </section>
 <section id="2.-Example:-Complex-current-clamp-waveforms">
 <h2>2. Example: Complex current-clamp waveforms<a class="headerlink" href="#2.-Example:-Complex-current-clamp-waveforms" title="Link to this heading">#</a></h2>
-<p>In the above example we inserted a current clamp as single or a series of step-currents. However you may want to use another input form like a wave or a gradual current which, if needed to implement in the above, would be very infeasbile. Luckily, BMTK also allows us to save our current function into a csv file which can contain hundreds to thousand of individual points differentiating how the current will change at each step of time.</p>
-<p>Implementing this is done in much the same way as in the example above with two exceptions:</p>
+<p>In the above example we inserted a current clamp as single or a series of step-currents. However you may want to use another input waveform like a wave or a gradual current which, if needed to be implemented using the above approach, would be very unfeasbile. Luckily, BMTK also allows us to save our current function into a csv file which can contain many individual points determining how the current will change at each step of time.</p>
+<p>This is done in much the same way as in the example above with two exceptions:</p>
 <ol class="arabic simple">
 <li><p>The <strong>module</strong> should be set to value <code class="docutils literal notranslate"><span class="pre">csv</span></code>.</p></li>
-<li><p>Instead of specifying the <strong>amp</strong>, <strong>delay</strong>, or <strong>duration</strong>; instead you specify the <strong>file</strong> path to the generated csv.</p></li>
+<li><p>Instead of specifying the <strong>amp</strong>, <strong>delay</strong>, or <strong>duration</strong>; instead you specify the <strong>file</strong> path to the csv file.</p></li>
 </ol>
-<p>For example to have the sequences of current clamps in the above example we would add the following to our configuration file:</p>
+<p>For example to have a sequences of current clamps in the above example we would add the following to our configuration file:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_series&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
@@ -752,9 +753,9 @@ select the current.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Where our file has the following format, each row specifying the time <strong>time-stamp</strong>, where 0 represents beginning of simulation, at at which the <strong>amp</strong> value is changes</p>
+<p>Where our file has the following format, each row specifying the time <strong>time-stamp</strong>, where 0 represents beginning of simulation, at which the <strong>amp</strong> value is changes</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -764,7 +765,7 @@ select the current.</p>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -793,32 +794,32 @@ select the current.</p>
   <tbody>
     <tr>
       <th>0</th>
-      <td>800.0</td>
+      <td>500.0</td>
       <td>0.150</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>1300.0</td>
+      <td>1000.0</td>
       <td>0.000</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>1800.0</td>
+      <td>1500.0</td>
       <td>0.175</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>2300.0</td>
+      <td>2000.0</td>
       <td>0.000</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>2800.0</td>
+      <td>2500.0</td>
       <td>0.200</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>3300.0</td>
+      <td>3000.0</td>
       <td>0.000</td>
     </tr>
   </tbody>
@@ -973,9 +974,9 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </section>
 <section id="3.-Example:-Voltage-Clamps">
 <h2>3. Example: Voltage Clamps<a class="headerlink" href="#3.-Example:-Voltage-Clamps" title="Link to this heading">#</a></h2>
-<p>Besides the current clamp, we can use a voltage clamp to set one or more cells to have a constant membrane voltage during some period of the simulation. And like the IClamp we can dynamically insert or remove a voltage clamp during any given simulation by simply editing our SONATA configuration json file. However, note that not all models allow us to insert a voltage clamp - in particular only models with conductance based mechanics allow voltage clamps (so for example we cannot clamp a
+<p>Besides the current clamp, we can use a voltage clamp to set one or more cells to have a constant membrane voltage during some period of the simulation. And like the IClamp we can dynamically insert or remove a voltage clamp during any given simulation by simply editing our SONATA configuration json file. However, note that not all models allow us to insert a voltage clamp - in particular only models with conductance based mechanics allow voltage clamps (so for example we cannot clamp an
 integrate-and-fire neuron).</p>
-<p>In the network built using the file <em>build_network.voltage_clamp.py</em> we have a simple network of two cells, with cell #1 synapsing onto cell #2. As we might do with a simple in-vitro experiment we want to clamp only one cell and see the results it has on both cells. And we want to use a simple single-electrode clamp (eg <code class="docutils literal notranslate"><span class="pre">SEClamp</span></code>) which is the simplest want to fix the voltage of one or more cells. To do so we add the following to the SONATA configuration <strong>“inputs</strong>” section:</p>
+<p>In the network built using the file <em>build_network.voltage_clamp.py</em> we have a simple network of two cells, with cell #1 synapsing onto cell #2. As we might do with a simple in-vitro experiment we want to clamp only one cell and see the results it has on both cells. And we want to use a simple single-electrode clamp (eg <code class="docutils literal notranslate"><span class="pre">SEClamp</span></code>) which is the simplest way to fix the voltage of one or more cells. To do so we add the following to the SONATA configuration <strong>“inputs</strong>” section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;se_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;clamp&quot;</span><span class="p">,</span>
@@ -999,7 +1000,7 @@ integrate-and-fire neuron).</p>
 <li><p>For the <strong>node_set</strong> we make sure to only attach a clamp to cell with <code class="docutils literal notranslate"><span class="pre">node_id=0</span></code>. (eg our source cell only, not the second cell in the network).</p></li>
 <li><p>We must specify the onset/<strong>delay</strong> of the clamp (in ms), the <strong>duration</strong> (ms) and the <strong>amp</strong> (mV) at which we want to hold our cell. In this case we will set the cell such that between times 1000 to 2000 ms it will be clamped to a membrane voltage of 20.0 mV.</p></li>
 <li><p>As with current-clamp we have options <strong>section_name</strong>, <strong>section_index</strong> and <strong>section_dist</strong> to determine where to place the clamp within the cell. If not specified BMTK will place it by default in the center of the soma.</p></li>
-<li><p>We can specifcy the <strong>resistance</strong> in nOhms - but default it will be set to 0.0.</p></li>
+<li><p>We can specify the <strong>resistance</strong> in nOhms - by default it will be set to 0.0.</p></li>
 </ul>
 <div class="alert alert-block alert-info"><p>⚠️ WARNING: Currently SEClamp can only handle simple single square-wave block. It does not support advance features like specified in the IClamp.</p>
 </div><div class="nbinput docutils container">
@@ -1059,14 +1060,14 @@ integrate-and-fire neuron).</p>
 </section>
 <section id="4.-Example:-Using-sweep-data-from-the-Allen-Cell-Types-Database">
 <h2>4. Example: Using sweep data from the Allen Cell-Types Database<a class="headerlink" href="#4.-Example:-Using-sweep-data-from-the-Allen-Cell-Types-Database" title="Link to this heading">#</a></h2>
-<p>When creating the <a class="reference external" href="https://celltypes.brain-map.org/data">Cell-Type Database at the Allen Insitute</a>, a wide range of clamping stimuli was used in the process of optimizing the parameters for the thousands of human and mouse cell models. BMTK allows the option to download and import these stimuli directly into single and multi-cell simulations (for both BioNet and PointNet). Thus allowing users to apply the same conditions for their own models. Or as just a way to use much more advanced and
+<p>When creating the <a class="reference external" href="https://celltypes.brain-map.org/data">Cell-Type Database at the Allen Insitute</a>, a wide range of clamping stimuli were used in the process of optimizing the parameters for the thousands of human and mouse cell models. BMTK allows the option to download and import these stimuli directly into single and multi-cell simulations (for both BioNet and PointNet). This allows users to apply the same conditions for their own models, or as just a way to use much more advanced and
 realistic current-clamping stimuli that would be difficult to rebuild from scratch.</p>
 <section id="Step-1:-Downloading-the-data">
 <h3>Step 1: Downloading the data<a class="headerlink" href="#Step-1:-Downloading-the-data" title="Link to this heading">#</a></h3>
-<p>First step is determine which experimental conditions we want to replicate and which stimlus types to use. Different cells were in the Allen Cell Types Database were optimized and tested against different types current clamps. For example if we look at the electrophysiology page for <a class="reference external" href="https://celltypes.brain-map.org/experiment/electrophysiology/488683425">cell 488683425</a> we can see we have stimulus types including <code class="docutils literal notranslate"><span class="pre">Long</span> <span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">Noise</span></code>, <code class="docutils literal notranslate"><span class="pre">Ramp</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span> <span class="pre">Square</span></code> and <code class="docutils literal notranslate"><span class="pre">Square</span></code>. And for
-each types there are different <em>sweeps</em> where amplitudes and times were varied between trials:</p>
-<div><p><img alt="6690f28ede314f80a16547924c51c10d" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
-</div><p>If you click on the “<code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Data</span></code>” file it will download an ecephy.nwb file containing all the <em>sweep</em> available for said experiment. You just need to put it in a directory that can be accessed by BMTK. If you need a more programatically way to download multiple ecephy files you can use the AllenSDK, and BMTK also includes helper functions to download the data. You can run the following in a command-line:</p>
+<p>First step is to determine which experimental conditions we want to replicate and which stimulus types to use. Different cells in the Allen Cell Types Database were optimized and tested against different types of current clamps. For example if we look at the electrophysiology page for <a class="reference external" href="https://celltypes.brain-map.org/experiment/electrophysiology/488683425">cell 488683425</a> we can see we have stimulus types including <code class="docutils literal notranslate"><span class="pre">Long</span> <span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">Noise</span></code>, <code class="docutils literal notranslate"><span class="pre">Ramp</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span> <span class="pre">Square</span></code> and <code class="docutils literal notranslate"><span class="pre">Square</span></code>. And for
+each types there are different <em>sweeps</em> where amplitudes and times were varied (or not) between trials:</p>
+<div><p><img alt="6a0851f6e639494c878c12253578a78c" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
+</div><p>If you click on the “<code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Data</span></code>” button it will download an ephys nwb file containing all the <em>sweep</em> available for said experiment. You just need to put it in a directory that can be accessed by BMTK. If you need a more programtic way to download multiple such files you can use the AllenSDK, and BMTK also includes helper functions to download the data. You can run the following in a command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_ephys_data<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--download-dir<span class="o">=</span>ecephys_inputs
 </pre></div>
 </div>
@@ -1084,12 +1085,12 @@ each types there are different <em>sweeps</em> where amplitudes and times were v
 </pre></div>
 </div>
 </div>
-<p>Due to the size of the files and available internet speeds it may take some time to fully donwload the nwb file(s). But when it does it will save the file into the local <em>ephy_inputs/</em> directory.</p>
+<p>Due to the size of the files and available internet speeds it may take some time to fully download the nwb file(s). But when it does it will save the file into the local <em>ephy_inputs/</em> directory.</p>
 </section>
 <section id="(Optional)-Step-2:-Downloading-cell-model-data">
 <h3>(Optional) Step 2: Downloading cell model data<a class="headerlink" href="#(Optional)-Step-2:-Downloading-cell-model-data" title="Link to this heading">#</a></h3>
-<p>The downloaded ephys data can be used with any cell-type (even cells that are not from the Allen Cell-Types Database). However for testing and replication purposes you may want to run the downloaded ephys data on the original cell. If you click on <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">neuronal</span> <span class="pre">model</span></code> button on the page it will give you an option to download a possible GLIF Model (which can be ran using PointNet) or a Biophysical (ran using BioNet) model. This will download a zip file containing the <em>fit_parameters.json`
-which you can use as the</em> <strong>dynamics_params</strong> <em>in you SONATA network. Also for Biophysical models it will contain the file</em> reconstruction.swc* which is the <strong>morphology</strong> swc file for the specific cell. You can move these file(s) into their appropiate <em>components/</em> directory and rebuild/modify the SONATA network file so that <strong>dynamics_params</strong> and <strong>morphology</strong> points to the correct paths.</p>
+<p>The downloaded ephys data can be used with any cell-type (even cells that are not from the Allen Cell-Types Database). However for testing and replication purposes you may want to run the downloaded ephys data on the original cell. If you click on <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">neuronal</span> <span class="pre">model</span></code> button on the page it will give you an option to download a possible GLIF Model (which can be run using PointNet) or a Biophysical (run using BioNet) model. This will download a zip file containing the <em>fit_parameters.json</em>
+which you can use as the <strong>dynamics_params</strong> in you SONATA network. Also for Biophysical models it will contain the file <em>reconstruction.swc</em> which is the <strong>morphology</strong> swc file for the specific cell. You can move these file(s) into their appropriate <em>components/</em> directory and rebuild/modify the SONATA network file so that <strong>dynamics_params</strong> and <strong>morphology</strong> points to the correct paths.</p>
 <p>Alternatively you can use BMTK to download, move and rename the files for you. In the command line you can run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_model<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--model-dir<span class="o">=</span><span class="s2">&quot;components&quot;</span><span class="w"> </span>--model-type<span class="o">=</span><span class="s2">&quot;Biophysical - all active&quot;</span>
 </pre></div>
@@ -1105,7 +1106,7 @@ which you can use as the</em> <strong>dynamics_params</strong> <em>in you SONATA
 </section>
 <section id="Step-3:-Set-the-configuration">
 <h3>Step 3: Set the configuration<a class="headerlink" href="#Step-3:-Set-the-configuration" title="Link to this heading">#</a></h3>
-<p>To use the downloaded ephys.nwb file we just need to create an “inputs sections with <strong>module</strong> set to <code class="docutils literal notranslate"><span class="pre">iclamp</span></code> and <strong>input_type</strong> set to <code class="docutils literal notranslate"><span class="pre">allen</span></code>. Use the <strong>file</strong> option to point to the path of our downloaded nwb file. And finally we must select our <strong>sweep</strong> number. In this case we’ll use swepp #35 which is just a 1 second long-square current.</p>
+<p>To use the downloaded ephys.nwb file we just need to create an “inputs sections with <strong>module</strong> set to <code class="docutils literal notranslate"><span class="pre">iclamp</span></code> and <strong>input_type</strong> set to <code class="docutils literal notranslate"><span class="pre">allen</span></code>. Use the <strong>file</strong> option to point to the path of our downloaded nwb file. And finally we must select our <strong>sweep</strong> number. In this case we’ll use sweep #35 which is just a 1 second long-square current.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_allen&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
@@ -1173,9 +1174,9 @@ which you can use as the</em> <strong>dynamics_params</strong> <em>in you SONATA
 </section>
 <section id="5.-Example:-Extracellular-Stimulation">
 <h2>5. Example: Extracellular Stimulation<a class="headerlink" href="#5.-Example:-Extracellular-Stimulation" title="Link to this heading">#</a></h2>
-<div class="alert alert-block alert-info"><p>⚠️ NOTE: This feature will only work for in BioNet using morphologically detailed cells.</p>
-</div><p>The <em>BioNet</em> simulator has optional input stimulus an electrical field inpulse, thus allowing you to simulation of deep brain stimulation or transcranial magnetic stimulation. One more more electrodes (or a mesh) can be readily inserted and removed into most networks and used along side other stimuli through simple changes to the SONATA config. However, take note that this can only be applied to cells with a extracelluar condunctance, such as morphologically detailed “biophysical” cells or even
-simple single-compartment “soma” cells, but won’t work for intergrate and fire type neurons in the network.</p>
+<div class="alert alert-block alert-info"><p>⚠️ NOTE: This feature will only work in BioNet using morphologically detailed cells.</p>
+</div><p>The <em>BioNet</em> simulator has optional input stimulus - an electric field impulse, thus allowing you to simulate simulation of, e.g., deep brain stimulation. One or more stimulating electrodes (or a mesh) can be readily inserted and removed into most networks and used along side other stimuli through simple changes to the SONATA config. However, take note that this can only be applied to cells with biophysical conductances, such as morphologically detailed “biophysical” cells or even simple
+single-compartment “soma” cells, but won’t work for integrate-and-fire type neurons.</p>
 <p>When extracellular stimulation(s) are inserted into a simulation, the effect the generated filed has on the extracellular membrane of each cell compartment will depend on the geometric relationship between the cell and the electrode(s). Thus it is important that we specify the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> attributes for each cell, plus make sure the cell is rotated properly (as specified by attributes <strong>rotation_angle_x</strong>, <strong>rotation_angle_y</strong>, <strong>rotation_angle_z</strong>). Once we have such a network (see
 <em>build_network.xstim.py</em>) we can go ahead and insert an extracellular stimulation into a simulation by adding to the <strong>“inputs”</strong> section of the SONATA config like such:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1201,10 +1202,10 @@ simple single-compartment “soma” cells, but won’t work for intergrate and 
 </div>
 <ul class="simple">
 <li><p>You must set <strong>module</strong> to “xstim” and <strong>input_type</strong> to “lfp” to signal to bmtk the mod of stimulus to apply</p></li>
-<li><p>The <strong>node_set</strong> is used to filter out which subset of cells in the network to apply the xstim. In this case we want to apply it to all “biophysical” type cells (in this example all are cells are “biophysical”, but in mixed networks it’s important otherwise bmtk can fail when applying stimlus to “point-neuron” type cells).</p></li>
-<li><p>Set the extracellular resistance between the electrode(s) and the cells to</p></li>
+<li><p>The <strong>node_set</strong> is used to filter out which subset of cells in the network to apply the xstim. In this case we want to apply it to all “biophysical” type cells (in this example all cells are “biophysical”, but in mixed networks it’s important to keep track of which cells are biophysical and which are not - otherwise bmtk can fail when applying stimlus to “point-neuron” type cells).</p></li>
+<li><p>Set the extracellular resistance between the electrode(s) and the cells to 300 nOhms.</p></li>
 <li><p>The <strong>waveform</strong> is set to generate a sin-wave shaped stimuli, starting at 1000 ms (<strong>del</strong>) that will run for 2000 ms (<strong>dur</strong>) with a maximum amplitude of .100 nA (<strong>amp</strong>).</p></li>
-<li><p>Lastly the <strong>positions_file</strong> is used to specify the coordinates and rotations of the electrodes. It should be a space-separated file with each row being the location of a different electrode. In our case we are only applying a single electrode</p></li>
+<li><p>Lastly the <strong>positions_file</strong> is used to specify the coordinates and rotations (if using a mesh) of the electrodes. It should be a space-separated file with each row being the location of a different electrode. In our case we are only applying a single electrode</p></li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -1317,7 +1318,7 @@ simple single-compartment “soma” cells, but won’t work for intergrate and 
 </div>
 <section id="More-advanced-wave-forms">
 <h3>More advanced wave-forms<a class="headerlink" href="#More-advanced-wave-forms" title="Link to this heading">#</a></h3>
-<p>In the above example we set it so the stimulus will generate a sin-wave at the electrode site. BMTK has a number of built-in shapes available, including a sin-wave a a direct-current (<strong>waveform</strong>: “dc”)</p>
+<p>In the above example we set it so the stimulus will generate a sine-wave at the electrode site. BMTK has a number of built-in shapes available, including a sine-wave and a direct-current (<strong>waveform</strong>: “dc”)</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span>

@@ -51,7 +51,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/NetworkBuilder_Intro';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 1: Single Cell Simulation with Current Injection (with BioNet)" href="tutorial_01_single_cell_clamped.html" />
+    <link rel="next" title="Tutorial: Single Cell Simulation with Current Injection (with BioNet)" href="tutorial_01_single_cell_clamped.html" />
     <link rel="prev" title="Tutorials and Examples" href="../tutorials.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -664,7 +665,7 @@ mcortex_node_types.h5
 <section id="Unique-node-properties">
 <h2>Unique node properties<a class="headerlink" href="#Unique-node-properties" title="Link to this heading">#</a></h2>
 <p>Suppose we have some properties that are unqiue to each individual nodes within a node-type. Instead of calling add_nodes N times, we can just pass in a list of size N.</p>
-<p>In the following example we have two types of nodes, 10 biophysical pyramidal type cells and 5 point izhikevich type cells. For the pyramidal cells we have a new parameter ‘tuning_angle’ which is uniquly assigned a different value to each cell. Similarly for the Izhikevich cells the param_a and param_b parameters are now unqily assigned.</p>
+<p>In the following example we have two types of nodes, 10 biophysical pyramidal type cells and 5 point izhikevich type cells. For the pyramidal cells we have a new parameter ‘tuning_angle’ which is uniquely assigned a different value to each cell. Similarly for the Izhikevich cells the param_a and param_b parameters are now uniquely assigned.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -988,7 +989,7 @@ mcortex_node_types.h5
 <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>These are properties used by BioNet/NEURON to build synapses. Like with nodes, these properties are the same for all 50 x 12 = 600 synapses. These parameters are optional, and depending on the requirements of the model/simulator, we can add or remove parameters are needed.</p>
+<p>These are properties used by BioNet/NEURON to build synapses. Like with nodes, these properties are the same for all 50 x 12 = 600 synapses. These parameters are optional, and depending on the requirements of the model/simulator, we can add or remove parameters as needed.</p>
 <p>After building and saving the edges, you’ll see in the network folder two edge files were created; mocrtex2_mcortex2_edges.h5 and mocrtex2_mcortex2_edge_types.csv. Like nodes and node-types, we have edges and edge-types - although adding individual edge properties is a bit more complex.</p>
 <section id="Custom-connection-rules">
 <h3>Custom connection rules<a class="headerlink" href="#Custom-connection-rules" title="Link to this heading">#</a></h3>
@@ -1030,7 +1031,7 @@ connections for a pair the function should return 0.</p>
 <section id="Individual-edge-properties">
 <h3>Individual edge properties<a class="headerlink" href="#Individual-edge-properties" title="Link to this heading">#</a></h3>
 <p>So far the edge properties like syn_weight and delay are being stored in the edge_types.cvs file. This means that all synapses created by the same add_edges call will share these values. Often this is desirable - the bmtk simulators have a way of altering synaptic weight during run-time. But other times we may want to have a unique syn_weight, or other property, for each individual connection.</p>
-<p>Unfortantely we can’t just pass in a list since, if you’re using a custom connection_rule, it’s hard to predetermine the total number of connections. Instead we need to again create a custom rule for setting individual synaptic parameters inside the edges.h5 file</p>
+<p>Unfortunately we can’t just pass in a list since, if you’re using a custom connection_rule, it’s hard to predetermine the total number of connections. Instead we need to again create a custom rule for setting individual synaptic parameters inside the edges.h5 file</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -1063,7 +1064,7 @@ connections for a pair the function should return 0.</p>
     <span class="k">return</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">sec_id</span>
 </pre></div>
 </div>
-<p><strong>Note</strong>: Using add_properties will slow-down the network build-time and increase the size of the resulting network. If a source-target pair has N synpatic connection, the builder will call my_fnc N times, and it will store N different synaptic connections in the edges.h5. It is usually best not to use add_properties and instead let BioNet, PointNet, etc. adjust syn_weight at run-time</p>
+<p><strong>Note</strong>: Using add_properties will slow-down the network build-time and increase the size of the resulting network. If a source-target pair has N synaptic connection, the builder will call my_fnc N times, and it will store N different synaptic connections in the edges.h5. It is usually best not to use add_properties and instead let BioNet, PointNet, etc. adjust syn_weight at run-time</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 8: Auditory Stimuli Inputs using FilterNet &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Auditory Stimuli Inputs using FilterNet &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Additional Tutorials" href="../ad_tutorials.html" />
-    <link rel="prev" title="Tutorial 7: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
+    <link rel="prev" title="Tutorial: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chapter 8: Auditory Stimuli Inputs using FilterNet</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Auditory Stimuli Inputs using FilterNet</span></li>
   </ul>
 </nav>
 </div>
@@ -432,15 +433,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Chapter-8:-Auditory-Stimuli-Inputs-using-FilterNet">
-<h1>Chapter 8: Auditory Stimuli Inputs using FilterNet<a class="headerlink" href="#Chapter-8:-Auditory-Stimuli-Inputs-using-FilterNet" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Auditory-Stimuli-Inputs-using-FilterNet">
+<h1>Tutorial: Auditory Stimuli Inputs using FilterNet<a class="headerlink" href="#Tutorial:-Auditory-Stimuli-Inputs-using-FilterNet" title="Link to this heading">#</a></h1>
 <ul class="simple">
 <li><p>Allows users to use audio wav files as stimuli for virtual neurons with filters that detect spectral and temporal modulation</p></li>
 <li><p>Users need to install pycochleagram to run this <a class="github reference external" href="https://github.com/mcdermottLab/pycochleagram">mcdermottLab/pycochleagram</a> <a class="reference external" href="https://readthedocs.org/projects/pycochleagram/">https://readthedocs.org/projects/pycochleagram/</a></p></li>
 </ul>
 <p>In the first part of the tutorial, we will make a simple auditory filter virtual neuron. For convenience, we will clone it five times to simulate 5 trials for the creation of a peristimulus time histogram.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -493,136 +494,8 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Invalid MIT-MAGIC-COOKIE-1 keyWARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_aud/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_aud/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_aud/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:07,272 [INFO] Created log file
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Created log file
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-here
-[0.00000000e+00 3.29638634e-01 6.59277267e-01 ... 7.99934072e+03
- 7.99967036e+03 8.00000000e+03]
-(24270,)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/ping/venv/bmtk_env/lib/python3.8/site-packages/pycochleagram-0.1-py3.8.egg/pycochleagram/cochleagram.py:128: RuntimeWarning: input arg &#34;hi_lim&#34; exceeds nyquist limit for max frequency; ignore with &#34;strict=False&#34;
-  filts, hz_cutoffs, freqs = erb.make_erb_cos_filters_nx(batch_signal.shape[1],
-/home/ping/venv/bmtk_env/lib/python3.8/site-packages/pycochleagram-0.1-py3.8.egg/pycochleagram/cochleagram.py:135: RuntimeWarning: divide by zero encountered in log10
-  freqs_to_plot = np.log10(freqs)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:19,526 [INFO] Normalizing auditory input to (-1.0, 1.0).
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Normalizing auditory input to (-1.0, 1.0).
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:19,530 [INFO] Building cells.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Building cells.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:19,544 [INFO] Evaluating rates.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Evaluating rates.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:21,298 [INFO] Max firing rate: 75.98156305803069
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Max firing rate: 75.98156305803069
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:21,307 [INFO] Done.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Done.
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
@@ -644,29 +517,6 @@ INFO:FilterNetIOUtils:Done.
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/tmp/ipykernel_350175/795480387.py:10: MatplotlibDeprecationWarning: shading=&#39;flat&#39; when X and Y have the same dimensions as C is deprecated since 3.3.  Either specify the corners of the quadrilaterals with X and Y, or pass shading=&#39;auto&#39;, &#39;nearest&#39; or &#39;gouraud&#39;, or set rcParams[&#39;pcolor.shading&#39;].  This will become an error two minor releases later.
-  ax0.pcolormesh(times*1000, frequencies/1000, np.log(spectrogram))
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_auditory_filternet_2_1.png" src="../_images/tutorials_auditory_filternet_2_1.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/tutorials_auditory_filternet_2_2.png" src="../_images/tutorials_auditory_filternet_2_2.png" />
-</div>
-</div>
 <p>Let’s take a look in the simulation_config.json file, where the stimulus is controlled:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;movie&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -683,11 +533,11 @@ INFO:FilterNetIOUtils:Done.
 <p>To change the stimulus to a WAV file of your choice, point to the relative path of the file under “data_file”.</p>
 <p>The filter carrier consists of a sinusoidal modulation in 2D akin to a plane wave. This carrier is multiplied by a Gaussian envelope in the spectral axis and an asymmetric scaled gamma distribution function in the temporal axis to allow for faster onset of responses and a slower tail decay.</p>
 <p>Filters with very little spectral modulation have a “vertical” appearance and respond preferentially to broadband temporal edges such as sound onsets. Filters with very little temporal modulation have a “horizontal” appearance and respond preferentially to sustained spectral edges. If the nodes are ordered by their center frequencies, we can construct different “views” of the stimulus (speech in this case) through these different types of filters.</p>
-<div><p><img alt="db5be6da5ad142a28de23e1e53505f5b" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
+<div><p><img alt="c509c044e4c64bbb888aed3719fb45b3" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
 </div><img alt="Responses" src="../_images/Responses_to_diff_scales_and_orientations.png" />
 <p>Now we will build a larger bank of filters with randomly assigned properties. Beware that if n_filts is set larger, the code could take a long time to run in the notebook.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_filts</span> <span class="o">=</span> <span class="mi">100</span>
@@ -750,124 +600,6 @@ INFO:FilterNetIOUtils:Done.
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:21,719 [INFO] Created log file
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Created log file
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-here
-[0.00000000e+00 3.29638634e-01 6.59277267e-01 ... 7.99934072e+03
- 7.99967036e+03 8.00000000e+03]
-(24270,)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/ping/venv/bmtk_env/lib/python3.8/site-packages/pycochleagram-0.1-py3.8.egg/pycochleagram/cochleagram.py:128: RuntimeWarning: input arg &#34;hi_lim&#34; exceeds nyquist limit for max frequency; ignore with &#34;strict=False&#34;
-  filts, hz_cutoffs, freqs = erb.make_erb_cos_filters_nx(batch_signal.shape[1],
-/home/ping/venv/bmtk_env/lib/python3.8/site-packages/pycochleagram-0.1-py3.8.egg/pycochleagram/cochleagram.py:135: RuntimeWarning: divide by zero encountered in log10
-  freqs_to_plot = np.log10(freqs)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:33,431 [INFO] Normalizing auditory input to (-1.0, 1.0).
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Normalizing auditory input to (-1.0, 1.0).
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:33,435 [INFO] Building cells.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Building cells.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:27:33,619 [INFO] Evaluating rates.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Evaluating rates.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:28:04,374 [INFO] Max firing rate: 76.56796640468757
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Max firing rate: 76.56796640468757
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-2024-03-28 19:28:04,375 [INFO] Done.
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-INFO:FilterNetIOUtils:Done.
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:

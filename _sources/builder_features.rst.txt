@@ -7,7 +7,7 @@ NetworkBuilder Methods
 
 
 Iterating and Filtering Nodes from a Network using the ``nodes()`` Method
-------------------------------------------------------------------
+-------------------------------------------------------------------------
 
 You can use the The :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` method 
 of the ``NetworkBuilder`` class to iterate over the nodes stored in a network. The ``nodes()`` method
@@ -282,7 +282,7 @@ reproducibility of network results.
 
 
 Explicitly setting afferent synapse section and position
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 The more reproducible alternative is to set the parameters **afferent_section_id** and **afferent_section_pos**, which 
 are reserve SONATA keywords recognized by other tools, for every synapse. To help with this you can use the 

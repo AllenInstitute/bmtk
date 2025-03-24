@@ -479,7 +479,7 @@ Useful Edge Parameters
       "efferent_section_id", "location of (NEURON) section where the connection will target"
       "efferent_section_pos", "distance within the (NEURON) section where synapse will target"
       "target_sections", "A list of neuronal sections where the synapse will target (soma, axon, apical, basal). When used in place of section_id, BioNet will randomly select a section on the target neuron"
-      "distance_range", "A range in :math:'\mu'm of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron."
+      "distance_range", "A range in microns of the distance from the soma, used along with target_sections param to randomly target certain areas of the post-synaptic neuron."
       "weight_function", "Name of the detailed morphology file (usually SWC)."
 
 

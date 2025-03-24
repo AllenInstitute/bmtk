@@ -428,30 +428,30 @@
 <a class="reference internal image-reference" href="_images/bmtk_architecture_filternet_highlight.jpg"><img alt="_images/bmtk_architecture_filternet_highlight.jpg" src="_images/bmtk_architecture_filternet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" />
 </a>
 </figure>
-<p>FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
+<p>FilterNet simulates the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
 uses neural filters to simulate firing rates and spike trains over a given time course and stimuli. It is based on a
 <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson cascade model</a>
 with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
-optimized to closely mimic mammalian thalamic cells:</p>
+optimized to mimic mammalian thalamic cells:</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/lnp_model.jpg"><img alt="_images/lnp_model.jpg" src="_images/lnp_model.jpg" style="width: 768.6px; height: 204.6px;" />
 </a>
 </figure>
-<p>FilterNet is very useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
+<p>FilterNet is useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
 PointNet, or PopNet. The procedure is as follows:</p>
 <ol class="arabic simple">
-<li><p>Generate the receptive field network.</p></li>
-<li><p>Use FilterNet to play images and movies against the receptive field and generate responses for each unit.</p></li>
-<li><p>Connect the receptive field network created in step #1 to some higher-level cortical circuit.</p></li>
-<li><p>Use the spike trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.</p></li>
+<li><p>Generate filter neurons with a receptive field for each.</p></li>
+<li><p>Use FilterNet to play images and movies to the receptive fields and generate responses for each unit.</p></li>
+<li><p>Connect the filter neurons created in step #1 to another network of neurons to simulate.</p></li>
+<li><p>Use the spike trains generated in Step #2 to see how the network of neurons would respond to different stimuli.</p></li>
 </ol>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading">#</a></h2>
-<p>Currently, FilterNet allows for a number of different types of custom and pre-aligned types of stimuli. To change the
-type of stimuli requires updating the inputs section in the simulation_config.json file like above.</p>
+<p>Currently, FilterNet allows for a number of different types of custom and pre-defined types of stimuli. Changing the
+type of stimuli requires updating the inputs section in the <em>simulation_config.json</em> file.</p>
 <section id="movie">
 <h3>Movie<a class="headerlink" href="#movie" title="Link to this heading">#</a></h3>
-<p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a npy file.</p>
+<p>Allows playing a custom movie file in the form of a three-dimensional matrix saved in a npy file.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">   </span><span class="nt">&quot;movie_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
@@ -466,10 +466,10 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>movie: Link to a 3-dimensional (time, x, y) matrix representing a movie (where time is equal to the number of frames in the movie).</p></li>
+<li><p>movie: Link to a 3-dimensional (time, y, x) matrix representing a movie (where time is equal to the number of frames in the movie).</p></li>
 <li><p>frame_rate: frames per second</p></li>
 <li><p>normalize: Allow the option to normalize the input movie to have contrast values between [-1.0, +1.0].
-* If set to true then FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
+* If set to true, FilterNet will attempt to infer the current range of the original movie from the data (most movies use contrast between [0, 255] or [0.0, 1.0].
 * If the original movie has a unique range, users can specify the min/max contrast for the original movie <code class="docutils literal notranslate"><span class="pre">`&quot;normalize&quot;:</span> <span class="pre">[0.0,</span> <span class="pre">100.0]`</span></code></p></li>
 <li><p>y_dir: Direction of the y-axis in the movie. Options are “up” or “down” (default: “down”).</p></li>
 <li><p>flip_y: Flip the y-axis of the movie (default: false).</p></li>
@@ -501,9 +501,9 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 <li><p>grapy_screen_dur: displays an optional gray screen for a number of seconds before the grating starts. (default: 0)</p></li>
 <li><p>cpd: spatial frequncy represented as cycles per degree. (default: 0.05)</p></li>
 <li><p>temporal_f: temporal frequency in Hz. (default: 4.0)</p></li>
-<li><p>theta: orientation angle, in degrees (default: 45.0)</p></li>
+<li><p>theta: angle of the drifting gratings, in degrees (default: 45.0)</p></li>
 <li><p>phase: temporal phase, in degrees (default: 0.0)</p></li>
-<li><p>contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)</p></li>
+<li><p>contrast: the maximum contrast, must be between 0 and 1.0 (default: 1.0)</p></li>
 <li><p>degrees_per_pixel: sampling pitch of the movie in degrees per pixel (default: 1 / (cpd * 10))</p></li>
 <li><p>y_dir: Direction of the y-axis in the movie. Options are “up” or “down” (default: “down”).</p></li>
 </ul>
@@ -561,9 +561,9 @@ regardless of how the Y-axis is defined.</p>
 </ul>
 </section>
 </section>
-<section id="optimizations-techniques">
-<h2>Optimizations Techniques<a class="headerlink" href="#optimizations-techniques" title="Link to this heading">#</a></h2>
-<p>The time required to generate spikes will depending on the number of cells in the network, the stimulus type, complexity of the cell-models; among
+<section id="optimization-techniques">
+<h2>Optimization Techniques<a class="headerlink" href="#optimization-techniques" title="Link to this heading">#</a></h2>
+<p>The time required to generate spikes will depend on the number of cells in the network, the stimulus type, complexity of the cell-models; among
 other factors. The full simulation time can take a few seconds to a few hours. The following options may sometimes be utilized in order to
 significantly speed up the process.</p>
 <section id="parallelization-with-mpi">
@@ -589,6 +589,8 @@ environment:</p>
 <p><code class="docutils literal notranslate"><span class="pre">`bash</span>
 <span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numba</span>
 <span class="pre">`</span></code></p>
+<p>If Numba is installed, FilterNet will automatically use it to compile some time-consuming functions.
+It will also detect if MPI is used simultaneously and will turn off Numba’s parallelization to avoid conflicts.</p>
 </section>
 </section>
 </section>
@@ -623,7 +625,7 @@ environment:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#looming">Looming</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizations-techniques">Optimizations Techniques</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimization-techniques">Optimization Techniques</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization-with-mpi">Parallelization with MPI</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numba">Numba</a></li>
 </ul>

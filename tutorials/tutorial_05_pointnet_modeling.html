@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial 5: Point-Neuron Network Models (with PointNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Point-Neuron Network Models (with PointNet) &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
   
   
   
@@ -51,8 +51,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tutorial_05_pointnet_modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial 6: Population Level Modeling (with PopNet)" href="tutorial_06_population_modeling.html" />
-    <link rel="prev" title="Tutorial 4: Multi-Population Recurrent Network (with BioNet)" href="tutorial_04_multi_pop.html" />
+    <link rel="next" title="Tutorial: Population Level Modeling (with PopNet)" href="tutorial_06_population_modeling.html" />
+    <link rel="prev" title="Tutorial: Multi-Population Recurrent Network (with BioNet)" href="tutorial_04_multi_pop.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.1.1" />
@@ -371,7 +371,8 @@
 <li class="toctree-l2"><a class="reference internal" href="Mouse_L4.html">Mouse V1 Layer IV example</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks and Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Released Models</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples">BMTK Examples Repository</a></li>
 </ul>
 </div>
 </nav></div>
@@ -415,7 +416,7 @@
     
     <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials and Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial 5: Point-Neuron Network Models (with PointNet)</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorial: Point-Neuron Network Models (with PointNet)</span></li>
   </ul>
 </nav>
 </div>
@@ -432,8 +433,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)">
-<h1>Tutorial 5: Point-Neuron Network Models (with PointNet)<a class="headerlink" href="#Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)" title="Link to this heading">#</a></h1>
+  <section id="Tutorial:-Point-Neuron-Network-Models-(with-PointNet)">
+<h1>Tutorial: Point-Neuron Network Models (with PointNet)<a class="headerlink" href="#Tutorial:-Point-Neuron-Network-Models-(with-PointNet)" title="Link to this heading">#</a></h1>
 <p>In this chapter we will create a heterogeneous network of point-model neurons and use the PointNet simulator which will run the network using the <a class="reference external" href="https://nest-simulator.readthedocs.io/en/stable/index.html">NEST simulator</a>. As with the previous BioNet examples, we will create both a internal recurrently-connected network of different node types and an external network of “virtual” neurons that will drive the internal neurons. We’ll also show how to drive network activity by using a current
 clamp.</p>
 <p>PointNet, like BioNet and the other BMTK simulators, uses the <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master">SONATA data format</a> to represent networks, set up simulations, and save results. Thus the tools used to build and display biophysically detailed networks in the previous chapters will work very similarily but the parameters will differ a bit.</p>
@@ -442,7 +443,7 @@ clamp.</p>
 <li><p>bmtk</p></li>
 <li><p>NEST 2.11+</p></li>
 </ul>
-<p>Scripts for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter06">sources/chapter05</a>.</p>
+<p>Scripts for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter05">sources/chapter05</a>.</p>
 <p>For more information on the PointNet Simulator, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/pointnet.html">PointNet Overview</a>.</p>
 <p>For more information on BMTK and SONATA format, please see the <a class="reference external" href="https://alleninstitute.github.io/bmtk/user_guide.html">Overview of BMTK</a> and <a class="reference external" href="https://alleninstitute.github.io/bmtk/builder.html">Network Builder</a> pages.</p>
 <section id="1.-Building-the-network">
@@ -795,7 +796,7 @@ clamp.</p>
 <li><p>Use different <strong>dynamics_parameter</strong> files</p></li>
 <li><p>It’s important to readjust <strong>syn_weight</strong> as values appropriate for NEURON based models are oftern wrong for NEST based models.</p></li>
 </ul>
-<p>Notice we don’t have to change any of the hdf5 files. The network topology remains the same making it a powerful tool for comparing networks at different levels of resolution.</p>
+<p>Notice we don’t have to change any of the hdf5 files. The network topology remains the same. This demonstrates the power of such an approach for comparing networks at different levels of resolution.</p>
 </section>
 <section id="Building-a-model-from-scratch">
 <h3>Building a model from scratch<a class="headerlink" href="#Building-a-model-from-scratch" title="Link to this heading">#</a></h3>
@@ -1292,7 +1293,7 @@ INFO:NestIOUtils:Done.
 </section>
 <section id="4.-Analyzing-results">
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Link to this heading">#</a></h2>
-<p>Results of the simulation, as specified in the config file, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot:</p>
+<p>Results of the simulation, as specified in the config file, are saved into the output directory. Using the analyzer functions, we can do things like generating a raster plot:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
@@ -1370,10 +1371,10 @@ can read using hdf5 or bmtk like below:</p>
 </section>
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
-<p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Bionet</span></a>.</p>
+<p>A common use case is to mimick a network where the firing rate of select cells are being supressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Bionet</span></a>.</p>
 <p>The <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells">‘point_120cells’ network</a> in the BMTK examples folder consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows:</p>
-<p><img alt="41ce2f5e478841e7bcefed247e4f6be0" src="../_images/raster_120cells_orig.png" /></p>
-<p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
+<p><img alt="7b791326e1cd4c359763356c30aa297c" src="../_images/raster_120cells_orig.png" /></p>
+<p>To stimulate some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
@@ -1389,7 +1390,7 @@ can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to excite. However it is also possible to get a subset using a specific property - for example if we wanted to only select inhibitory L2/3 cells:</p>
+<p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to stimulate. However it is also possible to get a subset using a specific property - for example if we wanted to only select inhibitory L2/3 cells:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
@@ -1399,7 +1400,7 @@ can read using hdf5 or bmtk like below:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>To simulate depression of cells 40 to 49 we will add another current_clamp but with a large negative current:</p>
+<p>To simulate suppression of cells 40 to 49 we will add another current_clamp but with a large negative current:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
@@ -1416,7 +1417,15 @@ can read using hdf5 or bmtk like below:</p>
 </pre></div>
 </div>
 <p>After we rerun the simulation:</p>
-<p><img alt="e958e0e7564a4eb3b77cb7e588f0404f" src="../_images/raster_120cells_perturbed.png" /></p>
+<p><img alt="4f54002e2d6f4f5f98cb51b549718285" src="../_images/raster_120cells_perturbed.png" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 </section>

@@ -16,7 +16,8 @@ Tutorials and Examples
     FilterNet: Full-field flashing movie <tutorials/tutorial_07_filter_models>
     Auditory FilterNet: Generating stimuli from auditory input <tutorials/auditory_filternet>
     ad_tutorials
-    examples
+    Released Models <examples>
+    BMTK Examples Repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples>
 
 
 Basic Usage
@@ -25,45 +26,43 @@ Basic Usage
 .. grid:: 1 1 3 3
     :gutter: 1
 
-    .. grid-item-card::  Overview
-        :link: user_guide.html
+    .. grid-item-card::  Tools for Modeling: The Brain Modeling Toolkit and SONATA data format
+        :link: tutorials/Mouse_L4.html
 
-        A high level look at the BMTK workflow, SONATA data-format, and how to 
-        create an environment for network modeling and simulation
+        A full guide for how to build, simulate, and analyze brain networks with (BMTK) using a scaled-down model 
+        of the mouse visual primary cortex layer 4 system and a variety of simple and complex stimuli.
 
 
-    .. grid-item-card:: Building Networks models with the BMTK NetworkBuilder 
-        :link: builder.html
+    .. grid-item-card:: BMTK Builder (A Quick Introduction) 
+        :link: tutorials/NetworkBuilder_Intro.html
 
-        Using the BMTK NetworkBuilder to create SONATA based network models for use in simulation and analysis
+        A in-depth tutorial for how to use the BMTK Network Builder module to create and save brain networks models
+        across differfent scales and levels-of-resolution.
 
        
-    .. grid-item-card:: Simulating biologically detailed networks
-        :link: bionet.html
+    .. grid-item-card:: Multi-Population Recurrent Network (with BioNet)
+        :link: tutorials/tutorial_04_multi_pop.html
 
         How to use BMTK BioNet to run simulations of networks of biophyscially realistic compartmental
-        cell models.        
+        cell models.
 
 
-    .. grid-item-card:: Simulating point-neuron networks with PointNet
-        :link: pointnet.html
+    .. grid-item-card:: Point-Neuron Network Models (with PointNet)
+        :link: tutorials/tutorial_05_pointnet_modeling.html
 
         How to use BMTK PointNet for running simulation of single point-neuron models.
 
 
-    .. grid-item-card:: Generating releastic sensory stimuli with FilterNet
-        :link: filternet.html
+    .. grid-item-card:: Modeling the Visual Field (with FilterNet)
+        :link: tutorials/tutorial_07_filter_models.html
 
         Use BMTK FilterNet to convert stimuli into a series of spikes for analysis and network 
         stimuli.
 
+    .. grid-item-card:: Population Level Modeling (with PopNet)
+        :link: tutorials/tutorial_06_population_modeling.html
 
-    .. grid-item-card:: Analyzing simulation results
-        :link: analyzer.html
-
-        How to use bmtk to fetch data from simulation results, plot and get statistics.
-
-
+        How to use BMTK PopNet for running simulation of populations and population firing rates using DiPDE.
 
 
 More Features
@@ -72,20 +71,205 @@ More Features
 .. grid:: 1 1 3 3
     :gutter: 1
 
-    .. grid-item-card:: Parallelization and Threading Options 
+    .. grid-item-card:: Tools for Generating Cell Placements
+        :link: tutorials/cell_placement.html
 
-        Options for running large-scale simulations taking advantage of multiple cores and Threading
-        with HPC
+        * Advanced options and functions for placing cells when building a network using BMTK Network Builder.
+        * Importing cell locations using Allen Common Coordinate Framework with NNRD files.
 
-    .. grid-item-card:: Advanced Stimulus for simulations 
+    .. grid-item-card:: Auditory Stimuli Inputs using FilterNet
+        :link: tutorials/auditory_filternet.html
 
-        More options for input stimulus to simulations
+        How to use FilterNet module to use audio wav files as stimuli for virtual neurons with filters that detect 
+        spectral and temporal modulation
 
 
-    .. grid-item-card:: Advanced simulation recordings 
+    .. grid-item-card:: Synaptic Plasticity in Pointnet (STP, Facilitation, Depression, STDP, and Others) 
+        :link: tutorials/dynamic_synapses.html
 
-        Includes voltage. LFP, synapse recording
+        * static synapse
+        * adjusting parameters in PointNet (NEST)
+        * STDP and STP synpatic models in PointNet (NEST)
 
-    .. grid-item-card:: Customized Python  
+    .. grid-item-card:: Generating Spike Trains with a Refractory Period
+        :link: tutorials/dynamic_synapses.html
 
-        Creating modules
+        Using built-in Spike Generator process to create spike trains (for analysis and simulation) with Poisson and 
+        Gamma based distributions with
+
+        * homogeneous firing rates 
+        * Heterogeneous firing-rates
+        * built-in refractor period 
+    
+    .. grid-item-card:: Replaying Parts of a Simulation
+        :link: tutorials/bionet_disconnected_sims.html
+
+        * Use activity of previous recurrent recordings for input to simulation.
+        * Allows you to capture and separate out network activity not generated by external stimulus.
+        * Can also select subpopulations of cells and synapses to segment subnetwork and motif activity within a larger network.
+
+    .. grid-item-card:: Using Customized and External Cell and Channel Models in BioNet
+        :link: tutorials/Ch_External_Models.html
+
+        * Importing NEURON HOC template cell models.
+        * Overwriting and appending to default cell model parameters and mechanisms.
+        * Writing custom cell models in Python.
+        * Importing customized channels and ion mechanisms into existing models.
+
+    .. grid-item-card:: Extending PointNet Networks and Simulation with External and Customized Models
+        :link: tutorials/Ch_NEST_Cusom_Models.html
+
+        * Using Built-in NEST cell models.
+        * Overridding cell model instantiation.
+        * Custom cell models with NESTML
+
+    .. grid-item-card:: Extending PointNet Networks and Simulation with External and Customized Models
+        :link: tutorials/Ch_NEST_Cusom_Models.html
+
+        * Using Built-in NEST cell models.
+        * Overridding cell model instantiation.
+        * Custom cell models with NESTML
+
+    .. grid-item-card:: Advanced Methods for Driving your Network with Synaptic Spike-trains
+        :link: tutorials/Ch_advanced_spikes_input.html
+
+        * How to create you're own pregenerated spike-train files using SONATA, CSV, or NWB files.
+        * Write your own python function to dynamically generate input spike-trains before or during simulation.
+
+    .. grid-item-card:: Advanced Stimulus Options
+        :link: tutorials/Ch_advanced_stim.html
+
+        * Advanced Options for setting current clamp stimulus in a simulation.
+        * Voltage Clamping stimulus.
+        * Use Allen Cell-Types intracullar experimental stimuli (sweep) for a simulation.
+        * Extracellular stimulus input 
+
+    .. grid-item-card:: Advanced Stimulus Options
+        :link: tutorials/Ch_extracellular.html
+
+        * Recording single and group cell contribution to a extracellular electrode or mesh.
+        * Setting extracellular resistance.
+        * Calculating Current Source Density.
+
+    .. grid-item-card:: External Resources for Large-Scale Network Modeling
+        :link: tutorials/Ch_extracellular.html
+
+        * Running BMTK on the Neuroscience Gateway (NSG).
+
+
+`BMTK Example Networks <https://github.com/AllenInstitute/bmtk/tree/develop/examples>`__
+========================================================================================
+
+The `BMTK github repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples>`__ also includes a number of 
+examples models that showcase the numerious capabilities and features supported by BMTK, each sub-directory containing 
+a different model including necessary files to build, simulate, and analyize. While most of these are small toy models 
+designed to run quickly on one's machine, they can provide a good jumping off point for building large more realistic 
+networks, plus more concrete examples of how to use BMTK.
+
+.. list-table::
+  :header-rows: 1
+
+  * - name
+    - description
+    - features
+  * - `bio_14cells/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_14cells>`__
+    - A small network of 14 cells - 10 multi-compartment biophysically detailed cells and 4 point integrate-and-fire cells - called V1. Recieves input from two networks of virtual cells (spike-trains) - LGN and TW.
+    - | BioNet
+      | Builder
+  * - `bio_1cell/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_1cell>`__
+    - A single excitatory cell that is stimulated by current clamps or virtual synapses
+    - | BioNet
+      | Builder
+      | IClamp
+  * - `bio_450cells/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_450cells>`__
+    - This is a small example network of a 450 cell simulation based on the 45,000 mouse layer 4 network described in Arkhipov et. al. 2018. Of the cells 180 are biophysically detailed multicompartment cells downloaded from the Allen Cell-Types database, the remaining are point integrate-and-fire neuron models. The network is driven by an external network of virtual nodes/spike-trains
+    - | BioNet
+      | Builder
+      | LFP/ECP
+      | Membrane (V)
+  * - `bio_450cells_replay/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_450cells_replay>`__
+    - This is a small example network of a 450 cell as above, but used to `replay` module for recreating and isolating network activity of different subsystems.
+    - | BioNet
+      | Network Replay 
+  * - `bio_advanced_stimuli/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_advanced_stimuli>`__
+    - A small toy network with various advanced options for stimulation.
+    - | BioNet
+      | Extracellular Stimulation
+      | IClamp 
+      | Voltage Clamps
+      | Spontaneous Stimuli
+  * - `bio_all_active_sweep/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_all_active_sweep>`__
+    - An example of using Allen Institute **All Active** cells models, recreating Allen Cell-Types Sweep experiments.
+    - | BioNet
+      | model_processing
+      | Allen Cell-Types Database
+  * - `bio_comsol/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_comsol>`__
+    - An example of advanced extracellular network stimulation using COMSOL physics files.
+    - | BioNet
+      | Extracellular Stimulation
+      | COMSOL     
+  * - `bio_neuropixels/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_neuropixels>`__
+    - An example using Neurodata without Borders (NWB) files and DANDI archive for integrating ECEPhys experimental data into a network simulation.
+    - | BioNet
+      | Builder
+      | NWB 2.0
+      | Dandi
+  * - `bio_nsg/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg>`__
+    - Includes Files and instructions for running a small network simulation on Neuroscience Gateway (NSG)
+    - | BioNet
+      | NSG
+  * - `bio_stp_models/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_stp_models>`__
+    - A network that uses STP type synapses
+    - | BioNet
+      | Builder 
+      | STP synapses
+  * - `point_120cells/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells>`__
+    - A small network of 120 point-neurons. Uses PointNet and will require NEST to run.
+    - | PointNet
+      | Builder 
+      | IClamp
+      | Optogenetic inhibition
+  * - `point_120cells_nestml/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells_nestml>`__
+    - A small network of 120 point-neurons. Neuron and synapse models are specified as NESTML models to demonstrate how to incorporate NESTML models. Uses PointNet and will require NEST and NESTML to run.
+    - | PointNet
+      | Builder 
+      | NESTML
+  * - `point_450cells/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_450cells>`__
+    - This is a small example network of a 450 point neuron simulation based on the 45,000 mouse layer 4 network described in Arkhipov et. al. 2018. The network is driven by an external network of virtual nodes/spike-trains.
+    - | PointNet
+      | Builder 
+  * - `point_450glifs/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_450glifs>`__
+    - This is a small example network that uses the Allen Institute generalized leaky integrate-and-fire (glif) cell models. The network is recurrent and receives stimulation from external spike trains (virtual cells).
+    - | PointNet
+      | Builder 
+      | Parallel simulations
+  * - `point_iclamp/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_iclamp>`__
+    - A small example network that uses different types of current clamp (IClamp) stimuli formats.
+    - | PointNet
+      | IClamp
+  * - `point_stdp/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_stdp>`__
+    - PointNet simulation with plastic synapses 
+    - | PointNet
+      | Builder
+  * - `filter_graitings/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_graitings>`__
+    - An example for a drifiting grating stimulus. All parameters can be found in the config file
+    - | FilterNet
+      | Builder
+      | Drifting Gratings
+  * - `filter_looming/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_looming>`__
+    - This is an example for creating a looming stimulus from LGN filters. The stimulus is a black circle that expands at 80degs/sec and then repeats. The example uses 85 cells from 3 LGN models.
+    - | FilterNet
+      | Builder
+      | Looming Movie
+  * - `filter_movie/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_movie>`__
+    - FilterNet simulations from arbitary movies
+    - | FilterNet
+      | Movie
+  * - `pop_2pops/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_2pops>`__
+    - Simple Excitatory-Inhibitory 2 population network using PopNet (DIPDE)
+    - | PopNet
+      | Builder
+  * - `pop_7pops_converted/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted>`__
+    - A more complex PopNet example converted from the point_120cells/ example
+    - | PopNet
+      | Builder 

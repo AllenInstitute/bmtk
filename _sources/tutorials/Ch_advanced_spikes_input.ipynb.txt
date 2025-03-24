@@ -5,7 +5,7 @@
    "id": "b0477c1f-ba3f-48bf-9510-c95a59f49da4",
    "metadata": {},
    "source": [
-    "# Advanced Methods for Driving your Network with Synapic Spike-trains"
+    "# Advanced Methods for Driving your Network with Synaptic Spike-trains"
    ]
   },
   {
@@ -15,7 +15,7 @@
    "source": [
     "BMTK is designed to build and simulate large-scale, realistic models of the nervous system. Most of these realistic simulations require the ability to recreate the kinds of synaptic input you would expect to see in vivo. To achieve this, modelers need to be able to generate the relevant spike trains that drive the synaptic stimuli of our simulations.\n",
     "\n",
-    "We have other tutorials demonstrating how to generate realistic stimuli using FilterNet. We have also shown how to use the BMTK SpikeTrain and PoissonSpikeTrain classes to generate input spike trains. In these cases, users must generate SONATA spike-train files before running their simulations. However, BMTK has additional methods for users to generate and import spike-train stimuli into their simulations. It includes using other formats besides SONATA, importing experimental data, and more fine-grained control of how and where cells within a network receive synaptic stimuli.\n",
+    "We have other tutorials demonstrating how to generate realistic stimuli using [FilterNet](https://alleninstitute.github.io/bmtk/tutorials/tutorial_07_filter_models.html). We have also shown how to use the [BMTK SpikeTrain and PoissonSpikeTrain classes](https://alleninstitute.github.io/bmtk/tutorials/tutorial_03_single_pop.html#Spike-Trains) to generate input spike trains. In these cases, users must generate SONATA spike-train files before running their simulations. However, BMTK has additional methods for users to generate and import spike-train stimuli into their simulations. It includes using other formats besides SONATA, importing experimental data, and more fine-grained control of how and where cells within a network receive synaptic stimuli.\n",
     "\n",
     "We will cover some of such methods in this tutorial.\n",
     "\n",
@@ -35,7 +35,7 @@
    "id": "ee0fbbe4-28eb-466d-9173-05072374f05e",
    "metadata": {},
    "source": [
-    "In [Tutorial 2](https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb), we demonstrated how to generate network spikes using the BMTK's built-in PoissonSpikeGenerator class, which will produce a series of spike trains using the distribution parameters/functions we give it and save it to a SONATA spikes file using to `to_sonata` method. But BMTK also allows input spikes to be saved and loaded using a simpler space-separated CSV file, which, in many cases, can be easier to analyze and use with other programs.\n",
+    "In [Tutorial 2](https://alleninstitute.github.io/bmtk/tutorials/tutorial_02_single_cell_syn.html), we demonstrated how to generate network spikes using the BMTK's built-in PoissonSpikeGenerator class, which will produce a series of spike trains using the distribution parameters/functions we give it and save it to a SONATA spikes file using to `to_sonata` method. But BMTK also allows input spikes to be saved and loaded using a simpler space-separated CSV file, which, in many cases, can be easier to analyze and use with other programs.\n",
     "\n",
     "For example, in the **network_simple_spikes/** folder (built using `build_network.simple_spikes.py`), we have a set of 10 virtual nodes that synaptically drive our simulation. If we want each one to fire at a constant 10Hz firing rate over a 5-second interval, we can use PoissonSpikeGenerator's `to_csv()` class to save the spikes as a CSV file."
    ]
@@ -261,7 +261,7 @@
    "id": "fdf47f53-740f-44b3-b167-aec0c3117b4c",
    "metadata": {},
    "source": [
-    "**Remember**: Biophysical models contain customized ion channels that require compiling using the `nrnivmod` command before running Bionet (see [Tutorial 1](https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb) for more details). Ion channels are stored in the **components/mechanisms/mod/** folder. In a shell or using Jupyter notebook, you'll need to run the following:"
+    "**Remember**: Biophysical models contain customized ion channels that require compiling using the `nrnivmod` command before running Bionet (see [Tutorial 1](https://alleninstitute.github.io/bmtk/tutorials/tutorial_01_single_cell_clamped.html) for more details). Ion channels are stored in the **components/mechanisms/mod/** folder. In a shell or using Jupyter notebook, you'll need to run the following:"
    ]
   },
   {
@@ -515,7 +515,7 @@
     "\n",
     "@spikes_generator\n",
     "def my_spikes_generator(node, sim):\n",
-    "    io.log_info(f'Generating custom spike trains for {node.node_id} from {node.population_name}')\n",
+    "    io.log_info(f'Generating custom spike trains for node {node.node_id} from {node.population_name}')\n",
     "    if node['pop_name'] == 'tON':\n",
     "        return np.arange(100.0, sim.tstop, step=sim.dt*10)\n",
     "    elif node['pop_name'] == 'tOFF':\n",
@@ -621,7 +621,7 @@
    "id": "ce4e0aca-0600-4b82-87f0-151f168e2de9",
    "metadata": {},
    "source": [
-    "## 3. Example: Incorporating real data with NWB <a class=\"anchor\" id=\"example-spikes-from-nwb\">"
+    "## 3. Example: Incorporating real data from NWB files <a class=\"anchor\" id=\"example-spikes-from-nwb\">"
    ]
   },
   {
@@ -629,11 +629,11 @@
    "id": "7a0a55bc-a592-4778-9f6d-0862da876721",
    "metadata": {},
    "source": [
-    "You can use tools like FilterNet or PoissonSpikeGenerator to create theoretical-to-realistic synaptic stimuli onto a network from various modes. But better yet, when actual experimental data is available, it is often possible to just use that. Especially as more and more experimental electrophysiological data sets are being made publically available through resources like [DANDI](https://dandiarchive.org/) or [The Allen Brain Observatory](https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels), we will want not only to use such data as a base-line for validating and comparing our models but to actually use the data within specific simulations. For example, when modeling a network of one population and/or region, we will want to use recordings of surrounding cells to help excite and inhibit our cells more realistically.\n",
+    "You can use tools like FilterNet or PoissonSpikeGenerator to create theoretical-to-realistic synaptic stimuli onto a network from various modes. But better yet, when actual experimental data is available, it is often possible to use just that. Especially as more and more experimental electrophysiological data sets are being made publicly available through resources like [DANDI](https://dandiarchive.org/) or [The Allen Brain Observatory](https://portal.brain-map.org/circuits-behavior/visual-coding-neuropixels), we will want not only to use such data as a base-line for validating our models and comparing them to experiments, but also to use the data within specific simulations. For example, when modeling a network of one population and/or region, we will want to use recordings of surrounding cells to help excite and inhibit our cells more realistically.\n",
     "\n",
-    "Traditionally a major issue with using encorporating experimental ephys data into simulations is trying to parse the wide variety of different ways the data was stored. Luckily, the [Neurodata Without Borders (NWB)](https://www.nwb.org/) has developed a field-adopted format for storing experimental data. BMTK can take these files and automatically insert them into simulations.\n",
+    "Traditionally a major issue with encorporating experimental electrophysiology data into simulations is trying to parse the wide variety of different ways the data was stored. Luckily, the [Neurodata Without Borders (NWB)](https://www.nwb.org/) has developed a format for storing experimental data, which has seen a substantial amount of adoption in the field. BMTK can take these files and automatically insert them into simulations.\n",
     "\n",
-    "In this example, we will take the previous model of the Mouse Primary Visual Cortex and add inputs that we know come from higher cortical regions (in this case, just the VisL and Hippocampal regions) along with the input from the LGN. For these added regions, we will use actual neuropixel recordings of activity from the region during drifting gratings."
+    "In this example, we will take the previous model of the Mouse Primary Visual Cortex and add inputs that we know come from higher cortical regions (in this case, just the VisL and subcortical regions) along with the input from the LGN. For these added regions, we will use actual Neuropixels recordings of activity from these regions during presentation of drifting gratings."
    ]
   },
   {
@@ -649,7 +649,7 @@
    "id": "d183688f-c1fd-477d-ad34-cb91106b0b9b",
    "metadata": {},
    "source": [
-    "The first step is to find experimental NWB that includes spiking events. For our example, we will use data from Allen Institute Visual Coding Data downloaded using the AllenSDK. We will get three experimental sessions that we know contain recordings of the VisL and hippocampus."
+    "The first step is to find experimental NWB that includes spiking events. For our example, we will use data from [Allen Institute Visual Coding dataset](https://observatory.brain-map.org/visualcoding/) downloaded using the AllenSDK. We will get three experimental sessions that we know contain recordings of the VisL and hippocampus."
    ]
   },
   {
@@ -774,7 +774,7 @@
    "id": "f99daefa-2859-491c-8226-2edc181e8afd",
    "metadata": {},
    "source": [
-    "### Step 2: Connecting VISL and Hippocampal onto our V1 cells."
+    "### Step 2: Connecting VISL and sub-cortical area onto our V1 cells."
    ]
   },
   {
@@ -823,7 +823,7 @@
     "Before we can run the simulation, we must update the SONATA configuration file so that the simulation:\n",
     "1. Knows which .nwb files to fetch spiking data from.\n",
     "2. Knows how to map cells (e.g., NWB units) from our experimental data to cells (e.g., SONATA nodes) in our 'VISl' and 'hippocampus' populations.\n",
-    "3. Know which interval of the experimental data to use in our simulation.\n",
+    "3. Know which time interval in the experimental data to use in our simulation.\n",
     "\n",
     "The most straightforward way of doing this is to add the following to our configuration file (*config.nwb_inputs.json*) in the \"inputs\" section:\n",
     "\n",
@@ -873,7 +873,7 @@
     "    ]\n",
     "```\n",
     "* The **units** field tells us which units from the nwb file to take their spiking data from based on specific keywords and/or unit-id. In the Neuropixels NWB files, each unit has a field called \"location\" to determine which region the data came from, which we can use here to tell that our model's \"hippocampus\" cells use any data coming from either the CA1, CA3 or Po regions.\n",
-    "* **mapping** tells how to map NWB **units** -> SONATA **node_set**. Setting the value to `sample` to do a random mapping without replacement. You can also use option `sample_with_replacment`, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option `units_map` (in which case **units** will point to a CSV file).\n",
+    "* **mapping** tells how to map NWB **units** -> SONATA **node_set**. Setting the value to `sample` will result in a random mapping without replacement. You can also use option `sample_with_replacement`, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option `units_map` (in which case **units** will point to a CSV file).\n",
     "* **interval** tells the simulation which time interval to fetch spikes from. Inside the NWB file, there is a stimulus table that marks the stimuli at any given epoch. We use this table to get only spikes recorded in which a \"drifting grating\" stimulus was present with a given orientation and frequency. You can also use the following option if you know the specific time.\n",
     "\n",
     "```json\n",
@@ -992,7 +992,7 @@
     "  \"timestamps\": [500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0]\n",
     "}\n",
     "```\n",
-    "* **precell_filter** determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK sponataneous activity to apply on to synapses with a source-cell that has attributes `population==VISp` and `ei==e`. If you know exactly which cells you want to use, you can filter by `node_id`:\n",
+    "* **precell_filter** determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK spontaneous activity to apply to synapses with a source-cell that has attributes `population==VISp` and `ei==e`. If you know exactly which cells you want to use, you can filter by `node_id`:\n",
     "```json\n",
     "    \"node_id\": [0, 1, 2, 3],\n",
     "```\n",
@@ -1081,7 +1081,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.10.13"
+   "version": "3.10.16"
   }
  },
  "nbformat": 4,
