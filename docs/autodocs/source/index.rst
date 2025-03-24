@@ -20,7 +20,7 @@ BMTK: The Brain Modeling Toolkit
 
 .. raw:: html
 
-   <a href="https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools" style="float: right;">
+   <a href="https://signup.e2ma.net/signup/2010845/1976001/" style="float: right; font-size: x-large; font-weight: bold;">
       <button>Subscribe to our newsletter</button>
    </a>
 
@@ -63,7 +63,9 @@ About BMTK
       .. grid-item::
 
          .. figure:: _static/images/v1_dg_500x333.gif
-            :scale: 150%
+            :scale: 160%
+
+            `Simulation of the mouse primary visual cortex <https://portal.brain-map.org/explore/models/mv1-all-layers>`__, prepared and carried out using BMTK.
 
 
    **BMTK Workflow**

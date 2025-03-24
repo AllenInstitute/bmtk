@@ -12,12 +12,12 @@ Basics
 BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ that facilitates simulations of
 large-scale networks of multicompartmental neurons. Some of its main features include:
 
-* Automatically integrates MPI for parallel simulations without the need for extra coding.
+* Automatically integrates MPI for parallel simulations without extra coding.
 
 * Supports models and morphologies from the Allen `Cell-Types Database <http://celltypes.brain-map.org/data>`_, as well
   as custom hoc and NeuroML2 cell and synapse models.
 
-* Use spike-trains, synaptic connections, current clamps, or even extracellular stimulation to drive network firing.
+* Use spike-trains, synaptic connections, current clamps, or even extracellular stimulation to drive neurons.
 
 * Can simulate extracellular field recordings.
 
@@ -29,7 +29,7 @@ following the rules specified in the `SONATA Data format <https://github.com/All
 
 SONATA Spike-Trains
 +++++++++++++++++++
-The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
+A user may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have ``model_type`` value ``virtual`` and are not actual cell objects (you can’t record from them). You
 may use either a `SONATA spike file <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file>`_,
 an NWB file, or a space-separated CSV file with columns **node_id**, **population**, and **timestamps**. The following
@@ -55,13 +55,13 @@ shows some examples of how to generate `spike-train files using bmtk <./analyzer
 
 `Extracelluar ElectroPhysiology (ECEPhys) Probe Data (NWB 2.0) Spikes <ecephys_probe.html>`_
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-An increasing number of ECEPhys electrode experimental data is being release to the public in NWB format, such as the 
+An increasing number of public ECEPhys electrode experimental data is being released in the NWB format, such as the 
 `Allen Visual Coding - Neuropixels <https://allensdk.readthedocs.io/en/latest/visual_coding_neuropixels.html>`_ dataset or through
-`DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert this data into SONATA spike-trains to 
-encorpate into your simulations, the `ecephys_probe` spikes module can do this automatically; fetching spikes from ECEPhys units
+`DANDI <https://dandiarchive.org/>`_. While it is possible to manually convert these data into SONATA spike-trains to 
+use in your simulations, the `ecephys_probe` spikes module can do this automatically; fetching ECEPhys units with spikes
 and converting them to virtual cells for network input into your model.
 
-For example, using a session NWB downloaded using the AllenSDK, the below example wil randomly l map "LGd" cells from the session onto our
+For example, using a session NWB file downloaded using the AllenSDK, the below example will randomly map "LGd" cells from the session onto our
 "LGN" population, and filter out only spikes that occur between 10.0 and 12.0 seconds
 
 .. code:: json
@@ -82,13 +82,13 @@ For example, using a session NWB downloaded using the AllenSDK, the below exampl
       }
     }
 
-See the `documentation <ecephys_probe.html>`__ for more information and advanced features.
+See this `documentation <ecephys_probe.html>`__ for more information and advanced features.
 
 
 `Current Clamps <current_clamps.html>`_
 +++++++++++++++++++++++++++++++++++++++
-May use one step current clamp-on multiple nodes, or have one node receive multiple current injections. Currently ;)
-only support injections at the soma.
+Users may apply one-step current clamp on multiple nodes, or have one node receive multiple current injections. Currently,
+BMTK only support injections at the soma.
 
 .. code:: json
 
@@ -142,7 +142,7 @@ And in the configuration file
 
 * module:  Always xstim
 * `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
-* positions_file: space separated file containing cartesian coordinates of the electrodes.
+* positions_file: space separated file containing Cartesian coordinates of the electrodes.
 * resistance: extracellular resistance between electrode and cells in Ohms / cm^3 (default: 300.0)
 * waveform: form of the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)
 
@@ -155,8 +155,8 @@ Outputs
 -------
 Spikes
 ++++++
-By default, all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
-the parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance model
+By default, all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threshold”
+parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance-based model
 cell.
 
 
@@ -182,7 +182,7 @@ for more information about how multi-segment recordings are represented.
             "cells": {"node_ids": [0, 1, 2, 3, 4, 5]},
             "variable_name": "v",
             "sections": "all",
-            "file_name": "cai_traces.h5"
+            "file_name": "v_traces.h5"
         }
     }
 
@@ -190,10 +190,11 @@ for more information about how multi-segment recordings are represented.
 * cells: a `node_set <./simulators.html#node-sets>`_ to filter out what cells to record.
 * sections: either “all”, “soma”, “basal” or “apical”
 * file_name: name of the file where traces will be recorded, under the “output_dir”. If not specified the report title
-  will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”
+  will be used, i.e. “calcium_concentration.h5” and “membrane_potential.h5”
 
 .. warning::
-    Disk space can be an issue when recording membrane variables. For large networks recording all segments or all cells, every 1-second simulation, can cause BMTK to try to write output files in the 100s of GB or even TB.
+    Disk space can be an issue when recording membrane variables. For large networks recording all segments or all cells,
+    every 1-second simulation, can cause BMTK to try to write output files in the hundreds of GB or even TB.
 
 
 
@@ -230,15 +231,15 @@ And in the config
 
 * cells: a `node_set <./simulators.html#node-sets>`_ to filter out what cells will contribute to the ECP.
 * variable_name: name of contributing variable, v for membrane potential
-* electrode_positions: name of electrode placement file
+* electrode_positions: name of the electrode placement file
 * contributions_dir: The output ECP file will contain the combined contributions from all cells, and not possible to
   determine the ECP of each cell. But if “contributions_dir” is specified it will also record and save each
-  cells’ ECP.
+  cell’s ECP.
 
 
 Synaptic Variables
 ++++++++++++++++++
-Similar to recording from membrane potential, by setting ``module`` parameter to ``netcon_report`` you can record the
+Similar to recording from membrane potential, by setting the ``module`` parameter to ``netcon_report``, you can record the
 variables from a synapse. The output is similar to a
 `SONATA membrane report <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings>`_,
 but instead of each column being a segment of a neuron, each column represents a different synapse.
@@ -262,14 +263,14 @@ Advanced Options
 
 Specifying Synapse locations
 ++++++++++++++++++++++++++++
-In SONATA the location of each synapse is determined by the
+In SONATA, the location of each synapse is determined by the
 `"afferent_section_id" and "afferent_section_pos" attributes <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#edges---required-attributes>`_,
-which requires modelers to know how NEURON parses the morphology of each cell. If these parameters are specified in the edges file
+which requires users to know how NEURON parses the morphology of each cell. If these parameters are specified in the edges file
 SONATA will use them to place a synapse on the target.
 
 Alternatively, BMTK supports the optional parameters “distance_range" and “target_sections”, which are present in the edges
 file, which will direct BMTK to randomly choose a target synapse location under the limitations. Here “target_setions” refers
-to a neuronal area (somatic, axon, apical, basal), and “"istance_range” is the minimum and maximum arc-length distance
+to a neuronal area (somatic, axon, apical, basal), and “distance_range” is the minimum and maximum arc-length distance
 (in um) from the soma to place the synapse. For example to specify synapses be created either at the soma or nearby
 basal dendrites:
 
@@ -281,7 +282,7 @@ basal dendrites:
     100 "[0.0, 100.0]" "['somatic', 'basal']" ...
 
 Using parameters “distance_range” and “target_sections” will speed up the instantiation by a bit. And has the benefit
-that the modeler doesn’t need to know the full details of the target_morphology. It may cause results to vary, but in
+that the user doesn’t need to know the full details of the target_morphology. It may cause results to vary, but in
 our experience for large-networks usually don’t change the dynamics.
 
 
@@ -293,7 +294,7 @@ by a pre-recorded spike-trains (eg, virtual cells). Thus the firing-times/voltag
 being driven by two primary sources; external inputs and synaptic/electrical activity from other cells in the network.
 Being able to separate the contributions of the two type of drivers is often important for analysis of our network.
 
-Being able to see how our network behaves without recurrent connections is usually trivial to implement using the SONATA
+Running a simulation without recurrent connections is usually trivial to implement using the SONATA
 configuration file. For example, a network called "internal" might have both internal-to-internal recurrent connections
 and external-to-internal connections as represented in the "networks" section of the config
 
@@ -355,8 +356,11 @@ fully connected simulation (left):
 
 .. image:: _static/images/disconnected_normal_sims.png
 
-But what if we want to rerun the full simulation but without the external inputs, how see how only the recurrent
-activity affects the full simulation? To do so we must use a special **"replay"** input module. In the
+But what if we want to rerun the simulation without the external inputs? We can exclude the
+external-to-internal connections, but this creates a challenge because the internal neurons
+will behave differently without the external inputs. Is there a way to isolate the contribution
+of the recurrent inputs in the simulation that has been just run?
+To do so, we can use a special **"replay"** input module. In the
 "inputs" section of the config we add the following:
 
 .. code:: json
@@ -397,7 +401,7 @@ Then we update the "networks" section since we don't want to have any external-t
     }
 
 And we can run the simulation with the updated config and see what the network looks like when activity is only being
-drived by recurrent activity
+driven by recurrent activity
 
 .. image:: _static/images/disconnected_recurrent_only.png
 
@@ -455,5 +459,5 @@ You can combine "replay" inputs with virtual inputs, current and voltage clamps.
     }
 
 See the `examples/bio_450cells_replay/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_450cells_replay>`_
-folder for examples of running replayed simulations.
+directory for examples of running replayed simulations.
 
