@@ -11,7 +11,7 @@ News and Events
 This hands-on workshop focuses on building and simulating complex and heterogeneous network models grounded in real biological data. 
 The 2025 workshop will be held :underline:`July 28th-30th, 2025` at the Allen Institute in Seattle, WA.
 
-Applications are due **March 15th, 2025!** Selected applicants will be notified by May 1st, 2025. Limited travel funding available. 
+Applications for the 2025 workshop are now closed. Selected applicants will be notified by May 1st, 2025.
 See event page for full details.
 
 .. grid:: 1 3 3 3
@@ -23,16 +23,17 @@ See event page for full details.
             :color: primary
             :outline:
 
-            VIEW EVENT PAGE
+            VIEW WORKSHOP PAGE
 
     .. grid-item::
         :columns: auto
 
-        .. button-link:: https://alleninstitute.submittable.com/submit/306603/2025-allen-institute-modeling-software-workshop
+        .. button-link::
             :color: primary
             :shadow:
+            :disabled:
 
-            APPLY NOW
+            APPLICATIONS CLOSED
 
     .. grid-item::
         :columns: auto
