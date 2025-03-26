@@ -67,7 +67,7 @@ setup(
         'pointnet': ['NEST'],
         'popnet': ['DiPDE']
     },
-    packages=find_packages(exclude=['bmtk.tests', 'bmtk.tests.*']),
+    packages=find_packages(exclude=['bmtk.tests', 'bmtk.tests.*', '*tests*']),
     # package_data={'': ['*.md', '*.txt', '*.cfg', '**/*.json', '**/*.hoc']},
     include_package_data=True,
     platforms='any'
