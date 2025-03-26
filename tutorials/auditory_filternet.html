@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorial: Auditory Stimuli Inputs using FilterNet &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Tutorial: Auditory Stimuli Inputs using FilterNet &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/documentation_options.js?v=6f037312"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Tutorial: Modeling the Visual Field (with FilterNet)" href="tutorial_07_filter_models.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.1" />
+  <meta name="docsearch:version" content="1.1.2" />
   </head>
   
   
@@ -121,8 +121,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
   
   
 </a></div>
@@ -533,7 +533,7 @@
 <p>To change the stimulus to a WAV file of your choice, point to the relative path of the file under “data_file”.</p>
 <p>The filter carrier consists of a sinusoidal modulation in 2D akin to a plane wave. This carrier is multiplied by a Gaussian envelope in the spectral axis and an asymmetric scaled gamma distribution function in the temporal axis to allow for faster onset of responses and a slower tail decay.</p>
 <p>Filters with very little spectral modulation have a “vertical” appearance and respond preferentially to broadband temporal edges such as sound onsets. Filters with very little temporal modulation have a “horizontal” appearance and respond preferentially to sustained spectral edges. If the nodes are ordered by their center frequencies, we can construct different “views” of the stimulus (speech in this case) through these different types of filters.</p>
-<div><p><img alt="c509c044e4c64bbb888aed3719fb45b3" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
+<div><p><img alt="4b8d9c731aa74b7f9696d07d9728f611" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
 </div><img alt="Responses" src="../_images/Responses_to_diff_scales_and_orientations.png" />
 <p>Now we will build a larger bank of filters with randomly assigned properties. Beware that if n_filts is set larger, the code could take a long time to run in the notebook.</p>
 <div class="nbinput nblast docutils container">

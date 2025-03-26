@@ -30,32 +30,33 @@ About BMTK
 
 .. card::
 
-   The Brain Modeling Toolkit (BMTK) is a open-source software package for modeling and simulation of large-scale neural 
-   network models. It Supports a range of modeling levels of resolution: multi-compartment biophysically detailed, 
-   point-neuron, and population-level firing rate models. 
+   The Brain Modeling Toolkit (BMTK) is an **open-source** software package for modeling and simulating large-scale
+   neural network models. It supports a range of modeling resolutions, including **multi-compartment, biophysically 
+   detailed** models, **point-neuron** models, and **population-level firing rate** models.
    
-   BMTK supports the full workflow for developing biologically realistic models of the brain networks; from building 
-   network models from scratch, to running parallelized simulations, to doing perturbation analysis. It offers:
+   BMTK provides a **full workflow** for developing biologically realistic brain network models—from **building 
+   networks from scratch**, to running **parallelized simulations**, to conducting **perturbation analyses**. Its 
+   features include:
 
    .. grid:: 2
 
       .. grid-item:: 
 
-         * An interface (API) for building models and running simulations, unified across levels of resolution
+         * A **unified interface (API)** for building and running simulations across levels of resolution
          
-         * A framework to easily share models and expand upon existing models
+         * A **flexible framework** for sharing models and expanding upon existing ones
          
-         * A simple network simulation setup with little-to-no programming necessary
+         * A **simple simulation setup** requiring little-to-no programming
 
-         * Adaptability that allows more advanced users to completely change how networks are instantiated and simulated
+         * **Adaptability** that allows advanced users to fully customize how networks are instantiated and simulated
           
-         * Auotmatic parallelization
+         * **Automatic parallelization**
 
          * Support for simulations ranging from single cells to networks with millions of cells and billions of synapses
 
-         * Functionality to programmatically adjust cell and synaptic properties on-the-fly during simulations
+         * **On-the-fly adjustments** of cell and synaptic properties during simulations
 
-         * A suite of functions for analyzing and visualizing network structure and simulations results
+         * **A suite of functions** for analyzing and visualizing network structure and simulation results
 
          And much more!
 
@@ -70,13 +71,14 @@ About BMTK
 
    **BMTK Workflow**
 
-   BMTK separates the process of building, simulating, and analyzing the results, thanks to modular organization and the
-   data format it uses (`SONATA <https://github.com/AllenInstitute/sonata>`__, see below). BMTK constructs a fully instantiated model and saves it in SONATA files. 
-   Subsequently, running a simulation involves loading SONATA files, without the need to re-build the model.
+   BMTK uses a **modular organization** and the **SONATA** data format (`SONATA <https://github.com/AllenInstitute/sonata>`__, 
+   see below) to separate the processes of **building**, **simulating**, and **analyzing** brain network models. BMTK
+   constructs a fully instantiated model and saves it in SONATA files. Then, running a simulation simply involves
+   loading those SONATA files, with no need to rebuild the model each time.
 
-   On the other hand, users can easily adjust cell and synaptic parameters in SONATA files, enabling faster iterations
-   of simulations. Models in SONATA format can be constructed, simulated, or analyzed using not only BMTK, but also a 
-   variety of other tools that support this format.
+   Users can also adjust cell and synaptic parameters in the SONATA files to iterate more quickly on simulations. 
+   Models in SONATA format can be constructed, simulated, or analyzed not only with BMTK but also with other tools 
+   that support the format.
 
    BMTK consists of three major components: `the network builder <builder.hmtl>`__, the 
    `simulation engines <simulators_guide.html>`__, and the 

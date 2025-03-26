@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Advanced Stimulus Options &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>Advanced Stimulus Options &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=58fbf978"></script>
+    <script src="../_static/documentation_options.js?v=6f037312"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Advanced Methods for Driving your Network with Synaptic Spike-trains" href="Ch_advanced_spikes_input.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.1" />
+  <meta name="docsearch:version" content="1.1.2" />
   </head>
   
   
@@ -121,8 +121,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
   
   
 </a></div>
@@ -1066,7 +1066,7 @@ realistic current-clamping stimuli that would be difficult to rebuild from scrat
 <h3>Step 1: Downloading the data<a class="headerlink" href="#Step-1:-Downloading-the-data" title="Link to this heading">#</a></h3>
 <p>First step is to determine which experimental conditions we want to replicate and which stimulus types to use. Different cells in the Allen Cell Types Database were optimized and tested against different types of current clamps. For example if we look at the electrophysiology page for <a class="reference external" href="https://celltypes.brain-map.org/experiment/electrophysiology/488683425">cell 488683425</a> we can see we have stimulus types including <code class="docutils literal notranslate"><span class="pre">Long</span> <span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">Noise</span></code>, <code class="docutils literal notranslate"><span class="pre">Ramp</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span> <span class="pre">Square</span></code> and <code class="docutils literal notranslate"><span class="pre">Square</span></code>. And for
 each types there are different <em>sweeps</em> where amplitudes and times were varied (or not) between trials:</p>
-<div><p><img alt="6a0851f6e639494c878c12253578a78c" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
+<div><p><img alt="e927ddc44efc4a2891d1176a1a456eca" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
 </div><p>If you click on the “<code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Data</span></code>” button it will download an ephys nwb file containing all the <em>sweep</em> available for said experiment. You just need to put it in a directory that can be accessed by BMTK. If you need a more programtic way to download multiple such files you can use the AllenSDK, and BMTK also includes helper functions to download the data. You can run the following in a command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_ephys_data<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--download-dir<span class="o">=</span>ecephys_inputs
 </pre></div>

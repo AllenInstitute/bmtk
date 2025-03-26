@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>BMTK: The Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 1.1.1 documentation</title>
+    <title>BMTK: The Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=58fbf978"></script>
+    <script src="_static/documentation_options.js?v=6f037312"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
@@ -53,7 +53,7 @@
     <link rel="next" title="News and Events" href="news_and_events.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.1" />
+  <meta name="docsearch:version" content="1.1.2" />
   </head>
   
   
@@ -119,8 +119,8 @@
       
     
     
-    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
-    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.1 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
   
   
 </a></div>
@@ -383,23 +383,24 @@
 <h2>About BMTK<a class="headerlink" href="#about-bmtk" title="Link to this heading">#</a></h2>
 <div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
-<p class="sd-card-text">The Brain Modeling Toolkit (BMTK) is a open-source software package for modeling and simulation of large-scale neural
-network models. It Supports a range of modeling levels of resolution: multi-compartment biophysically detailed,
-point-neuron, and population-level firing rate models.</p>
-<p class="sd-card-text">BMTK supports the full workflow for developing biologically realistic models of the brain networks; from building
-network models from scratch, to running parallelized simulations, to doing perturbation analysis. It offers:</p>
+<p class="sd-card-text">The Brain Modeling Toolkit (BMTK) is an <strong>open-source</strong> software package for modeling and simulating large-scale
+neural network models. It supports a range of modeling resolutions, including <strong>multi-compartment, biophysically
+detailed</strong> models, <strong>point-neuron</strong> models, and <strong>population-level firing rate</strong> models.</p>
+<p class="sd-card-text">BMTK provides a <strong>full workflow</strong> for developing biologically realistic brain network models—from <strong>building
+networks from scratch</strong>, to running <strong>parallelized simulations</strong>, to conducting <strong>perturbation analyses</strong>. Its
+features include:</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 docutils">
 <div class="sd-col sd-d-flex-column docutils">
 <ul class="simple">
-<li><p class="sd-card-text">An interface (API) for building models and running simulations, unified across levels of resolution</p></li>
-<li><p class="sd-card-text">A framework to easily share models and expand upon existing models</p></li>
-<li><p class="sd-card-text">A simple network simulation setup with little-to-no programming necessary</p></li>
-<li><p class="sd-card-text">Adaptability that allows more advanced users to completely change how networks are instantiated and simulated</p></li>
-<li><p class="sd-card-text">Auotmatic parallelization</p></li>
+<li><p class="sd-card-text">A <strong>unified interface (API)</strong> for building and running simulations across levels of resolution</p></li>
+<li><p class="sd-card-text">A <strong>flexible framework</strong> for sharing models and expanding upon existing ones</p></li>
+<li><p class="sd-card-text">A <strong>simple simulation setup</strong> requiring little-to-no programming</p></li>
+<li><p class="sd-card-text"><strong>Adaptability</strong> that allows advanced users to fully customize how networks are instantiated and simulated</p></li>
+<li><p class="sd-card-text"><strong>Automatic parallelization</strong></p></li>
 <li><p class="sd-card-text">Support for simulations ranging from single cells to networks with millions of cells and billions of synapses</p></li>
-<li><p class="sd-card-text">Functionality to programmatically adjust cell and synaptic properties on-the-fly during simulations</p></li>
-<li><p class="sd-card-text">A suite of functions for analyzing and visualizing network structure and simulations results</p></li>
+<li><p class="sd-card-text"><strong>On-the-fly adjustments</strong> of cell and synaptic properties during simulations</p></li>
+<li><p class="sd-card-text"><strong>A suite of functions</strong> for analyzing and visualizing network structure and simulation results</p></li>
 </ul>
 <p class="sd-card-text">And much more!</p>
 </div>
@@ -415,12 +416,13 @@ network models from scratch, to running parallelized simulations, to doing pertu
 </div>
 </div>
 <p class="sd-card-text"><strong>BMTK Workflow</strong></p>
-<p class="sd-card-text">BMTK separates the process of building, simulating, and analyzing the results, thanks to modular organization and the
-data format it uses (<a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA</a>, see below). BMTK constructs a fully instantiated model and saves it in SONATA files.
-Subsequently, running a simulation involves loading SONATA files, without the need to re-build the model.</p>
-<p class="sd-card-text">On the other hand, users can easily adjust cell and synaptic parameters in SONATA files, enabling faster iterations
-of simulations. Models in SONATA format can be constructed, simulated, or analyzed using not only BMTK, but also a
-variety of other tools that support this format.</p>
+<p class="sd-card-text">BMTK uses a <strong>modular organization</strong> and the <strong>SONATA</strong> data format (<a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA</a>,
+see below) to separate the processes of <strong>building</strong>, <strong>simulating</strong>, and <strong>analyzing</strong> brain network models. BMTK
+constructs a fully instantiated model and saves it in SONATA files. Then, running a simulation simply involves
+loading those SONATA files, with no need to rebuild the model each time.</p>
+<p class="sd-card-text">Users can also adjust cell and synaptic parameters in the SONATA files to iterate more quickly on simulations.
+Models in SONATA format can be constructed, simulated, or analyzed not only with BMTK but also with other tools
+that support the format.</p>
 <p class="sd-card-text">BMTK consists of three major components: <a class="reference external" href="builder.hmtl">the network builder</a>, the
 <a class="reference external" href="simulators_guide.html">simulation engines</a>, and the
 <a class="reference external" href="analyzer.html">analysis and visualization tools</a>. The components can be used in one workflow or separately.</p>
