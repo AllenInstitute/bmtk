@@ -28,10 +28,6 @@ from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.popnet import utils as poputils
 from bmtk.simulator.popnet.sonata_adaptors import PopEdgeAdaptor
 
-from dipde.internals.internalpopulation import InternalPopulation
-from dipde.internals.externalpopulation import ExternalPopulation
-from dipde.internals.connection import Connection
-
 
 class Population(object):
     def __init__(self, pop_id):
@@ -59,6 +55,8 @@ class Population(object):
         return True
 
     def build(self):
+        from dipde.internals.internalpopulation import InternalPopulation
+
         params = self._nodes[0].dynamics_params
         self._dipde_obj = InternalPopulation(**params)
 
@@ -94,6 +92,8 @@ class ExtPopulation(Population):
         self.build(value)
 
     def build(self, firing_rate):
+        from dipde.internals.externalpopulation import ExternalPopulation
+
         if firing_rate is not None:
             self._firing_rate = firing_rate
 
@@ -132,6 +132,8 @@ class PopConnection(object):
         self._edges.append(edge)
 
     def build(self):
+        from dipde.internals.connection import Connection
+
         edge = self._edges[0]
         self._dipde_conn = Connection(self._src_pop._dipde_obj, self._trg_pop._dipde_obj, edge.nsyns, edge.delay,
                                       edge.syn_weight)
