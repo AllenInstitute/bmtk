@@ -15,17 +15,16 @@
     "inputs": {
       "init_states": {
         "input_type": "init_states",
-        "module": "csv",
-        "file": "$BASE_DIR/input/initial_state.csv",
-        "strict_mapping": true,
+        "module": "function",
+        "init_function": "set_init_states",
         "node_set": {
             "population": "l23"
         }
       },
       "l4_inputs": {
         "input_type": "external_rates",
-        "module": "npy",
-        "file": "$BASE_DIR/input/l4e_rates.npy",
+        "module": "h5",
+        "file": "$BASE_DIR/input/l4e_rates.h5",
         "node_set": {
             "population": "l4e"
         }
@@ -44,6 +43,7 @@
       "output_dir": "$OUTPUT_DIR",
       "rates_file_csv": "l23_rates.csv",
       "rates_file_h5": "l23_rates.h5",
+      "include_columns": ["pop_name"],
       "log_file": "log.txt",
       "overwrite_output_dir": true
     },

@@ -7,11 +7,147 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 import h5py
+from functools import wraps
 
 from bmtk.simulator.core.simulation_config import SimulationConfig
 from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.core import sonata_reader
 import bmtk.simulator.utils.simulation_inputs as inputs
+
+from bmtk.utils.sonata.config import SonataConfig
+
+
+class _PyFunctions(object):
+    def __init__(self):
+        self.__user_functions = {}
+
+
+    @property
+    def user_functions(self):
+        return self.__user_functions.keys()
+    
+    def user_function(self, name):
+        return self.__user_functions[name]
+    
+    def add_user_functions(self, name, func, overwrite=True):
+        if overwrite or name not in self.__user_functions:
+            self.__user_functions[name] = func
+
+py_modules = _PyFunctions()
+
+
+def inputs_generator(*wargs, **wkwargs):
+    if len(wargs) == 1 and callable(wargs[0]):
+        # for the case without decorator arguments, grab the function object in wargs and create a decorator
+        func = wargs[0]
+        py_modules.add_user_functions(func.__name__, func)  # add function assigned to its original name
+
+        @wraps(func)
+        def func_wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        return func_wrapper
+    else:
+        # for the case with decorator arguments
+        assert(all(k in ['name'] for k in wkwargs.keys()))
+
+        def decorator(func):
+            # store the function in py_modules but under the name given in the decorator arguments
+            py_modules.add_user_functions(wkwargs['name'], func)
+
+            @wraps(func)
+            def func_wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return func_wrapper
+        return decorator
+
+init_function = inputs_generator
+
+
+def add_function(func, name=None, overwrite=True):
+    assert(callable(func))
+    func_name = name if name is not None else func.__name__
+    py_modules.add_spikes_generator(func_name, func, overwrite)
+
+
+
+def plot_rates(config_file=None, rates_files=None, population=None, times=None, label_column='node_id', title=None, show=True,
+                save_as=None, group_by=None, group_excludes=None,
+                nodes_file=None, node_types_file=None, plt_style=None):
+
+    def is_hdf5(file_path):
+        try:
+            h5py.File(file_path, 'r')
+            return True
+        except Exception:
+            return False
+
+    def is_csv(file_path):
+        try:
+            pd.read_csv(file_path)
+            return True
+        except Exception:
+            return False
+
+
+    sonata_config = SonataConfig.from_json(config_file) if config_file else None
+
+    rates_paths = set()
+    if isinstance(rates_files, (list, tuple, pd.Series)):
+        rates_paths.update([Path(rf).absolute() for rf in rates_files])
+    elif rates_files is not None:
+        rates_paths.add(Path(rates_files))
+    
+    if sonata_config is not None:
+        for k in ['rates_file', 'rates_file_csv', 'rates_file_h5']:
+            if k in sonata_config.output:
+                rates_paths.add(Path(sonata_config.get('output', {}).get('output_dir', '.')) / Path(sonata_config.output[k]))
+                break
+    
+    fig, ax = plt.subplots(1, 1)
+    for rpath in rates_paths:
+        if is_csv(rpath):
+            rates_df = pd.read_csv(rpath, sep=' ')
+            for (population, node_id), subdf in rates_df.groupby(['population', 'node_id']):
+                times = subdf['timestamps'].values
+                frs = subdf['firing_rates'].values
+                
+                if label_column == 'population':
+                    label = population
+                elif label_column == 'node_id':
+                    label = node_id
+                elif label_column in subdf.columns:
+                    label = subdf[label_column].iloc[0]
+                else:
+                    label = ''
+
+                ax.plot(times, frs, label=label)
+        
+        elif is_hdf5(rpath):
+            with h5py.File(rpath, 'r') as h5:
+                for population, popgrp in h5['/rates'].items():
+                    times = popgrp['mapping/time'][()]
+                    node_ids = popgrp['mapping/node_ids'][()]
+
+                    if label_column == 'population':
+                        labels = [population]*len(node_ids)
+                    elif label_column == 'node_id':
+                        labels = node_ids
+                    elif label_column in popgrp['mapping']:
+                        labels = popgrp['mapping'][label_column][()].astype(str)
+                    else:
+                        labels = ['']*len(node_ids)
+
+                    for idx, node_id in enumerate(node_ids):
+                        frs = popgrp['data'][:, idx]
+                        ax.plot(times, frs, label=labels[idx])
+    
+
+    ax.legend()
+    ax.set_ylabel('firing rates (Hz)')
+    ax.set_xlabel('times (ms)')
+    
+    if show:
+        plt.show()
 
 
 class RatesRecorderMod:
@@ -23,6 +159,7 @@ class RatesRecorderMod:
         self.file_name = file_name
         self._output_dir = kwargs.get('output_dir', '.')
         self._node_set = kwargs.get('cells', None)
+                
 
         self.file_path = Path(self.file_name)
         if not self.file_path.is_absolute():
@@ -30,6 +167,10 @@ class RatesRecorderMod:
 
         if self._output_type not in ['csv', 'h5']:
             raise ValueError(f'{self.__name__}: Invalid output_type "{self._output_type}". [Valid options: csv, h5]')
+
+        self._include_columns = kwargs.get('include_columns', [])
+        self._include_columns = [self._include_columns] if not isinstance(self._include_columns, (list, tuple)) else self._include_columns
+        self._include_columns = [k for k in self._include_columns if k not in ['population', 'node_id', 'firing_rates', 'timestamps']]
 
     def initialize(self, sim):
         pass
@@ -54,6 +195,7 @@ class RatesRecorderMod:
         output_df = None
         times = self._get_timestamps(sim)
         ssn_nodes = self._get_nodes(sim)
+
         for node in ssn_nodes:
             tmp_df = pd.DataFrame({
                 'population': node.population,
@@ -61,11 +203,13 @@ class RatesRecorderMod:
                 'timestamps': times,
                 'firing_rates': sim.results[:, node.gid]
             })
+
+            for c in self._include_columns:
+                tmp_df[c] = node.get(c, None)
+
             
             output_df = tmp_df if output_df is None else pd.concat([output_df, tmp_df], ignore_index=True)
-            # print(node.population, node.node_id, node.gid)
-            
-            # exit()
+
         if output_df is not None:
             output_df.to_csv(self.file_path, sep=' ', index=False)
         
@@ -77,9 +221,12 @@ class RatesRecorderMod:
         ssn_nodes = self._get_nodes(sim)
         mappings = {}
         for n in ssn_nodes:
-            subpop = mappings.get(n.population, {'node_id': [], 'gid': []})
+            subpop = mappings.get(n.population, {k: [] for k in ['node_id', 'gid'] + self._include_columns})
             subpop['node_id'].append(n.node_id)
             subpop['gid'].append(n.gid)
+            for c in self._include_columns:
+                subpop[c].append(n.get(c, None))
+            
             mappings[n.population] = subpop
 
         with h5py.File(self.file_path, mode) as h5:
@@ -88,15 +235,12 @@ class RatesRecorderMod:
                 subgrp = ratesgrp.create_group(pop_name)
                 subgrp.create_dataset('mapping/time', data=times)
                 subgrp.create_dataset('mapping/node_ids', data=pop_data['node_id'])
+                for c in self._include_columns:
+                    subgrp.create_dataset(f'mapping/{c}', data=pop_data[c])
 
                 data = subgrp.create_dataset('data', shape=(nsteps, len(pop_data['gid'])), dtype=float)
                 for col, gid in enumerate(pop_data['gid']):
                     data[:, col] = sim.results[:, gid]
-
-
-
-
-
 
 
 class ExternalRatesMod:
@@ -110,11 +254,9 @@ class ExternalRatesMod:
         if self._module == 'npy':
             npy_path = self._params['file']
             inputs_arr = np.load(npy_path)
-
-            
+           
             if sim.tstop is None:
                 # WARNING THAT TSTOP IS BEING SET BY INPUT
-
                 sim.tstop = len(inputs_arr)*sim.dt
 
             if sim.nsteps < len(inputs_arr):
@@ -130,6 +272,57 @@ class ExternalRatesMod:
             for node in node_set.fetch_nodes():
                 ssn_node = sim.network.get_node(node.population_name, node.node_id)
                 ssn_node.external_inputs = inputs_arr.flatten()
+
+
+        elif self._module == 'function':
+            fnc_name = self._params['inputs_generator']
+            generator_fnc = py_modules.user_function(fnc_name)
+
+            node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))
+            for node in node_set.fetch_nodes():
+                ssn_node = sim.network.get_node(node.population_name, node.node_id)
+                external_inputs = generator_fnc(ssn_node, sim)
+                ssn_node.external_inputs = external_inputs
+
+                if sim.tstop is None:
+                    # WARNING THAT TSTOP IS BEING SET BY INPUT
+                    sim.tstop = len(external_inputs)*sim.dt
+
+        elif self._module == 'csv':
+            # TODO: Check Timestamps match, line up if needed
+            rates_df = pd.read_csv(self._params['file'], sep=self._params.get('sep', ' '))
+            node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))
+            for node in node_set.fetch_nodes():
+                ssn_node = sim.network.get_node(node.population_name, node.node_id)
+                
+                # TODO: Check that node exists in file
+                inputs = rates_df[(rates_df['node_id'] == ssn_node.node_id) & (rates_df['population'] == ssn_node.population)]['firing_rates']
+                if len(inputs) > 0:
+                    ssn_node.external_inputs = inputs
+
+                    if sim.tstop is None:
+                        # WARNING THAT TSTOP IS BEING SET BY INPUT
+                        sim.tstop = len(inputs)*sim.dt
+        
+        elif self._module in ['h5', 'sonata']:
+            with h5py.File(self._params['file'], 'r') as h5:
+                ratesgrp = h5['/rates']
+                node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))
+                for node in node_set.fetch_nodes():
+                    ssn_node = sim.network.get_node(node.population_name, node.node_id)
+
+                    node_id_map = ratesgrp[f'{ssn_node.population}/mapping/node_ids'][()]
+                    idx = np.argwhere(node_id_map == ssn_node.node_id)[0][0]
+                    inputs = ratesgrp[f'{ssn_node.population}/data'][:, idx]
+
+                    ssn_node.external_inputs = inputs
+
+                    if sim.tstop is None:
+                        # WARNING THAT TSTOP IS BEING SET BY INPUT
+                        sim.tstop = len(inputs)*sim.dt
+        else:
+            raise ValueError('Uknown module')
+
 
     def finalize(self, sim):
         pass
@@ -154,10 +347,19 @@ class InitStatesMod:
         elif self._module == 'list':
             self.from_pregenerated(sim, itype='list')
         elif self._module == 'function':
-            raise NotImplementedError()
+            self.from_user_function(sim)
         else:
             raise ValueError(f'{self.__name__}: Error in {self._name} input module, no valid module [options: csv, constant, random, function]')
 
+    def from_user_function(self, sim):
+        fnc_name = self._params['init_function']
+        generator_fnc = py_modules.user_function(fnc_name)
+
+        node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))
+        for node in node_set.fetch_nodes():
+            ssn_node = sim.network.get_node(node.population_name, node.node_id)
+            init_val = generator_fnc(ssn_node, sim)
+            ssn_node.initial_value = init_val
 
     def from_csv(self, sim):
         csv_path = self._params['file']
@@ -249,7 +451,7 @@ class Config(SimulationConfig):
 
 
 class SSNNode:
-    def __init__(self, population, node_id, gid):
+    def __init__(self, population, node_id, gid, **node_properties):
         self.population = population
         self.node_id = node_id 
         self.gid = gid
@@ -261,10 +463,28 @@ class SSNNode:
         self.decay_const = []
         self.init_value = 0.0
         self.external_inputs = None
+        self.node_properties = node_properties
+        self._sonata_node = self.node_properties.get('node', {})
 
+    def __contains__(self, property):
+        return property in self.node_properties or property in self._sonata_node
+
+    def __getitem__(self, property):
+        if property in self.node_properties:
+            return self.node_properties[property]
+        elif property in self._sonata_node:
+            return self._sonata_node[property]
+        else:
+            raise KeyError(f'SSNNode does not contain property "{property}"')
+
+    def get(self, property, default=None):
+        if property in self:
+            return self[property]
+        else:
+            return default
 
     def __repr__(self) -> str:
-        return f'{self.gid} > ({self.population}.{self.node_id})'
+        return f'SSNNode {self.gid} > ({self.population}.{self.node_id})'
 
 
 class SSNNetwork(SimNetwork):
@@ -374,22 +594,17 @@ class SSNNetwork(SimNetwork):
                         scaling_coef=node['scaling_coef'], 
                         exponent=node['exponent'], 
                         decay_const=node['decay_const'],
-                        initial_value=node.get['initial_value'] if 'initial_value' in node else 0.0
+                        initial_value=node.get['initial_value'] if 'initial_value' in node else 0.0,
+                        node=node
                     )
                 
                 elif model_type in ['external', 'virtual']:
                     self.add_external_node(
                         population_id=node_pop.name, 
-                        node_id=node[self.grouping_key]
+                        node_id=node[self.grouping_key],
+                        node=node
                     )
 
-        # pprint(self._node_id_map)
-        # exit()
-        
-        #         print(node.population_name)
-        #         print(node['model_type'])
-
-        # exit()
 
     def build_edges(self):
         for edge_pop in self._edge_populations:
@@ -398,30 +613,27 @@ class SSNNetwork(SimNetwork):
                 # print(edge.source_population in self._node_id_map)
                 # print(list(self._node_id_map[edge.source_population].keys()))
                 # print(edge.source_node_id in self._node_id_map[edge.source_population])
-                # exit()
                 # print(self.get_ssn_node(edge.source_population, edge.source_node_id).gid)
                 src_node = self._node_id_map[edge.source_population][int(edge.source_node_id)]
                 trg_node = self._node_id_map[edge.target_population][int(edge.target_node_id)]
                 
                 self._conn_mat.append([trg_node.gid, src_node.gid, edge['syn_weight']])
-                # print(src_node, trg_node)
 
-        # exit()
 
     def get_node(self, population_id, node_id):
         return self._node_id_map[population_id][node_id]
 
 
-    def get_ssn_node(self, population_id, node_id):
+    def get_ssn_node(self, population_id, node_id, **node_properties):
         if population_id not in self._node_id_map:
             # print('new population')
-            ssn_node = SSNNode(population_id, node_id, gid=self.gids)
+            ssn_node = SSNNode(population_id, node_id, gid=self.gids, **node_properties)
             self._node_id_map[population_id] = {int(node_id): ssn_node}
             self.gids += 1
         
         elif int(node_id) not in self._node_id_map:
             # print(f'new node {population_id}, {node_id}')
-            ssn_node = SSNNode(population_id, node_id, gid=self.gids)
+            ssn_node = SSNNode(population_id, node_id, gid=self.gids, **node_properties)
             self._node_id_map[population_id][int(node_id)] = ssn_node
             self.gids += 1
 
@@ -432,11 +644,10 @@ class SSNNetwork(SimNetwork):
         return ssn_node
 
 
-    def add_recurrent_node(self, population_id, node_id, input_offset, scaling_coef, exponent, decay_const, initial_value=0.0):
-        self._nnodes_recurrent += 1
+    def add_recurrent_node(self, population_id, node_id, input_offset, scaling_coef, exponent, decay_const, initial_value=0.0, **node_properties):
+        self._nnodes_recurrent += 1       
         
-        
-        ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id)
+        ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id, **node_properties)
         ssn_obj.type='internal'
         ssn_obj.input_offset.append(input_offset)
         ssn_obj.scaling_coef.append(scaling_coef)
@@ -445,9 +656,9 @@ class SSNNetwork(SimNetwork):
         self._ssn_recurrent_nodes.add(ssn_obj)
         
 
-    def add_external_node(self, population_id, node_id):
+    def add_external_node(self, population_id, node_id, **node_properties):
         self._nnodes_external += 1
-        ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id)
+        ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id, **node_properties)
         ssn_obj.type = 'external'
         self._ssn_external_nodes.add(ssn_obj)
 
@@ -463,7 +674,6 @@ class SSNSimulator:
 
         self._mods = []
 
-
     @property
     def nsteps(self):
         return int((self.tstop - self.tstart)/self.dt)
@@ -478,10 +688,6 @@ class SSNSimulator:
             for ext_node in self.network._ssn_external_nodes:
                 if ext_node.external_inputs is not None:
                     self._fr_results[:, ext_node.gid] = ext_node.external_inputs
-                # print(ext_node.gid, ext_node.external_inputs)
-            # exit()
-            
-            # exit()
 
         return self._fr_results
 
@@ -498,9 +704,6 @@ class SSNSimulator:
         self._mods.append(mod)
 
     def run(self):
-        # print(self.network.connectivity_mat)
-        # print(self.results)
-        # exit()        
         for t in range(self.nsteps-1):
             self.results[t+1, :self.network.n_neu_recurrent] = self.step(
                 self.results[t, :],
@@ -598,6 +801,23 @@ class SSNSimulator:
         return sim
 
 
+@inputs_generator
+def load_bkg_inputs(node, sim, **opts):
+    # print(node.node_id, node.population)
+    # print(sim.dt, sim.tstart, sim.tstop, sim.nsteps)
+    return np.ones(sim.nsteps)
+
+@init_function
+def set_init_states(node, sim, **opts):
+    if node['pop_name'] == 'Exc':
+        return 1.38853652
+    elif node['pop_name'] == 'PV':
+        return 3.50304166
+    elif node['pop_name'] == 'SST':
+        return 1.61686557
+    else:
+        return 5.02447877
+
 configure = Config.from_json('config.simulation.json')
 configure.build_env()
 
@@ -607,3 +827,5 @@ network = SSNNetwork.from_config(configure)
 
 sim = SSNSimulator.from_config(configure, network)
 sim.run()
+
+plot_rates(rates_files='output/l23_rates.h5', label_column='pop_name')
