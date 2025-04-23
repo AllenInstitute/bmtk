@@ -1,4 +1,4 @@
-# Copyright 2017. Allen Institute. All rights reserved
+# Copyright 2025. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -20,7 +20,9 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from .popnetwork import PopNetwork
-from .popsimulator import PopSimulator
-from .config import Config
+from .popnetwork import SSNNetwork
+from .popsimulator import SSNSimulator
+from .pyfunction_cache import inputs_generator, init_function
 
+from bmtk.simulator.core.simulation_config import SimulationConfig as Config
+# from .config import Config

@@ -23,6 +23,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+import h5py
+
+from bmtk.utils.sonata.config import SonataConfig
 
 
 def convert_rates(rates_file):
@@ -86,4 +90,86 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
         plt.savefig(save_as)
 
     if show_plot:
+        plt.show()
+
+
+def plot_rates(config_file=None, rates_files=None, population=None, times=None, label_column='node_id', title=None, show=True,
+                save_as=None, group_by=None, group_excludes=None,
+                nodes_file=None, node_types_file=None, plt_style=None):
+
+    def is_hdf5(file_path):
+        try:
+            h5py.File(file_path, 'r')
+            return True
+        except Exception:
+            return False
+
+    def is_csv(file_path):
+        try:
+            pd.read_csv(file_path)
+            return True
+        except Exception:
+            return False
+
+
+    sonata_config = SonataConfig.from_json(config_file) if config_file else None
+
+    rates_paths = set()
+    if isinstance(rates_files, (list, tuple, pd.Series)):
+        rates_paths.update([Path(rf).absolute() for rf in rates_files])
+    elif rates_files is not None:
+        rates_paths.add(Path(rates_files))
+    
+    if sonata_config is not None:
+        for k in ['rates_file', 'rates_file_csv', 'rates_file_h5']:
+            if k in sonata_config.output:
+                rates_paths.add(Path(sonata_config.get('output', {}).get('output_dir', '.')) / Path(sonata_config.output[k]))
+                break
+    
+    fig, ax = plt.subplots(1, 1)
+    for rpath in rates_paths:
+        if is_csv(rpath):
+            rates_df = pd.read_csv(rpath, sep=' ')
+            for (population, node_id), subdf in rates_df.groupby(['population', 'node_id']):
+                times = subdf['timestamps'].values
+                frs = subdf['firing_rates'].values
+                
+                if label_column == 'population':
+                    label = population
+                elif label_column == 'node_id':
+                    label = node_id
+                elif label_column in subdf.columns:
+                    label = subdf[label_column].iloc[0]
+                else:
+                    label = ''
+
+                print(label)
+
+                ax.plot(times, frs, label=label)
+        
+        elif is_hdf5(rpath):
+            with h5py.File(rpath, 'r') as h5:
+                for population, popgrp in h5['/rates'].items():
+                    times = popgrp['mapping/time'][()]
+                    node_ids = popgrp['mapping/node_ids'][()]
+
+                    if label_column == 'population':
+                        labels = [population]*len(node_ids)
+                    elif label_column == 'node_id':
+                        labels = node_ids
+                    elif label_column in popgrp['mapping']:
+                        labels = popgrp['mapping'][label_column][()].astype(str)
+                    else:
+                        labels = ['']*len(node_ids)
+
+                    for idx, node_id in enumerate(node_ids):
+                        frs = popgrp['data'][:, idx]
+                        ax.plot(times, frs, label=labels[idx])
+    
+
+    ax.legend()
+    ax.set_ylabel('firing rates (Hz)')
+    ax.set_xlabel('times (ms)')
+    
+    if show:
         plt.show()
