@@ -19,11 +19,11 @@ class ExternalRatesMod(SimulatorMod):
             inputs_arr = np.load(npy_path)
            
             if sim.tstop is None:
-                # WARNING THAT TSTOP IS BEING SET BY INPUT
+                # TODO: WARNING THAT TSTOP IS BEING SET BY INPUT
                 sim.tstop = len(inputs_arr)*sim.dt
 
             if sim.nsteps < len(inputs_arr):
-                # WARN THAT input is being cut
+                # TODO: WARN THAT input is being cut
                 inputs_arr = inputs_arr[:sim.nsteps]
 
             elif sim.nsteps > len(inputs_arr):
@@ -48,7 +48,7 @@ class ExternalRatesMod(SimulatorMod):
                 ssn_node.external_inputs = external_inputs
 
                 if sim.tstop is None:
-                    # WARNING THAT TSTOP IS BEING SET BY INPUT
+                    # TODO: WARNING THAT TSTOP IS BEING SET BY INPUT
                     sim.tstop = len(external_inputs)*sim.dt
 
         elif self._module == 'csv':
@@ -64,7 +64,7 @@ class ExternalRatesMod(SimulatorMod):
                     ssn_node.external_inputs = inputs
 
                     if sim.tstop is None:
-                        # WARNING THAT TSTOP IS BEING SET BY INPUT
+                        # TODO: WARNING THAT TSTOP IS BEING SET BY INPUT
                         sim.tstop = len(inputs)*sim.dt
         
         elif self._module in ['h5', 'sonata']:
@@ -81,11 +81,7 @@ class ExternalRatesMod(SimulatorMod):
                     ssn_node.external_inputs = inputs
 
                     if sim.tstop is None:
-                        # WARNING THAT TSTOP IS BEING SET BY INPUT
+                        # TODO: WARNING THAT TSTOP IS BEING SET BY INPUT
                         sim.tstop = len(inputs)*sim.dt
         else:
             raise ValueError('Uknown module')
-
-
-    # def finalize(self, sim):
-    #     pass

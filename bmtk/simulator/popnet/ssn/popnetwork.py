@@ -16,25 +16,30 @@ class PopNetwork(SimNetwork):
         self._nnodes_recurrent = 0
         self._nnodes_external = 0
 
-        self._connectivity_mat = None
+        
         self._scales = None
         self._exponents = None
         self._decay_constants = None
         self._initial_states = None
 
         self._nodeid2grp = {}
-
-        # self._recurrent_nodes = {}
-        # self._external_nodes = {}
-
-
         self._nodes_idx = {}
         self._ssn_recurrent_nodes = set()
         self._ssn_external_nodes = set()
         self.gids = 0
 
-        self._conn_mat = []
-        # sefl._connectivity
+        # Not the actual connection matrix used during sim, used for storing connections while building network
+        self._conn_mat = [] 
+
+        # The actual N x (N+M) connection matrix used during simulation, created before simulation begins
+        self._connectivity_mat = None
+
+        # Keeps track if connection matrix needs to be rebuilt (mainly if new nodes/edges are added after a simulation)
+        self._conn_finalized = False
+
+    @property 
+    def network_finalized(self):
+        return self._conn_finalized
 
     @property
     def target_simulator(self):
@@ -50,20 +55,18 @@ class PopNetwork(SimNetwork):
 
     @property
     def connectivity_mat(self):
-        if self._connectivity_mat is None:
+        if self._connectivity_mat is None or not self._conn_finalized:
+            self._conn_finalized = True
             self._connectivity_mat = np.zeros((self._nnodes_recurrent, self.n_neu_total), dtype=float)
             for r, c, syn_w in self._conn_mat:
-                # print(r, c, syn_w)
                 self._connectivity_mat[r, c] = syn_w
-
-            # print(self._connectivity_mat)
 
         return self._connectivity_mat
 
 
     @property
     def scales(self):
-        if self._scales is None:
+        if self._scales is None or not self._conn_finalized:
             self._scales = np.zeros(self._nnodes_recurrent)
             for n in self._ssn_recurrent_nodes:
                 self._scales[n.gid] = np.mean(n.scaling_coef)
@@ -72,7 +75,7 @@ class PopNetwork(SimNetwork):
 
     @property
     def initial_states(self):
-        if self._initial_states is None:
+        if self._initial_states is None or not self._conn_finalized:
             self._initial_states = np.zeros(self._nnodes_recurrent)
             for n in self._ssn_recurrent_nodes:
                 self._initial_states[n.gid] = np.mean(n.initial_value)
@@ -81,7 +84,7 @@ class PopNetwork(SimNetwork):
 
     @property
     def exponents(self):
-        if self._exponents is None:
+        if self._exponents is None or not self._conn_finalized:
             self._exponents = np.zeros(self._nnodes_recurrent)
             for n in self._ssn_recurrent_nodes:
                 self._exponents[n.gid] = np.mean(n.exponent)
@@ -90,12 +93,10 @@ class PopNetwork(SimNetwork):
 
     @property
     def decay_constants(self):
-        if self._decay_constants is None:
+        if self._decay_constants is None or self._conn_finalized:
             self._decay_constants = np.zeros(self._nnodes_recurrent)
             for n in self._ssn_recurrent_nodes:
                 self._decay_constants[n.gid] = np.mean(n.decay_const)
-
-            # print(self._decay_constants)
         
         return self._decay_constants
 
@@ -125,44 +126,37 @@ class PopNetwork(SimNetwork):
 
 
     def build_edges(self):
+        self._conn_finalized = False
         for edge_pop in self._edge_populations:
             for edge in edge_pop.get_edges():
-                # print(edge.source_population, edge.source_node_id, edge.target_population, edge.target_node_id, edge['syn_weight'])
-                # print(edge.source_population in self._node_id_map)
-                # print(list(self._node_id_map[edge.source_population].keys()))
-                # print(edge.source_node_id in self._node_id_map[edge.source_population])
-                # print(self.get_ssn_node(edge.source_population, edge.source_node_id).gid)
                 src_node = self._node_id_map[edge.source_population][int(edge.source_node_id)]
                 trg_node = self._node_id_map[edge.target_population][int(edge.target_node_id)]
                 
+                # TODO: Move to add_edge function
                 self._conn_mat.append([trg_node.gid, src_node.gid, edge['syn_weight']])
 
 
     def get_node(self, population_id, node_id):
         return self._node_id_map[population_id][node_id]
 
-
     def get_ssn_node(self, population_id, node_id, **node_properties):
         if population_id not in self._node_id_map:
-            # print('new population')
             ssn_node = SSNNode(population_id, node_id, gid=self.gids, **node_properties)
             self._node_id_map[population_id] = {int(node_id): ssn_node}
             self.gids += 1
         
         elif int(node_id) not in self._node_id_map:
-            # print(f'new node {population_id}, {node_id}')
             ssn_node = SSNNode(population_id, node_id, gid=self.gids, **node_properties)
             self._node_id_map[population_id][int(node_id)] = ssn_node
             self.gids += 1
 
         else:
-            # print('found')
             ssn_node = self._node_id_map[population_id][node_id]
 
         return ssn_node
 
-
     def add_recurrent_node(self, population_id, node_id, input_offset, scaling_coef, exponent, decay_const, initial_value=0.0, **node_properties):
+        self._conn_finalized = False
         self._nnodes_recurrent += 1       
         
         ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id, **node_properties)
@@ -173,9 +167,10 @@ class PopNetwork(SimNetwork):
         ssn_obj.decay_const.append(decay_const)
         self._ssn_recurrent_nodes.add(ssn_obj)
         
-
     def add_external_node(self, population_id, node_id, **node_properties):
+        self._conn_finalized = False
         self._nnodes_external += 1
+        
         ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id, **node_properties)
         ssn_obj.type = 'external'
         self._ssn_external_nodes.add(ssn_obj)

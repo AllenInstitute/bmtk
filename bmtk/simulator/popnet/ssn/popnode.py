@@ -24,8 +24,12 @@ class SSNNode:
             return self.node_properties[property]
         elif property in self._sonata_node:
             return self._sonata_node[property]
+        elif property in ['node_id', 'node_ids']:
+            return self.node_id
+        elif property in ['population', 'population_name']:
+            return self.population
         else:
-            raise KeyError(f'SSNNode does not contain property "{property}"')
+            raise KeyError(f'{self.__class__.__name__} does not contain property "{property}"')
 
     def get(self, property, default=None):
         if property in self:
@@ -34,4 +38,4 @@ class SSNNode:
             return default
 
     def __repr__(self) -> str:
-        return f'SSNNode {self.gid} > ({self.population}.{self.node_id})'
+        return f'{self.__class__.__name__} {self.gid} > ({self.population}.{self.node_id})'

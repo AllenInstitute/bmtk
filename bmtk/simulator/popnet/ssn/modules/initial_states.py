@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 from ..pyfunction_cache import py_modules
 from .sim_module import SimulatorMod
 
@@ -43,10 +46,8 @@ class InitStatesMod(SimulatorMod):
         strict_mapping = self._params.get('strict_mapping', False)
 
         init_df = pd.read_csv(csv_path, sep=sep).set_index(index_col)
-        # init_df = init_df.set_index(init_df.columns['node_id'])
         
-        node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))
-        
+        node_set = sim.network.get_node_set(self._params.get('node_set', 'all'))       
         for node in node_set.fetch_nodes():
             ssn_node = sim.network.get_node(node.population_name, node.node_id)
             if ssn_node.node_id not in init_df.index:

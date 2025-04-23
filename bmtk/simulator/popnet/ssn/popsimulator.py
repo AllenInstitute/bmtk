@@ -17,9 +17,7 @@ class PopSimulator:
         self.tstart = tstart
         self.tstop = tstop
         self.network = network
-
         self._fr_results = None
-
         self._mods = []
         self.activation_function = py_modules.activation_function('default')
 
@@ -31,7 +29,6 @@ class PopSimulator:
     def results(self):
         if self._fr_results is None:
             self._fr_results = np.zeros((self.nsteps, self.network.n_neu_total), dtype=float)
-            # print(self.network.initial_states)
             self._fr_results[0, :self.network.n_neu_recurrent] = self.network.initial_states
             
             for ext_node in self.network._ssn_external_nodes:
@@ -69,16 +66,6 @@ class PopSimulator:
         for mod in self._mods:
             mod.finalize(self)
 
-
-        # print(self.results)
-        # print(self.results.shape)
-
-        # fig, ax = plt.subplots(2, 1)
-        # ax[0].plot(self.results[:, :])
-        # # ax[0].legend(nodes_recurrent["cell_types"].values)
-        # ax[0].title.set_text("Entire simulation")
-        # plt.show()
-
     @classmethod
     def from_config(cls, configure, network, **opts):
         # load the json file or object
@@ -91,9 +78,6 @@ class PopSimulator:
 
         sim = cls(network, dt=config.dt, tstart=config.tstart, tstop=config.tstop, **opts)
         
-        # if 'output_dir' in config['output']:
-        #     network.output_dir = config['output']['output_dir']
-
         network.io.log_info('Building nodes.')
         network.build_nodes()
 
