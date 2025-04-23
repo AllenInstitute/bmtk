@@ -11,7 +11,7 @@ from bmtk.simulator.core.simulation_config import SimulationConfig as Config
 import bmtk.simulator.popnet.ssn.default_setters
 
 
-class SSNSimulator:
+class PopSimulator:
     def __init__(self, network, dt=1.0, tstart=0.0, tstop=None, **opts):
         self.dt = dt
         self.tstart = tstart
@@ -22,7 +22,6 @@ class SSNSimulator:
 
         self._mods = []
         self.activation_function = py_modules.activation_function('default')
-
 
     @property
     def nsteps(self):

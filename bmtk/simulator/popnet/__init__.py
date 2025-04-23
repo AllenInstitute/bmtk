@@ -20,7 +20,47 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from .popnetwork import PopNetwork
-from .popsimulator import PopSimulator
-from .config import Config
+from six import string_types
 
+from bmtk.simulator.core.simulation_config import SimulationConfig
+from bmtk.simulator.core.io_tools import io
+from .config import Config
+from .ssn import inputs_generator, init_function
+
+
+class PopNetwork:
+    @staticmethod
+    def from_config(conf, **properties):
+        if isinstance(conf, SimulationConfig):
+            config = conf
+        else:
+            try:
+                config = SimulationConfig.load(conf)
+            except Exception as e:
+                io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
+
+        if config.target_simulator is None:
+            io.log_debug('Unspecified PopNet "target_simulator", defaulting to SSN (Options: SSN, DiPDE)')
+        elif config.target_simulator.lower() == 'dipde':
+            from .dipde import PopNetwork
+            return PopNetwork.from_config(config, **properties)
+        elif config.target_simulator.lower() == 'ssn':
+            from .ssn import PopNetwork
+            return PopNetwork.from_config(config, **properties)
+        else:
+            io.log_exception(f'Unrecognized PopNet target_simulator "{config.target_simulator}')
+
+
+class PopSimulator:
+    @staticmethod
+    def from_config(configure, network, **properties):
+        if network.target_simulator is None:
+            io.log_debug('Unspecified PopNet "target_simulator", defaulting to SSN (Options: SSN, DiPDE)')
+        elif network.target_simulator.lower() == 'dipde':
+            from .dipde import PopSimulator
+            return PopSimulator.from_config(configure, network, **properties)
+        elif network.target_simulator.lower() == 'ssn':
+            from .ssn import PopSimulator
+            return PopSimulator.from_config(configure, network, **properties)
+        else:
+            io.log_exception(f'Unrecognized PopNet target_simulator "{config.target_simulator}')

@@ -143,8 +143,6 @@ def plot_rates(config_file=None, rates_files=None, population=None, times=None, 
                 else:
                     label = ''
 
-                print(label)
-
                 ax.plot(times, frs, label=label)
         
         elif is_hdf5(rpath):

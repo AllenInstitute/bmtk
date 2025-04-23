@@ -23,14 +23,11 @@ class RatesRecorderMod(SimulatorMod):
             self.file_path = (Path(self._output_dir) / self.file_path).absolute()
 
         if self._output_type not in ['csv', 'h5']:
-            raise ValueError(f'{self.__name__}: Invalid output_type "{self._output_type}". [Valid options: csv, h5]')
+            raise ValueError(f'{self.__class__.__name__}: Invalid output_type "{self._output_type}". [Valid options: csv, h5]')
 
         self._include_columns = kwargs.get('include_columns', [])
         self._include_columns = [self._include_columns] if not isinstance(self._include_columns, (list, tuple)) else self._include_columns
         self._include_columns = [k for k in self._include_columns if k not in ['population', 'node_id', 'firing_rates', 'timestamps']]
-
-    # def initialize(self, sim):
-    #     pass
 
     def finalize(self, sim):
         if self._output_type == 'csv':
@@ -69,7 +66,7 @@ class RatesRecorderMod(SimulatorMod):
             output_df = tmp_df if output_df is None else pd.concat([output_df, tmp_df], ignore_index=True)
 
         if output_df is not None:
-            io.log_info(f'Saving rates to {self.file_path}.')
+            io.log_info(f'{self.__class__.__name__}: Saving rates to {self.file_path}.')
             output_df.to_csv(self.file_path, sep=' ', index=False)
         
 
@@ -89,7 +86,7 @@ class RatesRecorderMod(SimulatorMod):
             mappings[n.population] = subpop
 
         with h5py.File(self.file_path, mode) as h5:
-            io.log_info(f'Saving rates to {self.file_path}.')
+            io.log_info(f'{self.__class__.__name__}: Saving rates to {self.file_path}.')
             ratesgrp = h5['rates'] if 'rates' in h5 else h5.create_group('rates')
             for pop_name, pop_data in mappings.items():
                 subgrp = ratesgrp.create_group(pop_name)

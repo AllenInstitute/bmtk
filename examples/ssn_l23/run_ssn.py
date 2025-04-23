@@ -1,4 +1,6 @@
 import numpy as np
+import argparse
+
 # from numba import njit
 # from six import string_types
 # from pprint import pprint
@@ -16,7 +18,7 @@ import numpy as np
 # from bmtk.utils.sonata.config import SonataConfig
 
 
-from bmtk.simulator.popnet import ssn 
+from bmtk.simulator import popnet
 from bmtk.analyzer.firing_rates import plot_rates
 # import inputs_generator, init_function
 # from bmtk.simulator.popnet.ssn import Config
@@ -806,13 +808,13 @@ from bmtk.analyzer.firing_rates import plot_rates
 #         return sim
 
 
-@ssn.inputs_generator
+@popnet.inputs_generator
 def load_bkg_inputs(node, sim, **opts):
     # print(node.node_id, node.population)
     # print(sim.dt, sim.tstart, sim.tstop, sim.nsteps)
     return np.ones(sim.nsteps)
 
-@ssn.init_function
+@popnet.init_function
 def set_init_states(node, sim, **opts):
     if node['pop_name'] == 'Exc':
         return 1.38853652
@@ -823,14 +825,20 @@ def set_init_states(node, sim, **opts):
     else:
         return 5.02447877
 
-configure = ssn.Config.from_json('config.simulation.json')
-configure.build_env()
 
-# print(configure)
+def run(configuration_path):
+    configure = popnet.Config.from_json(configuration_path)
+    configure.build_env()
 
-network = ssn.SSNNetwork.from_config(configure)
+    network = popnet.PopNetwork.from_config(configure)
+    sim = popnet.PopSimulator.from_config(configure, network)
+    sim.run()   
 
-sim = ssn.SSNSimulator.from_config(configure, network)
-sim.run()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', nargs='?', default='config.simulation.json', help='SONATA configuration json file.')
 
-plot_rates(rates_files='output/l23_rates.h5', label_column='pop_name')
+    args = parser.parse_args()
+    run(args.config)
+
+    plot_rates(args.config, label_column='pop_name')

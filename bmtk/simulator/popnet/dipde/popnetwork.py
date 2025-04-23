@@ -25,8 +25,8 @@ import json
 import numpy as np
 
 from bmtk.simulator.core.simulator_network import SimNetwork
-from bmtk.simulator.popnet import utils as poputils
-from bmtk.simulator.popnet.sonata_adaptors import PopEdgeAdaptor
+from bmtk.simulator.popnet.dipde import utils as poputils
+from bmtk.simulator.popnet.dipde.sonata_adaptors import PopEdgeAdaptor
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
@@ -161,6 +161,10 @@ class PopNetwork(SimNetwork):
         self._connections = {}
         self._external_connections = {}
         self._all_connections = []
+
+    @property
+    def target_simulator(self):
+        return 'DiPDE'
 
     @property
     def populations(self):

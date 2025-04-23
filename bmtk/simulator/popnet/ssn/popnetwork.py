@@ -3,9 +3,9 @@ import numpy as np
 from bmtk.simulator.core.simulator_network import SimNetwork
 from .popnode import SSNNode
 
-class SSNNetwork(SimNetwork):
+class PopNetwork(SimNetwork):
     def __init__(self, grouping_key='node_id', **opts):
-        super(SSNNetwork, self).__init__()
+        super(PopNetwork, self).__init__()
         # self.n_neu_total = 6
         self.grouping_key = grouping_key
 
@@ -36,7 +36,9 @@ class SSNNetwork(SimNetwork):
         self._conn_mat = []
         # sefl._connectivity
 
-
+    @property
+    def target_simulator(self):
+        return 'SSN'
 
     @property
     def n_neu_recurrent(self):
