@@ -49,6 +49,7 @@ l23_net.add_nodes(
     decay_const=params['tau_v']*1000.0
 )
 
+
 for src, trg in itertools.product(['Exc', 'PV', 'SST', 'VIP'], repeat=2):
     lu_key = f'{src[0]}_to_{trg[0]}'.lower()
     if lu_key in params:
@@ -56,6 +57,8 @@ for src, trg in itertools.product(['Exc', 'PV', 'SST', 'VIP'], repeat=2):
             source={'pop_name': src}, target={'pop_name': trg},
             syn_weight=params[lu_key]*model_data.l23_infl_df.loc[lu_key]['mean']
         )
+        # print(src, trg, params[lu_key]*model_data.l23_infl_df.loc[lu_key]['mean'])
+
 
 l23_net.build()
 l23_net.save(output_dir='network')
@@ -73,6 +76,7 @@ for trg, syn_weight in zip(['Exc', 'PV', 'SST', 'VIP'], params[['stim_e', 'stim_
         target=l23_net.nodes(pop_name=trg),
         syn_weight=syn_weight
     )
+
 
 l4e_net.build()
 l4e_net.save(output_dir='network')

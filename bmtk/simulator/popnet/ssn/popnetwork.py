@@ -109,7 +109,6 @@ class PopNetwork(SimNetwork):
                     self.add_recurrent_node(
                         population_id=node_pop.name, 
                         node_id=node['node_id'], 
-                        input_offset=node['input_offset'], 
                         scaling_coef=node['scaling_coef'], 
                         exponent=node['exponent'], 
                         decay_const=node['decay_const'],
@@ -155,13 +154,13 @@ class PopNetwork(SimNetwork):
 
         return ssn_node
 
-    def add_recurrent_node(self, population_id, node_id, input_offset, scaling_coef, exponent, decay_const, initial_value=0.0, **node_properties):
+    def add_recurrent_node(self, population_id, node_id, scaling_coef, exponent, decay_const, initial_value=0.0, **node_properties):
         self._conn_finalized = False
         self._nnodes_recurrent += 1       
         
         ssn_obj = self.get_ssn_node(population_id=population_id, node_id=node_id, **node_properties)
         ssn_obj.type='internal'
-        ssn_obj.input_offset.append(input_offset)
+        # ssn_obj.input_offset.append(input_offset)
         ssn_obj.scaling_coef.append(scaling_coef)
         ssn_obj.exponent.append(exponent)
         ssn_obj.decay_const.append(decay_const)

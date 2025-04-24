@@ -57,6 +57,9 @@ class NodeSet(object):
             for node in pop.filter(self._filter):
                 yield node
 
+    def __len__(self) -> int:
+        return len(self.node_ids)
+
 
 class NodeSetAll(NodeSet):
     def __init__(self, network):

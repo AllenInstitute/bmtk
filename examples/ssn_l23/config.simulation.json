@@ -15,11 +15,14 @@
     "inputs": {
       "init_states": {
         "input_type": "init_states",
-        "module": "function",
-        "init_function": "set_init_states",
+        "module": "csv",
         "node_set": {
             "population": "l23"
-        }
+        },
+        "file": "$BASE_DIR/input/initial_state.csv",
+        "sep": " ",
+        "index_col": "node_id",
+        "value_col": "initial_state"
       },
       "l4_inputs": {
         "input_type": "external_rates",
