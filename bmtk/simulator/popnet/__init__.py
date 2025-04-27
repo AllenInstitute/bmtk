@@ -25,7 +25,7 @@ from six import string_types
 from bmtk.simulator.core.simulation_config import SimulationConfig
 from bmtk.simulator.core.io_tools import io
 from .config import Config
-from .ssn import inputs_generator, init_function
+from .ssn import inputs_generator, init_function, activation_function
 
 
 class PopNetwork:

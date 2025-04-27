@@ -24,12 +24,18 @@ def set_init_states(node, sim, **opts):
         return 5.02447877
 
 
+@popnet.activation_function
+def tanh(state_arr):
+    return np.tanh(state_arr)
+
+
 def run(configuration_path):
     configure = popnet.Config.from_json(configuration_path)
     configure.build_env()
 
     network = popnet.PopNetwork.from_config(configure)
     sim = popnet.PopSimulator.from_config(configure, network)
+    # sim.set_activation_function(tanh)
     sim.run()   
 
 if __name__ == '__main__':

@@ -66,6 +66,9 @@ class PopSimulator:
         for mod in self._mods:
             mod.finalize(self)
 
+    def set_activation_function(self, fnc):
+        self.activation_function = fnc
+
     @classmethod
     def from_config(cls, configure, network, **opts):
         # load the json file or object
@@ -78,6 +81,15 @@ class PopSimulator:
 
         sim = cls(network, dt=config.dt, tstart=config.tstart, tstop=config.tstop, **opts)
         
+        act_fnc_sig = config.run.get('activation_function', None)
+        if act_fnc_sig:
+            if act_fnc_sig not in py_modules.activation_functions:
+                io.log_error(f'Could not find activation fucntion with signature {act_fnc_sig} registered to PopNet')
+            else:
+                io.log_debug(f'Setting simulation activation function to {act_fnc_sig}')
+                sim.set_activation_function(py_modules.activation_function(act_fnc_sig))
+
+
         network.io.log_info('Building nodes.')
         network.build_nodes()
 

@@ -22,7 +22,7 @@
 #
 from .popnetwork import PopNetwork
 from .popsimulator import PopSimulator
-from .pyfunction_cache import inputs_generator, init_function
+from .pyfunction_cache import inputs_generator, init_function, activation_function, add_activation_function
 
 from bmtk.simulator.core.simulation_config import SimulationConfig as Config
 # from .config import Config
