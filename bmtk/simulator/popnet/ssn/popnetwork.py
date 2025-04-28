@@ -106,14 +106,17 @@ class PopNetwork(SimNetwork):
                 model_type = node['model_type'].lower()
                 
                 if model_type in ['population', 'rate_population', 'recurrent']:
+                    params = node.dynamics_params if node.dynamics_params is not None else {}
+                    ssn_attrs = ['scaling_coef', 'initial_value', 'exponent', 'decay_const']
+                    for attr_name in ssn_attrs:
+                        if attr_name in node:
+                            params[attr_name] = node[attr_name]
+
+                    params['node'] = node
                     self.add_recurrent_node(
                         population_id=node_pop.name, 
                         node_id=node['node_id'], 
-                        scaling_coef=node['scaling_coef'], 
-                        exponent=node['exponent'], 
-                        decay_const=node['decay_const'],
-                        initial_value=node.get['initial_value'] if 'initial_value' in node else 0.0,
-                        node=node
+                        **params
                     )
                 
                 elif model_type in ['external', 'virtual']:
@@ -122,7 +125,6 @@ class PopNetwork(SimNetwork):
                         node_id=node[self.grouping_key],
                         node=node
                     )
-
 
     def build_edges(self):
         self._conn_finalized = False

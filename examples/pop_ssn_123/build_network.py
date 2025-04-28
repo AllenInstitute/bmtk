@@ -17,7 +17,8 @@ l23_net.add_nodes(
     scaling_coef=params['conn_scale'],
     input_offset=0.0,
     exponent=2.0,
-    decay_const=params['tau_e']*1000.0
+    decay_const=params['tau_e']*1000.0,
+    # dynamics_params='exc_ssn.json'
 )
 l23_net.add_nodes(
     pop_name='PV',
@@ -26,7 +27,8 @@ l23_net.add_nodes(
     scaling_coef=params['conn_scale'],
     input_offset=0.0,
     exponent=2.0,
-    decay_const=params['tau_p']*1000.0
+    decay_const=params['tau_p']*1000.0,
+    # dynamics_params='pv_ssn.json'
 )
 
 l23_net.add_nodes(
@@ -36,7 +38,8 @@ l23_net.add_nodes(
     scaling_coef=params['conn_scale'],
     input_offset=0.0,
     exponent=2.0,
-    decay_const=params['tau_s']*1000.0
+    decay_const=params['tau_s']*1000.0,
+    # dynamics_params='sst_ssn.json'
 )
 
 l23_net.add_nodes(
@@ -46,7 +49,8 @@ l23_net.add_nodes(
     scaling_coef=params['conn_scale'],
     input_offset=0.0,
     exponent=2.0,
-    decay_const=params['tau_v']*1000.0
+    decay_const=params['tau_v']*1000.0,
+    # dynamics_params='vip_ssn.json'
 )
 
 
