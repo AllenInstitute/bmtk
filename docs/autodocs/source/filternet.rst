@@ -55,6 +55,8 @@ Allows playing a custom movie file in the form of a three-dimensional matrix sav
 * y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 * flip_y: Flip the y-axis of the movie (default: false).
 
+A complete example is available in the `BMTK Examples Repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_movie>`_.
+
 Grating
 +++++++
 Plays a drifting grating across the screen
@@ -91,6 +93,7 @@ Plays a drifting grating across the screen
 Note: Theta is always defined as counterclockwise rotation from the x-axis
 regardless of how the Y-axis is defined.
 
+A complete example is available in the `BMTK Examples Repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_gratings>`_.
 
 Full Field Flash
 ++++++++++++++++
@@ -143,6 +146,7 @@ Creates a spreading black field originating from the center.
 * t_looming: time of the looming movie (seconds).
 * y_dir: Direction of the y-axis in the movie. Options are "up" or "down" (default: "down").
 
+A complete example is available in the `BMTK Examples Repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples/filter_looming>`_.
 
 Optimization Techniques
 ------------------------
