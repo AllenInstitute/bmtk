@@ -62,7 +62,11 @@ class PopNetwork(SimNetwork):
                 self._connectivity_mat[r, c] = syn_w
 
         return self._connectivity_mat
-
+    
+    @connectivity_mat.setter
+    def connectivity_mat(self, value):
+        self._connectivity_mat = value
+        self._conn_finalized = True
 
     @property
     def scales(self):
@@ -72,6 +76,10 @@ class PopNetwork(SimNetwork):
                 self._scales[n.gid] = np.mean(n.scaling_coef)
         
         return self._scales
+    
+    @scales.setter
+    def scales(self, value):
+        self._scales = value
 
     @property
     def initial_states(self):
@@ -90,6 +98,10 @@ class PopNetwork(SimNetwork):
                 self._exponents[n.gid] = np.mean(n.exponent)
         
         return self._exponents
+    
+    @exponents.setter
+    def exponents(self, value):
+        self._exponents = value
 
     @property
     def decay_constants(self):
@@ -99,6 +111,10 @@ class PopNetwork(SimNetwork):
                 self._decay_constants[n.gid] = np.mean(n.decay_const)
         
         return self._decay_constants
+    
+    @decay_constants.setter
+    def decay_constants(self, value):
+        self._decay_constants = value
 
     def build_nodes(self):
         for node_pop in self.node_populations:

@@ -36,7 +36,7 @@ def run(configuration_path):
     network = popnet.PopNetwork.from_config(configure)
     sim = popnet.PopSimulator.from_config(configure, network)
     # sim.set_activation_function(tanh)
-    sim.run()   
+    sim.run()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

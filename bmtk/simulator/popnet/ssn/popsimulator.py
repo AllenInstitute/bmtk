@@ -10,6 +10,42 @@ from bmtk.simulator.core.simulation_config import SimulationConfig as Config
 # TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.
 import bmtk.simulator.popnet.ssn.default_setters
 
+try:
+    from numba import njit
+except ImportError as ie:
+    from bmtk.simulator.popnet.ssn.utils import empty_decorator
+    njit = empty_decorator
+
+@njit
+def step(activation_function, state, mat, scales, exponents, decay_constants, dt):
+    """ A function to compute one step of the network.
+    This function needs to be here so that run_njit can be compiled.
+    """
+
+    input = activation_function(np.dot(mat, state) * scales) ** exponents
+    n_neu_recurrent = mat.shape[0]
+    recurrent_state = state[:n_neu_recurrent]
+    dr = (-recurrent_state + input) / decay_constants * dt
+    return activation_function(recurrent_state + dr)
+
+@njit
+def run_ssn(activation_function, results, connectivity_mat, scales, exponents, decay_constants, dt, nsteps, n_neu_recurrent):
+    """
+    A function to run the whole simulation.
+    The results will be modified in place.
+    """
+    for t in range(nsteps-1):
+        results[t+1, :n_neu_recurrent] = step(
+            activation_function,
+            results[t, :],
+            connectivity_mat,
+            scales,
+            exponents,
+            decay_constants,
+            dt,
+        )
+    return
+
 
 class PopSimulator:
     def __init__(self, network, dt=1.0, tstart=0.0, tstop=None, **opts):
@@ -38,29 +74,32 @@ class PopSimulator:
         return self._fr_results
 
 
-    def step(self, state, mat, scales, exponents, decay_constants, dt):
-        input = self.activation_function(np.dot(mat, state) * scales) ** exponents
-        n_neu_recurrent = mat.shape[0]
-        recurrent_state = state[:n_neu_recurrent]
-        dr = (-recurrent_state + input) / decay_constants * dt
-        return self.activation_function(recurrent_state + dr)
-
     def add_mod(self, mod):
         mod.initialize(self)
         self._mods.append(mod)
+        
 
-    def run(self):
-        io.log_info('Running Simulation.')
-        for t in range(self.nsteps-1):
-            self.results[t+1, :self.network.n_neu_recurrent] = self.step(
-                self.results[t, :],
-                self.network.connectivity_mat,
-                self.network.scales,
-                self.network.exponents,
-                self.network.decay_constants,
-                self.dt,
-            )
+    def run(self, return_output=False):
+        
+        activation_function = self.activation_function
+        if not return_output:
+            io.log_info('Running Simulation.')
 
+        # self.results will be modified in place
+        run_ssn(
+            activation_function,
+            self.results,
+            self.network.connectivity_mat,
+            self.network.scales,
+            self.network.exponents,
+            self.network.decay_constants,
+            self.dt,
+            self.nsteps,
+            self.network.n_neu_recurrent,
+        )
+
+        if return_output:
+            return self.results
         io.log_info('Simulation Finished.')
 
         for mod in self._mods:
