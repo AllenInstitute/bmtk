@@ -149,7 +149,7 @@ def write_csv_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
     comm_barrier()
 
 
-def write_nwb(path, spiketrain_reader, mode='w', include_population=True, units='ms', **kwargs):
+def write_nwb(path, spiketrain_reader, mode='a', include_population=True, units='ms', **kwargs):
     import pynwb
     
     path_dir = os.path.dirname(path)
@@ -159,12 +159,18 @@ def write_nwb(path, spiketrain_reader, mode='w', include_population=True, units=
     if MPI_rank == 0:
         # Last checked pynwb doesn't support writing on multiple cores, must let first core do all the
         # writing to NWB.
-        nwbfile = pynwb.NWBFile(
-            session_description='BMTK {} generated NWB spikes file'.format(bmtk.__version__),
-            identifier='Generated in-silico, no session id',  # TODO: No idea what to put here?
-            session_start_time=datetime.now().astimezone(),
-            # experiment_description=str(session.experiment_metadata['experiment_id'])
-        )
+        
+        if os.path.exists(path) and mode != 'w':
+            io = pynwb.NWBHDF5IO(path, 'a')
+            nwbfile = io.read()
+        else:
+            io = pynwb.NWBHDF5IO(path, mode)
+            nwbfile = pynwb.NWBFile(
+                session_description='BMTK {} generated NWB spikes file'.format(bmtk.__version__),
+                identifier='Generated in-silico, no session id',  # TODO: No idea what to put here?
+                session_start_time=datetime.now().astimezone(),
+                # experiment_description=str(session.experiment_metadata['experiment_id'])
+            )
 
         if include_population:
             nwbfile.add_unit_column(name="population", description="node population identifier")
@@ -187,7 +193,7 @@ def write_nwb(path, spiketrain_reader, mode='w', include_population=True, units=
                 node_id = int(node_id)
                 add_unit(node_id, population, spikes_times)
 
-        with pynwb.NWBHDF5IO(path, mode) as io:
-            io.write(nwbfile)
+        # with pynwb.NWBHDF5IO(path, mode) as io:
+        io.write(nwbfile)
 
     comm_barrier()

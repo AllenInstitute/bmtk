@@ -26,6 +26,9 @@ import math
 import pandas as pd
 from neuron import h
 import numpy as np
+from datetime import datetime
+from dateutil.tz import tzlocal
+from uuid import uuid4
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
@@ -37,12 +40,11 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir=None, cells=None, variable_name='v',
+    def __init__(self, tmp_dir, file_name, electrode_positions, file_name_nwb=None, contributions_dir=None, cells=None, variable_name='v',
                  electrode_channels=None, cell_bounds=None, minimum_distance=None):
         self._ecp_output = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
-
 
         if contributions_dir is not None:
             self._save_individ_cells = True
@@ -78,6 +80,11 @@ class EcpMod(SimulatorMod):
         self._tmp_ecp_file = self._get_tmp_fname(MPI_RANK)
         self._tmp_ecp_handle = None
         # self._tmp_ecp_dataset = None
+
+        self._nwb_path = None
+        if file_name_nwb:
+            self._nwb_path = file_name_nwb if os.path.isabs(file_name_nwb) else os.path.join(tmp_dir, file_name_nwb)
+        
 
         self._local_gids = []
 
@@ -238,6 +245,89 @@ class EcpMod(SimulatorMod):
         self._save_ecp(sim)
         self._delete_tmp_files()
         pc.barrier()
+
+        if self._nwb_path:
+            convert2nwb(self._nwb_path, self._ecp_output, self._positions_file)
+
+
+
+def convert2nwb(nwb_path, orig_hdf5_lfp, electrodes_file):
+    import pynwb
+
+    if os.path.exists(nwb_path):
+        io = pynwb.NWBHDF5IO(nwb_path, 'a')
+        nwbfile = io.read()
+        print('appending lfp')
+    else:
+        io = pynwb.NWBHDF5IO(nwb_path, "w")
+        nwbfile = pynwb.NWBFile(
+            session_start_time=datetime.now(tzlocal()),
+            session_description="test time",
+            identifier=str(uuid4()),
+        )
+        print('new nwb file')
+
+    electrodes_metdata_df = pd.read_csv(electrodes_file, sep=' ').set_index('channel')
+
+    device = nwbfile.create_device(
+        name="ecp electrode matrix"
+    )
+
+    electrode_group = nwbfile.create_electrode_group(
+        name="array 1",
+        device=device,
+        location="Brain",
+        description="desc"
+    )
+
+    # electrodes_file
+
+    nwbfile.add_electrode_column(name="channel_id", description="label of electrode")
+    with h5py.File(orig_hdf5_lfp, 'r') as orig_h5:
+        channels = orig_h5['ecp/channel_id'][()]
+        for chan in channels:
+            chan_data = electrodes_metdata_df.loc[chan]
+            # print(chan_data.get('location', 'None'))
+            # print(chan_data.get('x_pos', 'Not Avail'))
+            nwbfile.add_electrode(
+                group=electrode_group,
+                channel_id=chan,
+                # label="1",
+                location=chan_data.get('location', 'None'),
+                x=chan_data.get('x_pos', 'Not Avail'),
+                y=chan_data.get('y_pos', 'Not Avail'),
+                z=chan_data.get('z_pos', 'Not Avail'),
+            )
+        electrode_region_table = nwbfile.create_electrode_table_region(
+            region=list(channels),
+            description="all electrodes",
+        )
+        
+        time = orig_h5['ecp/time'][()]
+        rate = (time[1] - time[0])/time[2]
+        lfp_electrical_series = pynwb.ecephys.ElectricalSeries(
+            name="ElectricalSeries",
+            description="LFP data",
+            data=orig_h5['ecp/data'][()],
+            # filtering='Low-pass filter at 300 Hz',
+            electrodes=electrode_region_table,
+            starting_time=time[0],
+            rate=rate,
+        )
+
+        nwbfile.add_acquisition(lfp_electrical_series)
+
+        lfp = pynwb.ecephys.LFP(lfp_electrical_series)
+
+        ecephys_module = nwbfile.create_processing_module(
+            name="ecephys",
+            description="processed extracellular electrophysiology data",
+        )
+        ecephys_module.add(lfp)
+
+    io.write(nwbfile)
+
+    # print(nwb_path)
 
 
 class RecXElectrode(object):
