@@ -26,13 +26,11 @@ class CSVAmpReaderNRN(iclamp.CSVAmpReader):
         # NRN Vector.play function requires consistent
         dts = np.unique(np.diff(self._inputs_df[self._ts_col].values))
         if len(dts) > 1:
-            io.log_exception('{}: csv timestamps column ({}) must have a consistent intervals.'.format(
+            io.log_warning('{}: csv timestamps column ({}) may not have consistent intervals; please check that timestamp are consistent to within the same significance as simulation dt.'.format(
                 IClampMod.__name__, self._ts_col)
             )
         self._idt = dts[0]
-        self._istart = self.delays[0]  # self._inputs_df[self._ts_col].values[0]
-        # self._amps_vals = self._inputs_df[self._amps_col].values
-        # self._ts_vals = self._inputs_df[self._ts_col].values
+        self._istart = self.delays[0]
 
         # The way NEURON's Vector.play([amps], dt) works is that it will access the [amps] at every dt interval (0.0,
         #  dt, 2dt, 3dt, ...) in ms regardless of when the IClamp starts. Thus if the initial onset stimuli is > 0.0 ms,

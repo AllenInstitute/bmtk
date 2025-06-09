@@ -73,7 +73,7 @@ class PointProcessCell(Cell):
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
         syn_params = edge_prop.dynamics_params
-        nsyns = edge_prop.nsyns
+        nsyns = int(edge_prop.nsyns)
         delay = edge_prop.delay
 
         syn_weight = edge_prop.syn_weight(src_node, self._node)

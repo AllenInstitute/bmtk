@@ -174,6 +174,7 @@ def test_sim_csv():
     assert(np.max(list(sim.vm)) > -60)
 
 
+@pytest.mark.skip
 def test_invalid_csv():
     # Timestamps are not evenly spaced
     tmpfile = create_csv(

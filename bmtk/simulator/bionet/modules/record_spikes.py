@@ -107,7 +107,7 @@ class SpikesMod(SimulatorMod):
             pc.barrier()
 
         if self._save_nwb:
-            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
+            self._spike_writer.to_nwb(self._nwb_fname, mode='a', sort_order=self._sort_order)
             pc.barrier()
 
         self._spike_writer.close()
