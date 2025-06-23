@@ -52,7 +52,7 @@ class InitStatesMod(SimulatorMod):
             ssn_node = sim.network.get_node(node.population_name, node.node_id)
             if ssn_node.node_id not in init_df.index:
                 if strict_mapping:
-                    raise Exception('COULD NOT FIND APPROPIATE ID IN CSV')
+                    raise Exception('COULD NOT FIND APPROPRIATE ID IN CSV')
                 else:
                     # TODO: warning message
                     pass
