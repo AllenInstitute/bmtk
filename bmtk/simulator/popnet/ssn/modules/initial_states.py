@@ -77,7 +77,7 @@ class InitStatesMod(SimulatorMod):
         elif itype == 'random':
             dist = self._params['distribution']
             if dist == 'uniform':
-                init_states = np.random.normal(
+                init_states = np.random.uniform(
                     low=self._params.get('low', 0.0),
                     high=self._params.get('high', 1.0),
                     size=nsize
