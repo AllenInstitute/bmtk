@@ -71,7 +71,7 @@ class RatesRecorderMod(SimulatorMod):
         
 
     def _to_hdf5(self, sim):
-        mode = self._params.get('modd', 'a')
+        mode = self._params.get('mode', 'a')
         times = self._get_timestamps(sim)
         nsteps = len(times)
         ssn_nodes = self._get_nodes(sim)
