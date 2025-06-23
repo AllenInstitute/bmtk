@@ -84,4 +84,4 @@ class ExternalRatesMod(SimulatorMod):
                         # TODO: WARNING THAT TSTOP IS BEING SET BY INPUT
                         sim.tstop = len(inputs)*sim.dt
         else:
-            raise ValueError('Uknown module')
+            raise ValueError('Unknown module')
