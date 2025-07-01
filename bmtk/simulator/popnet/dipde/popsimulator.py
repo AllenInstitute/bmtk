@@ -30,11 +30,19 @@ from dipde.internals.connection import Connection
 import dipde
 
 from bmtk.simulator.core.simulator import Simulator
-from . import config as cfg
+# from bmtk. import config as cfg
+from bmtk.simulator.core.simulation_config import SimulationConfig
+from bmtk.simulator.core.io_tools import io
 from . import utils as poputils
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.reports.spike_trains import SpikeTrains
 from bmtk.utils.io import firing_rates
+
+
+def from_json(config_file, validate=False):
+    conf_dict = SimulationConfig.from_json(config_file)
+    conf_dict.io = io
+    return conf_dict
 
 
 class PopSimulator(Simulator):

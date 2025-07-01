@@ -1,4 +1,4 @@
-# Copyright 2017. Allen Institute. All rights reserved
+# Copyright 2025. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -20,14 +20,9 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from bmtk.simulator.core.simulation_config import SimulationConfig
-from bmtk.simulator.core.io_tools import io
+from .popnetwork import PopNetwork
+from .popsimulator import PopSimulator
+from .pyfunction_cache import inputs_generator, init_function, activation_function, add_activation_function
 
-def from_json(config_file, validate=False):
-    conf_dict = SimulationConfig.from_json(config_file)
-    conf_dict.io = io
-    return conf_dict
-
-
-class Config(SimulationConfig):
-    pass
+from bmtk.simulator.core.simulation_config import SimulationConfig as Config
+# from .config import Config

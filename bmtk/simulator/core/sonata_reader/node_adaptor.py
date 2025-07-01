@@ -145,7 +145,7 @@ class NodeAdaptor(object):
                     params_dir = network.get_component('point_neuron_models_dir')
                 elif model_type == 'point_soma':
                     params_dir = network.get_component('point_neuron_models_dir')
-                elif model_type == 'population':
+                elif model_type in ['population', 'rate_population']:
                     params_dir = network.get_component('population_models_dir')
                 elif model_type == 'lgnmodel' or model_type == 'virtual':
                     params_dir = network.get_component('filter_models_dir')

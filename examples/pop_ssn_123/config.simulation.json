@@ -1,0 +1,92 @@
+{
+    "manifest": {
+      "$BASE_DIR": ".",
+      "$OUTPUT_DIR": "$BASE_DIR/output",
+      "$INPUT_DIR": "$BASE_DIR/inputs",
+      "$NETWORK_DIR": "$BASE_DIR/network"
+    },
+  
+    "target_simulator":"SSN",
+  
+    "run": {
+      "dt": 1.0
+    },
+  
+    "inputs": {
+      "init_states": {
+        "input_type": "init_states",
+        "module": "csv",
+        "node_set": {
+            "population": "l23"
+        },
+        "file": "$BASE_DIR/input/initial_state.csv",
+        "sep": " ",
+        "index_col": "node_id",
+        "value_col": "initial_state"
+      },
+      "l4_inputs": {
+        "input_type": "external_rates",
+        "module": "h5",
+        "file": "$BASE_DIR/input/l4e_rates.h5",
+        "node_set": {
+            "population": "l4e"
+        },
+        "enabled": true
+      },
+      "bkg_inputs": {
+        "input_type": "external_rates",
+        "module": "npy",
+        "file": "$BASE_DIR/input/bkg_rates.npy",
+        "node_set": {
+            "population": "bkg"
+        },
+        "enabled": true
+      }
+    },
+  
+    "output": {
+      "output_dir": "$OUTPUT_DIR",
+      "rates_file_csv": "l23_rates.csv",
+      "rates_file_h5": "l23_rates.h5",
+      "include_columns": ["pop_name"],
+      "log_file": "log.txt",
+      "overwrite_output_dir": true
+    },
+
+    "components": {
+      "population_models_dir": "$BASE_DIR/components/pop_models"
+    },
+
+    "networks": {
+        "nodes": [
+          {
+            "nodes_file": "$NETWORK_DIR/l23_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/l23_node_types.csv"
+          },
+          {
+            "nodes_file": "$NETWORK_DIR/l4e_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/l4e_node_types.csv"
+          },
+          {
+            "nodes_file": "$NETWORK_DIR/bkg_nodes.h5",
+            "node_types_file":  "$NETWORK_DIR/bkg_node_types.csv"
+          }
+    
+        ],
+    
+        "edges": [
+          {
+            "edges_file": "$NETWORK_DIR/l23_l23_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/l23_l23_edge_types.csv"
+          },
+          {
+            "edges_file": "$NETWORK_DIR/l4e_l23_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/l4e_l23_edge_types.csv"
+          },
+          {
+            "edges_file": "$NETWORK_DIR/bkg_l23_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/bkg_l23_edge_types.csv"
+          }
+        ]
+      }
+  }

@@ -20,14 +20,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from bmtk.simulator.core.simulation_config import SimulationConfig
-from bmtk.simulator.core.io_tools import io
-
-def from_json(config_file, validate=False):
-    conf_dict = SimulationConfig.from_json(config_file)
-    conf_dict.io = io
-    return conf_dict
-
-
-class Config(SimulationConfig):
-    pass
+from .popnetwork import PopNetwork
+from .popsimulator import PopSimulator
+from ..config import Config
