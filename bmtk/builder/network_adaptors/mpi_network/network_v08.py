@@ -1,116 +1,31 @@
-# Copyright 2017. Allen Institute. All rights reserved
-#
-# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-# following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
-# disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
-# disclaimer in the documentation and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
-# products derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
 import os
-import numpy as np
-import types
-import csv
 import six
+import csv
 import logging
-import heapq
+import types
+import numpy as np
 import h5py
+from ast import literal_eval
+from six import string_types
 
-from bmtk.builder.node_pool import NodePool
-from bmtk.builder.connection_map import ConnectionMap, MockConnectionMap
-from bmtk.builder.node_set import NodeSet
 from bmtk.builder.id_generator import IDGenerator
 from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks
-from bmtk.builder.network_adaptors.edges_collator import EdgesCollator
-from bmtk.builder.network_adaptors.edge_props_table import EdgeTypesTable
-from bmtk.builder.index_builders import create_index_in_memory, create_index_on_disk
-from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier
+from bmtk.builder.node_set import NodeSet
+# from bmtk.builder.node_pool import NodePool
+from bmtk.builder.index_builders import create_index_in_memory
+from bmtk.builder import connector
+from bmtk.builder import iterator
 from bmtk.builder.edges_sorter import sort_edges
 
-from .edge_props_table_updated import EdgeTypesTableUpdated
 
+# from bmtk.builder.network_adaptors.edge_props_table import EdgeTypesTable
+from bmtk.builder.network_adaptors.edges_collator import EdgesCollator
+from .edge_props_table_updated import EdgeTypesTableUpdated
 
 logger = logging.getLogger(__name__)
 
 
-
-class NetworkV02(object):
-    """The Network class is used for building and saving a brain network/circuit. By default it will save to SONATA
-    format for running network simulations using BioNet, PointNet, PopNet or FilterNet bmtk modules, however it can
-    be generalized to build any time of network for any time of simulation.
-
-    Building the network:
-        For the general use-case building a network consists of 4 steps, each with a corresponding method.
-
-        1. Initialize the network::
-
-            net = Network("network_name")
-
-        2. Create nodes (ie cells) using the **add_nodes()** method::
-
-            net.add_nodes(N=80, model_type='Biophysical', ei='exc')
-            net.add_nodes(N=20, model_type='IntFire', ei='inh')
-            ...
-
-        3. Create Connection rules between different subsets of nodes using **add_edges()** method::
-
-            net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'},
-                          connection_rule=my_conn_func, synaptic_model='e2i')
-            ...
-
-        4. Finally **build** the network and **save** the files::
-
-            net.build()
-            net.save(output_dir='network_path')
-
-        See the bmtk documentation, or the method doc-strings for more advanced functionality
-
-
-    Network Accessor methods:
-        **nodes()**
-
-        Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to
-        fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by
-        passing in property/values pairs::
-
-            for node in net.nodes(model_type='Biophysical', ei='exc'):
-                assert(node['ei'] == 'exc')
-                ...
-
-        **edges()**
-
-        Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge
-        property::
-
-            for edge in net.edges(synaptic_model='exp2'):
-                ...
-
-        One can also pass in a list of source (or target) to filter out only those edges which belong to a specific
-        subset of cells::
-
-            for edge in net.edges(target_nodes=net.nodes(ei='exc')):
-            ...
-
-
-    Network Properties:
-        * **name** - name of the network
-        * **nnodes** - number of nodes (cells) in the network.
-        * **nedges** - number of edges. Will be zero if build() method hasn't been called
-    """
-
+class NetworkV08:
     def __init__(self, name, **network_props):
         if name is None or len(name) == 0:
             raise ValueError('Network name missing.')
@@ -121,9 +36,10 @@ class NetworkV02(object):
         self._nedges = 0
         self._edges_built = False
         self._network_props = network_props
+        self._network_props['rank_passing'] = 'comm'
         
         self._node_sets = []
-        self.__external_node_sets = []
+        # self.__external_node_sets = []
         # self.__node_id_counter = 0
 
         self._node_types_properties = {}
@@ -145,6 +61,9 @@ class NetworkV02(object):
 
         self._connection_maps = []
         self._cm_rank_order = [(0, r) for r in range(mpi_size)]
+
+        self.split_by = network_props.get('mpi_split_by', '')
+        self._next_rank = 0
 
     @property
     def name(self):
@@ -172,8 +91,6 @@ class NetworkV02(object):
         return self._nedges
 
     def get_connections(self):
-        """Returns a list of all bmtk.builder.connection_map.ConnectionMap objects representing all edge-types for this
-         network."""
         return self._connection_maps
 
     def _add_node_type(self, props):
@@ -189,25 +106,6 @@ class NetworkV02(object):
         self._node_types_properties[node_type_id] = props
 
     def add_nodes(self, N=1, **properties):
-        """Used to add nodes (eg cells) to a network. User should specify the number of Nodes (N) and can use any
-        properties/attributes they require to define the nodes. By default all individual cells will be assigned a
-        unique 'node_id' to identify each node in the network and a 'node_type_id' to identify each group of nodes.
-
-        If a property is a singular value then said property will be shared by all the nodes in the group. If a value
-        is a list of length N then each property will be uniquely assigned to each node. In the below example a group
-        of 100 nodes is created, all share the same 'model_type' parameter but the pos_x values will be different for
-        each node::
-
-            net.add_nodes(N=100, pos_x=np.random.rand(100), model_type='intfire1', ...)
-
-        You can use a tuple to store property values (in which the SONATA hdf5 will save it as a dataset with multiple
-        columns). For example to have one property 'positions' which keeps track of the x/y/z coordinates of each cell::
-
-            net.add_nodes(N=100, positions=[(rand(), rand(), rand()) for _ in range(100)], ...)
-
-        :param N: number of nodes in this group
-        :param properties: Individual and group properties of given nodes
-        """
         self._clear()
         check_properties_across_ranks(properties)
 
@@ -245,100 +143,9 @@ class NetworkV02(object):
         self._add_node_type(node_properties)
         self._node_sets.append(NodeSet(N, node_params, node_properties))
 
+
     def add_edges(self, source=None, target=None, connection_rule=1, connection_params=None, iterator='one_to_one',
                   **edge_type_properties):
-        """Used to create the connectivity matrix between subsets of nodes. The actually connections will not be
-        created until the build() method is called, using the 'connection_rule.
-
-        Node Selection:
-            To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to
-            filter the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
-            fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all
-            neurons will be used)::
-
-                net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'},
-                              dynamic_params='i2e.json', synaptic_model='alpha', ...)
-
-            In the above code there is one connection between each source/target pair of nodes, but to create a
-            multi-graph with N connections between each pair use 'connection_rule' parameter with an integer value::
-
-                net.add_edges(
-                    source={'ei': 'inh'},
-                    target={'ei': 'exc', 'etype': 'fast-spiking'},
-                    connection_rule=M,
-                    ...
-                )
-
-        Connection rules:
-            Usually the 'connection_rule' parameter will be the name of a function that takes in source-node and
-            target-node object (which can be treated like dictionaries, and returns the number of connections (ie
-            synapses, 0 or None if no synapses should exists) between the source and target cell::
-
-                def my_conn_fnc(source_node, target_node):
-                    src_pos = source_node['position']
-                    trg_pos = target_node['position']
-                    ...
-                    return N_syns
-
-                net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'}, connection_rule=my_conn_fnc, **opt_edge_attrs)
-
-            If the connection_rule function requires addition arguments use the 'connection_params' option::
-
-                def my_conn_fnc(source_node, target_node, min_edges, max_edges)
-                    ...
-
-                net.add_edges(connection_rule=my_conn_fnc, connection_params={'min_edges': 0, 'max_edges': 20}, ...)
-
-            Sometimes it may be more efficient or even a requirement that multiple connections are created at the same
-            time. For example a post-synaptic neuron may only be targeted by a limited number of sources which couldn't
-            be done by the previous connection_rule function. But by setting property 'iterator' to value 'all_to_one'
-            the connection_rule function now takes in as a value a list of N source neurons, a single target, and should
-            return a list of size N::
-
-                def bulk_conn_fnc(sources, target):
-                    syn_list = np.zeros(len(sources))
-                    for source in sources:
-                        ....
-                    return syn_list
-
-                net.add_edges(connection_rule=bulk_conn_fnc, iterator='all_to_one', ...)
-
-            There is also a 'all_to_one' iterator option that will pair each source node with a list of all available
-            target nodes.
-
-        Edge Properties:
-            Normally the properties used when creating a given type of edge will be shared by all the indvidual
-            connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object::
-
-                def set_syn_weight_by_dist(source, target):
-                    src_pos, trg_pos = source['position'], target['position']
-                    ....
-                    return syn_weight
-
-
-                cm = net.add_edges(connection_rule=my_conn_fnc, model_template='Exp2Syn', ...)
-                                delay=2.0)
-                cm.add_properties('syn_weight', rule=set_syn_weight_by_dist)
-                cm.add_properties('delay', rule=lambda *_: np.random.rand(0.01, 0.50))
-
-            In this case the 'model_template' property has a value for all connections of this given type of edge. The
-            'syn_weight' and 'delay' properties will (most likely) be unique values. See ConnectionMap documentation for
-            more info.
-
-        :param source: A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
-            subset of nodes.
-        :param target: A dictionary or list of Node objects). Used to filter out post-synaptic subset of nodes
-        :param connection_rule: Integer or a function that returns integer(s). Rule to determine number of connections
-            between each source and target node
-        :param connection_params: A dictionary, used when the 'connection_rule' is a function that requires additional
-            argments
-        :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
-            how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
-            called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
-        :param edge_type_properties: properties/attributes of the given edge type
-        :return: A ConnectionMap object
-        """
         check_properties_across_ranks(edge_type_properties)
 
         if not isinstance(source, NodePool):
@@ -371,29 +178,41 @@ class NetworkV02(object):
             connection_rule = edge_type_properties['nsyns']
             del edge_type_properties['nsyns']
 
-        connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
+        # self, sources=None, targets=None, connector=None, connector_params=None, iterator='one_to_one',
+        #                  edge_type_properties=None, split_by=''
+
+        connection = ConnectionMap(
+            sources=source, 
+            targets=target, 
+            connector=connection_rule, 
+            connector_params=connection_params, 
+            iterator=iterator, 
+            split_by=self.split_by, 
+            edge_type_properties=edge_type_properties
+        )
+        
+        # return self._add_connection_on_rank(connection)
+        # if self        
+        # self._connection_maps.append(connection)
+        # return connection
         return self._add_connection_on_rank(connection)
 
     def _add_connection_on_rank(self, connection_map):
-        max_conns, rank = heapq.heappop(self._cm_rank_order)
-        max_conns += connection_map.max_connections()
-        heapq.heappush(self._cm_rank_order, (max_conns, rank))
-        # logger.info(f'Adding {connection_map.max_connections()} to rank {rank}')
-
-        if rank == mpi_rank:
+        if self.split_by == 'edge_type':        
+            selected_rank = self._next_rank
+            self._next_rank = (selected_rank+1) % mpi_size
+            if mpi_rank == self._next_rank:
+                self._connection_maps.append(connection_map)
+                return connection_map
+            else:
+                return MockConnectionMap()
+        else:
             self._connection_maps.append(connection_map)
             return connection_map
-        else:
-            return MockConnectionMap()
 
     def add_gap_junctions(self, source=None, target=None, resistance=1., conductance=None,
                           distance_range=[0.0, 300.0], target_sections=['somatic'],
                           connection_rule=1, iterator='one_to_one', **edge_type_properties):
-        """A special function for marking a edge group as gap junctions. Just a wrapper for add_edges.
-
-        :param resistance: gap junction resistance (megaohm)
-        :param conductance: gap junction conductance (microsiemens). If specified, resistance is ignored.
-        """
         if target_sections is not None:
             logger.warning(
                 'For gap junctions, the target sections variable is used for both the source and target sections.'
@@ -407,21 +226,6 @@ class NetworkV02(object):
         )
 
     def nodes(self, **properties):
-        """Returns an iterator of Node (glorified dictionary) objects, filtered by parameters.
-
-        To get all nodes on a network::
-
-            for node in net.nodes():
-                ...
-
-        To only get those nodes with properties that match a given list of parameter values::
-
-            for nod in net.nodes(param1=value1, param2=value2, ...):
-                ...
-
-        :param properties: key-value pair of node attributes to filter returned nodes
-        :return: An iterator of Node objects
-        """
         if not self.nodes_built:
             self._build_nodes()
 
@@ -434,27 +238,6 @@ class NetworkV02(object):
             return self._nodes
 
     def edges(self, target_nodes=None, source_nodes=None, target_network=None, source_network=None, **properties):
-        """Returns a list of dictionary-like Edge objects, given filter parameters.
-
-        To get all edges from a network::
-
-            edges = net.edges()
-
-        To specify the target and/or source node-set::
-
-            edges = net.edges(target_nodes=net.nodes(type='biophysical'), source_nodes=net.nodes(ei='i'))
-
-        To only get edges with a given edge_property::
-
-          edges = net.edges(weight=100, syn_type='AMPA_Exc2Exc')
-
-        :param target_nodes: gid, list of gid, dict or node-pool. Set of target nodes for a given edge.
-        :param source_nodes: gid, list of gid, dict or node-pool. Set of source nodes for a given edge.
-        :param target_network: name of network containing target nodes.
-        :param source_network: name of network containing source nodes.
-        :param properties: edge-properties used to filter out only certain edges.
-        :return: list of bmtk.builder.edge.Edge properties.
-        """
         def nodes2gids(nodes, network):
             """helper function for converting target and source nodes into list of gids"""
             if nodes is None or isinstance(nodes, list):
@@ -508,20 +291,6 @@ class NetworkV02(object):
         return edges
 
     def edges_iter(self, trg_gids, src_network=None, trg_network=None):
-        """Given a list of target gids, returns a generator for iteratoring over all possible edges.
-
-        It is preferable to use edges() method instead, it allows more flexibility in the input and can better
-        indicate if their is a problem.
-
-        The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
-        secondary ordering by source-nodes and/or edge-type. If their isn't a edge with a matching target-id then
-        it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.
-
-        :param trg_gids: list of gids to match with an edge's target.
-        :param src_network: str, only returns edges coming from the specified source network.
-        :param trg_network: str, only returns edges coming from the specified target network.
-        :return: iteration of bmtk.build.edge.Edge objects representing given edge.
-        """
         raise NotImplementedError
 
     def clear(self):
@@ -822,7 +591,11 @@ class NetworkV02(object):
             if et.source_network == src_network and et.target_network == trg_network
         ]
 
-        merged_edges = EdgesCollator(filtered_edge_types, network_name=self.name, **self._network_props)
+        merged_edges = EdgesCollator(
+            filtered_edge_types, 
+            network_name=self.name, 
+            **self._network_props
+        )
         merged_edges.process()
         n_total_conns = merged_edges.n_total_edges
         barrier()
@@ -922,125 +695,6 @@ class NetworkV02(object):
 
         if mpi_rank == 0:
             logger.debug('Saving completed.')
-
-    """
-    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
-                    index_by=('target_node_id', 'source_node_id'), compression='gzip'):
-        barrier()
-
-        if compression == 'none':
-            compression = None  # legit option for h5py for no compression
-
-        if mpi_rank == 0:
-            logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
-
-        filtered_edge_types = [
-            # Some edges may not match the source/target population
-            et for et in self._edges_tables
-            if et.source_network == src_network and et.target_network == trg_network
-        ]
-
-        merged_edges = EdgesCollator(filtered_edge_types, network_name=self.name)
-        merged_edges.process()
-        n_total_conns = merged_edges.n_total_edges
-        barrier()
-
-        if n_total_conns == 0:
-            if mpi_rank == 0:
-                logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
-            return
-
-        # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
-        # write to disk first then sort the hdf5 file
-        sort_on_disk = False
-        edges_file_name_final = edges_file_name
-        if sort_by:
-            if merged_edges.can_sort:
-                merged_edges.sort(sort_by=sort_by)
-            else:
-                sort_on_disk = True
-                edges_file_name_final = edges_file_name
-
-                edges_file_basename = os.path.basename(edges_file_name)
-                edges_file_dirname = os.path.dirname(edges_file_name)
-                edges_file_name = os.path.join(edges_file_dirname, '.unsorted.{}'.format(edges_file_basename))
-                if mpi_rank == 0:
-                    logger.debug('Unable to sort edges in memory, will temporarly save to {}'.format(edges_file_name) +
-                                 ' before sorting hdf5 file.')
-        barrier()
-
-        if mpi_rank == 0:
-            logger.debug('Saving {} edges to disk'.format(n_total_conns))
-            pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
-            with h5py.File(edges_file_name, 'w') as hf:
-                # Initialize the hdf5 groups and datasets
-                add_hdf5_attrs(hf)
-                pop_grp = hf.create_group('/edges/{}'.format(pop_name))
-
-                pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64', compression=compression)
-                pop_grp['source_node_id'].attrs['node_population'] = src_network
-                pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64', compression=compression)
-                pop_grp['target_node_id'].attrs['node_population'] = trg_network
-                pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16', compression=compression)
-                pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32', compression=compression)
-                pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32', compression=compression)
-
-                for group_id in merged_edges.group_ids:
-                    # different model-groups will have different datasets/properties depending on what edge information
-                    # is being saved for each edges
-                    model_grp = pop_grp.create_group(str(group_id))
-                    for prop_mdata in merged_edges.get_group_metadata(group_id):
-                        model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'], compression=compression)
-
-                # Uses the collated edges (eg combined edges across all edge-types) to actually write the data to hdf5,
-                # potentially in multiple chunks. For small networks doing it this way isn't very effiecent, however
-                # this has the benefits:
-                #  * For very large networks it won't always be possible to store all the data in memory.
-                #  * When using MPI/multi-node the chunks can represent data from different ranks.
-                for chunk_id, idx_beg, idx_end in merged_edges.itr_chunks():
-                    pop_grp['source_node_id'][idx_beg:idx_end] = merged_edges.get_source_node_ids(chunk_id)
-                    pop_grp['target_node_id'][idx_beg:idx_end] = merged_edges.get_target_node_ids(chunk_id)
-                    pop_grp['edge_type_id'][idx_beg:idx_end] = merged_edges.get_edge_type_ids(chunk_id)
-                    pop_grp['edge_group_id'][idx_beg:idx_end] = merged_edges.get_edge_group_ids(chunk_id)
-                    pop_grp['edge_group_index'][idx_beg:idx_end] = merged_edges.get_edge_group_indices(chunk_id)
-
-                    for group_id, prop_name, grp_idx_beg, grp_idx_end in merged_edges.get_group_data(chunk_id):
-                        prop_array = merged_edges.get_group_property(prop_name, group_id, chunk_id)
-                        pop_grp[str(group_id)][prop_name][grp_idx_beg:grp_idx_end] = prop_array
-
-            if sort_on_disk:
-                logger.debug('Sorting {} by {} to {}'.format(edges_file_name, sort_by, edges_file_name_final))
-                sort_edges(
-                    input_edges_path=edges_file_name,
-                    output_edges_path=edges_file_name_final,
-                    edges_population='/edges/{}'.format(pop_name),
-                    sort_by=sort_by,
-                    compression=compression,
-                    # sort_on_disk=True,
-                )
-                try:
-                    logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
-                    os.remove(edges_file_name)
-                except OSError as e:
-                    logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name))
-
-            if index_by:
-                index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
-                for index_type in index_by:
-                    logger.debug('Creating index {}'.format(index_type))
-                    create_index_in_memory(
-                        edges_file=edges_file_name_final,
-                        edges_population='/edges/{}'.format(pop_name),
-                        index_type=index_type,
-                        compression=compression
-                    )
-
-        barrier()
-        del merged_edges
-
-        if mpi_rank == 0:
-            logger.debug('Saving completed.')
-    """
             
     def _initialize(self):
         self.__id_map = []
@@ -1050,16 +704,17 @@ class NetworkV02(object):
         self._nodes.extend(nodes)
         self._nnodes = len(self._nodes)
 
+    """
     def _add_edges(self, connection_map, i):
-        """
-
-        :param connection_map:
-        :param i:
-        """
         edge_type_id = connection_map.edge_type_properties['edge_type_id']
         logger.debug('Generating edges data for edge_types_id {}.'.format(edge_type_id))
-        edges_table = EdgeTypesTable(connection_map, network_name=self.name)
+        edges_table = EdgeTypesTableUpdated(
+            connection_map, 
+            network_name=self.name,
+            **self._network_props  
+        )
         connections = connection_map.connection_itr()
+        
 
         # iterate through all possible SxT source/target pairs and use the user-defined function/list/value to update
         # the number of syns between each pair. TODO: See if this can be vectorized easily.
@@ -1099,7 +754,7 @@ class NetworkV02(object):
                     for pname, pval in zip(pnames, pvals):
                         edges_table.set_property_value(prop_name=pname, edge_index=edge_index, prop_value=pval)
 
-        logger.info('Edge-types {} data built with {} connection ({} synapses)'.format(
+        logger.debug('Edge-types {} data built with {} connection ({} synapses)'.format(
             edge_type_id, edges_table.n_edges, edges_table.n_syns)
         )
 
@@ -1109,80 +764,7 @@ class NetworkV02(object):
         # than the number of actual edges stored (for efficency), may be a better user-representation.
         self._nedges += edges_table.n_syns  # edges_table.n_edges
         self._edges_tables.append(edges_table)
-
-    def _clear(self):
-        self._nedges = 0
-        self._nnodes = 0
-
-    @property
-    def nnodes(self):
-        if not self.nodes_built:
-            return 0
-        return self._nnodes
-
-    @property
-    def nedges(self):
-        return self._nedges
-
-
-class NetworkV03(NetworkV02):
-    def __init__(self, name, **network_props):
-        super(NetworkV03, self).__init__(name, **network_props)
-        self._next_rank = 0
-        self._cm_rank_order = [0 for _ in range(mpi_size)]
-
-    def _add_connection_on_rank(self, connection_map):
-        selected_rank = self._next_rank
-        self._cm_rank_order[selected_rank] += connection_map.max_connections()
-        self._next_rank = np.argmin(self._cm_rank_order)
-
-        if selected_rank == mpi_rank:
-            self._connection_maps.append(connection_map)
-            return connection_map
-        else:
-            return MockConnectionMap()
-
-
-class NetworkV04(NetworkV02):
-    def __init__(self, name, **network_props):
-        super(NetworkV04, self).__init__(name, **network_props)
-        self._next_rank = 0
-        # self._cm_rank_order = [0 for _ in range(mpi_size)]
-
-    def _add_connection_on_rank(self, connection_map):
-        selected_rank = self._next_rank
-        self._next_rank = (selected_rank+1) % mpi_size
-        if mpi_rank == self._next_rank:
-            self._connection_maps.append(connection_map)
-            return connection_map
-        else:
-            return MockConnectionMap()
-
-        # selected_rank = self._next_rank
-        # self._cm_rank_order[selected_rank] += connection_map.max_connections()
-        # self._next_rank = np.argmin(self._cm_rank_order)
-
-        # if selected_rank == mpi_rank:
-        #     self._connection_maps.append(connection_map)
-        #     return connection_map
-        # else:
-        #     return MockConnectionMap()
-
-
-class NetworkV05(NetworkV04):
-    def __init__(self, name, **network_props):
-        super(NetworkV05, self).__init__(name, **network_props)
-        self._next_rank = 0
-        # self._cm_rank_order = [0 for _ in range(mpi_size)]
-
-    def _add_connection_on_rank(self, connection_map):
-        selected_rank = self._next_rank
-        self._next_rank = (selected_rank+1) % mpi_size
-        if mpi_rank == self._next_rank:
-            self._connection_maps.append(connection_map)
-            return connection_map
-        else:
-            return MockConnectionMap()
+    """
 
     def _add_edges(self, connection_map, i):
         """
@@ -1194,6 +776,16 @@ class NetworkV05(NetworkV04):
         logger.debug('Generating edges data for edge_types_id {}.'.format(edge_type_id))
         edges_table = EdgeTypesTableUpdated(connection_map, network_name=self.name, **self._network_props)
         connections = connection_map.connection_itr()
+
+        # logger.info(len(connection_map.source_nodes))
+        # logger.info(len(connection_map.target_nodes))
+        # n_conns = 0
+        # for conn in connections:
+        #     n_conns += 1
+
+        # logger.info(f'{edge_type_id} -> {n_conns}')
+        # exit()
+
 
         # iterate through all possible SxT source/target pairs and use the user-defined function/list/value to update
         # the number of syns between each pair. TODO: See if this can be vectorized easily.
@@ -1245,19 +837,312 @@ class NetworkV05(NetworkV04):
         self._edges_tables.append(edges_table)
 
 
-class NetworkV06(NetworkV05):
-    def __init__(self, name, **network_props):
-        super(NetworkV06, self).__init__(name, **network_props)
-        self._network_props['rank_passing'] = 'pickled'
+    def _clear(self):
+        self._nedges = 0
+        self._nnodes = 0
 
+    @property
+    def nnodes(self):
+        if not self.nodes_built:
+            return 0
+        return self._nnodes
 
-class NetworkV07(NetworkV05):
-    def __init__(self, name, **network_props):
-        super(NetworkV07, self).__init__(name, **network_props)
-        self._network_props['rank_passing'] = 'comm'
+    @property
+    def nedges(self):
+        return self._nedges
 
 
 def add_hdf5_attrs(hdf5_handle):
     # TODO: move this as a utility function
     hdf5_handle['/'].attrs['magic'] = np.uint32(0x0A7A)
     hdf5_handle['/'].attrs['version'] = [np.uint32(0), np.uint32(1)]
+
+
+class ConnectionMap(object):
+    class ParamsRules(object):
+        """A subclass to store indvidiual synpatic parameter rules"""
+        def __init__(self, names, rule, rule_params, dtypes):
+            self._names = names
+            self._rule = rule
+            self._rule_params = rule_params
+            self._dtypes = self.__create_dtype_dict(names, dtypes)
+
+        def __create_dtype_dict(self, names, dtypes):
+            if isinstance(names, list):
+                # TODO: compare size of names and dtypes
+                return {n: dt for n, dt in zip(names, dtypes)}
+            else:
+                return {names: dtypes}
+
+        @property
+        def names(self):
+            return self._names
+
+        @property
+        def rule(self):
+            return connector.create(self._rule, **(self._rule_params or {}))
+
+        @property
+        def dtypes(self):
+            return self._dtypes
+
+        def get_prop_dtype(self, prop_name):
+            return self._dtypes[prop_name]
+
+    def __init__(self, sources=None, targets=None, connector=None, connector_params=None, iterator='one_to_one',
+                 split_by='', edge_type_properties=None):
+        if mpi_size == 1 or split_by == 'edge_type':
+            self._source_nodes = sources
+            self._target_nodes = targets
+        elif split_by == 'by_source' or iterator == 'one_to_all':
+            self._source_nodes = sources[mpi_rank::mpi_size]
+            self._target_nodes = targets
+        else:
+            self._source_nodes = sources
+            self._target_nodes = targets[mpi_rank::mpi_size]
+        
+        self._connector = connector  # function, list or value that determines connection between sources and targets
+        self._connector_params = connector_params  # parameters passed into connector
+        self._iterator = iterator  # rule for iterating between sources and targets
+        self._edge_type_properties = edge_type_properties
+        self._max_connections = None
+        self._params = []
+        self._param_keys = []
+
+    @property
+    def params(self):
+        return self._params
+
+    @property
+    def source_nodes(self):
+        return self._source_nodes
+
+    @property
+    def source_network_name(self):
+        return self._source_nodes.network_name
+
+    @property
+    def target_nodes(self):
+        return self._target_nodes
+
+    @property
+    def target_network_name(self):
+        return self._target_nodes.network_name
+
+    @property
+    def connector(self):
+        return self._connector
+
+    @property
+    def connector_params(self):
+        return self._connector_params
+
+    @property
+    def iterator(self):
+        return self._iterator
+
+    @property
+    def edge_type_properties(self):
+        return self._edge_type_properties or {}
+
+    @property
+    def edge_type_id(self):
+        # TODO: properly implement edge_type
+        return self._edge_type_properties['edge_type_id']
+
+    @property
+    def property_names(self):
+        if len(self._param_keys) == 0:
+            return ['nsyns']
+        else:
+            return self._param_keys
+
+    def properties_keys(self):
+        ordered_keys = sorted(self.property_names)
+        return str(ordered_keys)
+
+    def max_connections(self):
+        if self._max_connections is None:
+            self._max_connections = len(self._source_nodes) * len(self._target_nodes)
+        return self._max_connections
+
+    def add_properties(self, names, rule=None, rule_params=None, values=None, dtypes=None):
+        if not (bool(values is not None) != bool(rule is not None)):
+            raise ValueError('Please specify either the "rule" or "values" parameters')
+        
+        if values is not None:
+            rule = values
+
+        if isinstance(rule, list) or isinstance(rule, np.ndarray):
+            rule = ListIterator(rule)
+            rule_params = {}
+
+        self._params.append(self.ParamsRules(names, rule, rule_params, dtypes))
+        self._param_keys += names
+
+    def connection_itr(self):
+        """Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,
+        and create a connection rule based on the connector.
+        """
+        conr = connector.create(self.connector, **(self.connector_params or {}))
+        itr = iterator.create(self.iterator, conr, **({}))
+        return itr(self.source_nodes, self.target_nodes, conr)
+
+
+class ListIterator(object):
+    def __init__(self, my_list):
+        self.my_list = my_list
+        self._idx = 0
+
+    def __call__(self, *args, **kwds):
+        val = self.my_list[self._idx]
+        self._idx += 1
+        return val
+    
+
+class NodePool(object):
+    """Stores a collection of nodes based off some query of the network.
+
+    Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and
+    saved by the network, this just stores the query information and provides iterator methods for accessing different
+    nodes.
+
+    TODO:
+        * Implement a collection-set algebra including | and not operators. ie.
+            nodes = net.nodes(type=1) | net.nodes(type=2)
+        * Implement operators on properties
+            nodes = net.nodes(val) > 100
+            nodes = 100 in net.nodes(val)
+    """
+
+    def __init__(self, network, slice=None, **properties):
+        self.__network = network
+        self.__properties = properties
+        self.__filter_str = None
+        self.__slice = slice
+        
+        self.__itr_lst = None
+
+        # self.__itr_lst = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+        # if self.__slice:
+        #     self.__itr_lst = self.__itr_lst[self.__slice]
+
+
+        # self.__itr_indices = None
+        # self.__itr_curr = 0
+        # self.__itr_list = None
+        # self.__itr_list_end = None
+        # self.__itr_cidx = 0
+
+    @property
+    def nodes(self):
+        if self.__itr_lst is None:
+            self.__itr_lst = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+            if self.__slice:
+                self.__itr_lst = self.__itr_lst[self.__slice]
+
+        return self.__itr_lst
+
+    def __len__(self):
+        return len(self.nodes) # sum(1 for _ in self)
+
+    def __iter__(self):
+        # if self.__itr_lst is None:
+        #     self.__itr_lst = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+        #     if self.__slice:
+        #         self.__itr_lst = self.__itr_lst[self.__slice]
+
+        return iter(self.nodes)
+        # return (n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties))
+
+
+    # def __iter__(self):
+        
+        
+        # return (n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties))
+        # itr_list = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+        # if self.__slice:
+        #     itr_list = itr_list[self.__slice]
+        # print('--', len(self.__itr_list))
+        # exit()
+
+        # self.__itr_list_end = len(self.__itr_list)
+        # self.__itr_cidx = 0
+        # return iter(self.__itr_lst)
+    
+    # def __next__(self):
+    #     if self.__itr_cidx < self.__itr_list_end:
+    #         # print('next')
+    #         # print(self.__itr_cidx)
+    #         self.__itr_cidx += 1
+    #         # print('next', self.__itr_list[self.__itr_cidx-1])
+    #         return self.__itr_list[self.__itr_cidx-1]
+    #     else:
+    #         raise StopIteration
+        
+
+
+
+    @property
+    def network(self):
+        return self.__network
+
+    @property
+    def network_name(self):
+        return self.__network.name
+
+    @property
+    def filter_str(self):
+        if self.__filter_str is None:
+            if len(self.__properties) == 0:
+                self.__filter_str = '*'
+            else:
+                self.__filter_str = ''
+                for k, v in self.__properties.items():
+                    conditional = "{}=='{}'".format(k, v)
+                    self.__filter_str += conditional + '&'
+                if self.__filter_str.endswith('&'):
+                    self.__filter_str = self.__filter_str[0:-1]
+
+        return self.__filter_str
+
+    @classmethod
+    def from_filter(cls, network, filter_str):
+        assert(isinstance(filter_str, string_types))
+        if len(filter_str) == 0 or filter_str == '*':
+            return cls(network, position=None)
+
+        properties = {}
+        for condtional in filter_str.split('&'):
+            var, val = condtional.split('==')
+            properties[var] = literal_eval(val)
+        return cls(network, position=None, **properties)
+
+    def __query_object_properties(self, obj, props):
+        if props is None:
+            return True
+
+        for k, v in props.items():
+            ov = obj.get(k, None)
+            if ov is None:
+                return False
+
+            if hasattr(v, '__call__'):
+                if not v(ov):
+                    return False
+            elif isinstance(v, list):
+                if ov not in v:
+                    return False
+            elif ov != v:
+                return False
+
+        return True
+
+    def __getitem__(self, key):
+        # print(key, type(key))
+        if isinstance(key, slice):
+            return NodePool(self.__network, slice=key, **self.__properties)
+
+        else:
+            raise NotImplementedError()
+        # exit()

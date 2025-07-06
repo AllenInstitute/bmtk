@@ -39,16 +39,57 @@ class NodePool(object):
             nodes = 100 in net.nodes(val)
     """
 
-    def __init__(self, network, **properties):
+    def __init__(self, network, slice=None, **properties):
         self.__network = network
         self.__properties = properties
         self.__filter_str = None
+        self.__slice = slice
+        
+        self.__itr_lst = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+        if self.__slice:
+            self.__itr_lst[self.__slice]
+
+
+        # self.__itr_indices = None
+        # self.__itr_curr = 0
+        # self.__itr_list = None
+        # self.__itr_list_end = None
+        # self.__itr_cidx = 0
+
 
     def __len__(self):
-        return sum(1 for _ in self)
+        return len(self.__itr_lst) # sum(1 for _ in self)
 
     def __iter__(self):
         return (n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties))
+
+
+    # def __iter__(self):
+        
+        
+        # return (n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties))
+        # itr_list = [n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties)]
+        # if self.__slice:
+        #     itr_list = itr_list[self.__slice]
+        # print('--', len(self.__itr_list))
+        # exit()
+
+        # self.__itr_list_end = len(self.__itr_list)
+        # self.__itr_cidx = 0
+        # return iter(self.__itr_lst)
+    
+    # def __next__(self):
+    #     if self.__itr_cidx < self.__itr_list_end:
+    #         # print('next')
+    #         # print(self.__itr_cidx)
+    #         self.__itr_cidx += 1
+    #         # print('next', self.__itr_list[self.__itr_cidx-1])
+    #         return self.__itr_list[self.__itr_cidx-1]
+    #     else:
+    #         raise StopIteration
+        
+
+
 
     @property
     def network(self):
@@ -104,3 +145,12 @@ class NodePool(object):
                 return False
 
         return True
+
+    # def __getitem__(self, key):
+    #     # print(key, type(key))
+    #     if isinstance(key, slice):
+    #         return NodePool(self.__network, slice=key, **self.__properties)
+
+    #     else:
+    #         raise NotImplementedError()
+    #     # exit()

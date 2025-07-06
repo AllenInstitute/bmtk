@@ -54,6 +54,8 @@ class EdgeTypesTableMemory(object):
         self.nsyn_table_src_ids = np.zeros(max_conns, dtype=np.uint32)
         self.nsyn_table_trg_ids = np.zeros(max_conns, dtype=np.uint32)
         self.nsyn_table_vals = np.zeros(max_conns, dtype=np.uint16)
+        
+        # logger.info(f'> Edgetype {self.edge_type_id}: {len(connection_map.source_nodes)}x{len(connection_map.target_nodes)} : {max_conns}')
         self._nsyn_table_idx = 0
         self._nsyns = -1
 
@@ -68,7 +70,7 @@ class EdgeTypesTableMemory(object):
         if self._nsyns < 0:
             self._n_syns = np.sum(self.nsyn_table_vals[0:self._nsyn_table_idx])
         
-        return self._n_syns
+        return int(self._n_syns)
 
     @property
     def n_edges(self):
@@ -171,7 +173,7 @@ class EdgeTypesTableMemory(object):
             nsyns = self.nsyn_table_vals[idx]
             src_id = self.nsyn_table_src_ids[idx]
             trg_id = self.nsyn_table_trg_ids[idx]
-            for edge_index in range(nsyns):
+            for _ in range(nsyns):
                 source_node = self.source_nodes_map[src_id]
                 target_node = self.target_nodes_map[trg_id]
                 yield source_node, target_node, edge_index
@@ -232,7 +234,7 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
     """
     _tmp_table_valid = False  # Singleton flag to ensure hdf5 temp file is created only once
 
-    def __init__(self, connection_map, network_name):
+    def __init__(self, connection_map, network_name, **opt_args):
         super(EdgeTypesTableMPI, self).__init__(connection_map, network_name)
         self.tmp_table_name = EdgeTypesTableMPI.get_tmp_table_path(mpi_rank)
 
@@ -294,13 +296,42 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
         except (FileNotFoundError, IOError, Exception) as e:
             logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
 
-class EdgeTypesTableUpdated(EdgeTypesTableMPI):
-    pass
+
+# class EdgeTypesTableUpdated(EdgeTypesTableMPI):
+#     pass
 
 
-# class EdgeTypesTable(object):
-#     def __new__(cls, *args, **kwargs):
-#         if mpi_size > 1:
-#             return EdgeTypesTableMPI(*args, **kwargs)
-#         else:
-#             return EdgeTypesTableMemory(*args, **kwargs)
+class EdgeTypesTableMPIPickled(EdgeTypesTableMPI):
+    def __init__(self, connection_map, network_name, **opt_args):
+        super(EdgeTypesTableMPIPickled, self).__init__(connection_map, network_name)
+
+    def save(self):
+        pass
+    
+    def __del__(self):
+        pass
+
+
+
+first_msg = True
+def log_once(msg):
+    global first_msg
+    if first_msg:
+        logger.info(msg)
+        first_msg = False
+
+
+class EdgeTypesTableUpdated(object):
+    def __new__(cls, *args, **kwargs):
+        rank_passing = kwargs.get('rank_passing', 'h5')
+        if mpi_size == 1:
+            log_once('>> EdgeTypesTableMemory')
+            return EdgeTypesTableMemory(*args, **kwargs)
+
+        elif rank_passing == 'h5':
+            log_once('>> EdgeTypesTableMPI')
+            return EdgeTypesTableMPI(*args, **kwargs)
+
+        else:
+            log_once('>> EdgeTypesTableMPIPickled')
+            return EdgeTypesTableMPIPickled(*args, **kwargs)

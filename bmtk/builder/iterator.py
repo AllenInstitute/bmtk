@@ -23,6 +23,10 @@
 import itertools
 import functools
 import types
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class IteratorCache(object):
@@ -68,12 +72,27 @@ def one_to_all_iterator(source_nodes, target_nodes, connector):
 
 def all_to_one_iterator(source_nodes, target_nodes, connector):
     """Iterate through all the target nodes and return target node + list of all sources"""
+    # logger.info(f'all_to_one_iterator(): {len(source_nodes)}x{len(target_nodes)}')
+    # logger.info(f'all_to_one_iterator(): {len(list(target_nodes))}')
+
+
+
     source_list = list(source_nodes)
+    # trg_cnt = 0
+    # for target in target_nodes: 
+    #     trg_cnt += 1
+    
+    # logger.info(f'all_to_one_iterator(): trgs = {trg_cnt}')
+    
+    
+    # cnt = 0
     for target in target_nodes:
         val = connector(source_list, target)
+        # assert(len(val) == len(source_list))
         for i, source in enumerate(source_list):
+            # cnt += 1
             yield (source.node_id, target.node_id, val[i])
-
+    # logger.info(f'all_to_one_iterator(): total = {cnt}')
 
 def one_to_one_iterator(source_nodes, target_nodes, connector):
     # TODO: may be faster to pull out the node_ids, don't user itertools

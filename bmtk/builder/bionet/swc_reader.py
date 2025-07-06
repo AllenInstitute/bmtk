@@ -444,10 +444,10 @@ swc_cache = {}
 
 
 def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):
-    cell_pop = cell.get('population', 'default')
-    cell_node_id = cell['node_id']
-    if use_cache and cell_pop in swc_cache and cell_node_id in swc_cache[cell_pop]:
-        return swc_cache[cell_pop][cell_node_id]
+    # cell_pop = cell.get('population', 'default')
+    # cell_node_id = cell['node_id']
+    # if use_cache and cell_pop in swc_cache and cell_node_id in swc_cache[cell_pop]:
+    #     return swc_cache[cell_pop][cell_node_id]
 
     swc_path = cell['morphology']
     if morphology_dir:
@@ -455,6 +455,9 @@ def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):
 
     if not os.path.exists(swc_path) and not swc_path.endswith('.swc'):
         swc_path += '.swc'
+
+    # if use_cache and swc_path in swc_cache:
+    #     return swc_cache[swc_path]
 
     if not os.path.exists(swc_path):
         raise ValueError('File {} does not exists.'.format(swc_path))
@@ -482,10 +485,11 @@ def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):
 
     swc = swc.move_and_rotate(soma_coords=soma_coords, rotation_angles=rotation_angles)
 
-    if use_cache:
-        if cell_pop not in swc_cache:
-            swc_cache[cell_pop] = {}
+    # if use_cache:
+    #     swc_cache[swc_path] = swc
+    #     # if cell_pop not in swc_cache:
+    #     #     swc_cache[cell_pop] = {}
 
-        swc_cache[cell_pop][cell_node_id] = swc
+    #     # swc_cache[cell_pop][cell_node_id] = swc
 
     return swc

@@ -50,6 +50,9 @@ class EdgeTypesTableMemory(object):
         self._n_syns = 0
         self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint32)
 
+        logger.debug(f'> Edgetype {self.edge_type_id}: {len(self._nsyns_idx2src)}x{len(self._nsyns_idx2trg)} : {connection_map.max_connections()}')
+
+
         self._prop_vals = {}  # used to store the arrays for each property
         self._prop_node_ids = None  # used to save the source_node_id and target_node_id for each edge
         self._source_nodes_map = None  # map source_node_id --> Node object

@@ -2,6 +2,7 @@ import logging
 
 from .network_adaptors.dm_network import DenseNetwork
 from .network_adaptors import mpi_network
+from .network_adaptors.mpi_network.network_v08 import NetworkV08
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +88,9 @@ class NetworkBuilder(object):
         'V03': mpi_network.MPINetworkV03,
         'V04': mpi_network.MPINetworkV04,
         'V05': mpi_network.MPINetworkV05,
+        'V06': mpi_network.MPINetworkV06,
+        'V07': mpi_network.MPINetworkV07,
+        'V08': NetworkV08,
     }
 
     def __init__(self, name, adaptor_cls=DenseNetwork, **network_props):

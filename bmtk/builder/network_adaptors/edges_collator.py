@@ -2,8 +2,10 @@ import os
 import numpy as np
 import logging
 import h5py
+import pickle
+import copy
 
-from ..builder_utils import mpi_rank, mpi_size, barrier, build_time_uuid
+from ..builder_utils import mpi_rank, mpi_size, barrier, build_time_uuid, comm
 from .edge_props_table import EdgeTypesTableMPI
 
 
@@ -192,7 +194,7 @@ class EdgesCollatorMPI(object):
 
     TODO: Consider saving tables to memory on each rank, and using MPI Gather/Send.
     """
-    def __init__(self, edge_types_tables, network_name):
+    def __init__(self, edge_types_tables, network_name, **opt_args):
         self._edge_types_tables = edge_types_tables
         self._network_name = network_name
 
@@ -458,10 +460,419 @@ class EdgesCollatorMPI(object):
         except (FileNotFoundError, IOError, Exception) as e:
             logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
 
+
+class EdgesCollatorMPIPickled(object):
+    """For collecting all the different edge-types tables to make writing edges and iterating over the entire network
+    easier. Similar to above but for when edge-rules data are split across multiple MPI ranks/processors. Can also
+    be utlized for single core building when the network is too big to store in memory at once.
+
+    TODO: Consider saving tables to memory on each rank, and using MPI Gather/Send.
+    """
+    def __init__(self, edge_types_tables, network_name, **opt_args):
+        self._edge_types_tables = edge_types_tables
+        self._network_name = network_name
+
+        self.n_total_edges = 0  # total number of edges across all ranks
+        self.n_local_edges = 0  # total number of edges for just those edge-types saved on current rank
+        self._edges_by_rank = {r: 0 for r in range(mpi_size)}  # number of edges per .edge_types_table*h5 file
+        self._rank_offsets = [0]
+
+        self._model_groups_md = {}  # keep track of all the edge-types metdata/properties across all ranks
+        self._group_ids = set()  # keep track of all group_ids
+        self._group_offsets = {}
+        self._proc_fhandles = {}  # reference to open readable hdf5 handles.
+
+        self.can_sort = False
+
+        self.grp_ids_lu = {}
+        self.collected_data = None
+        self.group_metadata = {}
+
+    @staticmethod
+    def get_tmp_table_path(rank=0, name=None):
+        builder_uuid = build_time_uuid()
+        return '.edge_types_table.processed.{}.{}.h5'.format(rank, builder_uuid)
+
+    def process(self):
+        barrier()
+
+        total_syns = 0
+        columns = set()
+        for etable in self._edge_types_tables:
+            total_syns += etable.n_syns
+            columns |= set((et['name'], et['dtype']) for et in etable.get_property_metatadata())
+
+        grp_metadata = {}
+        for etable in self._edge_types_tables:
+            if etable.hash_key not in grp_metadata:
+                grp_metadata[etable.hash_key] = {
+                    'columns': etable.get_property_metatadata(),
+                    'size': 0
+                }
+            grp_metadata[etable.hash_key]['size'] += etable.n_syns
+
+        conn_data = {
+            'src_ids': np.zeros(total_syns, dtype=np.uint),
+            'trg_ids': np.zeros(total_syns, dtype=np.uint),
+            'edge_type_ids': np.zeros(total_syns, dtype=np.uint32),
+            'grp_keys': np.empty(total_syns, dtype='<U10'),
+            'grp_metadata': grp_metadata,
+            # 'columns': {c[0]: np.empty(total_syns, dtype=c[1]) for c in columns}
+        }
+        for c in columns:
+            conn_data[c[0]] = np.empty(total_syns, dtype=c[1]) 
+
+        idx_beg = 0
+        for etable in self._edge_types_tables:
+            if etable.n_syns == 0:
+                continue
+
+            idx_end = idx_beg + etable.n_syns
+            src_ids, trg_ids = etable.edge_type_node_ids
             
+            conn_data['src_ids'][idx_beg:idx_end] = src_ids
+            conn_data['trg_ids'][idx_beg:idx_end] = trg_ids
+            conn_data['edge_type_ids'][idx_beg:idx_end] = etable.edge_type_id
+            conn_data['grp_keys'][idx_beg:idx_end] = etable.hash_key
+            for pdata in etable.get_property_metatadata():
+                cname = pdata['name']
+                conn_data[cname][idx_beg:idx_end] = etable.get_property_value(cname)
+
+            idx_beg = idx_end
+
+        filename = f'.conn_data.rank{mpi_rank}.{build_time_uuid()}.pkl'
+        # filename = f'.conn_data.rank{mpi_rank}.pkl'
+        
+        recieved_data = {}
+        if mpi_rank == 0:
+            recieved_data[0] = conn_data
+            for r in range(1, mpi_size):
+                rank_fname = comm.recv(source=r, tag=111)
+                with open(rank_fname, 'rb') as f:
+                    recieved_data[r] = pickle.load(f)
+                
+                try:
+                    os.remove(rank_fname)
+                except PermissionError:
+                    print(f"Permission denied: Could not delete '{rank_fname}'.")
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+        else:
+            with open(filename, 'wb') as fhandle:
+                pickle.dump(conn_data, fhandle)
+            comm.send(filename, dest=0, tag=111)
+
+        self.collected_data = recieved_data
+
+        if mpi_rank == 0:
+            all_grp_keys = set()
+            for rank_data in recieved_data.values():
+                all_grp_keys |= set(np.unique(rank_data['grp_keys']))
+                self.n_total_edges += len(rank_data['grp_keys'])
+
+            self.grp_ids_lu = {grp_key: i for i, grp_key in enumerate(all_grp_keys)}
+            self.grp_keys_lu = {grp_id: grp_key for grp_key, grp_id in self.grp_ids_lu.items()}
+            
+            hash2grpids_fnc = np.vectorize(lambda s: self.grp_ids_lu[s])
+            for d in self.collected_data.values():
+                d['grp_ids'] = hash2grpids_fnc(d['grp_keys'])
+            
+            grp_indices_counter = {grp_id: 0 for grp_id in self.grp_ids_lu.values()}
+            for conn_data in self.collected_data.values():
+                grp_id_table = conn_data['grp_ids']
+                grp_indices_table = np.zeros(len(grp_id_table), dtype=np.uint)
+                
+                for grp_id in np.unique(grp_id_table):
+                    indices = np.argwhere(grp_id_table == grp_id).flatten()
+                    # if len(indices) != 0:
+                    idx_beg = grp_indices_counter[grp_id]
+                    idx_end = idx_beg + len(indices)
+                    grp_indices_table[indices] = range(idx_beg, idx_end)
+                    grp_indices_counter[grp_id] = idx_end
+
+                conn_data['grp_indices'] = grp_indices_table
+
+            
+            # self.group_metadata = {}
+            for r, c in self.collected_data.items():
+                for k, d in c['grp_metadata'].items():
+                    grp_id = self.grp_ids_lu[k]
+                    if grp_id in self.group_metadata:
+                        self.group_metadata[grp_id]['size'] += d['size']
+                    else:
+                        self.group_metadata[grp_id] = copy.deepcopy(d) # {'name': d['name'], 'type': d['type'], 'size': d['size']}
+
+        bcast_total_syns = self.n_total_edges if mpi_rank == 0 else None 
+        self.n_total_edges = comm.bcast(bcast_total_syns, root=0)
+
+        self._group_ids = set(self.grp_ids_lu.values())
+
+    @property
+    def group_ids(self):
+        return list(self._group_ids)
+
+    def sort(self, sort_by, sort_group_properties=True):
+        logger.warning('Unable to sort edges.')
+
+    def get_group_metadata(self, group_id):
+        """for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks."""
+        grp_md = self.group_metadata[group_id]
+        return [{
+            'name': cd['name'],
+            'type': cd['dtype'],
+            'dim': (grp_md['size'], )
+        } for cd in grp_md['columns']]
+
+
+        
+        # ret_props = None
+        # prop_size = 0
+        # # There has to be a better way of doing this
+        # for _, edge_type_md in self._model_groups_md.items():
+        #     if edge_type_md['edge_group_id'] != group_id:
+        #         continue
+
+        #     prop_size += edge_type_md['size']
+        #     if ret_props is None:
+        #         ret_props = edge_type_md['properties']
+
+        # if prop_size == 0:
+        #     return []
+        # else:
+        #     for p in ret_props:
+        #         p['dim'] = (prop_size,)
+        #     return ret_props
+
+    def itr_chunks(self):
+        self._group_offsets = {grp_id: 0 for grp_id in self.group_ids}
+
+        idx_beg = 0
+        for rank_id in range(mpi_size):
+            idx_end = idx_beg + len(self.collected_data[rank_id]['grp_ids'])
+            yield rank_id, idx_beg, idx_end
+            idx_beg = idx_end
+       
+
+        # for rank_id in range(mpi_size):
+        #     idx_end = idx_beg + self._edges_by_rank[rank_id]
+        #     yield rank_id, idx_beg, idx_end
+        #     idx_beg = idx_end
+
+    def _get_processed_h5(self, rank):
+        h5_path = EdgesCollatorMPI.get_tmp_table_path(rank=rank) #  '.edge_types_table.processed.{}.h5'.format(rank)
+        if h5_path in self._proc_fhandles:
+            return self._proc_fhandles[h5_path]
+        else:
+            h5_handle = h5py.File(h5_path, 'r')
+            self._proc_fhandles[h5_path] = h5_handle
+            return h5_handle
+
+    def get_source_node_ids(self, chunk_id):
+        return self.collected_data[chunk_id]['src_ids']
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['/processed/source_node_id'][()]
+
+    def get_target_node_ids(self, chunk_id):
+        return self.collected_data[chunk_id]['trg_ids']
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['/processed/target_node_id'][()]
+
+    def get_edge_type_ids(self, chunk_id):
+        return self.collected_data[chunk_id]['edge_type_ids']
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['/processed/edge_type_id'][()]
+
+    def get_edge_group_ids(self, chunk_id):
+        return self.collected_data[chunk_id]['grp_ids']
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['/processed/edge_group_id'][()]
+
+    def get_edge_group_indices(self, chunk_id):
+        return self.collected_data[chunk_id]['grp_indices']
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['/processed/edge_group_index'][()]
+
+    def get_group_data(self, chunk_id):
+        ret_data = []
+
+        rank_data = self.collected_data[chunk_id]
+        grp_ids_on_rank = np.unique(rank_data['grp_ids'])
+        for grp_id in grp_ids_on_rank:
+            grp_idx_beg = self._group_offsets[grp_id]
+            grp_key = self.grp_keys_lu[grp_id]
+            self._group_offsets[grp_id] = grp_idx_end = grp_idx_beg + rank_data['grp_metadata'][grp_key]['size']
+            for col in self.group_metadata[grp_id]['columns']:
+                ret_data.append((
+                    grp_id,
+                    col['name'],
+                    grp_idx_beg,
+                    grp_idx_end
+                ))
+        return ret_data
+
+
+    def get_group_property(self, prop_name, group_id, chunk_id):
+        rank_data = self.collected_data[chunk_id]
+        
+        data_indices = np.argwhere(rank_data['grp_ids'] == group_id).flatten()
+        return rank_data[prop_name][data_indices]
+
+        # rank_h5 = self._get_processed_h5(rank=chunk_id)
+        # return rank_h5['processed'][str(group_id)][prop_name][()]
+
+    # def __del__(self):
+    #     # clean up .h5 file that is saved to disk
+    #     tmp_h5_path = EdgesCollatorMPI.get_tmp_table_path(mpi_rank) # '.edge_types_table.processed.{}.h5'.format(mpi_rank)
+    #     try:
+    #         if os.path.exists(tmp_h5_path):
+    #             os.remove(tmp_h5_path)
+    #     except (FileNotFoundError, IOError, Exception) as e:
+    #         logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
+
+
+import sys
+
+class EdgesCollatorMPIComm(EdgesCollatorMPIPickled):
+    def process(self):
+        barrier()
+
+        total_syns = 0
+        columns = set()
+        for etable in self._edge_types_tables:
+            total_syns += etable.n_syns
+            columns |= set((et['name'], et['dtype']) for et in etable.get_property_metatadata())
+
+        grp_metadata = {}
+        for etable in self._edge_types_tables:
+            if etable.hash_key not in grp_metadata:
+                grp_metadata[etable.hash_key] = {
+                    'columns': etable.get_property_metatadata(),
+                    'size': 0
+                }
+            grp_metadata[etable.hash_key]['size'] += etable.n_syns
+
+        conn_data = {
+            'src_ids': np.zeros(total_syns, dtype=np.uint),
+            'trg_ids': np.zeros(total_syns, dtype=np.uint),
+            'edge_type_ids': np.zeros(total_syns, dtype=np.uint32),
+            'grp_keys': np.empty(total_syns, dtype='<U10'),
+            'grp_metadata': grp_metadata,
+            # 'columns': {c[0]: np.empty(total_syns, dtype=c[1]) for c in columns}
+        }
+        nbytes = total_syns * 10240
+        for c in columns:
+            conn_data[c[0]] = np.empty(total_syns, dtype=c[1])
+            nbytes += conn_data[c[0]].nbytes
+
+        print(nbytes)
+        print(sys.getsizeof(conn_data))
+        # exit()
+         
+
+        idx_beg = 0
+        for etable in self._edge_types_tables:
+            if etable.n_syns == 0:
+                continue
+
+            idx_end = idx_beg + etable.n_syns
+            src_ids, trg_ids = etable.edge_type_node_ids
+            
+            conn_data['src_ids'][idx_beg:idx_end] = src_ids
+            conn_data['trg_ids'][idx_beg:idx_end] = trg_ids
+            conn_data['edge_type_ids'][idx_beg:idx_end] = etable.edge_type_id
+            conn_data['grp_keys'][idx_beg:idx_end] = etable.hash_key
+            for pdata in etable.get_property_metatadata():
+                cname = pdata['name']
+                conn_data[cname][idx_beg:idx_end] = etable.get_property_value(cname)
+
+            idx_beg = idx_end
+        
+        
+        # if mpi_rank == 0:
+        #     print(mpi_rank, '>', conn_data['grp_metadata'])
+        #     print(mpi_rank, '-', sum(c['size'] for c in conn_data['grp_metadata'].values()))
+        #     print(mpi_rank, '>', conn_data['grp_keys'].shape, conn_data['syn_weight'].shape)
+        
+        recieved_data = {}
+        if mpi_rank == 0:
+            recieved_data[0] = conn_data
+            for s in range(1, mpi_size):
+                recieved_data[s] = comm.recv(source=s, tag=11)
+        else:
+            comm.send(conn_data, dest=0, tag=11)
+
+        self.collected_data = recieved_data
+
+        if mpi_rank == 0:
+            all_grp_keys = set()
+            for rank_data in recieved_data.values():
+                all_grp_keys |= set(np.unique(rank_data['grp_keys']))
+                self.n_total_edges += len(rank_data['grp_keys'])
+
+            self.grp_ids_lu = {grp_key: i for i, grp_key in enumerate(all_grp_keys)}
+            self.grp_keys_lu = {grp_id: grp_key for grp_key, grp_id in self.grp_ids_lu.items()}
+            
+            hash2grpids_fnc = np.vectorize(lambda s: self.grp_ids_lu[s])
+            for d in self.collected_data.values():
+                d['grp_ids'] = hash2grpids_fnc(d['grp_keys'])
+            
+            grp_indices_counter = {grp_id: 0 for grp_id in self.grp_ids_lu.values()}
+            for conn_data in self.collected_data.values():
+                grp_id_table = conn_data['grp_ids']
+                grp_indices_table = np.zeros(len(grp_id_table), dtype=np.uint)
+                
+                for grp_id in np.unique(grp_id_table):
+                    indices = np.argwhere(grp_id_table == grp_id).flatten()
+                    idx_beg = grp_indices_counter[grp_id]
+                    idx_end = idx_beg + len(indices)
+                    grp_indices_table[indices] = range(idx_beg, idx_end)
+                    grp_indices_counter[grp_id] = idx_end
+
+                conn_data['grp_indices'] = grp_indices_table
+
+            
+            # self.group_metadata = {}
+            for r, c in self.collected_data.items():
+                for k, d in c['grp_metadata'].items():
+                    grp_id = self.grp_ids_lu[k]
+                    if grp_id in self.group_metadata:
+                        self.group_metadata[grp_id]['size'] += d['size']
+                    else:
+                        self.group_metadata[grp_id] = copy.deepcopy(d) # {'name': d['name'], 'type': d['type'], 'size': d['size']}
+
+        bcast_total_syns = self.n_total_edges if mpi_rank == 0 else None 
+        self.n_total_edges = comm.bcast(bcast_total_syns, root=0)
+
+        self._group_ids = set(self.grp_ids_lu.values())
+
+
+first_msg = True
+def log_once(msg):
+    global first_msg
+    if first_msg:
+        logger.info(msg)
+        first_msg = False
+
+
 class EdgesCollator(object):
     def __new__(cls, *args, **kwargs):
-        if mpi_size > 1:
-            return EdgesCollatorMPI(*args, **kwargs)
-        else:
+        rank_passing = kwargs.get('rank_passing', 'h5')
+        
+        if mpi_size == 0:
+            log_once('>> EdgesCollatorSingular')
             return EdgesCollatorSingular(*args, **kwargs)
+        
+        elif rank_passing == 'h5':
+            # return EdgesCollatorMPIPickled(*args, **kwargs)
+            log_once('>> EdgesCollatorMPI')
+            return EdgesCollatorMPI(*args, **kwargs)
+        
+        elif rank_passing == 'comm':
+            log_once('>> EdgesCollatorMPIComm')
+            return EdgesCollatorMPIComm(*args, **kwargs)
+
+        else:
+            log_once('>> EdgesCollatorMPIPickled')
+            return EdgesCollatorMPIPickled(*args, **kwargs)
+
+            
