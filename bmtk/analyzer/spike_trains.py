@@ -331,7 +331,7 @@ def spike_statistics(spikes_file, simulation=None, population=None, simulation_t
 
         return pd.Series(d, index=['count', 'isi'])
 
-    spike_counts_df = spike_trains.to_dataframe().groupby(['population', 'node_ids']).apply(calc_stats)
+    spike_counts_df = spike_trains.to_dataframe().groupby(['population', 'node_ids'])[['timestamps']].apply(calc_stats)
     spike_counts_df = spike_counts_df.rename({'timestamps': 'counts'}, axis=1)
     spike_counts_df.index.names = ['population', 'node_id']
 
@@ -343,7 +343,7 @@ def spike_statistics(spikes_file, simulation=None, population=None, simulation_t
         vals_df = pd.merge(nodes_df, spike_counts_df, left_index=True, right_index=True, how='left')
         vals_df = vals_df.fillna({'count': 0.0, 'firing_rate': 0.0, 'isi': 0.0})
 
-        vals_df = vals_df.groupby(group_by)[['firing_rate', 'count', 'isi']].agg([np.mean, np.std])
+        vals_df = vals_df.groupby(group_by)[['firing_rate', 'count', 'isi']].agg(['mean', 'std'])
         return vals_df
     else:
         return spike_counts_df
