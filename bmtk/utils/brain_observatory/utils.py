@@ -1,6 +1,6 @@
 import ast
 import numpy as np
-
+import hashlib
 
 class FakeTqdm:
     def __init__(self, *args, **kwargs):
@@ -49,3 +49,27 @@ def infer_column_types(dataframe):
     
     dataframe = dataframe.infer_objects()
     return dataframe
+
+
+
+def file_hash_from_path(file_path):
+    """
+    Return the hexadecimal file hash for a file
+
+    Parameters
+    ----------
+    file_path: Union[str, Path]
+        path to a file
+
+    Returns
+    -------
+    str:
+        The file hash (Blake2b; hexadecimal) of the file
+    """
+    hasher = hashlib.blake2b()
+    with open(file_path, 'rb') as in_file:
+        chunk = in_file.read(1000000)
+        while len(chunk) > 0:
+            hasher.update(chunk)
+            chunk = in_file.read(1000000)
+    return hasher.hexdigest()
