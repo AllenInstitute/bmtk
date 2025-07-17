@@ -10,7 +10,7 @@ from pkg_resources import parse_version
 from .cache import Cache, get_default_manifest_file
 from .rma_template import RmaTemplate
 from . import stimulus_info as si
-
+from .manifest import ManifestBuilder
 
 class NoEyeTrackingException(Exception): 
     pass
@@ -1040,7 +1040,14 @@ class BrainObservatoryApi(RmaTemplate):
 
 
 class BrainObservatoryCache(Cache):
+    EXPERIMENT_CONTAINERS_KEY = "EXPERIMENT_CONTAINERS"
+    EXPERIMENTS_KEY = "EXPERIMENTS"
+    CELL_SPECIMENS_KEY = "CELL_SPECIMENS"
     EXPERIMENT_DATA_KEY = "EXPERIMENT_DATA"
+    ANALYSIS_DATA_KEY = "ANALYSIS_DATA"
+    EVENTS_DATA_KEY = "EVENTS_DATA"
+    STIMULUS_MAPPINGS_KEY = "STIMULUS_MAPPINGS"
+    EYE_GAZE_DATA_KEY = "EYE_GAZE_DATA"
     MANIFEST_VERSION = "1.3"
 
     def __init__(self, cache=True, manifest_file=None, base_uri=None, api=None):
@@ -1087,4 +1094,68 @@ class BrainObservatoryCache(Cache):
 
         return BrainObservatoryNwbDataSet(file_name)
 
+    def build_manifest(self, file_name):
+        """
+        Construct a manifest for this Cache class and save it in a file.
 
+        Parameters
+        ----------
+
+        file_name: string
+            File location to save the manifest.
+
+        """
+
+        mb = ManifestBuilder()
+        mb.set_version(self.MANIFEST_VERSION)
+        mb.add_path("BASEDIR", ".")
+        mb.add_path(
+            self.EXPERIMENT_CONTAINERS_KEY,
+            "experiment_containers.json",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.EXPERIMENTS_KEY,
+            "ophys_experiments.json",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.EXPERIMENT_DATA_KEY,
+            "ophys_experiment_data/%d.nwb",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.ANALYSIS_DATA_KEY,
+            "ophys_experiment_analysis/%d_%s_analysis.h5",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.EVENTS_DATA_KEY,
+            "ophys_experiment_events/%d_events.npz",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.CELL_SPECIMENS_KEY,
+            "cell_specimens.json",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.STIMULUS_MAPPINGS_KEY,
+            "stimulus_mappings.json",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+        mb.add_path(
+            self.EYE_GAZE_DATA_KEY,
+            "ophys_eye_gaze_mapping/%d_eyetracking_dlc_to_screen_mapping.h5",
+            typename="file",
+            parent_key="BASEDIR",
+        )
+
+        mb.write_json_file(file_name)

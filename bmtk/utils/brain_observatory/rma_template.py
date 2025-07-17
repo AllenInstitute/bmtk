@@ -5,6 +5,7 @@ import requests
 from contextlib import closing
 import urllib
 import json
+from pathlib import Path
 
 from jinja2 import Template
 
@@ -281,9 +282,9 @@ class Api(object):
                 stream_file_over_http(url, file_path)
 
         except Exception as e:
-            self._file_download_log.error("Couldn't retrieve file %s from %s" % (file_path, url))
-            self.cleanup_truncated_file(file_path)
-            raise
+            # self._file_download_log.error("Couldn't retrieve file %s from %s" % (file_path, url))
+            # self.cleanup_truncated_file(file_path)
+            raise e
 
 
     def retrieve_parsed_json_over_http(self, url, post=False):
@@ -374,7 +375,7 @@ def stream_file_over_http(url, file_path, timeout=(9.05, 31.1)):
         and read timeouts.
 
     '''
-
+    Path(file_path).parent.mkdir(parents=True, exist_ok=True)
     with closing(requests.get(url, stream=True, timeout=timeout)) as response:
 
         response.raise_for_status()
