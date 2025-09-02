@@ -45,16 +45,8 @@ class ArgumentParser(argparse.ArgumentParser):
         if args is None:
             args = copy.copy(sys.argv)
         args = ArgumentParser.parse_nrniv_arg(args)[1:]
-        
+
         return super().parse_known_args(args, namespace)
-
-    def parse_args(self, args=None, namespace=None):
-        if args is None:
-            args = copy.copy(sys.argv)
-        args = ArgumentParser.parse_nrniv_arg(args)[1:]
-
-        return super().parse_args(args, namespace)
-
 
     @staticmethod
     def parse_nrniv_arg(sys_argv):
