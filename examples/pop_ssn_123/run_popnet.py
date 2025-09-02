@@ -39,9 +39,10 @@ def run(configuration_path):
     sim.run()
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('config', nargs='?', default='config.simulation.json', help='SONATA configuration json file.')
+    parser = argparse.ArgumentParser(description='Run PopNet network simulation.')
+    parser.add_argument('config_path', nargs='?', default='config.simulation.json', 
+                        help='Path to SONATA configuration json file.')
     args = parser.parse_args()
-    run(args.config)
+    run(args.config_path)
 
-    plot_rates(args.config, label_column='pop_name')
+    plot_rates(args.config_path, label_column='pop_name')

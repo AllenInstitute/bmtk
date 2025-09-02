@@ -1,6 +1,3 @@
-"""Simulates an example network of 450 cell receiving two kinds of exernal input as defined in the configuration file"""
-import os
-import sys
 from bmtk.simulator import bionet
 
 
@@ -15,18 +12,9 @@ def run(config_path):
 
 
 if __name__ == '__main__':
-    # Find the appropriate config.json file
-    config_path = None
-    if __file__ != sys.argv[-1]:
-        config_path = sys.argv[-1]
-        if not os.path.exists(config_path):
-            raise AttributeError('configuration file {} does not exist.'.format(config_path))
-    else:
-        for cfg_path in ['config.json', 'config.simulation.json']:
-            if os.path.exists(cfg_path):
-                config_path = cfg_path
-                break
-        else:
-            raise AttributeError('Could not find configuration json file.')
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.json', help='Path to the SONATA configuration file')
 
-    run(config_path)
+    args, _ = parser.parse_known_args()
+    run(args.config_path)
+

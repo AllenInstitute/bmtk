@@ -2,6 +2,7 @@
 
 A single excitatory cell that is stimulated by current clamps or virtual synapses
 
+
 Uses the BioNet simulator (requires NEURON)
 
 ## Compiling NEURON mechanisms

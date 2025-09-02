@@ -1,9 +1,6 @@
-import sys
-
 from bmtk.simulator import bionet
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.default_setters.cell_models import set_params_allactive
-# from bmtk.simulator.bionet.pyfunction_cache import add_cell_processor
 from bmtk.simulator.bionet import model_processing
 from bmtk.analyzer.compartment import plot_traces
 
@@ -15,7 +12,6 @@ def aibs_allactive_fullaxon(hobj, cell, dynamics_params):
     # The main difference is that in the original the axon is cut and replaced by a 
     # stub. Here we leave the full axon intact 
     io.log_info('Initializing Cell Model Params')
-    # fix_axon_allactive(hobj)
     set_params_allactive(hobj, dynamics_params)
     return hobj
 
@@ -33,11 +29,8 @@ def run(config_path):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        config_path = sys.argv[-1]
-        run(config_path)
-    else:
-        # run('config.simulation_syns.json')
-        # run('config.simulation.491766131_stubaxon.sweep35.json')
-        run('config.simulation.491766131_fullaxon.sweep35.json')
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.491766131_fullaxon.sweep35.json', help='Path to the SONATA configuration file')
 
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

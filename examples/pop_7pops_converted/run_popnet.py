@@ -1,8 +1,8 @@
-import sys
+import argparse
 from bmtk.simulator import popnet
 
 
-def main(config_file):
+def run(config_file):
     configure = popnet.config.from_json(config_file)
     configure.build_env()
 
@@ -12,7 +12,10 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        main(sys.argv[-1])
-    else:
-        main('config.simulation.json')
+    parser = argparse.ArgumentParser(description='Run PopNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.json', 
+                        help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)
+

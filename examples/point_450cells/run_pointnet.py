@@ -1,7 +1,8 @@
+import argparse
 from bmtk.simulator import pointnet
 
 
-def main(config_file):
+def run(config_file):
     configure = pointnet.Config.from_json(config_file)
     configure.build_env()
 
@@ -11,4 +12,9 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    main('config.simulation.json')
+    parser = argparse.ArgumentParser(description='Run PointNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.json', 
+                        help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

@@ -12,13 +12,9 @@ def run(config_file):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Run point network simulation.')
-    parser.add_argument('config_file',
-        type=str,
-        nargs='?',
-        default='config.simulation.json',
-        help='Path to the configuration file'
-    )
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Run PointNet network simulation.')
+    parser.add_argument('config_file', type=str, nargs='?', default='config.simulation.json',
+                        help='Path to the configuration file')
+    args = parser.parse_known_args()
 
     run(args.config_file)

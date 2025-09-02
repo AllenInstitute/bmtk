@@ -1,5 +1,4 @@
-import os, sys
-
+import argparse
 from bmtk.simulator import pointnet
 
 
@@ -13,6 +12,13 @@ def run(config_file):
 
 
 if __name__ == '__main__':
-    # Find the appropriate config.json file
-    run('config.simulation.json')
-    # run('config.simulation_perturbations.json')
+    default_config = 'config.simulation.json'
+    # default_config = 'config.simulation_perturbations.json'
+
+    parser = argparse.ArgumentParser(description='Run PointNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default=default_config, 
+                        help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)
+
