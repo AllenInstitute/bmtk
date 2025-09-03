@@ -1,4 +1,4 @@
-# 450 cells network
+# 450 Cell Biophysical Network Model
 
 This is a small example network of a 450 cell simulation based on the 45,000 mouse layer 4 network described in
 Arkhipov et. al. 2018. Of the cells 180 are biophysically detailed multicompartment cells downloaded from the
