@@ -1,6 +1,3 @@
-"""Simulates an example network of 450 cell receiving two kinds of exernal input as defined in the configuration file"""
-import sys
-
 from bmtk.simulator import bionet
 from bmtk.analyzer.compartment import plot_traces
 
@@ -14,18 +11,20 @@ def run(config_file):
     sim.run()
 
     plot_traces(config_file=config_file, report_name='membrane_potential', population='bio')
+    bionet.nrn.quit_execution()
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        run(sys.argv[-1])
-    else:
-        # Make sure to run only one at a time
-        run('config.simulation_iclamp.json')  # Current clamp stimulation
-        # run('config.simulation_iclamp.aslist.json')
-        # run('config.simulation_iclamp.csv.json')
-        # run('config.simulation_iclamp.nwb.json')
+    # default_config = 'config.simulation_iclamp.json'
+    # default_config = 'config.simulation_iclamp.aslist.json'
+    # default_config = 'config.simulation_iclamp.csv.json'
+    # default_config = 'config.simulation_iclamp.nwb.json'
+    default_config = 'config.simulation_xstim.json'
+    # default_config = 'config.simulation_spikes.json'
+    # default_config = 'config.simulation_spont_activity.json'
 
-        # run('config.simulation_xstim.json')  # Extracellular electrode stimulation
-        # run('config.simulation_spikes.json')  # Synaptic stimulation with external virtual cells
-        # run('config.simulation_spont_activity.json')  # Spontaneous synaptic activity
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default=default_config, help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

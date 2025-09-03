@@ -144,7 +144,8 @@ def run_iteration(config_file):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        run_iteration(sys.argv[-1])
-    else:
-        run_iteration('config.simulation.json')
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.json', help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run_iteration(args.config_path)

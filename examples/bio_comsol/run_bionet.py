@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-import sys
 from bmtk.simulator import bionet
 
 def run(config_file):
@@ -13,9 +11,12 @@ def run(config_file):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        run(sys.argv[-1])
-    else:
-        run('config.comsol_stat.json')
-        # run('config.comsol_stat2.json')
-        # run('config.comsol_tdep.json')
+    default_config = 'config.comsol_stat.json'
+    default_config = 'config.comsol_stat2.json'
+    default_config = 'config.comsol_tdep.json'
+
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default=default_config, help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

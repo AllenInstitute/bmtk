@@ -1,5 +1,4 @@
-import sys
-
+import argparse
 from bmtk.simulator import pointnet
 from bmtk.analyzer.compartment import plot_traces
 
@@ -14,11 +13,16 @@ def run(config_file):
 
     plot_traces(config_file=config_file, report_name='membrane_potential', population='cortex')
 
+
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        run(sys.argv[-1])
-    else:
-        # run('config.simulation_iclamp.json')
-        # run('config.simulation_iclamp.aslist.json')
-        # run('config.simulation_iclamp.csv.json')
-        run('config.simulation_iclamp.nwb.json')
+    default_config = 'config.simulation_iclamp.json'
+    # default_config = 'config.simulation_iclamp.aslist.json'
+    # default_config = 'config.simulation_iclamp.csv.json'
+    # default_config = 'config.simulation_iclamp.nwb.json'
+
+    parser = argparse.ArgumentParser(description='Run PointNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.simulation.json', 
+                        help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

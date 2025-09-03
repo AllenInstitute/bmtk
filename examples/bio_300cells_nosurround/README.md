@@ -1,4 +1,4 @@
-# 300 cells network
+# 300 cell Biophysical Network Model
 
 This is a small example network of a 300 cell simulation based on the 45,000 mouse layer 4 network described in
 Arkhipov et. al. 2018. Of the cells 300 are biophysically detailed multicompartment cells downloaded from the

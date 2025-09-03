@@ -1,59 +1,115 @@
 # Examples
 
-This is the examples directory for the Brain Modeling Toolkit (bmtk) software package. Here you will find examples of
-how to build, simulate, and plot simple brain network models of a variety of different levels-of-resolution using 
-bmtk. These examples are toy models for demonstration of how to use bmtk capable of running on a laptop/desktop 
-machine (for some examples of scientifically developed models that run on bmtk please see the following link: 
-https://alleninstitute.github.io/bmtk/examples.html).
+The following directory contains examples of running various parts of the Brain Modeling Toolkit (BMTK), including all the necessacary files to build a network, simulate it with one or more types of stimulation, and record and plot results. Each directory highlights a different type of model or a different features available in BMTK. 
+
+The majority of the examples are small toy examples that can be readily ran on most laptops or desktops. The minimum they requires BMTK, but depending on the module may have additional requirements.
 
 
-### BioNet (biophysically detailed) models
+## Directory Structure
 
-Each ```bio_*/``` directory uses the BioNet simulator to run morphologically detailed network simulations using the NEURON
-simulation tool. 
+Most of the examples have a prefix based on which simulation engine is being used to run the model.
 
-```bio_components/``` contains external parameter and model files which are shared by most of the BioNet
-examples (note: this location can be changed in the each example's ```config.circuit.json``` file). This also includes
-a ```bio_components/mechanism/``` directory which require extra compilation for the Allen Institute models. To run 
-the BioNet examples one will have to run the following commands to compile the extra neuronal mechanisms:
+- **bio_\*/** - Examples of biophysically detailed network models that run using [BioNet](https://alleninstitute.github.io/bmtk/bionet.html). 
+- **point_\*/** - Examples of point-neuron network models that run using [PointNet](https://alleninstitute.github.io/bmtk/pointnet.html)
+- **pop_\*/** - Examples of populations based rates models that run using [PopNet](https://alleninstitute.github.io/bmtk/popnet.html)
+- **pop_\*/** - Examples that uses [FilterNet](https://alleninstitute.github.io/bmtk/filternet.html) to convert visual or auditory stimuli into spike-models based on spatio-temporal statistics.
+
+Other important directories
+
+- **bio_components/** - External files shared by BioNet models and simulations (Morphologies, parameters, etc.).
+- **point_components/** - External files shared by PointNet models and simulations
+- **pop_components/** - External files shared by PopNet models and simulations
+
+## Running Simulations
+
+### BioNet
+
+**(Prerequisite) Compiling NEURON mechanisms**
+
+The components for the BioNet examples are located in ../examples/bio_components. If the NEURON mechanisms have not already been compiled, the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
+
 ```bash
-$ cd examples/bio_components/mechanisms
-$ nrnivmodl modfiles
+$ cd ../bio_components/mechanisms
+$ nrnivmodl modfiles 
+$ cd -
+```
+Failure to compile the mechanisms results in an error such as:
+```
+**Warning**:  NEURON mechanisms not found in ./../bio_components/mechanisms.
+              [...]
+              ValueError: argument not a density mechanism name
+```
+---
+
+
+To run a full simulation of the network on a single using the default simulation configuration, run the following on a command line:
+
+```bash
+$ python run_bionet.py
 ```
 
-For more information on using BioNet see the following: https://alleninstitute.github.io/bmtk/bionet.html
+or to use a different SONATA configuration file (eg `<SONATA_CONFIG>.json`)
 
-### PointNet (point-neuron) models
+```bash
+$ python run_bionet.py <SONATA_CONFIG>.json
+```
 
-```point_*/``` directories contain examples that use the PointNet simulator to run point-neuron type models, including 
-Allen Institute's Generalized Integrate-and-Fire (GLIF) models. Using these examples will require installing the 
-NEST simulator. 
+If using a machine or cluster with mutiple cores you may use `mpirun` (if available on machine) to run the simulation in `N` cores with the following command:
 
-```point_components/``` directory contains model files that are shared by many of the different PointNet examples. This
-can be changed in each examples' ```config.circuit.json``` files.
+```bash
+$ mpirun -np <N> nrniv -mpi -python run_bionet.py <SONATA_CONFIG>.json
+```
 
-For more information on using PointNet see the following: https://alleninstitute.github.io/bmtk/pointnet.html
-
-
-### PopNet (population firing rates) models
-
-```pop_*/```directories contain examples that use the PopNet simulator to run population level firing-rate model
-simulations. This requires installing the DiPDE simulator. 
-
-```pop_components/``` directory contains model files that are shared by many of the different PopNet examples. This
-can be changed in each examples' ```config.circuit.json``` files.
-
-For more information on using PopNet see the following: https://alleninstitute.github.io/bmtk/popnet.html
+When simulation has completed it will create an *output* folder with logs, simulated spike trains, and any other recorded variables as set in the `<SONATA_CONFIG>`
 
 
-### FilterNet (LNP) models
+### PointNet
 
-```filter_*/``` directories contain examples that use the PopNet simulator to run filter models simulations to convert
-visual stimuli into spike-trains.
+Executing a simulation inside the model directory can be done in the command line using either
 
-```filter_components/``` directory contains model files that are shared by many of the different FilterNet examples. This
-can be changed in each examples' ```config.circuit.json``` files.
+```bash
+$ python run_pointnet.py 
+```
 
-For more information on using PopNet see the following: https://alleninstitute.github.io/bmtk/filternet.html
+Which will run the default simulation configurations. Or to run a different simulation setup you can specify a specific `<SONATA_CONFIG>.json` file path:
+
+```bash
+$ python run_pointnet.py <SONATA_CONFIG>.json
+```
+
+If using a machine or cluster with mutiple cores you may use `mpirun` (if available on machine) to run the simulation in `N` cores with the following command:
+
+```bash
+$ mpirun -np <N> python run_pointnet.py <SONATA_CONFIG>.json
+```
+
+When simulation has completed it will create an *output* folder with logs, simulated spike trains, and any other recorded variables as set in the `<SONATA_CONFIG>`
+
+### PopNet
+
+Executing a simulation inside the model directory can be done in the command line using either
+
+```bash
+$ python run_popnet.py 
+```
+
+Which will run the default simulation configurations. Or to run a different simulation setup you can specify a specific `<SONATA_CONFIG>.json` file path:
+
+```bash
+$ python run_popnet.py <SONATA_CONFIG>.json
+```
+
+If using a machine or cluster with mutiple cores you may use `mpirun` (if available on machine) to run the simulation in `N` cores with the following command:
+
+```bash
+$ mpirun -np <N> python run_popnet.py <SONATA_CONFIG>.json
+```
+
+When simulation has completed it will create an *output* folder with logs, simulated spike trains, and any other recorded variables as set in the `<SONATA_CONFIG>`
 
 
+## Updating Simulation Parameters
+
+BMTK uses the *config.simulation_\*.json* files to determine simulation parameters like run-time, time delta, stimulus, recorded varaibles, and a number of other important factors. These are simple json files that can be edited with most text editors. 
+
+Please see our [BMTK User Guide](https://alleninstitute.github.io/bmtk/user_guide.html) or the [SONATA Developers Guide](https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md) for a description of the configuration format and a list of features and attributes available in BMTK.

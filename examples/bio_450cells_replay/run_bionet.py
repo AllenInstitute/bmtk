@@ -1,6 +1,3 @@
-"""Simulates an example network of 450 cell receiving two kinds of exernal input as defined in the configuration file"""
-import sys, os
-
 from bmtk.simulator import bionet
 
 
@@ -16,9 +13,8 @@ def run(config_file):
 
 
 if __name__ == '__main__':
-    # run('config.recurrent.json')
-    # run('config.feedforward.json')
-    run('config.all_cells.json')
-    # run('config.w_extern.json')
-    # run('config.biophys_cells.json')
-    # run('config.pv_cells.json')
+    parser = bionet.ArgumentParser(description='Run BioNet network simulation.')
+    parser.add_argument('config_path', type=str, nargs='?', default='config.all_cells.json', help='Path to the SONATA configuration file')
+
+    args, _ = parser.parse_known_args()
+    run(args.config_path)

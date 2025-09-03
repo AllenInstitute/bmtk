@@ -26,3 +26,33 @@ from bmtk.simulator.bionet.config import Config
 from bmtk.simulator.bionet.bionetwork import BioNetwork
 from bmtk.simulator.bionet.biosimulator import BioSimulator
 from bmtk.simulator.bionet.nrn import reset
+
+import sys
+import argparse
+import copy
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    """A Helper class for using argparse when calling script through nrniv, eg
+      $ nrniv -python run_bionet.py
+
+    or
+      $ mpirun -np 2 nrniv -mpi -python run_bionet.py
+      
+    
+    """
+    def parse_known_args(self, args=None, namespace=None):
+        if args is None:
+            args = copy.copy(sys.argv)
+        args = ArgumentParser.parse_nrniv_arg(args)[1:]
+
+        return super().parse_known_args(args, namespace)
+
+    @staticmethod
+    def parse_nrniv_arg(sys_argv):
+        if sys_argv[0].endswith('nrniv') or sys_argv[0].endswith('nrniv.exe'):
+            for i, cmd_opt in enumerate(sys_argv):
+                if cmd_opt == '-python':
+                    return sys_argv[i+1:]
+        else:
+            return sys_argv
