@@ -5,44 +5,16 @@
 News and Events
 ###############
 
-2025 Allen Institute Modeling Software Workshop!
-================================================
+2025 Modeling Software Workshop Tutorials and Lectures!
+=======================================================
 
-This hands-on workshop focuses on building and simulating complex and heterogeneous network models grounded in real biological data. 
-The 2025 workshop will be held :underline:`July 28th-30th, 2025` at the Allen Institute in Seattle, WA.
+These lectures introduce tutorials that cover software tools for building, simulating, and visualizing bio-realistic models of brain circuits. They were recorded during the 2025 Allen Institute Modeling Software Workshop.
 
-Applications for the 2025 workshop are now closed. Selected applicants will be notified by May 1st, 2025.
-See event page for full details.
 
-.. grid:: 1 3 3 3
+https://www.youtube.com/playlist?list=PLN-QyZNMh3Ptp6zoD9Ea3jU4SPF2advH6
 
-    .. grid-item::
-        :columns: auto
 
-        .. button-link:: https://alleninstitute.org/events/2025-modeling-software-workshop
-            :color: primary
-            :outline:
 
-            VIEW WORKSHOP PAGE
-
-    .. grid-item::
-        :columns: auto
-
-        .. button-link::
-            :color: primary
-            :shadow:
-            :disabled:
-
-            APPLICATIONS CLOSED
-
-    .. grid-item::
-        :columns: auto
-
-        .. button-link:: https://github.com/AllenInstitute/bmtk-workshop
-            :color: primary
-            :outline:
-
-            VIEW TUTORIALS
 
 
 News Letter
