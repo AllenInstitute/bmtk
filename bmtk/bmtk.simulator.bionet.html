@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bmtk.simulator.bionet package &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>bmtk.simulator.bionet package &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -52,7 +52,7 @@
     <link rel="prev" title="bmtk.simulator package" href="bmtk.simulator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -118,8 +118,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -365,6 +365,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html">bmtk.utils.brain_observatory package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a></li>
@@ -532,6 +533,7 @@
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.RecXElectrode.get_transfer_resistance"><code class="docutils literal notranslate"><span class="pre">RecXElectrode.get_transfer_resistance()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.convert2nwb"><code class="docutils literal notranslate"><span class="pre">convert2nwb()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.iclamp">bmtk.simulator.bionet.modules.iclamp module</a><ul>
@@ -1905,6 +1907,28 @@ of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and t
 </section>
 <section id="module-bmtk.simulator.bionet">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.bionet" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.ArgumentParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.</span></span><span class="sig-name descname"><span class="pre">ArgumentParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epilog=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents=[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter_class=&lt;class</span> <span class="pre">'argparse.HelpFormatter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_chars='-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromfile_prefix_chars=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argument_default=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conflict_handler='error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_abbrev=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_on_error=True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet.html#ArgumentParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.ArgumentParser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code></p>
+<dl class="simple">
+<dt>A Helper class for using argparse when calling script through nrniv, eg</dt><dd><p>$ nrniv -python run_bionet.py</p>
+</dd>
+<dt>or</dt><dd><p>$ mpirun -np 2 nrniv -mpi -python run_bionet.py</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.ArgumentParser.parse_known_args">
+<span class="sig-name descname"><span class="pre">parse_known_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet.html#ArgumentParser.parse_known_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.ArgumentParser.parse_known_args" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.ArgumentParser.parse_nrniv_arg">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_nrniv_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sys_argv</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet.html#ArgumentParser.parse_nrniv_arg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.ArgumentParser.parse_nrniv_arg" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -2245,7 +2269,14 @@ of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and t
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.bionet">Module contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.simulator.bionet">Module contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.bionet.ArgumentParser"><code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.bionet.ArgumentParser.parse_known_args"><code class="docutils literal notranslate"><span class="pre">ArgumentParser.parse_known_args()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.simulator.bionet.ArgumentParser.parse_nrniv_arg"><code class="docutils literal notranslate"><span class="pre">ArgumentParser.parse_nrniv_arg()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

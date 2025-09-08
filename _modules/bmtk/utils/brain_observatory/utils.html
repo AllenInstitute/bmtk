@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.popnet.sonata_adaptors &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>bmtk.utils.brain_observatory.utils &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -39,17 +39,17 @@
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../../../../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/bmtk/simulator/popnet/sonata_adaptors';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/bmtk/utils/brain_observatory/utils';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -115,8 +115,8 @@
       
     
     
-    <img src="../../../../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../../../../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../../../../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../../../../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -372,7 +372,7 @@
     
     <li class="breadcrumb-item"><a href="../../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">bmtk.simulator.popnet.sonata_adaptors</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">bmtk.utils.brain_observatory.utils</span></li>
   </ul>
 </nav>
 </div>
@@ -389,27 +389,99 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for bmtk.simulator.popnet.sonata_adaptors</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.core.sonata_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">NodeAdaptor</span><span class="p">,</span> <span class="n">SonataBaseNode</span><span class="p">,</span> <span class="n">EdgeAdaptor</span><span class="p">,</span> <span class="n">SonataBaseEdge</span>
+  <h1>Source code for bmtk.utils.brain_observatory.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 
-
-<div class="viewcode-block" id="PopNetEdge">
-<a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopNetEdge">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">PopNetEdge</span><span class="p">(</span><span class="n">SonataBaseEdge</span><span class="p">):</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span></div>
-
-
-
-<div class="viewcode-block" id="PopEdgeAdaptor">
-<a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopEdgeAdaptor">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">PopEdgeAdaptor</span><span class="p">(</span><span class="n">EdgeAdaptor</span><span class="p">):</span>
-<div class="viewcode-block" id="PopEdgeAdaptor.get_edge">
-<a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopEdgeAdaptor.get_edge">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_edge</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">PopNetEdge</span><span class="p">(</span><span class="n">sonata_edge</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+<div class="viewcode-block" id="FakeTqdm">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.FakeTqdm">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FakeTqdm</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+    
+<div class="viewcode-block" id="FakeTqdm.update">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.FakeTqdm.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 </div>
+
+
+
+<div class="viewcode-block" id="write_from_stream">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.write_from_stream">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_from_stream</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="json_handler">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.json_handler">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">json_handler</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used by write_json convert a few non-standard types to things that the</span>
+<span class="sd">    json package can handle.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;isoformat&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Object of type </span><span class="si">%s</span><span class="s2"> with value of </span><span class="si">%s</span><span class="s2"> is not JSON serializable&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="infer_column_types">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.infer_column_types">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">infer_column_types</span><span class="p">(</span><span class="n">dataframe</span><span class="p">):</span>
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">colname</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">dataframe</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">colname</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">):</span>
+            <span class="k">continue</span>
+    
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">infer_objects</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">dataframe</span></div>
+
+
+
+
+<div class="viewcode-block" id="file_hash_from_path">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.utils.file_hash_from_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">file_hash_from_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the hexadecimal file hash for a file</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_path: Union[str, Path]</span>
+<span class="sd">        path to a file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str:</span>
+<span class="sd">        The file hash (Blake2b; hexadecimal) of the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">blake2b</span><span class="p">()</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_file</span><span class="p">:</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">in_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1000000</span><span class="p">)</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">in_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1000000</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
 </pre></div>
 

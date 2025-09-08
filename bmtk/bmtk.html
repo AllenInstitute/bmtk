@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bmtk package &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>bmtk package &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -52,7 +52,7 @@
     <link rel="prev" title="bmtk" href="modules.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -118,8 +118,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -365,6 +365,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html">bmtk.utils.brain_observatory package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a></li>
@@ -462,6 +463,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.firing_rates">bmtk.analyzer.firing_rates module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html#bmtk.analyzer.firing_rates.convert_rates"><code class="docutils literal notranslate"><span class="pre">convert_rates()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html#bmtk.analyzer.firing_rates.firing_rates_equal"><code class="docutils literal notranslate"><span class="pre">firing_rates_equal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html#bmtk.analyzer.firing_rates.plot_rates"><code class="docutils literal notranslate"><span class="pre">plot_rates()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html#bmtk.analyzer.firing_rates.plot_rates_popnet"><code class="docutils literal notranslate"><span class="pre">plot_rates_popnet()</span></code></a></li>
 </ul>
 </li>
@@ -784,15 +786,10 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html">bmtk.simulator.popnet package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-config-module">bmtk.simulator.popnet.config module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popedge-module">bmtk.simulator.popnet.popedge module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popnetwork-module">bmtk.simulator.popnet.popnetwork module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popnode-module">bmtk.simulator.popnet.popnode module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popsimulator-module">bmtk.simulator.popnet.popsimulator module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.sonata_adaptors">bmtk.simulator.popnet.sonata_adaptors module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.utils">bmtk.simulator.popnet.utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.config">bmtk.simulator.popnet.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.utils.html">bmtk.simulator.utils package</a><ul>
@@ -809,6 +806,19 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.brain_observatory.html">bmtk.utils.brain_observatory package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.brain_observatory_cache">bmtk.utils.brain_observatory.brain_observatory_cache module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.cache">bmtk.utils.brain_observatory.cache module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.manifest">bmtk.utils.brain_observatory.manifest module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.rma_engine">bmtk.utils.brain_observatory.rma_engine module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.rma_template">bmtk.utils.brain_observatory.rma_template module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.stimulus_info">bmtk.utils.brain_observatory.stimulus_info module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory.utils">bmtk.utils.brain_observatory.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html#module-bmtk.utils.brain_observatory">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html#module-bmtk.utils.cell_types_db">Module contents</a></li>
 </ul>

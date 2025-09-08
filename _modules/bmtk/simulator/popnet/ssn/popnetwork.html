@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bmtk.simulator.popnet.ssn.popnetwork &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../../../_static/documentation_options.js?v=cb7bf70b"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/bmtk/simulator/popnet/ssn/popnetwork';</script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.3" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../../../../../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../../index.html" class="nav-link">Module code</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../../popnet.html" class="nav-link">bmtk.simulator.popnet</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">bmtk.simulator.popnet.ssn.popnetwork</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for bmtk.simulator.popnet.ssn.popnetwork</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.core.simulator_network</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.popnode</span><span class="w"> </span><span class="kn">import</span> <span class="n">SSNNode</span>
+
+<div class="viewcode-block" id="PopNetwork">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PopNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grouping_key</span><span class="o">=</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PopNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># self.n_neu_total = 6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grouping_key</span> <span class="o">=</span> <span class="n">grouping_key</span>
+
+        <span class="c1"># self._pop_index = {}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_external</span> <span class="o">=</span> <span class="mi">0</span>
+
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_states</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid2grp</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_idx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_external_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gids</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Not the actual connection matrix used during sim, used for storing connections while building network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_mat</span> <span class="o">=</span> <span class="p">[]</span> 
+
+        <span class="c1"># The actual N x (N+M) connection matrix used during simulation, created before simulation begins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Keeps track if connection matrix needs to be rebuilt (mainly if new nodes/edges are added after a simulation)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span> 
+    <span class="k">def</span><span class="w"> </span><span class="nf">network_finalized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;SSN&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_neu_recurrent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_neu_total</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_external</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectivity_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neu_total</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">syn_w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_mat</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_w</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span>
+    
+    <span class="nd">@connectivity_mat</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connectivity_mat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_mat</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scales</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">scaling_coef</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span>
+    
+    <span class="nd">@scales</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scales</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initial_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_states</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_states</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initial_states</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">initial_value</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_states</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exponents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">exponent</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span>
+    
+    <span class="nd">@exponents</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exponents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exponents</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decay_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">decay_const</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span>
+    
+    <span class="nd">@decay_constants</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decay_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_decay_constants</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="PopNetwork.build_nodes">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.build_nodes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                <span class="n">model_type</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_population&#39;</span><span class="p">,</span> <span class="s1">&#39;recurrent&#39;</span><span class="p">]:</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+                    <span class="n">ssn_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;scaling_coef&#39;</span><span class="p">,</span> <span class="s1">&#39;initial_value&#39;</span><span class="p">,</span> <span class="s1">&#39;exponent&#39;</span><span class="p">,</span> <span class="s1">&#39;decay_const&#39;</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">ssn_attrs</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                            <span class="n">params</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
+
+                    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;node&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_recurrent_node</span><span class="p">(</span>
+                        <span class="n">population_id</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> 
+                        <span class="n">node_id</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">],</span> 
+                        <span class="o">**</span><span class="n">params</span>
+                    <span class="p">)</span>
+                
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;external&#39;</span><span class="p">,</span> <span class="s1">&#39;virtual&#39;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_external_node</span><span class="p">(</span>
+                        <span class="n">population_id</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> 
+                        <span class="n">node_id</span><span class="o">=</span><span class="n">node</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">grouping_key</span><span class="p">],</span>
+                        <span class="n">node</span><span class="o">=</span><span class="n">node</span>
+                    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PopNetwork.build_edges">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.build_edges">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">edge_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                <span class="n">src_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">source_population</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">)]</span>
+                <span class="n">trg_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">target_population</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">target_node_id</span><span class="p">)]</span>
+                
+                <span class="c1"># TODO: Move to add_edge function</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn_mat</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">trg_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">src_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]])</span></div>
+
+
+
+<div class="viewcode-block" id="PopNetwork.get_node">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.get_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">population_id</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="PopNetwork.get_ssn_node">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.get_ssn_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ssn_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">population_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">:</span>
+            <span class="n">ssn_node</span> <span class="o">=</span> <span class="n">SSNNode</span><span class="p">(</span><span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">population_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">node_id</span><span class="p">):</span> <span class="n">ssn_node</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gids</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">:</span>
+            <span class="n">ssn_node</span> <span class="o">=</span> <span class="n">SSNNode</span><span class="p">(</span><span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">population_id</span><span class="p">][</span><span class="nb">int</span><span class="p">(</span><span class="n">node_id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ssn_node</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gids</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ssn_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_map</span><span class="p">[</span><span class="n">population_id</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">ssn_node</span></div>
+
+
+<div class="viewcode-block" id="PopNetwork.add_recurrent_node">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.add_recurrent_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_recurrent_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">scaling_coef</span><span class="p">,</span> <span class="n">exponent</span><span class="p">,</span> <span class="n">decay_const</span><span class="p">,</span> <span class="n">initial_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_recurrent</span> <span class="o">+=</span> <span class="mi">1</span>       
+        
+        <span class="n">ssn_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ssn_node</span><span class="p">(</span><span class="n">population_id</span><span class="o">=</span><span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">)</span>
+        <span class="n">ssn_obj</span><span class="o">.</span><span class="n">type</span><span class="o">=</span><span class="s1">&#39;internal&#39;</span>
+        <span class="c1"># ssn_obj.input_offset.append(input_offset)</span>
+        <span class="n">ssn_obj</span><span class="o">.</span><span class="n">scaling_coef</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scaling_coef</span><span class="p">)</span>
+        <span class="n">ssn_obj</span><span class="o">.</span><span class="n">exponent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exponent</span><span class="p">)</span>
+        <span class="n">ssn_obj</span><span class="o">.</span><span class="n">decay_const</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decay_const</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_recurrent_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ssn_obj</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="PopNetwork.add_external_node">
+<a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnetwork.PopNetwork.add_external_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_external_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conn_finalized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes_external</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+        <span class="n">ssn_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ssn_node</span><span class="p">(</span><span class="n">population_id</span><span class="o">=</span><span class="n">population_id</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="o">**</span><span class="n">node_properties</span><span class="p">)</span>
+        <span class="n">ssn_obj</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;external&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssn_external_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ssn_obj</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

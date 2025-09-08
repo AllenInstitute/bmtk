@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Recording Extracellular Potentials and Current Source Densities &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>Recording Extracellular Potentials and Current Source Densities &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Advanced Stimulus Options" href="Ch_advanced_stim.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -121,8 +121,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -483,7 +483,7 @@ calculate the current source density (CSD), thus capturing the slow-reacting, no
 </div>
 <p>In this particular example, we use a very simplified “cortical column” consisting of layers <code class="docutils literal notranslate"><span class="pre">L2/3</span></code>, <code class="docutils literal notranslate"><span class="pre">L4</span></code> (which receives most of the external inputs), and <code class="docutils literal notranslate"><span class="pre">L5</span></code> pyramidal cells surrounded by inhibitory interneurons. The cells are built in a column parallel to the <strong>y</strong> axis and centered at <strong>x=0</strong> and <strong>z=0</strong>.</p>
 <p>We can use VND to visualize our network to make sure the layering and rotation of our cells are correct:</p>
-<div><p><img alt="fb40891c294a44f4b9d08ba10de8495e" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
+<div><p><img alt="8215b0fa36f54be18c9ee8c4982a7d15" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
 </div><p>The full script for this example can be found in the file <em>build_network.lfp.py</em>. We encourage you to make changes and test out the effects that different cell types, synapses, and geometry have on LFP recordings. You can also try using a different network altogether.</p>
 </section>
 <section id="Step-2:-Adding-%22ecp%22-recordings-to-simulation-config.">
@@ -732,7 +732,7 @@ Warning: no DISPLAY environment variable.
 </div>
 </div>
 <p>But if you need to analyze the results yourself, they will be saved in the <em>output/cortical_electrode.h5</em> file, which is an HDF5 following SONATA format for <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">Extracellular reports</a>. The results are stored in the <code class="docutils literal notranslate"><span class="pre">/ecp/data</span></code> table that is <span class="math notranslate nohighlight">\(T \times N\)</span> (<span class="math notranslate nohighlight">\(timestamps \times channels\)</span>) in size.</p>
-<div><p><img alt="dd6df0869a8b4d30ad2c3a9c6d1a3246" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 800px;" /></p>
+<div><p><img alt="54454c1842244926afac6e16d62b0d57" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 800px;" /></p>
 </div><div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>

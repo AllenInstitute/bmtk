@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>bmtk.simulator package &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>bmtk.simulator package &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -52,7 +52,7 @@
     <link rel="prev" title="bmtk.builder.network_adaptors package" href="bmtk.builder.network_adaptors.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -118,8 +118,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -365,6 +365,7 @@
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.brain_observatory.html">bmtk.utils.brain_observatory package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a></li>
@@ -793,7 +794,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.bionet.html#bmtk.simulator.bionet.ArgumentParser"><code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.html#bmtk.simulator.bionet.ArgumentParser.parse_known_args"><code class="docutils literal notranslate"><span class="pre">ArgumentParser.parse_known_args()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.html#bmtk.simulator.bionet.ArgumentParser.parse_nrniv_arg"><code class="docutils literal notranslate"><span class="pre">ArgumentParser.parse_nrniv_arg()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.core.html">bmtk.simulator.core package</a><ul>
@@ -1395,43 +1403,48 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.popnet.html">bmtk.simulator.popnet package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html">bmtk.simulator.popnet.dipde package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#bmtk-simulator-popnet-dipde-popedge-module">bmtk.simulator.popnet.dipde.popedge module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#bmtk-simulator-popnet-dipde-popnetwork-module">bmtk.simulator.popnet.dipde.popnetwork module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#bmtk-simulator-popnet-dipde-popnode-module">bmtk.simulator.popnet.dipde.popnode module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#bmtk-simulator-popnet-dipde-popsimulator-module">bmtk.simulator.popnet.dipde.popsimulator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#module-bmtk.simulator.popnet.dipde.sonata_adaptors">bmtk.simulator.popnet.dipde.sonata_adaptors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#module-bmtk.simulator.popnet.dipde.utils">bmtk.simulator.popnet.dipde.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.dipde.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html">bmtk.simulator.popnet.ssn package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn.popnetwork">bmtk.simulator.popnet.ssn.popnetwork module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn.popnode">bmtk.simulator.popnet.ssn.popnode module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn.popsimulator">bmtk.simulator.popnet.ssn.popsimulator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn.pyfunction_cache">bmtk.simulator.popnet.ssn.pyfunction_cache module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn.utils">bmtk.simulator.popnet.ssn.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.ssn.html#module-bmtk.simulator.popnet.ssn">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-config-module">bmtk.simulator.popnet.config module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popedge-module">bmtk.simulator.popnet.popedge module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popnetwork-module">bmtk.simulator.popnet.popnetwork module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popnode-module">bmtk.simulator.popnet.popnode module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk-simulator-popnet-popsimulator-module">bmtk.simulator.popnet.popsimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.sonata_adaptors">bmtk.simulator.popnet.sonata_adaptors module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopEdgeAdaptor"><code class="docutils literal notranslate"><span class="pre">PopEdgeAdaptor</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopEdgeAdaptor.get_edge"><code class="docutils literal notranslate"><span class="pre">PopEdgeAdaptor.get_edge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.config">bmtk.simulator.popnet.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.config.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.config.from_json"><code class="docutils literal notranslate"><span class="pre">from_json()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopNetEdge"><code class="docutils literal notranslate"><span class="pre">PopNetEdge</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.sonata_adaptors.PopNetEdge.syn_weight"><code class="docutils literal notranslate"><span class="pre">PopNetEdge.syn_weight</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.PopNetwork"><code class="docutils literal notranslate"><span class="pre">PopNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.PopNetwork.from_config"><code class="docutils literal notranslate"><span class="pre">PopNetwork.from_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.PopSimulator"><code class="docutils literal notranslate"><span class="pre">PopSimulator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.PopSimulator.from_config"><code class="docutils literal notranslate"><span class="pre">PopSimulator.from_config()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#module-bmtk.simulator.popnet.utils">bmtk.simulator.popnet.utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.KeyDefaultDict"><code class="docutils literal notranslate"><span class="pre">KeyDefaultDict</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.assert_model_known"><code class="docutils literal notranslate"><span class="pre">assert_model_known()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_firing_rate_server"><code class="docutils literal notranslate"><span class="pre">create_firing_rate_server()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_instance"><code class="docutils literal notranslate"><span class="pre">create_instance()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_nwb_server_file_path"><code class="docutils literal notranslate"><span class="pre">create_nwb_server_file_path()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_population_list"><code class="docutils literal notranslate"><span class="pre">create_population_list()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.df_to_csv"><code class="docutils literal notranslate"><span class="pre">df_to_csv()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_firing_rate_from_nwb"><code class="docutils literal notranslate"><span class="pre">get_firing_rate_from_nwb()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_firing_rates"><code class="docutils literal notranslate"><span class="pre">get_firing_rates()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_mesoscale_connectivity_dict"><code class="docutils literal notranslate"><span class="pre">get_mesoscale_connectivity_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.list_of_dicts_to_dict_of_lists"><code class="docutils literal notranslate"><span class="pre">list_of_dicts_to_dict_of_lists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.network_dict_to_target_adjacency_dict"><code class="docutils literal notranslate"><span class="pre">network_dict_to_target_adjacency_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_csv"><code class="docutils literal notranslate"><span class="pre">population_list_to_csv()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_dataframe"><code class="docutils literal notranslate"><span class="pre">population_list_to_dataframe()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_to_dict_for_dataframe"><code class="docutils literal notranslate"><span class="pre">population_to_dict_for_dataframe()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.reorder_columns_in_frame"><code class="docutils literal notranslate"><span class="pre">reorder_columns_in_frame()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.html">bmtk.simulator.utils package</a><ul>

@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>bmtk.utils.brain_observatory.ecephys package &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'bmtk/bmtk.utils.brain_observatory.ecephys';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmtk.utils.cell_types_db package" href="bmtk.utils.cell_types_db.html" />
+    <link rel="prev" title="bmtk.utils.brain_observatory.behavior package" href="bmtk.utils.brain_observatory.behavior.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.3" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="modules.html">bmtk</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="bmtk.html">bmtk package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.auxi.html">bmtk.builder.auxi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.bionet.html">bmtk.builder.bionet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.edges_sorter.html">bmtk.builder.edges_sorter package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.network_adaptors.html">bmtk.builder.network_adaptors package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.html">bmtk.simulator.bionet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.core.html">bmtk.simulator.core package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.html">bmtk.simulator.filternet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.pointnet.html">bmtk.simulator.pointnet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.html">bmtk.simulator.popnet package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.html">bmtk.simulator.utils package</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="reference internal" href="bmtk.utils.brain_observatory.html">bmtk.utils.brain_observatory package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.cell_types_db.html">bmtk.utils.cell_types_db package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.compile_mechanisms.html">bmtk.utils.compile_mechanisms package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.create_environment.html">bmtk.utils.create_environment package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.io.html">bmtk.utils.io package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.html">bmtk.utils.reports package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.sonata.html">bmtk.utils.sonata package</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../developers_guide.html" class="nav-link">For Developers</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">bmtk</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.html" class="nav-link">bmtk package</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.utils.html" class="nav-link">bmtk.utils package</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="bmtk.utils.brain_observatory.html" class="nav-link">bmtk.utils.brain_observatory package</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">bmtk.utils.brain_observatory.ecephys package</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="bmtk-utils-brain-observatory-ecephys-package">
+<h1>bmtk.utils.brain_observatory.ecephys package<a class="headerlink" href="#bmtk-utils-brain-observatory-ecephys-package" title="Link to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
+</section>
+<section id="module-bmtk.utils.brain_observatory.ecephys.ecephys_project_cache">
+<span id="bmtk-utils-brain-observatory-ecephys-ecephys-project-cache-module"></span><h2>bmtk.utils.brain_observatory.ecephys.ecephys_project_cache module<a class="headerlink" href="#module-bmtk.utils.brain_observatory.ecephys.ecephys_project_cache" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.</span></span><span class="sig-name descname"><span class="pre">EcephysProjectCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fetch_api</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_tries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream_writer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.cache.Cache" title="bmtk.utils.brain_observatory.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.CHANNELS_KEY">
+<span class="sig-name descname"><span class="pre">CHANNELS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'channels'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.CHANNELS_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.MANIFEST_VERSION">
+<span class="sig-name descname"><span class="pre">MANIFEST_VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.3.0'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.MANIFEST_VERSION" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_DIR_KEY">
+<span class="sig-name descname"><span class="pre">NATURAL_MOVIE_DIR_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'movie_dir'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_DIR_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_KEY">
+<span class="sig-name descname"><span class="pre">NATURAL_MOVIE_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'natural_movie'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_DIR_KEY">
+<span class="sig-name descname"><span class="pre">NATURAL_SCENE_DIR_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'natural_scene_dir'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_DIR_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_KEY">
+<span class="sig-name descname"><span class="pre">NATURAL_SCENE_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'natural_scene'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBES_KEY">
+<span class="sig-name descname"><span class="pre">PROBES_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'probes'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBES_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBE_LFP_NWB_KEY">
+<span class="sig-name descname"><span class="pre">PROBE_LFP_NWB_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'probe_lfp_nwb'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBE_LFP_NWB_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSIONS_KEY">
+<span class="sig-name descname"><span class="pre">SESSIONS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sessions'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSIONS_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_ANALYSIS_METRICS_KEY">
+<span class="sig-name descname"><span class="pre">SESSION_ANALYSIS_METRICS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session_analysis_metrics'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_ANALYSIS_METRICS_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_DIR_KEY">
+<span class="sig-name descname"><span class="pre">SESSION_DIR_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session_data'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_DIR_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_NWB_KEY">
+<span class="sig-name descname"><span class="pre">SESSION_NWB_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session_nwb'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_NWB_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SUPPRESS_FROM_PROBES">
+<span class="sig-name descname"><span class="pre">SUPPRESS_FROM_PROBES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('air_channel_index',</span> <span class="pre">'surface_channel_index',</span> <span class="pre">'date_of_acquisition',</span> <span class="pre">'published_at',</span> <span class="pre">'specimen_id',</span> <span class="pre">'session_type',</span> <span class="pre">'isi_experiment_id',</span> <span class="pre">'age_in_days',</span> <span class="pre">'sex',</span> <span class="pre">'genotype',</span> <span class="pre">'has_nwb',</span> <span class="pre">'lfp_temporal_subsampling_factor')</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SUPPRESS_FROM_PROBES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.TYPEWISE_ANALYSIS_METRICS_KEY">
+<span class="sig-name descname"><span class="pre">TYPEWISE_ANALYSIS_METRICS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'typewise_analysis_metrics'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.TYPEWISE_ANALYSIS_METRICS_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.UNITS_KEY">
+<span class="sig-name descname"><span class="pre">UNITS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'units'</span></em><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.UNITS_KEY" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.add_manifest_paths">
+<span class="sig-name descname"><span class="pre">add_manifest_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest_builder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.add_manifest_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.add_manifest_paths" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.from_warehouse">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_warehouse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch_tries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.from_warehouse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.from_warehouse" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_channels">
+<span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.get_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_channels" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_probes">
+<span class="sig-name descname"><span class="pre">get_probes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suppress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.get_probes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_probes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_session_data">
+<span class="sig-name descname"><span class="pre">get_session_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.get_session_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_session_data" title="Link to this definition">#</a></dt>
+<dd><p>Obtain an EcephysSession object containing detailed data for a single session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_unit_analysis_metrics_for_session">
+<span class="sig-name descname"><span class="pre">get_unit_analysis_metrics_for_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_by_validity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">unit_filter_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectCache.get_unit_analysis_metrics_for_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_unit_analysis_metrics_for_session" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.</span></span><span class="sig-name descname"><span class="pre">EcephysProjectWarehouseApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rma_engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.default">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">rma_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.default" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_channels">
+<span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_channels" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probe_lfp_data">
+<span class="sig-name descname"><span class="pre">get_probe_lfp_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probe_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_probe_lfp_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probe_lfp_data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probes">
+<span class="sig-name descname"><span class="pre">get_probes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probe_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_probes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_rig_metadata">
+<span class="sig-name descname"><span class="pre">get_rig_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_rig_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_rig_metadata" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_session_data">
+<span class="sig-name descname"><span class="pre">get_session_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_session_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_session_data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_sessions">
+<span class="sig-name descname"><span class="pre">get_sessions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_eye_tracking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stimulus_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_sessions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_sessions" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_unit_analysis_metrics">
+<span class="sig-name descname"><span class="pre">get_unit_analysis_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecephys_session_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_unit_analysis_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_unit_analysis_metrics" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_units">
+<span class="sig-name descname"><span class="pre">get_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysProjectWarehouseApi.get_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_units" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysSession">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.</span></span><span class="sig-name descname"><span class="pre">EcephysSession</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nwb_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/brain_observatory/ecephys/ecephys_project_cache.html#EcephysSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysSession" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-bmtk.utils.brain_observatory.ecephys">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.brain_observatory.ecephys" title="Link to this heading">#</a></h2>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.utils.brain_observatory.ecephys.ecephys_project_cache">bmtk.utils.brain_observatory.ecephys.ecephys_project_cache module</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.CHANNELS_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.CHANNELS_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.MANIFEST_VERSION"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.MANIFEST_VERSION</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_DIR_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.NATURAL_MOVIE_DIR_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_MOVIE_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.NATURAL_MOVIE_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_DIR_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.NATURAL_SCENE_DIR_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.NATURAL_SCENE_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.NATURAL_SCENE_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBES_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.PROBES_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.PROBE_LFP_NWB_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.PROBE_LFP_NWB_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSIONS_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.SESSIONS_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_ANALYSIS_METRICS_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.SESSION_ANALYSIS_METRICS_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_DIR_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.SESSION_DIR_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SESSION_NWB_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.SESSION_NWB_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.SUPPRESS_FROM_PROBES"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.SUPPRESS_FROM_PROBES</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.TYPEWISE_ANALYSIS_METRICS_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.TYPEWISE_ANALYSIS_METRICS_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.UNITS_KEY"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.UNITS_KEY</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.add_manifest_paths"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.add_manifest_paths()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.from_warehouse"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.from_warehouse()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_channels"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.get_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_probes"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.get_probes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_session_data"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.get_session_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_unit_analysis_metrics_for_session"><code class="docutils literal notranslate"><span class="pre">EcephysProjectCache.get_unit_analysis_metrics_for_session()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.default"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.default()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_channels"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_channels()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probe_lfp_data"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_probe_lfp_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_probes"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_probes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_rig_metadata"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_rig_metadata()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_session_data"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_session_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_sessions"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_sessions()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_unit_analysis_metrics"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_unit_analysis_metrics()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_units"><code class="docutils literal notranslate"><span class="pre">EcephysProjectWarehouseApi.get_units()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysSession"><code class="docutils literal notranslate"><span class="pre">EcephysSession</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-bmtk.utils.brain_observatory.ecephys">Module contents</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/bmtk/bmtk.utils.brain_observatory.ecephys.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

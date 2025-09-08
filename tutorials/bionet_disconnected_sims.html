@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Replaying Parts of a Simulation &#8212; Brain Modeling Toolkit 1.1.2 documentation</title>
+    <title>Replaying Parts of a Simulation &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=6f037312"></script>
+    <script src="../_static/documentation_options.js?v=cb7bf70b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -55,7 +55,7 @@
     <link rel="prev" title="Generating Spike Trains with a Refractory Period" href="spike_trains_refractory.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.2" />
+  <meta name="docsearch:version" content="1.1.3" />
   </head>
   
   
@@ -121,8 +121,8 @@
       
     
     
-    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
-    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.2 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
   
   
 </a></div>
@@ -441,7 +441,7 @@
 <p>When simulating a bio-realistic network, cells will receive synaptic stimulation from both locally recurrent connections as well as feedforward connections from external inputs. Often when analyzing the results of full network activity we would like to know the contribution of only a subset of the synaptic activity. For example, how much the feedforward synapses, or only recurrent synapses between specific population of cells, contribute to the simulation results. Certain techniques, like
 running with only a subset of the full network, or using optogenetics/current-clamp to turn on-off subpopulations, can provide useful insights but do not tell the full story of a network simulation.</p>
 <p>Instead we can use the BMTK “replay” input module to disentangle subsections of simulation activity from the full network in BioNet/biophysically realistic simulations. The BMTK “replay” module let’s the user take a previous simulation, and replay a simulation using only activity from a subset of the synapses. This can be helpful in parameter tuning and optimization, and for very large networks can provide an efficient manner to replay small subsets of a full network.</p>
-<div><p><img alt="805b32510c834698ae0d0d0b6f493996" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
+<div><p><img alt="9eebf04447c445f1a952e16d3df3cdec" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
 </div><div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
