@@ -486,11 +486,11 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 </section>
 <section id="Building-the-Network">
 <h2>Building the Network<a class="headerlink" href="#Building-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="6ae59bf952ca42dcbcf46f3e2342c4a7" src="../_images/bmtk_workflow_builder.png" /></p>
+<p><img alt="2e8a37f0a91b44058c42bce600206a82" src="../_images/bmtk_workflow_builder.png" /></p>
 <p>Before we can start simulation we must first build (or receive from a third party) the network model files. To create our toy network of 300 cells in BMTK we will use the <em>builder</em> component, which allows us to build heterogeneous, multi-graph networks and save them in the SONATA format.</p>
 <section id="Building-the-cells">
 <h3>Building the cells<a class="headerlink" href="#Building-the-cells" title="Link to this heading">#</a></h3>
-<p><img alt="c415f6ae07c3468e93f2a18a6b001aa7" src="../_images/builder_add_nodes.png" /></p>
+<p><img alt="b70f610095d34f449d12457913df102a" src="../_images/builder_add_nodes.png" /></p>
 <p>The first step is figuring out different cell types and parameters we want to use in our network. When we know that we can begin building our network model first by initializing the network using <em>bmtk.builder.networks.NetworkBuilder</em> plus calls to <em>add_nodes()</em> method</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -600,7 +600,7 @@ rotation.</p>
 </section>
 <section id="Creating-the-connections">
 <h3>Creating the connections<a class="headerlink" href="#Creating-the-connections" title="Link to this heading">#</a></h3>
-<p><img alt="3c195b5406d84b09a1e1e167e5aa91fd" src="../_images/builder_add_edges.png" /></p>
+<p><img alt="4abde467d85945729bd07f35c513c783" src="../_images/builder_add_edges.png" /></p>
 <p>Now that we have our cells/nodes, we can go ahead and create the synapse/connectivity matrix using the <strong>add_edges</strong> method. We will want to call this method multiple times to add different connection types with different properties and rules. For each connection type we must select what subpopulation of cells to use for the source (pre-synaptic) and target (post-synaptic) cells. We can select our cells using any combination of attributes</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -745,7 +745,7 @@ rotation.</p>
 </section>
 <section id="Building-the-network">
 <h3>Building the network<a class="headerlink" href="#Building-the-network" title="Link to this heading">#</a></h3>
-<p><img alt="f10c08b271aa4f2f84ffdfa96f6587ed" src="../_images/builder_complete_network.png" /></p>
+<p><img alt="1d60ea4aef4545139efd30f2383f7395" src="../_images/builder_complete_network.png" /></p>
 <p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -827,7 +827,7 @@ rotation.</p>
 </section>
 <section id="Simulating-the-Network">
 <h2>Simulating the Network<a class="headerlink" href="#Simulating-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="6c0a54efdb0d46fc99c5ccd56cec0b43" src="../_images/bmtk_workflow_simulator.png" /></p>
+<p><img alt="2f2fe532b81749d5b5ac15bb8bd0f031" src="../_images/bmtk_workflow_simulator.png" /></p>
 <p>Now that we have built the SONATA network models files (or recieved the files from another source), we can go ahead and setup a simulation to run. To simulate the multi-compartment cell models we will use the BioNet component of the BMTK - which uses the <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON</a> simulator libraries for simulating our network.</p>
 <p>Before we can do that there are still a few things that need to be taken care of, including setting up run-time parameters, choosing the stimulus, and deciding what to record.</p>
 <section id="Simulation-Directory-Structure">
@@ -1090,7 +1090,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div>
 </div>
 <p>The <em>devices/linear_electrode.csv</em> file is what we use to specify the electrode and all the recording channels. for this simulation the electrode will be placed through the center of the V1 column with recording channels at every 100 microns (the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> coordinates of the electrode should be in the same space as the cells).</p>
-<p><img alt="18801f60b3a94b299f340d8815f8121a" src="../_images/v1_neuropixel_probe.png" /></p>
+<p><img alt="acd845fee43c448ba5fa3a5de48ed056" src="../_images/v1_neuropixel_probe.png" /></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>channel</p></th>
