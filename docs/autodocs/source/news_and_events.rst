@@ -24,12 +24,16 @@ News Letter
 
     .. raw:: html
 
-        <iframe src=https://t.e2ma.net/webview/zck93h/61d3fee64f76feac08e86bd3c83a56cf width="80%" height="600" frameborder="0"></iframe>
+        <iframe src=_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20September%202025.pdf width="100%" height="600" frameborder="0"></iframe>
 
 
 
 Previous News Letters
 ^^^^^^^^^^^^^^^^^^^^^
+
+* `September 2025 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20September%202025.pdf>`__
+
+* `July 2025 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20July%202025.pdf>`__
 
 * `September 2024 <_static/documents/Updates%20on%20the%20Allen%20Institute%20Modeling%20Software%20-%20September%202024.pdf>`__
 
