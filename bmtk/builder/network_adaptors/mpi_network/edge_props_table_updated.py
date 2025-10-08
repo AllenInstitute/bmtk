@@ -64,6 +64,12 @@ class EdgeTypesTableMemory(object):
         self._source_nodes_map = None  # map source_node_id --> Node object
         self._target_nodes_map = None  # map target_node_id --> Node object
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state['_source_nodes_map'] = {s.node_id: s for s in self._connection_map.source_nodes}
+        del state['_connection_map']
+        return state
+
     @property
     def n_syns(self):
         """Number of synapses."""
@@ -80,7 +86,7 @@ class EdgeTypesTableMemory(object):
         if self._prop_vals:
             return self.n_syns
         else:
-            return np.count_nonzero(self.nsyn_table)
+            return np.count_nonzero(self.nsyn_table_vals)
 
     @property
     def edge_type_node_ids(self):
@@ -143,9 +149,13 @@ class EdgeTypesTableMemory(object):
     def edge_type_properties(self):
         return self._connection_map.edge_type_properties
 
+
     def get_property_metatadata(self):
+        return self.get_property_metadata()
+    
+    def get_property_metadata(self):
         if not self._prop_vals:
-            return [{'name': 'nsyns', 'dtype': self.nsyn_table.dtype}]
+            return [{'name': 'nsyns', 'dtype': self.nsyn_table_vals.dtype}]
         else:
             return [{'name': pname, 'dtype': pvals.dtype} for pname, pvals in self._prop_vals.items()]
 
@@ -195,7 +205,7 @@ class EdgeTypesTableMemory(object):
 
     def get_property_value(self, prop_name):
         if prop_name == 'nsyns':
-            nsyns_table_flat = self.nsyn_table.ravel()
+            nsyns_table_flat = self.nsyn_table_vals.ravel()
             nonzero_indxs = np.argwhere(nsyns_table_flat > 0).flatten()
 
             return nsyns_table_flat[nonzero_indxs]
@@ -223,85 +233,85 @@ class EdgeTypesTableMemory(object):
         del self._prop_vals
 
 
-class EdgeTypesTableMPI(EdgeTypesTableMemory):
-    """Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules
-    are split across different ranks/processors.
+# class EdgeTypesTableMPI(EdgeTypesTableMemory):
+#     """Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules
+#     are split across different ranks/processors.
 
-    The data tables are saved in temporary files on the disk, so that the rank which is responsible for writing to the
-    final hdf5 file. This could also be useful for very large networks built on one core.
+#     The data tables are saved in temporary files on the disk, so that the rank which is responsible for writing to the
+#     final hdf5 file. This could also be useful for very large networks built on one core.
 
-    TODO: Look into saving in memory, use MPI Gather/Send.
-    """
-    _tmp_table_valid = False  # Singleton flag to ensure hdf5 temp file is created only once
+#     TODO: Look into saving in memory, use MPI Gather/Send.
+#     """
+#     _tmp_table_valid = False  # Singleton flag to ensure hdf5 temp file is created only once
 
-    def __init__(self, connection_map, network_name, **opt_args):
-        super(EdgeTypesTableMPI, self).__init__(connection_map, network_name)
-        self.tmp_table_name = EdgeTypesTableMPI.get_tmp_table_path(mpi_rank)
+#     def __init__(self, connection_map, network_name, **opt_args):
+#         super(EdgeTypesTableMPI, self).__init__(connection_map, network_name)
+#         self.tmp_table_name = EdgeTypesTableMPI.get_tmp_table_path(mpi_rank)
 
-    @staticmethod
-    def get_tmp_table_path(rank=0, name=None):
-        builder_uuid = build_time_uuid()
-        return '.edge_types_table.{}.{}.h5'.format(rank, builder_uuid)
+#     @staticmethod
+#     def get_tmp_table_path(rank=0, name=None):
+#         builder_uuid = build_time_uuid()
+#         return '.edge_types_table.{}.{}.h5'.format(rank, builder_uuid)
 
-    def _open_tmp_table(self):
-        if EdgeTypesTableMPI._tmp_table_handle is None:
-            EdgeTypesTableMPI._tmp_table_handle = h5py.File(self.tmp_table_name, 'w')
+#     def _open_tmp_table(self):
+#         if EdgeTypesTableMPI._tmp_table_handle is None:
+#             EdgeTypesTableMPI._tmp_table_handle = h5py.File(self.tmp_table_name, 'w')
 
-        return EdgeTypesTableMPI._tmp_table_handle
+#         return EdgeTypesTableMPI._tmp_table_handle
 
-    def _init_tmp_table(self):
-        # There may/will be multiple EdgeTypeTables objects, but only one .edge_type_table*.h5 file per rank, but don't
-        # overwrite the file everytime save() is called. Use a singleton to ensure hdf5 tmp file is created only once.
-        if not EdgeTypesTableMPI._tmp_table_valid:
-            with h5py.File(self.tmp_table_name, 'w') as h5:
-                h5.create_group('unprocessed')
-                EdgeTypesTableMPI._tmp_table_valid = True
+#     def _init_tmp_table(self):
+#         # There may/will be multiple EdgeTypeTables objects, but only one .edge_type_table*.h5 file per rank, but don't
+#         # overwrite the file everytime save() is called. Use a singleton to ensure hdf5 tmp file is created only once.
+#         if not EdgeTypesTableMPI._tmp_table_valid:
+#             with h5py.File(self.tmp_table_name, 'w') as h5:
+#                 h5.create_group('unprocessed')
+#                 EdgeTypesTableMPI._tmp_table_valid = True
 
-    def save(self):
-        """Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""
-        self._init_tmp_table()
+#     def save(self):
+#         """Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""
+#         self._init_tmp_table()
 
-        source_node_ids, target_node_ids = super().edge_type_node_ids
-        if len(source_node_ids) == 0:
-            # ignore if no actual edges
-            return
+#         source_node_ids, target_node_ids = super().edge_type_node_ids
+#         if len(source_node_ids) == 0:
+#             # ignore if no actual edges
+#             return
 
-        with h5py.File(self.tmp_table_name, 'r+') as h5:
-            # Create a new group
-            edge_type_id_str = str(self.edge_type_id)
-            if edge_type_id_str in h5:
-                del h5[edge_type_id_str]
+#         with h5py.File(self.tmp_table_name, 'r+') as h5:
+#             # Create a new group
+#             edge_type_id_str = str(self.edge_type_id)
+#             if edge_type_id_str in h5:
+#                 del h5[edge_type_id_str]
 
-            edge_type_grp = h5.create_group('/unprocessed/{}/{}'.format(self._network_name, edge_type_id_str))
+#             edge_type_grp = h5.create_group('/unprocessed/{}/{}'.format(self._network_name, edge_type_id_str))
 
-            edge_type_grp.create_dataset('source_node_id', data=source_node_ids)
-            edge_type_grp.create_dataset('target_node_id', data=target_node_ids)
+#             edge_type_grp.create_dataset('source_node_id', data=source_node_ids)
+#             edge_type_grp.create_dataset('target_node_id', data=target_node_ids)
 
-            for prop_mdata in super().get_property_metatadata():
-                pname = prop_mdata['name']
-                ptype = prop_mdata['dtype']
-                pvals = super().get_property_value(pname)
-                edge_type_grp.create_dataset(pname, data=pvals, dtype=ptype)
-                edge_type_grp.attrs['size'] = len(pvals)
-                edge_type_grp.attrs['hash_key'] = self.hash_key
+#             for prop_mdata in super().get_property_metatadata():
+#                 pname = prop_mdata['name']
+#                 ptype = prop_mdata['dtype']
+#                 pvals = super().get_property_value(pname)
+#                 edge_type_grp.create_dataset(pname, data=pvals, dtype=ptype)
+#                 edge_type_grp.attrs['size'] = len(pvals)
+#                 edge_type_grp.attrs['hash_key'] = self.hash_key
 
 
-            h5.flush()
+#             h5.flush()
 
-    def __del__(self):
-        tmp_h5_path = EdgeTypesTableMPI.get_tmp_table_path(rank=mpi_rank)
-        try:
-            if os.path.exists(tmp_h5_path):
-                os.remove(tmp_h5_path)
-        except (FileNotFoundError, IOError, Exception) as e:
-            logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
+#     def __del__(self):
+#         tmp_h5_path = EdgeTypesTableMPI.get_tmp_table_path(rank=mpi_rank)
+#         try:
+#             if os.path.exists(tmp_h5_path):
+#                 os.remove(tmp_h5_path)
+#         except (FileNotFoundError, IOError, Exception) as e:
+#             logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
 
 
 # class EdgeTypesTableUpdated(EdgeTypesTableMPI):
 #     pass
 
 
-class EdgeTypesTableMPIPickled(EdgeTypesTableMPI):
+class EdgeTypesTableMPIPickled(EdgeTypesTableMemory):
     def __init__(self, connection_map, network_name, **opt_args):
         super(EdgeTypesTableMPIPickled, self).__init__(connection_map, network_name)
 

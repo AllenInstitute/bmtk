@@ -11,6 +11,7 @@ from six import string_types
 from bmtk.builder.id_generator import IDGenerator
 from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks
 from bmtk.builder.node_set import NodeSet
+from bmtk.builder import node_pool
 # from bmtk.builder.node_pool import NodePool
 from bmtk.builder.index_builders import create_index_in_memory
 from bmtk.builder import connector
@@ -19,7 +20,7 @@ from bmtk.builder.edges_sorter import sort_edges
 
 
 # from bmtk.builder.network_adaptors.edge_props_table import EdgeTypesTable
-from bmtk.builder.network_adaptors.edges_collator import EdgesCollator
+from bmtk.builder.network_adaptors.edges_collator_v08 import EdgesCollator
 from .edge_props_table_updated import EdgeTypesTableUpdated
 
 logger = logging.getLogger(__name__)
@@ -62,7 +63,8 @@ class NetworkV08:
         self._connection_maps = []
         self._cm_rank_order = [(0, r) for r in range(mpi_size)]
 
-        self.split_by = network_props.get('mpi_split_by', '')
+        self.split_by = network_props.get('mpi_split_by', 'target')
+
         self._next_rank = 0
 
     @property
@@ -174,6 +176,10 @@ class NetworkV08:
         edge_type_properties['source_query'] = source.filter_str
         edge_type_properties['target_query'] = target.filter_str
 
+        
+        if self.split_by == 'target':
+            target = target[mpi_rank::mpi_size]
+        
         if 'nsyns' in edge_type_properties:
             connection_rule = edge_type_properties['nsyns']
             del edge_type_properties['nsyns']
@@ -187,7 +193,7 @@ class NetworkV08:
             connector=connection_rule, 
             connector_params=connection_params, 
             iterator=iterator, 
-            split_by=self.split_by, 
+            # split_by=self.split_by, 
             edge_type_properties=edge_type_properties
         )
         
@@ -891,16 +897,18 @@ class ConnectionMap(object):
 
     def __init__(self, sources=None, targets=None, connector=None, connector_params=None, iterator='one_to_one',
                  split_by='', edge_type_properties=None):
-        if mpi_size == 1 or split_by == 'edge_type':
-            self._source_nodes = sources
-            self._target_nodes = targets
-        elif split_by == 'by_source' or iterator == 'one_to_all':
-            self._source_nodes = sources[mpi_rank::mpi_size]
-            self._target_nodes = targets
-        else:
-            self._source_nodes = sources
-            self._target_nodes = targets[mpi_rank::mpi_size]
+        # if mpi_size == 1 or split_by == 'edge_type':
+        #     self._source_nodes = sources
+        #     self._target_nodes = targets
+        # elif split_by == 'by_source' or iterator == 'one_to_all':
+        #     self._source_nodes = sources[mpi_rank::mpi_size]
+        #     self._target_nodes = targets
+        # else:
+        #     self._source_nodes = sources
+        #     self._target_nodes = targets[mpi_rank::mpi_size]
         
+        self._source_nodes = sources
+        self._target_nodes = targets
         self._connector = connector  # function, list or value that determines connection between sources and targets
         self._connector_params = connector_params  # parameters passed into connector
         self._iterator = iterator  # rule for iterating between sources and targets
@@ -1000,7 +1008,7 @@ class ListIterator(object):
         return val
     
 
-class NodePool(object):
+class NodePool(node_pool.NodePool):
     """Stores a collection of nodes based off some query of the network.
 
     Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and

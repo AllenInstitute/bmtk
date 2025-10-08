@@ -499,7 +499,7 @@ class EdgesCollatorMPIPickled(object):
         total_syns = 0
         columns = set()
         for etable in self._edge_types_tables:
-            total_syns += etable.n_syns
+            total_syns += etable.n_edges
             columns |= set((et['name'], et['dtype']) for et in etable.get_property_metatadata())
 
         grp_metadata = {}
@@ -509,7 +509,7 @@ class EdgesCollatorMPIPickled(object):
                     'columns': etable.get_property_metatadata(),
                     'size': 0
                 }
-            grp_metadata[etable.hash_key]['size'] += etable.n_syns
+            grp_metadata[etable.hash_key]['size'] += etable.n_edges
 
         conn_data = {
             'src_ids': np.zeros(total_syns, dtype=np.uint),
@@ -524,10 +524,10 @@ class EdgesCollatorMPIPickled(object):
 
         idx_beg = 0
         for etable in self._edge_types_tables:
-            if etable.n_syns == 0:
+            if etable.n_edges == 0:
                 continue
 
-            idx_end = idx_beg + etable.n_syns
+            idx_end = idx_beg + etable.n_edges
             src_ids, trg_ids = etable.edge_type_node_ids
             
             conn_data['src_ids'][idx_beg:idx_end] = src_ids
@@ -736,10 +736,12 @@ class EdgesCollatorMPIComm(EdgesCollatorMPIPickled):
     def process(self):
         barrier()
 
-        total_syns = 0
+        # pickle.dump(conn_data, fhandle)
+        
+        total_edges = 0
         columns = set()
         for etable in self._edge_types_tables:
-            total_syns += etable.n_syns
+            total_edges += etable.n_edges
             columns |= set((et['name'], et['dtype']) for et in etable.get_property_metatadata())
 
         grp_metadata = {}
@@ -749,26 +751,29 @@ class EdgesCollatorMPIComm(EdgesCollatorMPIPickled):
                     'columns': etable.get_property_metatadata(),
                     'size': 0
                 }
-            grp_metadata[etable.hash_key]['size'] += etable.n_syns
+            grp_metadata[etable.hash_key]['size'] += etable.n_edges
 
         conn_data = {
-            'src_ids': np.zeros(total_syns, dtype=np.uint),
-            'trg_ids': np.zeros(total_syns, dtype=np.uint),
-            'edge_type_ids': np.zeros(total_syns, dtype=np.uint32),
-            'grp_keys': np.empty(total_syns, dtype='<U10'),
+            'src_ids': np.zeros(total_edges, dtype=np.uint),
+            'trg_ids': np.zeros(total_edges, dtype=np.uint),
+            'edge_type_ids': np.zeros(total_edges, dtype=np.uint32),
+            'grp_keys': np.empty(total_edges, dtype='<U10'),
             'grp_metadata': grp_metadata,
             # 'columns': {c[0]: np.empty(total_syns, dtype=c[1]) for c in columns}
         }
-        nbytes = total_syns * 10240
+        nbytes = 0 # total_edges * 1024
         for c in columns:
-            conn_data[c[0]] = np.empty(total_syns, dtype=c[1])
+            conn_data[c[0]] = np.empty(total_edges, dtype=c[1])
             nbytes += conn_data[c[0]].nbytes
 
-        print(nbytes)
-        print(sys.getsizeof(conn_data))
+        # print(nbytes)
+        # print(sys.getsizeof(conn_data))
         # exit()
+
          
 
+        # print(mpi_rank, '>', nbytes)
+        # exit()
         idx_beg = 0
         for etable in self._edge_types_tables:
             if etable.n_syns == 0:
@@ -776,6 +781,11 @@ class EdgesCollatorMPIComm(EdgesCollatorMPIPickled):
 
             idx_end = idx_beg + etable.n_syns
             src_ids, trg_ids = etable.edge_type_node_ids
+            # print(src_ids, src_ids.shape)
+            # print(trg_ids, trg_ids.shape)
+            # print(conn_data['src_ids'].shape)
+            # print(total_edges)
+            # exit()
             
             conn_data['src_ids'][idx_beg:idx_end] = src_ids
             conn_data['trg_ids'][idx_beg:idx_end] = trg_ids
@@ -793,12 +803,19 @@ class EdgesCollatorMPIComm(EdgesCollatorMPIPickled):
         #     print(mpi_rank, '-', sum(c['size'] for c in conn_data['grp_metadata'].values()))
         #     print(mpi_rank, '>', conn_data['grp_keys'].shape, conn_data['syn_weight'].shape)
         
+        import json
+        
+        print(sys.getsizeof(conn_data))
+        print(conn_data)
+        exit()
+        
         recieved_data = {}
         if mpi_rank == 0:
             recieved_data[0] = conn_data
             for s in range(1, mpi_size):
                 recieved_data[s] = comm.recv(source=s, tag=11)
         else:
+            
             comm.send(conn_data, dest=0, tag=11)
 
         self.collected_data = recieved_data
@@ -858,7 +875,7 @@ class EdgesCollator(object):
     def __new__(cls, *args, **kwargs):
         rank_passing = kwargs.get('rank_passing', 'h5')
         
-        if mpi_size == 0:
+        if mpi_size == 1:
             log_once('>> EdgesCollatorSingular')
             return EdgesCollatorSingular(*args, **kwargs)
         
