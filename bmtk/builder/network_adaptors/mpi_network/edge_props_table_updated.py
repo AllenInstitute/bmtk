@@ -32,7 +32,7 @@ class EdgeTypesTableMemory(object):
     saved in the SONATA file will vary.
     """
 
-    def __init__(self, connection_map, network_name):
+    def __init__(self, connection_map, network_name, **opt_args):
         self._connection_map = connection_map
         self._network_name = network_name
 
@@ -64,10 +64,15 @@ class EdgeTypesTableMemory(object):
         self._source_nodes_map = None  # map source_node_id --> Node object
         self._target_nodes_map = None  # map target_node_id --> Node object
 
+
     def __getstate__(self):
         state = self.__dict__.copy()
         state['_source_nodes_map'] = {s.node_id: s for s in self._connection_map.source_nodes}
-        del state['_connection_map']
+        state['_target_nodes_map'] = {t.node_id for t in self._connection_map.target_nodes}
+        state['_connection_map'] = None
+        # state['source_node_ids'] = [s.node_id for s in self._connection_map.source_nodes]
+        # state['target_node_ids'] = [t.node_id for t in self._connection_map.target_nodes]
+        # del state['_connection_map']
         return state
 
     @property

@@ -1147,10 +1147,8 @@ class NodePool(node_pool.NodePool):
         return True
 
     def __getitem__(self, key):
-        # print(key, type(key))
         if isinstance(key, slice):
             return NodePool(self.__network, slice=key, **self.__properties)
 
         else:
             raise NotImplementedError()
-        # exit()
