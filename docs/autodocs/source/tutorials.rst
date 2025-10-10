@@ -20,6 +20,18 @@ Tutorials and Examples
     BMTK Examples Repository <https://github.com/AllenInstitute/bmtk/tree/develop/examples>
 
 
+Modeling Workshop Tutorials
+===========================
+
+.. card::
+
+  The Allen Institute holds an annual summer modeling workshop that includes extensive training on how to use BMTK, 
+  SONATA, VND, and other applications to build, simulate, and analyze bio-realistic network models. Access to 
+  workshop Jupyter notebook tutorials can be found and cloned from the following github link:
+
+  https://github.com/AllenInstitute/bmtk-workshop
+
+
 Basic Usage
 ===========
 
