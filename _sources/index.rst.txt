@@ -20,10 +20,15 @@ BMTK: The Brain Modeling Toolkit
 
 .. raw:: html
 
-   <a href="https://signup.e2ma.net/signup/2010845/1976001/" style="float: right; font-size: x-large; font-weight: bold;">
-      <button>Subscribe to our newsletter</button>
-   </a>
+   <div style="display: flex; gap: 6px; justify-content: flex-end;">
+      <a href="https://signup.e2ma.net/signup/2010845/1976001/" style="float: right; font-size: x-large; font-weight: bold;">
+         <button>Subscribe to our newsletter</button>
+      </a>
 
+      <a href="https://neuroai-multimodal-workshop.github.io/" style="float: right; font-size: x-large; font-weight: bold;">
+         <button>Join the AAAI 2026 NeuroAI workshop</button>
+      </a>
+   </div>
 
 About BMTK
 ==========
@@ -69,6 +74,8 @@ About BMTK
 
             `Simulation of the mouse primary visual cortex <https://portal.brain-map.org/explore/models/mv1-all-layers>`__, prepared and carried out using BMTK.
 
+   See BMTK repo on GitHub: https://github.com/AllenInstitute/bmtk.
+   
 
    **BMTK Workflow**
 
