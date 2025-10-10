@@ -30,9 +30,10 @@ About BMTK
 
 .. card::
 
-   The Brain Modeling Toolkit (BMTK) is an **open-source** software package for modeling and simulating large-scale
-   neural network models. It supports a range of modeling resolutions, including **multi-compartment, biophysically 
-   detailed** models, **point-neuron** models, and **population-level firing rate** models.
+   `The Brain Modeling Toolkit (BMTK) <https://github.com/AllenInstitute/bmtk>`__ is an **open-source** software package 
+   for modeling and simulating large-scale neural network models. It supports a range of modeling resolutions, including 
+   **multi-compartment, biophysically detailed** models, **point-neuron** models, and **population-level firing rate** 
+   models.
    
    BMTK provides a **full workflow** for developing biologically realistic brain network models—from **building 
    networks from scratch**, to running **parallelized simulations**, to conducting **perturbation analyses**. Its 
@@ -80,7 +81,7 @@ About BMTK
    Models in SONATA format can be constructed, simulated, or analyzed not only with BMTK but also with other tools 
    that support the format.
 
-   BMTK consists of three major components: `the network builder <builder.hmtl>`__, the 
+   BMTK consists of three major components: `the network builder <builder.html>`__, the 
    `simulation engines <simulators_guide.html>`__, and the 
    `analysis and visualization tools <analyzer.html>`__. The components can be used in one workflow or separately.
 
