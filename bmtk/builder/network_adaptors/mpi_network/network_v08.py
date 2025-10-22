@@ -9,7 +9,7 @@ from ast import literal_eval
 from six import string_types
 
 from bmtk.builder.id_generator import IDGenerator
-from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks
+from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks, comm
 from bmtk.builder.node_set import NodeSet
 from bmtk.builder import node_pool
 # from bmtk.builder.node_pool import NodePool
@@ -63,7 +63,8 @@ class NetworkV08:
         self._connection_maps = []
         self._cm_rank_order = [(0, r) for r in range(mpi_size)]
 
-        self.split_by = network_props.get('mpi_split_by', 'target')
+        # self.split_by = network_props.get('split_by', 'target')
+        self.split_by = network_props.get('split_by', None)
 
         self._next_rank = 0
 
@@ -177,8 +178,10 @@ class NetworkV08:
         edge_type_properties['target_query'] = target.filter_str
 
         
-        if self.split_by == 'target':
-            target = target[mpi_rank::mpi_size]
+
+        # if self.split_by == 'target':
+        #     target = target[mpi_rank::mpi_size]
+        # elif self.
         
         if 'nsyns' in edge_type_properties:
             connection_rule = edge_type_properties['nsyns']
@@ -187,34 +190,91 @@ class NetworkV08:
         # self, sources=None, targets=None, connector=None, connector_params=None, iterator='one_to_one',
         #                  edge_type_properties=None, split_by=''
 
-        connection = ConnectionMap(
+        # connection = ConnectionMap(
+        #     sources=source, 
+        #     targets=target, 
+        #     connector=connection_rule, 
+        #     connector_params=connection_params, 
+        #     iterator=iterator, 
+        #     # split_by=self.split_by, 
+        #     edge_type_properties=edge_type_properties
+        # )
+        connection = self._add_connection_on_rank(
             sources=source, 
             targets=target, 
             connector=connection_rule, 
             connector_params=connection_params, 
             iterator=iterator, 
-            # split_by=self.split_by, 
             edge_type_properties=edge_type_properties
         )
-        
+        return connection
+       
+
+
         # return self._add_connection_on_rank(connection)
         # if self        
         # self._connection_maps.append(connection)
         # return connection
-        return self._add_connection_on_rank(connection)
+        # return self._add_connection_on_rank(connection)
 
-    def _add_connection_on_rank(self, connection_map):
-        if self.split_by == 'edge_type':        
-            selected_rank = self._next_rank
-            self._next_rank = (selected_rank+1) % mpi_size
-            if mpi_rank == self._next_rank:
+    def _add_connection_on_rank(self, sources, targets, connector, connector_params, iterator, edge_type_properties):
+        if mpi_size > 1:
+            if self.split_by is None or self.split_by == '':
+                self.split_by = 'source' if iterator == 'one_to_all' else 'target'
+        
+            if self.split_by == 'edge_type':
+                selected_rank = self._next_rank
+                self._next_rank = (selected_rank + 1) % mpi_size
+                if mpi_rank == selected_rank:
+                    connection_map = ConnectionMap(
+                        sources=sources, 
+                        targets=targets, 
+                        connector=connector, 
+                        connector_params=connector_params, 
+                        iterator=iterator, 
+                        edge_type_properties=edge_type_properties
+                    )
+                    
+                else:
+                    connection_map = MockConnectionMap()
+                    # self._connection_maps.append(connection_map)
+                    # return connection_map
+                
                 self._connection_maps.append(connection_map)
                 return connection_map
+            
+            elif self.split_by == 'source':
+                sources = sources[mpi_rank::mpi_size]
+
             else:
-                return MockConnectionMap()
-        else:
-            self._connection_maps.append(connection_map)
-            return connection_map
+                targets = targets[mpi_rank::mpi_size]
+
+        # print(iterator)
+        # print(f'> split_by={self.split_by}, sources: {len(sources)}, targets: {len(targets)}')
+
+        connection_map = ConnectionMap(
+            sources=sources, 
+            targets=targets, 
+            connector=connector, 
+            connector_params=connector_params, 
+            iterator=iterator, 
+            edge_type_properties=edge_type_properties
+        )
+        self._connection_maps.append(connection_map)
+        return connection_map
+
+    # def _add_connection_on_rank(self, connection_map):
+    #     if self.split_by == 'edge_type':        
+    #         selected_rank = self._next_rank
+    #         self._next_rank = (selected_rank+1) % mpi_size
+    #         if mpi_rank == self._next_rank:
+    #             self._connection_maps.append(connection_map)
+    #             return connection_map
+    #         else:
+    #             return MockConnectionMap()
+    #     else:
+    #         self._connection_maps.append(connection_map)
+    #         return connection_map
 
     def add_gap_junctions(self, source=None, target=None, resistance=1., conductance=None,
                           distance_range=[0.0, 300.0], target_sections=['somatic'],
@@ -523,7 +583,8 @@ class NetworkV08:
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
 
             if p[2] is not None:
-                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
+                # self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
+                self._save_edges_parallel(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
         if mpi_rank == 0:
@@ -581,8 +642,88 @@ class NetworkV08:
                 f.create_dataset('src_gap_ids', data=np.array(src_gap_ids), compression=compression)
                 f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids), compression=compression)
 
-    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
-                    index_by=('target_node_id', 'source_node_id'), compression='gzip'):
+    def _save_edges_parallel(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by=None, # 'target_node_id',
+                            index_by=None, # ('target_node_id', 'source_node_id'), 
+                            compression=None):
+        barrier()
+
+        if compression == 'none':
+            compression = None  # legit option for h5py for no compression
+
+        if mpi_rank == 0:
+            logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
+
+        filtered_edge_types = [
+            # Some edges may not match the source/target population
+            et for et in self._edges_tables
+            if et.source_network == src_network and et.target_network == trg_network
+        ]
+
+        merged_edges = EdgesCollator(
+            filtered_edge_types, 
+            network_name=self.name, 
+            **self._network_props
+        )
+        n_total_conns = merged_edges.n_total_edges
+        # print(mpi_rank, n_total_conns)
+        # exit()
+
+        pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name    
+        with h5py.File(edges_file_name, 'w', driver='mpio', comm=comm) as hf:
+            add_hdf5_attrs(hf)
+            
+            pop_grp = hf.create_group('/edges/{}'.format(pop_name))
+            # logger.info('DONE')
+            # barrier()
+
+            pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64', compression=None)
+            pop_grp['source_node_id'].attrs['node_population'] = src_network
+            pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64', compression=None)
+            pop_grp['target_node_id'].attrs['node_population'] = trg_network
+            pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16', compression=None)
+            pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32', compression=None)
+            pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32', compression=None)
+            # exit()
+
+            for group_id in merged_edges.group_ids:
+                model_grp = pop_grp.create_group(str(group_id))
+                # print(merged_edges.get_group_metadata(group_id))
+                for prop_mdata in merged_edges.get_group_metadata(group_id):
+                    model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'], compression=None)
+
+            for chunk_id, idx_beg, idx_end in merged_edges.itr_local():
+                print(mpi_rank, idx_beg, idx_end, merged_edges.get_source_node_ids(chunk_id).shape, merged_edges.get_source_node_ids(chunk_id).dtype)
+                # pop_grp['source_node_id'][mpi_rank*10:(mpi_rank*10 + 10)] = mpi_rank
+                
+                # idx_beg, idx_end = mpi_rank*10, mpi_rank*10 + 10
+                # print(mpi_rank, idx_beg, idx_end, np.full(10, mpi_rank, dtype='uint64'))
+                # with src_ds.collective:
+                #     src_ds[idx_beg:idx_end] = np.full(10, mpi_rank, dtype='uint64')
+                # src_node_ids_ds = pop_grp['source_node_id']# [mpi_rank] = mpi_rank
+                # src_node_ids_ds[mpi_rank] = np.array([mpi_rank], dtype='uint64')
+                pop_grp['source_node_id'][idx_beg:idx_end] = merged_edges.get_source_node_ids(chunk_id)
+                pop_grp['target_node_id'][idx_beg:idx_end] = merged_edges.get_target_node_ids(chunk_id)
+                pop_grp['edge_type_id'][idx_beg:idx_end] = merged_edges.get_edge_type_ids(chunk_id)
+                pop_grp['edge_group_id'][idx_beg:idx_end] = merged_edges.get_edge_group_ids(chunk_id)
+                pop_grp['edge_group_index'][idx_beg:idx_end] = merged_edges.get_edge_group_indices(chunk_id)
+
+                for group_id, prop_name, grp_idx_beg, grp_idx_end in merged_edges.get_group_data(chunk_id):
+                    prop_array = merged_edges.get_group_property(prop_name, group_id, chunk_id)
+                    pop_grp[str(group_id)][prop_name][grp_idx_beg:grp_idx_end] = prop_array
+
+
+
+            
+            # print(merged_edges.group_ids)
+            # print(merged_edges.group_ids_lu)
+
+        # logger.info('CLOSED')
+        # exit()
+
+    
+    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by=None, # 'target_node_id',
+                    index_by=None, # ('target_node_id', 'source_node_id'), 
+                    compression='gzip'):
         barrier()
 
         if compression == 'none':
@@ -778,26 +919,25 @@ class NetworkV08:
         :param connection_map:
         :param i:
         """
+        if isinstance(connection_map, MockConnectionMap):
+            return
+
         edge_type_id = connection_map.edge_type_properties['edge_type_id']
         logger.debug('Generating edges data for edge_types_id {}.'.format(edge_type_id))
         edges_table = EdgeTypesTableUpdated(connection_map, network_name=self.name, **self._network_props)
         connections = connection_map.connection_itr()
 
-        # logger.info(len(connection_map.source_nodes))
-        # logger.info(len(connection_map.target_nodes))
-        # n_conns = 0
-        # for conn in connections:
-        #     n_conns += 1
-
-        # logger.info(f'{edge_type_id} -> {n_conns}')
+        # print(connections)
         # exit()
-
+        for conn in connections:
+            edges_table.set_nsyns(source_ids=conn[0], target_ids=conn[1], nsyns=conn[2])
+            # exit()
 
         # iterate through all possible SxT source/target pairs and use the user-defined function/list/value to update
         # the number of syns between each pair. TODO: See if this can be vectorized easily.
-        for conn in connections:
-            if conn[2]:
-                edges_table.set_nsyn(source_id=conn[0], target_id=conn[1], nsyn=conn[2])
+        # for conn in connections:
+        #     if conn[2]:
+        #         edges_table.set_nsyn(source_id=conn[0], target_id=conn[1], nsyn=conn[2])
 
         target_net = connection_map.target_nodes
         self._target_networks[target_net.network_name] = target_net.network
@@ -995,6 +1135,13 @@ class ConnectionMap(object):
         conr = connector.create(self.connector, **(self.connector_params or {}))
         itr = iterator.create(self.iterator, conr, **({}))
         return itr(self.source_nodes, self.target_nodes, conr)
+
+class MockConnectionMap(ConnectionMap):
+    def add_properties(self, names, rule=None, rule_params=None, values=None, dtypes=None):
+        pass
+
+    def connection_itr(self):
+        raise NotImplementedError
 
 
 class ListIterator(object):

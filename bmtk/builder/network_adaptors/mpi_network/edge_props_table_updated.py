@@ -154,7 +154,6 @@ class EdgeTypesTableMemory(object):
     def edge_type_properties(self):
         return self._connection_map.edge_type_properties
 
-
     def get_property_metatadata(self):
         return self.get_property_metadata()
     
@@ -164,17 +163,34 @@ class EdgeTypesTableMemory(object):
         else:
             return [{'name': pname, 'dtype': pvals.dtype} for pname, pvals in self._prop_vals.items()]
 
-    def set_nsyns(self, source_id, target_id, nsyns):
-        # assert(nsyns >= 0)
-        indexed_pair = (self._nsyns_src2idx[source_id], self._nsyns_trg2idx[target_id])
-        self.nsyn_table[indexed_pair] = nsyns
-        self._nsyns_updated = True
+    # def set_nsyns(self, source_id, target_id, nsyns):
+    #     # assert(nsyns >= 0)
+    #     indexed_pair = (self._nsyns_src2idx[source_id], self._nsyns_trg2idx[target_id])
+    #     self.nsyn_table[indexed_pair] = nsyns
+    #     self._nsyns_updated = True
 
-    def set_nsyn(self, source_id, target_id, nsyn):
-        self.nsyn_table_src_ids[self._nsyn_table_idx] = source_id
-        self.nsyn_table_trg_ids[self._nsyn_table_idx] = target_id
-        self.nsyn_table_vals[self._nsyn_table_idx] = nsyn
-        self._nsyn_table_idx += 1
+    def set_nsyns(self, source_ids, target_ids, nsyns):
+        if any(i is None or i == 0 for i in nsyns):
+            valid_idxs = np.argwhere(nsyns).flatten()
+            nsyns = np.array(nsyns)[valid_idxs]
+            source_ids = source_ids if isinstance(source_ids, (int, np.integer)) else np.array(source_ids)[valid_idxs]
+            target_ids = target_ids if isinstance(target_ids, (int, np.integer)) else np.array(target_ids)[valid_idxs]
+
+        n_vals = len(nsyns)
+        if n_vals == 0:
+            return
+       
+        idx_beg, idx_end = self._nsyn_table_idx, self._nsyn_table_idx + n_vals
+        self.nsyn_table_src_ids[idx_beg:idx_end] = source_ids
+        self.nsyn_table_trg_ids[idx_beg:idx_end] = target_ids
+        self.nsyn_table_vals[idx_beg:idx_end] = nsyns
+        self._nsyn_table_idx += n_vals
+
+    # def set_nsyn(self, source_id, target_id, nsyn):
+    #     self.nsyn_table_src_ids[self._nsyn_table_idx] = source_id
+    #     self.nsyn_table_trg_ids[self._nsyn_table_idx] = target_id
+    #     self.nsyn_table_vals[self._nsyn_table_idx] = nsyn
+    #     self._nsyn_table_idx += 1
 
     def create_property(self, prop_name, prop_type=None):
         assert(prop_name not in self._prop_vals)
@@ -340,13 +356,13 @@ class EdgeTypesTableUpdated(object):
     def __new__(cls, *args, **kwargs):
         rank_passing = kwargs.get('rank_passing', 'h5')
         if mpi_size == 1:
-            log_once('>> EdgeTypesTableMemory')
+            # log_once('>> EdgeTypesTableMemory')
             return EdgeTypesTableMemory(*args, **kwargs)
 
         elif rank_passing == 'h5':
-            log_once('>> EdgeTypesTableMPI')
+            # log_once('>> EdgeTypesTableMPI')
             return EdgeTypesTableMPI(*args, **kwargs)
 
         else:
-            log_once('>> EdgeTypesTableMPIPickled')
+            # log_once('>> EdgeTypesTableMPIPickled')
             return EdgeTypesTableMPIPickled(*args, **kwargs)
