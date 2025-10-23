@@ -51,6 +51,7 @@ class EdgeTypesTableMemory(object):
         # self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint32)
 
         max_conns = connection_map.max_connections()
+        self.max_conns = max_conns
         self.nsyn_table_src_ids = np.zeros(max_conns, dtype=np.uint32)
         self.nsyn_table_trg_ids = np.zeros(max_conns, dtype=np.uint32)
         self.nsyn_table_vals = np.zeros(max_conns, dtype=np.uint16)
@@ -247,7 +248,11 @@ class EdgeTypesTableMemory(object):
         return ret_df
 
     def save(self):
-        pass
+        if self._nsyn_table_idx < len(self.nsyn_table_vals):
+            self.nsyn_table_src_ids = np.resize(self.nsyn_table_src_ids, self._nsyn_table_idx)
+            self.nsyn_table_trg_ids = np.resize(self.nsyn_table_trg_ids, self._nsyn_table_idx)
+            self.nsyn_table_vals = np.resize(self.nsyn_table_vals, self._nsyn_table_idx)
+        # pass
 
     def free_data(self):
         del self.nsyn_table
@@ -336,8 +341,9 @@ class EdgeTypesTableMPIPickled(EdgeTypesTableMemory):
     def __init__(self, connection_map, network_name, **opt_args):
         super(EdgeTypesTableMPIPickled, self).__init__(connection_map, network_name)
 
-    def save(self):
-        pass
+    # def save(self):
+    #     print('HERE')
+    #     exit()
     
     def __del__(self):
         pass

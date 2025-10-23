@@ -7,6 +7,7 @@ import numpy as np
 import h5py
 from ast import literal_eval
 from six import string_types
+from pathlib import Path
 
 from bmtk.builder.id_generator import IDGenerator
 from bmtk.builder.builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks, comm
@@ -418,7 +419,7 @@ class NetworkV08:
         else:
             return os.path.join(path_dir, filename)
 
-    def save(self, output_dir='.', force_overwrite=True, compression='gzip'):
+    def save(self, output_dir='.', force_overwrite=True, **opt_args):
         """Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
         names will be automatically generated based on the network names.
 
@@ -427,10 +428,10 @@ class NetworkV08:
         :param output_dir: string, directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
         """
-        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
-        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
+        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite, **opt_args)
+        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite, **opt_args)
 
-    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, compression='gzip'):
+    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, **opt_args):
         """Save the instantiated nodes in SONATA format files.
 
         :param nodes_file_name: file-name of hdf5 nodes file. By default will use <network.name>_nodes.h5.
@@ -439,6 +440,9 @@ class NetworkV08:
         :param output_dir: Directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
         """
+        compression = opt_args.get('compression', None)
+        mode = opt_args.get('mode', 'w')
+        
         nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
         if not force_overwrite and os.path.exists(nodes_file):
             raise Exception('File {} already exists. Please delete existing file, use a different name, or use force_overwrite.'.format(nodes_file))
@@ -453,16 +457,15 @@ class NetworkV08:
         ntf_dir = os.path.dirname(node_types_file)
         if not os.path.exists(ntf_dir) and mpi_rank == 0:
             os.makedirs(ntf_dir)
+        
         barrier()
 
-        self._save_nodes(nodes_file, compression=compression)
+        self._save_nodes(nodes_file, mode=mode, compression=compression)
         self._save_node_types(node_types_file)
 
-    def _save_nodes(self, nodes_file_name, compression='gzip'):
+    def _save_nodes(self, nodes_file_name, mode='w', compression=None):       
         if not self._nodes_built:
             self._build_nodes()
-        if compression == 'none':
-            compression = None  # legit option for h5py for no compression
 
         # save the node_types file
         group_indx = 0
@@ -496,7 +499,7 @@ class NetworkV08:
                 prop_ds.append(node.params[key])
 
         if mpi_rank == 0:
-            with h5py.File(nodes_file_name, 'w') as hf:
+            with h5py.File(nodes_file_name, mode) as hf:
                 # Add magic and version attribute
                 add_hdf5_attrs(hf)
 
@@ -533,7 +536,7 @@ class NetworkV08:
         raise NotImplementedError
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
-                   trg_network=None, name=None, force_build=True, force_overwrite=False, compression='gzip'):
+                   trg_network=None, name=None, force_build=True, force_overwrite=False, **opt_args):
         """Save the instantiated edges in SONATA format files.
 
         :param edges_file_name: file-name of hdf5 edges file. By default will use <src_network>_<trg_network>_edges.h5.
@@ -546,9 +549,10 @@ class NetworkV08:
         :param force_build: Force to (re)build the connection matrix if it hasn't already been built.
         :param force_overwrite: Overwrites existing network files.
         """
+        
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
-            logging.warning('No edges have been made for this network, skipping saving of edges file.')
+            logging.debug('No edges have been made for this network, skipping saving of edges file.')
             return
 
         if self._edges_built is False:
@@ -576,15 +580,17 @@ class NetworkV08:
             os.mkdir(output_dir)
         barrier()
 
-        self._save_gap_junctions(os.path.join(output_dir, self._network_name + '_gap_juncs.h5'), compression=compression)
-
+        write_parrallel = opt_args.get('write_parallel', False)
         for p in network_params:
             if p[3] is not None:
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
 
             if p[2] is not None:
-                # self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
-                self._save_edges_parallel(os.path.join(output_dir, p[2]), p[0], p[1], name, compression=compression)
+                if write_parrallel:
+                    self._write_edges_parallel(os.path.join(output_dir, p[2]), p[0], p[1], name, **opt_args)
+                else:
+                    self._write_edges_serial(os.path.join(output_dir, p[2]), p[0], p[1], name, **opt_args)
+                # 
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
         if mpi_rank == 0:
@@ -642,40 +648,47 @@ class NetworkV08:
                 f.create_dataset('src_gap_ids', data=np.array(src_gap_ids), compression=compression)
                 f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids), compression=compression)
 
-    def _save_edges_parallel(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by=None, # 'target_node_id',
-                            index_by=None, # ('target_node_id', 'source_node_id'), 
-                            compression=None):
-        barrier()
-
-        if compression == 'none':
-            compression = None  # legit option for h5py for no compression
-
-        if mpi_rank == 0:
-            logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
+    def _write_edges_parallel(self, edges_file_name, src_network, trg_network, pop_name=None, 
+                             mode='w',
+                             sort_by=None, # 'target_node_id',
+                             index_by=('target_node_id', 'source_node_id'), 
+                             compression=None, 
+                             hdf5_driver='mpio',
+                             **opt_args):
+        logger.debug('Saving {} --> {} edges to {} (in parallel).'.format(src_network, trg_network, edges_file_name))       
 
         filtered_edge_types = [
             # Some edges may not match the source/target population
             et for et in self._edges_tables
             if et.source_network == src_network and et.target_network == trg_network
         ]
-
         merged_edges = EdgesCollator(
             filtered_edge_types, 
-            network_name=self.name, 
+            network_name=self.name,
+            sort_by=sort_by,
             **self._network_props
         )
         n_total_conns = merged_edges.n_total_edges
-        # print(mpi_rank, n_total_conns)
-        # exit()
+
+        if n_total_conns == 0:
+            logger.warning('No edges generated for {src_network} -> {trg_network} connections. Skipping.')
+            return
+
+        if sort_by and not merged_edges.is_sorted:
+            file_ext = Path(edges_file_name).suffix
+            unprocessed_hdf5_path = edges_file_name.replace(file_ext, f'.unsorted{file_ext}')
+            logger.debug(f'Unable to presort edges. Saving to unsorted edges to {unprocessed_hdf5_path}.')
+            needs_sorting = True
+        else:
+            unprocessed_hdf5_path = edges_file_name
+            needs_sorting = False
 
         pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name    
-        with h5py.File(edges_file_name, 'w', driver='mpio', comm=comm) as hf:
+        with h5py.File(unprocessed_hdf5_path, mode=mode, driver=hdf5_driver, comm=comm) as hf:
             add_hdf5_attrs(hf)
             
             pop_grp = hf.create_group('/edges/{}'.format(pop_name))
-            # logger.info('DONE')
-            # barrier()
-
+            pop_grp.attrs['sorted'] = merged_edges.sort_by
             pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64', compression=None)
             pop_grp['source_node_id'].attrs['node_population'] = src_network
             pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64', compression=None)
@@ -683,24 +696,13 @@ class NetworkV08:
             pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16', compression=None)
             pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32', compression=None)
             pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32', compression=None)
-            # exit()
 
             for group_id in merged_edges.group_ids:
                 model_grp = pop_grp.create_group(str(group_id))
-                # print(merged_edges.get_group_metadata(group_id))
                 for prop_mdata in merged_edges.get_group_metadata(group_id):
                     model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'], compression=None)
 
             for chunk_id, idx_beg, idx_end in merged_edges.itr_local():
-                print(mpi_rank, idx_beg, idx_end, merged_edges.get_source_node_ids(chunk_id).shape, merged_edges.get_source_node_ids(chunk_id).dtype)
-                # pop_grp['source_node_id'][mpi_rank*10:(mpi_rank*10 + 10)] = mpi_rank
-                
-                # idx_beg, idx_end = mpi_rank*10, mpi_rank*10 + 10
-                # print(mpi_rank, idx_beg, idx_end, np.full(10, mpi_rank, dtype='uint64'))
-                # with src_ds.collective:
-                #     src_ds[idx_beg:idx_end] = np.full(10, mpi_rank, dtype='uint64')
-                # src_node_ids_ds = pop_grp['source_node_id']# [mpi_rank] = mpi_rank
-                # src_node_ids_ds[mpi_rank] = np.array([mpi_rank], dtype='uint64')
                 pop_grp['source_node_id'][idx_beg:idx_end] = merged_edges.get_source_node_ids(chunk_id)
                 pop_grp['target_node_id'][idx_beg:idx_end] = merged_edges.get_target_node_ids(chunk_id)
                 pop_grp['edge_type_id'][idx_beg:idx_end] = merged_edges.get_edge_type_ids(chunk_id)
@@ -710,34 +712,51 @@ class NetworkV08:
                 for group_id, prop_name, grp_idx_beg, grp_idx_end in merged_edges.get_group_data(chunk_id):
                     prop_array = merged_edges.get_group_property(prop_name, group_id, chunk_id)
                     pop_grp[str(group_id)][prop_name][grp_idx_beg:grp_idx_end] = prop_array
-
-
-
-            
-            # print(merged_edges.group_ids)
-            # print(merged_edges.group_ids_lu)
-
-        # logger.info('CLOSED')
-        # exit()
-
-    
-    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by=None, # 'target_node_id',
-                    index_by=None, # ('target_node_id', 'source_node_id'), 
-                    compression='gzip'):
         barrier()
 
-        if compression == 'none':
-            compression = None  # legit option for h5py for no compression
+        if needs_sorting and mpi_rank == 0:
+            logger.debug(f'Sorting {unprocessed_hdf5_path} by {sort_by} and saving to {edges_file_name}.')
+            sort_edges(
+                input_edges_path=unprocessed_hdf5_path,
+                output_edges_path=edges_file_name,
+                edges_population='/edges/{}'.format(pop_name),
+                sort_by=sort_by,
+                compression=compression,
+            )
+            try:
+                logger.debug('Deleting intermediate edges file {}.'.format(unprocessed_hdf5_path))
+                os.remove(unprocessed_hdf5_path)
+            except OSError as e:
+                logger.warning('Unable to remove intermediate edges file {}.'.format(unprocessed_hdf5_path))
+        barrier()
 
-        if mpi_rank == 0:
-            logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
+        if index_by and mpi_rank == 0:
+            index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
+            for index_type in index_by:
+                logger.debug('Creating index {}'.format(index_type))
+                create_index_in_memory(
+                    edges_file=edges_file_name,
+                    edges_population='/edges/{}'.format(pop_name),
+                    index_type=index_type,
+                    compression=compression
+                )
+        barrier()
+
+    
+    def _write_edges_serial(self, edges_file_name, src_network, trg_network, pop_name=None, 
+                           mode='w',
+                           sort_by=None,
+                           index_by=('target_node_id', 'source_node_id'), 
+                           compression='gzip',
+                           **opt_args):
+
+        logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
         filtered_edge_types = [
             # Some edges may not match the source/target population
             et for et in self._edges_tables
             if et.source_network == src_network and et.target_network == trg_network
         ]
-
         merged_edges = EdgesCollator(
             filtered_edge_types, 
             network_name=self.name, 
@@ -748,8 +767,7 @@ class NetworkV08:
         barrier()
 
         if n_total_conns == 0:
-            if mpi_rank == 0:
-                logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
+            logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
             return
 
         # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
@@ -774,7 +792,7 @@ class NetworkV08:
         if mpi_rank == 0:
             logger.debug('Saving {} edges to disk'.format(n_total_conns))
             pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
-            with h5py.File(edges_file_name, 'w') as hf:
+            with h5py.File(edges_file_name, mode) as hf:
                 # Initialize the hdf5 groups and datasets
                 add_hdf5_attrs(hf)
                 pop_grp = hf.create_group('/edges/{}'.format(pop_name))
@@ -820,6 +838,7 @@ class NetworkV08:
                     compression=compression,
                     # sort_on_disk=True,
                 )
+                
                 try:
                     logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
                     os.remove(edges_file_name)

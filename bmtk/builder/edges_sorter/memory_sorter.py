@@ -70,6 +70,7 @@ def quicksort_edges(input_edges_path, output_edges_path, edges_population, sort_
 
         sort_vals = in_pop_grp[sort_by][()]
         sort_order = np.argsort(sort_vals)
+        out_pop_grp.attrs['sorting'] = sort_by
         # TODO: Check if already sorted
 
         for col_name in ['source_node_id', 'target_node_id', 'edge_type_id', 'edge_group_id']:

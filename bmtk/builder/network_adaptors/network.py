@@ -551,7 +551,7 @@ class Network(object):
         else:
             return os.path.join(path_dir, filename)
 
-    def save(self, output_dir='.', force_overwrite=True, compression='gzip'):
+    def save(self, output_dir='.', force_overwrite=True, **opt_args):
         """Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
         names will be automatically generated based on the network names.
 
@@ -560,8 +560,8 @@ class Network(object):
         :param output_dir: string, directory where network files will be generated. Default, current working directory.
         :param force_overwrite: Overwrites existing network files.
         """
-        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
-        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
+        self.save_nodes(output_dir=output_dir, force_overwrite=force_overwrite, **opt_args)
+        self.save_edges(output_dir=output_dir, force_overwrite=force_overwrite, **opt_args)
 
     def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, compression='gzip'):
         """Save the instantiated nodes in SONATA format files.

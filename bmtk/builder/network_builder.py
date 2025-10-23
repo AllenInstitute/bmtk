@@ -99,7 +99,7 @@ class NetworkBuilder(object):
         elif isinstance(adaptor_cls, str):
             adaptor_cls = NetworkBuilder.ADAPTORS[adaptor_cls.upper()]
         
-        logger.debug(f'Initializing NetworkBuilder adaptor {adaptor_cls}')
+        # logger.debug(f'Initializing NetworkBuilder adaptor {adaptor_cls}')
         self.adaptor = adaptor_cls(name, **network_props)
 
     @property
@@ -308,7 +308,7 @@ class NetworkBuilder(object):
         """
         self.adaptor.build(force=force)
 
-    def save(self, output_dir='.', force_overwrite=True, compression='gzip'):
+    def save(self, output_dir='.', force_overwrite=True, **opt_args):
         """Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
         names will be automatically generated based on the network names.
 
@@ -319,7 +319,7 @@ class NetworkBuilder(object):
         :param compression: Compression algorithm used to save hdf5 files. 'gzip' (default), 'lzf', 'none', or None.
             you can also specify an integer (1-9) to specify the level of gzip compression.
         """
-        self.adaptor.save(output_dir=output_dir, force_overwrite=force_overwrite, compression=compression)
+        self.adaptor.save(output_dir=output_dir, force_overwrite=force_overwrite, **opt_args)
 
     def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True, compression='gzip'):
         """Save the instantiated nodes in SONATA format files.

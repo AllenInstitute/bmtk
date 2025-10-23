@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class EdgesCollator:
-    def __init__(self, edge_types_table, network_name, **opt_args):
+    def __init__(self, edge_types_table, network_name, sort_by=None, **opt_args):
         self._edge_type_tables = edge_types_table
         self.collected_edges = []
         self.n_rank_edges = sum(e.n_edges for e in edge_types_table)
@@ -27,8 +27,18 @@ class EdgesCollator:
         self._group_metadata = None
         self._group_offsets = None
 
-        self.mpi_collection_method = opt_args.get('mpi_collection_method', 'comm')
+        self._sort_by=sort_by
+        self.is_sorted = False
 
+        self.mpi_collection_method = opt_args.get('mpi_collection_method', 'comm')
+        
+
+    @property
+    def sort_by(self):
+        if self.is_sorted:
+            return self._sort_by
+        else:
+            return 'none'
 
     @property
     def group_ids_lu(self):
@@ -270,8 +280,6 @@ class EdgesCollator:
                         logger.warning(f'Unable to recieve edges from rank {rank}')
 
             else:
-                # pickled_list = pickle.dumps(self._edge_type_tables)
-                # print('HERE', len(pickled_list))
                 try:
                     comm.send(self._edge_type_tables, dest=0, tag=222)
 
