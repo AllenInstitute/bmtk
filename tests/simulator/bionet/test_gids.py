@@ -1,14 +1,16 @@
 import pytest
+import numpy as np
+
 from .conftest import *
 
 
 @pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_gid_pool():
     gid_map = GidPool()
-    gid_map.add_pool(name='p1', n_nodes=1000)
-    gid_map.add_pool(name='p2', n_nodes=10000)
-    gid_map.add_pool(name='p3', n_nodes=1)
-    gid_map.add_pool(name='p4', n_nodes=500)
+    gid_map.add_pool(name='p1', node_ids=list(range(1000)))
+    gid_map.add_pool(name='p2', node_ids=list(range(10000)))
+    gid_map.add_pool(name='p3', node_ids=[0])
+    gid_map.add_pool(name='p4', node_ids=np.arange(500, dtype=int))
 
     assert(gid_map.get_gid(name='p1', node_id=0) == 0)
     assert(gid_map.get_pool_id(0) == (0, 'p1'))

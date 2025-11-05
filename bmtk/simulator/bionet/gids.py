@@ -14,13 +14,16 @@ class GidPool(object):
         self._offsets = np.array([0], dtype=np.uint64)
         self._offset2pool_map = {}
 
-    def add_pool(self, name, n_nodes):
+    def add_pool(self, name, node_ids):
+        n_nodes = np.max(node_ids) + 1
         offset_index = len(self._offsets)
+
         self._offset2pool_map[offset_index] = name
         self._offsets = np.append(self._offsets, np.array([self._accumulated_offset + n_nodes], dtype=np.uint64))
 
         self._pool_offsets[name] = self._accumulated_offset
         self._accumulated_offset += n_nodes
+
 
     def get_gid(self, name, node_id):
         return int(self._pool_offsets[name] + node_id)
