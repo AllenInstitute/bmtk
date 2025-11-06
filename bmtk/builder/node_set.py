@@ -25,7 +25,8 @@ from .node import Node
 
 
 class NodeSet(object):
-    def __init__(self, N, node_params, node_type_properties):
+    def __init__(self, N, node_params, node_type_properties, network):
+        self.network_name = network.name
         self.__N = N
         self.__node_params = node_params
         self.__node_type_properties = node_type_properties
@@ -67,5 +68,5 @@ class NodeSet(object):
                 ap_flat[i][key] = val
 
         # create node objects
-        return [Node(nid, params, self.__node_type_properties, self.__params_col_hash)
+        return [Node(nid, self.network_name, params, self.__node_type_properties, self.__params_col_hash)
                 for (nid, params) in zip(node_ids, ap_flat)]

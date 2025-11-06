@@ -440,7 +440,7 @@ class SWCReader(object):
         return int(nameindex_str)
 
 
-swc_cache = {}
+# swc_cache = {}
 
 
 def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):

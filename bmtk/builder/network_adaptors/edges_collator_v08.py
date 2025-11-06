@@ -256,6 +256,7 @@ class EdgesCollator:
 
 
         elif self.mpi_collection_method == 'comm':
+            # comm.barrier()
             recv_data = {}
             if mpi_rank == 0:
                 recv_data[0] = self._edge_type_tables
@@ -281,6 +282,7 @@ class EdgesCollator:
 
             else:
                 try:
+                    # print(self._edge_type_tables)
                     comm.send(self._edge_type_tables, dest=0, tag=222)
 
                 except OverflowError as ofe:

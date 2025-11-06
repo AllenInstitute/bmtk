@@ -93,7 +93,7 @@ class NetworkBuilder(object):
         'V08': NetworkV08,
     }
 
-    def __init__(self, name, adaptor_cls=DenseNetwork, **network_props):
+    def __init__(self, name, adaptor_cls='V08', **network_props):
         if adaptor_cls is None:
             adaptor_cls = DenseNetwork
         elif isinstance(adaptor_cls, str):

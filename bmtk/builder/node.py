@@ -23,9 +23,10 @@
 
 
 class Node(dict):
-    def __init__(self, node_id, node_params, node_type_properties, params_hash=-1):
+    def __init__(self, node_id, population, node_params, node_type_properties, params_hash=-1):
         super(Node, self).__init__({})
 
+        self.population = population
         self._node_params = node_params
         self._node_params['node_id'] = node_id
         self._node_type_properties = node_type_properties

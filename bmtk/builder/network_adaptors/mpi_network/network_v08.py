@@ -145,7 +145,7 @@ class NetworkV08:
                 self._node_id_gen.remove_id(nid)
 
         self._add_node_type(node_properties)
-        self._node_sets.append(NodeSet(N, node_params, node_properties))
+        self._node_sets.append(NodeSet(N, node_params, node_properties, self))
 
 
     def add_edges(self, source=None, target=None, connection_rule=1, connection_params=None, iterator='one_to_one',
@@ -838,7 +838,7 @@ class NetworkV08:
                     compression=compression,
                     # sort_on_disk=True,
                 )
-                
+
                 try:
                     logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
                     os.remove(edges_file_name)
