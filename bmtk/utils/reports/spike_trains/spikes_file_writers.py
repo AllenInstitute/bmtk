@@ -159,12 +159,11 @@ def write_nwb(path, spiketrain_reader, mode='a', include_population=True, units=
     if MPI_rank == 0:
         # Last checked pynwb doesn't support writing on multiple cores, must let first core do all the
         # writing to NWB.
-        
         if os.path.exists(path) and mode != 'w':
             io = pynwb.NWBHDF5IO(path, 'a')
             nwbfile = io.read()
         else:
-            io = pynwb.NWBHDF5IO(path, mode)
+            io = pynwb.NWBHDF5IO(path, 'w')
             nwbfile = pynwb.NWBFile(
                 session_description='BMTK {} generated NWB spikes file'.format(bmtk.__version__),
                 identifier='Generated in-silico, no session id',  # TODO: No idea what to put here?
@@ -180,20 +179,22 @@ def write_nwb(path, spiketrain_reader, mode='a', include_population=True, units=
 
         nwbfile.add_unit_column(name="node_id", description="id of each node within a population")
 
-        for population in spiketrain_reader.populations:
-            for node_id in spiketrain_reader.node_ids(population=population):
-                spikes_times = spiketrain_reader.get_times(node_id=node_id, population=population)
-                if spikes_times is None or len(spikes_times) == 0:
-                    # No spikes for given node, don't try to write to nwb 
-                    continue
+    for population in spiketrain_reader.populations:
+        for node_id in spiketrain_reader.node_ids(population=population):
+            spikes_times = spiketrain_reader.get_times(node_id=node_id, population=population)
+            if spikes_times is None or len(spikes_times) == 0:
+                # No spikes for given node, don't try to write to nwb 
+                continue
 
-                # sometimes bmtk/sonata may default to use different 32 or unsigned data-types which will cause
-                # nwb to throw a fit. Need to explicity convert data-types just in case.
-                spikes_times = spikes_times.astype('float64')
-                node_id = int(node_id)
+            # sometimes bmtk/sonata may default to use different 32 or unsigned data-types which will cause
+            # nwb to throw a fit. Need to explicity convert data-types just in case.
+            spikes_times = np.array(spikes_times).astype('float64')
+            node_id = int(node_id)
+            if MPI_rank == 0:
                 add_unit(node_id, population, spikes_times)
 
-        # with pynwb.NWBHDF5IO(path, mode) as io:
+    # with pynwb.NWBHDF5IO(path, mode) as io:
+    if MPI_rank == 0:
         io.write(nwbfile)
 
     comm_barrier()
