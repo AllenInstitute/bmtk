@@ -30,9 +30,10 @@ from datetime import datetime
 from dateutil.tz import tzlocal
 from uuid import uuid4
 
+
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
-
+from bmtk.simulator.bionet.io_tools import io
 
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
@@ -83,8 +84,12 @@ class EcpMod(SimulatorMod):
 
         self._nwb_path = None
         if file_name_nwb:
-            self._nwb_path = file_name_nwb if os.path.isabs(file_name_nwb) else os.path.join(tmp_dir, file_name_nwb)
-        
+            try:
+                import pynwb
+                self._nwb_path = file_name_nwb if os.path.isabs(file_name_nwb) else os.path.join(tmp_dir, file_name_nwb)
+
+            except ImportError as ie:
+                io.log_warning('pynwb library is not installed, simulation cannot be saved to {file_name_nwb}.')      
 
         self._local_gids = []
 
@@ -246,18 +251,19 @@ class EcpMod(SimulatorMod):
         self._delete_tmp_files()
         pc.barrier()
 
-        if self._nwb_path:
+        if self._nwb_path and MPI_RANK == 0:
             convert2nwb(self._nwb_path, self._ecp_output, self._positions_file)
 
+        pc.barrier()
 
 
 def convert2nwb(nwb_path, orig_hdf5_lfp, electrodes_file):
     import pynwb
 
+    # io.log_debug('Writing to NWB format in {nwb_path}')
     if os.path.exists(nwb_path):
         io = pynwb.NWBHDF5IO(nwb_path, 'a')
         nwbfile = io.read()
-        print('appending lfp')
     else:
         io = pynwb.NWBHDF5IO(nwb_path, "w")
         nwbfile = pynwb.NWBFile(
@@ -265,7 +271,6 @@ def convert2nwb(nwb_path, orig_hdf5_lfp, electrodes_file):
             session_description="test time",
             identifier=str(uuid4()),
         )
-        print('new nwb file')
 
     electrodes_metdata_df = pd.read_csv(electrodes_file, sep=' ').set_index('channel')
 
@@ -281,14 +286,11 @@ def convert2nwb(nwb_path, orig_hdf5_lfp, electrodes_file):
     )
 
     # electrodes_file
-
     nwbfile.add_electrode_column(name="channel_id", description="label of electrode")
     with h5py.File(orig_hdf5_lfp, 'r') as orig_h5:
         channels = orig_h5['ecp/channel_id'][()]
         for chan in channels:
             chan_data = electrodes_metdata_df.loc[chan]
-            # print(chan_data.get('location', 'None'))
-            # print(chan_data.get('x_pos', 'Not Avail'))
             nwbfile.add_electrode(
                 group=electrode_group,
                 channel_id=chan,
@@ -326,8 +328,6 @@ def convert2nwb(nwb_path, orig_hdf5_lfp, electrodes_file):
         ecephys_module.add(lfp)
 
     io.write(nwbfile)
-
-    # print(nwb_path)
 
 
 class RecXElectrode(object):
