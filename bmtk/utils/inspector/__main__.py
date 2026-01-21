@@ -21,6 +21,21 @@ def inspect_bionet(config_path, format='json', output_path=None):
     bionet.nrn.quit_execution()
 
 
+def inspect_pointnet(config_path, format='json', output_path=None):
+    from bmtk.simulator import pointnet
+
+    conf = pointnet.Config.from_json(config_path)
+    conf.output['log_to_console'] = False
+    conf.build_env()
+
+    network = pointnet.PointNetwork.from_config(conf)
+    pointnet.PointSimulator.from_config(conf, network)
+    network.inspect(
+        format=format,
+        output_path=output_path
+    )
+
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--to-json', action='store_true')
@@ -44,7 +59,7 @@ if __name__ == '__main__':
     if target_sim in ['BIONET', 'NEURON', 'NRN']:
         inspect_bionet(config_path=config_path, format=format, output_path=output_path)
     elif target_sim in ['POINTNET', 'NEST']:
-        print('PointNet')
+        inspect_pointnet(config_path=config_path, format=format, output_path=output_path)
     elif target_sim in ['FILTERNET', 'LGN']:
         print('FilterNet')
     

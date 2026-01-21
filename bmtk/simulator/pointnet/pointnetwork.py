@@ -23,7 +23,9 @@
 import os
 import json
 import functools
+import pandas as pd
 import nest
+from pathlib import Path
 
 from six import string_types
 import numpy as np
@@ -254,3 +256,103 @@ class PointNetwork(SimNetwork):
             # Record exception to log file.
             self.io.log_error(str(e))
             raise
+
+    skip_attrs = [
+        'archiver_length', 
+        'element_type', 
+        'frozen', 
+        'global_id', 
+        'local', 
+        'model', 
+        'model_id', 
+        'node_uses_wfr', 
+        'post_trace', 
+        'recordables', 
+        'refractory_input', 
+        'synaptic_elements', 
+        'thread', 
+        'thread_local_id'
+    ]
+
+    def inspect(self, format='json', output_path=None, filter=None):
+        from pprint import pprint
+        
+        filter = filter or {'model_type': 'point_neuron'}
+        node_set = self.get_node_set(filter)
+        # print(self._node_sets)
+        # exit()
+        # for n in list(node_set.fetch_nodes()):
+        #     print(n.node_id, n.population_name, n.node_type_id)
+        # print(node_set.population_names())
+        # exit()
+        nodes = list(node_set.fetch_nodes())
+        nest_ids = list(node_set.gids())
+        # populations = node_set.population_names()
+        # populations = populations*len(node_ids) if len(populations) < len(node_ids) else populations
+
+        attrs_table = {
+            'population': [],
+            'node_id': [],
+            'nest_id': [],
+            # 'model_type': [],
+            'model_template': [],
+            'node_type_id': [],
+            'attr_name': [],
+            'attr_val': [],
+            'type': []
+        }
+
+        nest_attrs = nest.GetStatus(nest.NodeCollection(nest_ids))
+        for nest_id, cell_attr, node in zip(nest_ids, nest_attrs, nodes):
+            model_template = cell_attr['model']
+            for key, val in cell_attr.items():
+                if key in self.skip_attrs:
+                    continue
+                else:
+                    attrs_table['population'].append(node.population_name)
+                    attrs_table['node_id'].append(node.node_id)
+                    attrs_table['node_type_id'].append(node.node_type_id)
+                    attrs_table['nest_id'].append(nest_id)
+                    attrs_table['model_template'].append(model_template)
+                    attrs_table['attr_name'].append(key)
+                    attrs_table['attr_val'].append(val)
+                    if key in cell_attr.get('recordables', {}):
+                        attrs_table['type'].append('recordable')
+                    else:
+                        attrs_table['type'].append('attribute')
+
+        attrs_table_df = pd.DataFrame(attrs_table)
+        attrs_table_df['model_type'] = 'point_neuron'
+
+        if format == 'csv':
+            if output_path:
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                attrs_table_df.to_csv(output_path, index=False)
+            else:
+                csv_str = attrs_table_df.to_csv(index=False)
+                print(csv_str)
+        else:
+            attrs_dict = {}
+            for pop, pop_df in attrs_table_df.groupby('population'):
+                attrs_dict[pop] = {}
+                for node_id, node_df in pop_df.groupby('node_id'):
+                    attrs_dict[pop][node_id] = {
+                        'model_type': node_df['model_type'].iloc[0],
+                        'nest_id': int(node_df['nest_id'].iloc[0]),
+                        'node_type_id': int(node_df['node_type_id'].iloc[0]),
+                        'model_template': node_df['model_template'].iloc[0],
+                    }
+                    attrs_dict[pop][node_id]['attributes'] = []
+                    for _, row in node_df.iterrows():
+                        attrs_dict[pop][node_id]['attributes'].append({
+                            'name': row['attr_name'],
+                            'value': row['attr_val'],
+                            'type': row['type']
+                        })
+
+            if output_path:
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                with open(output_path, 'w') as f:
+                    json.dump(attrs_dict, f, indent=2)
+            else:
+                pprint(attrs_dict)

@@ -494,15 +494,6 @@ class BioNetwork(SimNetwork):
                         mechs_dict[pop][node_id][sec] = {}
                         for _, r in sec_df.iterrows():
                             mechs_dict[pop][node_id][sec][r['attr_name']] = {'default_value': float(r['attr_val']), 'mechanism': r['mech_name'], 'type': r['type']}
-                        # print(pop, node_id, sec)
-                        # print(sec_df)
-                        # exit()
-
-                # mechs_dict[pop][node_id] = cell_dict
-            # print(mechs_df)
-            # exit()
-
-            # mechs_df.to_csv('network_mechanisms', index=False)  
 
             if output_path:
                 Path(output_path).parent.mkdir(parents=True, exist_ok=True)
