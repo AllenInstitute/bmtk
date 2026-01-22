@@ -1,10 +1,11 @@
 import logging
+import re
 from argparse import ArgumentParser
 
 from bmtk.simulator.core.simulation_config import SimulationConfig
 
 
-def inspect_bionet(config_path, format='json', output_path=None):
+def inspect_bionet(config_path, format='json', output_path=None, filter=None):
     from bmtk.simulator import bionet
 
     conf = bionet.Config.from_json(config_path)
@@ -15,13 +16,14 @@ def inspect_bionet(config_path, format='json', output_path=None):
     network.build_nodes()
     network.inspect_cells(
         format=format,
-        output_path=output_path
+        output_path=output_path,
+        filter=filter
     )
 
     bionet.nrn.quit_execution()
 
 
-def inspect_pointnet(config_path, format='json', output_path=None):
+def inspect_pointnet(config_path, format='json', output_path=None, filter=None):
     from bmtk.simulator import pointnet
 
     conf = pointnet.Config.from_json(config_path)
@@ -32,7 +34,8 @@ def inspect_pointnet(config_path, format='json', output_path=None):
     pointnet.PointSimulator.from_config(conf, network)
     network.inspect(
         format=format,
-        output_path=output_path
+        output_path=output_path,
+        filter=filter
     )
 
 
@@ -41,6 +44,8 @@ if __name__ == '__main__':
     parser.add_argument('--to-json', action='store_true')
     parser.add_argument('--to-csv', action='store_true')
     parser.add_argument('--output-path', type=str)
+    parser.add_argument('-p', '--population', type=str, required=False)
+    parser.add_argument('--node-ids', type=str, required=False)
     parser.add_argument('config', type=str)
     args = parser.parse_args()
 
@@ -55,13 +60,19 @@ if __name__ == '__main__':
     elif args.to_csv:
         format = 'csv'
 
+    filter_dict = {}
+    if args.population:
+        filter_dict['population'] = re.split(r'[,;\s]+', args.population)
+
+    if args.node_ids:
+        print(args.node_ids)
+        node_ids = re.split(r'[,;\s]+', args.node_ids)
+        node_ids = list(map(int, node_ids))
+        filter_dict['node_id'] = node_ids
 
     if target_sim in ['BIONET', 'NEURON', 'NRN']:
-        inspect_bionet(config_path=config_path, format=format, output_path=output_path)
+        inspect_bionet(config_path=config_path, format=format, output_path=output_path, filter=filter_dict)
     elif target_sim in ['POINTNET', 'NEST']:
-        inspect_pointnet(config_path=config_path, format=format, output_path=output_path)
+        inspect_pointnet(config_path=config_path, format=format, output_path=output_path, filter=filter_dict)
     elif target_sim in ['FILTERNET', 'LGN']:
-        print('FilterNet')
-    
-    # print(.target_simulator)
-
+        raise NotImplementedError

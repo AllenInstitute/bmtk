@@ -389,7 +389,9 @@ class BioNetwork(SimNetwork):
 
         self.io.barrier()
 
-    def inspect_cells(self, format='json', output_path=None):
+    INTFIRE_ATTRS = ['tau', 'refrac', 'm', 'taum', 'taus', 'ib', 'i', 'I', 'taue', 'taui1', 'taui2', 'i1', 'i2']
+
+    def inspect_cells(self, format='json', output_path=None, filter=None):
         import pandas as pd
         import json
         from pathlib import Path
@@ -414,7 +416,16 @@ class BioNetwork(SimNetwork):
             'nsegments': []
         }
 
+        
+        filtered_gids = set()
+        filter = filter or 'all'
+        for a in self.get_node_set(filter).fetch_nodes():
+            filtered_gids.add((a.node_id, a.population_name))
+
         for _, cell in self.get_local_cells().items():
+            if (cell.node_id, cell.population_name) not in filtered_gids:
+                continue
+
             if cell['model_type'] == 'biophysical':
                 sect_counts['population'].append(cell.population_name)
                 sect_counts['node_id'].append(cell.node_id)
@@ -458,12 +469,21 @@ class BioNetwork(SimNetwork):
                             cell_mechs['attr_val'].append(np.mean(attr_val))
                             cell_mechs['type'].append('ion')
        
-            else:
-                pass
-                # print(type(cell.hobj))
-                # print(dir(cell.hobj))
-                # print(cell.hobj.hname())
-        
+            elif cell['model_type'] in ['point_neuron', 'point', 'point_process']:
+                process_name = sec.name().split('.')[-1].split('[')[0]
+                for attr_name in dir(cell.hobj):
+                    if attr_name.startswith('__') or attr_name not in self.INTFIRE_ATTRS:
+                        continue
+
+                    cell_mechs['population'].append(cell.population_name)
+                    cell_mechs['node_id'].append(cell.node_id)
+                    cell_mechs['node_type_id'].append(cell['node_type_id'])
+                    cell_mechs['model_type'].append(cell['model_type'])
+                    cell_mechs['sec_name'].append('NA')
+                    cell_mechs['mech_name'].append(process_name)
+                    cell_mechs['attr_name'].append(attr_name)
+                    cell_mechs['attr_val'].append(getattr(cell.hobj, attr_name))
+                    cell_mechs['type'].append('ARTIFICIAL_CELL')       
 
         agg_mech = pd.DataFrame(cell_mechs).groupby(['population', 'node_id', 'node_type_id', 'model_type', 'sec_name', 'mech_name', 'attr_name', 'type']).agg('mean')
         mechs_df = agg_mech.reset_index()
