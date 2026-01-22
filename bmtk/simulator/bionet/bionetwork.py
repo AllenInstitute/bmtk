@@ -388,3 +388,136 @@ class BioNetwork(SimNetwork):
                     raise NotImplementedError()
 
         self.io.barrier()
+
+    INTFIRE_ATTRS = ['tau', 'refrac', 'm', 'taum', 'taus', 'ib', 'i', 'I', 'taue', 'taui1', 'taui2', 'i1', 'i2']
+
+    def inspect_cells(self, format='json', output_path=None, filter=None):
+        import pandas as pd
+        import json
+        from pathlib import Path
+        from pprint import pprint
+
+        cell_mechs = {
+            'population': [],
+            'node_id': [],
+            'model_type': [],
+            'node_type_id': [],
+            'sec_name': [],
+            'attr_name': [],
+            'mech_name': [],
+            'attr_val': [],
+            'type': []
+        }
+
+        sect_counts = {
+            'population': [],
+            'node_id': [],
+            'nsections': [],
+            'nsegments': []
+        }
+
+        
+        filtered_gids = set()
+        filter = filter or 'all'
+        for a in self.get_node_set(filter).fetch_nodes():
+            filtered_gids.add((a.node_id, a.population_name))
+
+        for _, cell in self.get_local_cells().items():
+            if (cell.node_id, cell.population_name) not in filtered_gids:
+                continue
+
+            if cell['model_type'] == 'biophysical':
+                sect_counts['population'].append(cell.population_name)
+                sect_counts['node_id'].append(cell.node_id)
+                sect_counts['nsections'].append(sum(1 for _ in cell.hobj.all))
+                sect_counts['nsegments'].append(sum(sec.nseg for sec in cell.hobj.all))
+                
+                for sec in cell.hobj.all:
+                    sec_name = sec.name().split('.')[-1].split('[')[0]
+                    if hasattr(sec, 'Ra'):
+                        cell_mechs['population'].append(cell.population_name)
+                        cell_mechs['node_id'].append(cell.node_id)
+                        cell_mechs['node_type_id'].append(cell['node_type_id'])
+                        cell_mechs['model_type'].append(cell['model_type'])
+                        cell_mechs['sec_name'].append(sec_name)
+                        cell_mechs['mech_name'].append(None)
+                        cell_mechs['attr_name'].append('Ra')
+                        cell_mechs['attr_val'].append(sec.Ra)
+                        cell_mechs['type'].append(None)
+
+                    for mech_name, mech_props in sec.psection()['density_mechs'].items():
+                        for attr_name, attr_val in mech_props.items():
+                            cell_mechs['population'].append(cell.population_name)
+                            cell_mechs['node_id'].append(cell.node_id)
+                            cell_mechs['node_type_id'].append(cell['node_type_id'])
+                            cell_mechs['model_type'].append(cell['model_type'])
+                            cell_mechs['sec_name'].append(sec_name)
+                            cell_mechs['mech_name'].append(mech_name)
+                            cell_mechs['attr_name'].append(attr_name)
+                            cell_mechs['attr_val'].append(np.mean(attr_val))
+                            cell_mechs['type'].append('mechanism')
+
+                    for ion_name, ion_props in sec.psection()['ions'].items():
+                        for attr_name, attr_val in ion_props.items():
+                            cell_mechs['population'].append(cell.population_name)
+                            cell_mechs['node_id'].append(cell.node_id)
+                            cell_mechs['node_type_id'].append(cell['node_type_id'])
+                            cell_mechs['model_type'].append(cell['model_type'])
+                            cell_mechs['sec_name'].append(sec_name)
+                            cell_mechs['mech_name'].append(ion_name)
+                            cell_mechs['attr_name'].append(attr_name)
+                            cell_mechs['attr_val'].append(np.mean(attr_val))
+                            cell_mechs['type'].append('ion')
+       
+            elif cell['model_type'] in ['point_neuron', 'point', 'point_process']:
+                process_name = sec.name().split('.')[-1].split('[')[0]
+                for attr_name in dir(cell.hobj):
+                    if attr_name.startswith('__') or attr_name not in self.INTFIRE_ATTRS:
+                        continue
+
+                    cell_mechs['population'].append(cell.population_name)
+                    cell_mechs['node_id'].append(cell.node_id)
+                    cell_mechs['node_type_id'].append(cell['node_type_id'])
+                    cell_mechs['model_type'].append(cell['model_type'])
+                    cell_mechs['sec_name'].append('NA')
+                    cell_mechs['mech_name'].append(process_name)
+                    cell_mechs['attr_name'].append(attr_name)
+                    cell_mechs['attr_val'].append(getattr(cell.hobj, attr_name))
+                    cell_mechs['type'].append('ARTIFICIAL_CELL')       
+
+        agg_mech = pd.DataFrame(cell_mechs).groupby(['population', 'node_id', 'node_type_id', 'model_type', 'sec_name', 'mech_name', 'attr_name', 'type']).agg('mean')
+        mechs_df = agg_mech.reset_index()
+        mechs_df['attr_name'] = mechs_df.apply(lambda r: f'{r["attr_name"]}_{r["mech_name"]}' if r['type'] == 'mechanism' else r['attr_name'], axis=1)       
+
+        sect_lu = pd.DataFrame(sect_counts).set_index(['population', 'node_id'])
+
+        if format == 'csv':
+            if output_path:
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                mechs_df.to_csv(output_path, index=False)
+            else:
+                csv_str = mechs_df.to_csv(index=False)
+                print(csv_str)
+
+        else:
+            mechs_dict = {}
+            for pop, pop_df in mechs_df.groupby('population'):
+                mechs_dict[pop] = {}
+                for node_id, node_df in pop_df.groupby('node_id'):
+                    mechs_dict[pop][node_id] = {
+                        'node_type_id': int(node_df['node_type_id'].iloc[0]),
+                        'model_type': node_df['model_type'].iloc[0],
+                        'nsections': int(sect_lu.loc[(pop, node_id)]['nsections']),
+                        'nsegments': int(sect_lu.loc[(pop, node_id)]['nsegments'])
+                    }
+                    for sec, sec_df in node_df.groupby('sec_name'):
+                        mechs_dict[pop][node_id][sec] = {}
+                        for _, r in sec_df.iterrows():
+                            mechs_dict[pop][node_id][sec][r['attr_name']] = {'default_value': float(r['attr_val']), 'mechanism': r['mech_name'], 'type': r['type']}
+
+            if output_path:
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+                with open(output_path, 'w') as f:
+                    json.dump(mechs_dict, f, indent=2)
+            else:
+                pprint(mechs_dict)

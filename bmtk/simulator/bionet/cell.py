@@ -38,6 +38,7 @@ class Cell(object):
     def __init__(self, node, population_name, network=None):
         self._node = node
         self._network = network
+        self.population_name = population_name
 
         self._gid = network.gid_pool.get_gid(name=population_name, node_id=node.node_id)
         self._node_id = node.node_id
