@@ -410,8 +410,14 @@ class EdgePopulation(Population):
         return self._types_table
 
     def to_dataframe(self):
-        raise NotImplementedError()
+        ret_df = pd.DataFrame()
+        for grp_id in self.group_ids:
+            grp_df = self.get_group(grp_id).to_dataframe()
 
+            ret_df = pd.concat([ret_df, grp_df], sort=False)
+        ret_df['source_population'] = self.source_population
+        ret_df['target_population'] = self.target_population
+        return ret_df
 
     def build_indicies(self):
         indicies_grp = None
