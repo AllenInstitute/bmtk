@@ -133,7 +133,7 @@ class BioNetwork(SimNetwork):
         return list(self._rank_node_gids.keys())
 
     def add_nodes(self, node_population):
-        self._gid_pool.add_pool(node_population.name, node_population.n_nodes())
+        self._gid_pool.add_pool(node_population.name, node_population.node_ids)
         super(BioNetwork, self).add_nodes(node_population)
 
     def get_virtual_cells(self, population, node_id, spike_trains, spikes_generator=None, sim=None):

@@ -151,6 +151,10 @@ class SonataNodes(NodesReader):
                 for node in node_group:
                     yield node_adaptor.get_node(node)
 
+    @property
+    def node_ids(self):
+        return self._node_pop.node_ids
+
 
 class SonataEdges(EdgesReader):
     def __init__(self, edge_population, adaptor):
