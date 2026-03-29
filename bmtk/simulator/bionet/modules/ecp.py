@@ -135,7 +135,7 @@ class EcpMod(SimulatorMod):
         file_name = os.path.join(self._contributions_dir, '{}.h5'.format(int(gid)))
         file_h5 = h5py.File(file_name, 'a')
         self._cell_var_files[gid] = file_h5
-        file_h5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), chunks=True)
+        file_h5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), dtype=float, chunks=True)
         # self._cell_var_files[gid] = file_h5['ecp']
 
     def _calculate_ecp(self, sim):

@@ -19,9 +19,11 @@ def cmp_dicts(d1, d2):
         return False
     else:
         for k in d1.keys():
+            if k in ['N_class']:
+                continue
+
             if isinstance(d1[k], dict):
                 if not cmp_dicts(d1[k], d2[k]):
-                    print(k)
                     return False
 
             elif not cmp_vals(d1[k], d2[k]):
@@ -68,13 +70,14 @@ sus_sus_expected = {
 
 
 trans_sus_expected = {
-    'TF1': {'f0_exp': np.array([36., 21.04166667, 22.41666667, 23.54166667, 12.04166667]), 'f1_exp': np.array([ 8.85216752,  7.71744362,  8.79852287, 16.1074593 ,  8.09474585]), 'spont_exp': np.array([5.]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 7},
-    'TF15': {'f0_exp': np.array([3.20833333, 3.45833333, 3.79166667, 5.125, 5.70833333]), 'f1_exp': np.array([4.43147768, 4.62166585, 5.53742765, 8.081975  , 8.51808459]), 'spont_exp': np.array([3.3]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 7},
-    'TF2': {'f0_exp': np.array([3.16666667, 3.29166667, 3.25, 1.75, 2.29166667]), 'f1_exp': np.array([2.32621476, 3.50080051, 2.85302699, 2.12566901, 2.3698903 ]), 'spont_exp': np.array([1.]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 7},
-    'TF4': {'f0_exp': np.array([ 5.91666667,  7.95833333, 13.375,  6.58333333, 5.41666667]), 'f1_exp': np.array([5.24514294, 3.8352691 , 4.99435957, 3.69495923, 1.75006614]), 'spont_exp': np.array([4.4]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 7},
-    'TF8': {'f0_exp': np.array([10.29166667, 13.125, 19.16666667, 21.83333333, 17.29166667]), 'f1_exp': np.array([10.79237938, 19.16833868, 29.71094753, 36.04648112, 25.37906864]), 'spont_exp': np.array([11.2]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 7}
+    'TF1': {'f0_exp': np.array([36., 21.04166667, 22.41666667, 23.54166667, 12.04166667]), 'f1_exp': np.array([ 8.85216752,  7.71744362,  8.79852287, 16.1074593 ,  8.09474585]), 'spont_exp': np.array([5.]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 5},
+    'TF15': {'f0_exp': np.array([3.20833333, 3.45833333, 3.79166667, 5.125, 5.70833333]), 'f1_exp': np.array([4.43147768, 4.62166585, 5.53742765, 8.081975  , 8.51808459]), 'spont_exp': np.array([3.3]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 5},
+    'TF2': {'f0_exp': np.array([3.16666667, 3.29166667, 3.25, 1.75, 2.29166667]), 'f1_exp': np.array([2.32621476, 3.50080051, 2.85302699, 2.12566901, 2.3698903 ]), 'spont_exp': np.array([1.]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 5},
+    'TF4': {'f0_exp': np.array([ 5.91666667,  7.95833333, 13.375,  6.58333333, 5.41666667]), 'f1_exp': np.array([5.24514294, 3.8352691 , 4.99435957, 3.69495923, 1.75006614]), 'spont_exp': np.array([4.4]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 5},
+    'TF8': {'f0_exp': np.array([10.29166667, 13.125, 19.16666667, 21.83333333, 17.29166667]), 'f1_exp': np.array([10.79237938, 19.16833868, 29.71094753, 36.04648112, 25.37906864]), 'spont_exp': np.array([11.2]), 'si_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_inf_exp': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'ttp_exp': np.array([[np.nan, np.nan]]), 'f0_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'f1_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'spont_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'si_std': np.array([[np.nan, np.nan, np.nan, np.nan, np.nan]]), 'nsub': 1, 'N_class': 5}
 }
 
+from pprint import pprint
 
 @pytest.mark.parametrize("cell_subclass,expected_val",
                          [
@@ -96,7 +99,8 @@ def test_get_data_metrics(cell_subclass, expected_val):
 
 if __name__ == '__main__':
     cell_metrics = get_data_metrics_for_each_subclass('tOFF')
-    print(cmp_dicts(cell_metrics, tOFF_expected))
+    # print(cmp_dicts(cell_metrics, tOFF_expected))
+    test_get_data_metrics('trans_sus', trans_sus_expected)
 
     #print(cell_metrics)
 

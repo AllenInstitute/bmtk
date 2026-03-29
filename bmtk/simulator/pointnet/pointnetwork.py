@@ -180,7 +180,7 @@ class PointNetwork(SimNetwork):
                 if np.isscalar(edge.nest_params['weight']):
                     edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
                                                          fill_value=edge.nest_params['weight'])
-                self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                self._nest_connect(nest_srcs.copy(), nest_trgs.copy(), conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent
@@ -239,7 +239,7 @@ class PointNetwork(SimNetwork):
     def _nest_connect(self, nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=None):
         """Calls nest.Connect but with some extra error logging and exception handling."""
         try:
-            nest.Connect(nest_srcs, nest_trgs, conn_spec=conn_spec, syn_spec=syn_spec)
+            nest.Connect(nest_srcs.copy(), nest_trgs.copy(), conn_spec=conn_spec, syn_spec=syn_spec)
 
         except nest.kernel.NESTErrors.BadDelay as bde:
             # An occuring issue is when dt > delay, add some extra messaging in log to help users fix problem.

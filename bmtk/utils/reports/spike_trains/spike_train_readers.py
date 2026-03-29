@@ -30,6 +30,7 @@ import warnings
 
 from .spike_trains_api import SpikeTrainsReadOnlyAPI
 from .core import SortOrder, csv_headers, col_population, col_timestamps, col_node_ids, pop_na
+from .core import MPI_rank, MPI_size, comm_barrier, comm
 
 
 GRP_spikes_root = 'spikes'
@@ -47,6 +48,20 @@ sorting_attrs = {
 }
 
 
+def _open_h5(path, mode='r'):
+    if h5py.get_config().mpi:
+        return h5py.File(path, mode, driver='mpio', comm=comm)
+    else:
+        # If opening the spike-train h5 file independently across multiple ranks then stagger the
+        # opening. With some file-systems opening the same file across ranks can cause deadlocks.
+        h5_obj = None
+        for r in range(MPI_size):
+            if r == MPI_rank:
+                h5_obj = h5py.File(path, 'r')
+            comm_barrier()
+        return h5_obj
+
+
 def load_sonata_file(path, version=None, **kwargs):
     """Loads a Sonata file reader, making sure it matches the correct version.
 
@@ -55,28 +70,27 @@ def load_sonata_file(path, version=None, **kwargs):
     :param kwargs:
     :return:
     """
+    h5_handle = _open_h5(path, 'r')
+
     try:
-        with h5py.File(path, 'r') as h5:
-            spikes_root = h5[GRP_spikes_root]
-            for name, h5_obj in spikes_root.items():
-                if isinstance(h5_obj, h5py.Group):
-                    # In case there exists a population subgroup
-                    return SonataSTReader(path, **kwargs)
+        spikes_root = h5_handle[GRP_spikes_root]
+        for name, h5_obj in spikes_root.items():
+            if isinstance(h5_obj, h5py.Group):
+                # In case there exists a population subgroup
+                return SonataSTReader(path, h5_handle=h5_handle, **kwargs)
     except Exception:
         pass
 
     try:
-        with h5py.File(path, 'r') as h5:
-            spikes_root = h5[GRP_spikes_root]
-            if 'gids' in spikes_root and 'timestamps' in spikes_root:
-                return SonataOldReader(path, **kwargs)
+        spikes_root = h5_handle[GRP_spikes_root]
+        if 'gids' in spikes_root and 'timestamps' in spikes_root:
+            return SonataOldReader(path, h5_handle=h5_handle, **kwargs)
     except Exception:
         pass
 
     try:
-        with h5py.File(path, 'r') as h5:
-            if '/spikes' in h5:
-                return EmptySonataReader(path, **kwargs)
+        if '/spikes' in h5_handle:
+            return EmptySonataReader(path, h5_handle=h5_handle, **kwargs)
     except Exception:
         pass
 
@@ -91,9 +105,9 @@ def to_list(v):
 
 
 class SonataSTReader(SpikeTrainsReadOnlyAPI):
-    def __init__(self, path, **kwargs):
+    def __init__(self, path, h5_handle=None, **kwargs):
         self._path = path
-        self._h5_handle = h5py.File(self._path, 'r')
+        self._h5_handle = h5_handle or _open_h5(path, 'r')
         self._DATASET_node_ids = 'node_ids'
         self._n_spikes = None
         # TODO: Create a function for looking up population and can return errors if more than one

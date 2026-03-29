@@ -204,7 +204,7 @@ class NodeGroup(Group):
             # TODO: Need to performance test, I think this code could be optimized.
             node_types_table = self._parent.node_types_table
             nt_col = node_types_table.column(property_name)
-            tmp_array = np.empty(shape=len(self._parent_indicies), dtype=nt_col.dtype)
+            tmp_array = np.empty(shape=len(self._parent_indicies), dtype=type(nt_col.dtype))
             for i, ntid in enumerate(self.node_type_ids):
                 tmp_array[i] = node_types_table[ntid][property_name]
 

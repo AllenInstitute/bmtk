@@ -32,6 +32,7 @@ from neuron import h
 
 pc = h.ParallelContext()    # object to access MPI methods
 
+
 class ConnectionStruct(object):
     def __init__(self, edge_prop, src_node, syn, connector, is_virtual=False, is_gap_junc=False):
         self._src_node = src_node
@@ -378,10 +379,12 @@ class BioCell(Cell):
 
     def setup_ecp(self):
         self.im_ptr = h.PtrVector(self.morphology.nseg)  # pointer vector
-        # used for gathering an array of  i_membrane values from the pointer vector
-        self.im_ptr.ptr_update_callback(self.set_im_ptr)
-        self.imVec = h.Vector(self.morphology.nseg)
+        try:
+            self.im_ptr.ptr_update_callback(self.set_im_ptr)
+        except AttributeError as e:
+            pass
 
+        self.imVec = h.Vector(self.morphology.nseg)
         self.__set_extracell_mechanism()
         # for sec in self.hobj.all:
         #     sec.insert('extracellular')
