@@ -38,6 +38,16 @@ import h5py
 pc = h.ParallelContext()    # object to access MPI methods
 
 
+if not hasattr(h.PtrVector(1), 'ptr_update_callback'):
+    io.log_warning(
+        f'NEURON {h.nrnversion()} is missing "ptr_update_callback" that may sometimes effect ECP results.'
+        ' If not seeing sensible results or simulation returns a pointer error please try a different version of neuron (ex 8.2.4)'
+        )
+    cache_efficient = False
+else:
+    cache_efficient = True
+
+
 class BioSimulator(Simulator):
     """Includes methods to run and control the simulation"""
 
@@ -68,7 +78,8 @@ class BioSimulator(Simulator):
         h.steps_per_ms = 1/h.dt
         pc.setup_transfer()#Sets up gap junctions.
         self._set_init_conditions()  # call to save state
-        h.cvode.cache_efficient(1)
+        if cache_efficient:
+            h.cvode.cache_efficient(1)
                
         h.pysim = self  # use this objref to be able to call postFadvance from proc advance in advance.hoc
         self._iclamps = []

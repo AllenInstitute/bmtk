@@ -85,7 +85,7 @@ class ColumnProperty(object):
             return cls(c_name, c_dtype, 1)
 
         elif isinstance(pd_obj, pd.DataFrame):
-            return [cls(name, pd_obj[name].dtype, 1) for name in pd_obj.columns]
+            return [cls(name, pd_obj[name].to_numpy().dtype, 1) for name in pd_obj.columns]
 
         else:
             raise Exception('Unable to convert pandas object {} to a property or list of properties.'.format(pd_obj))

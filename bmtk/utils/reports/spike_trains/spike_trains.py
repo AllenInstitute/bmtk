@@ -27,7 +27,11 @@ from .core import find_file_type, MPI_size
 from .spike_train_readers import load_sonata_file, CSVSTReader, NWBSTReader
 from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer, STCSVMPIBufferV2
 from bmtk.utils.sonata.utils import get_node_ids
-from scipy.stats import gamma
+
+try:
+    from scipy.stats import gamma
+except ImportError as ie:
+    pass
 import warnings
 
 class SpikeTrains(object):
