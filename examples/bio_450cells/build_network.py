@@ -123,11 +123,20 @@ def build_internal_network():
             N=n_cells,
             x=positions[:, 0], y=positions[:, 1], z=positions[:, 2],
             rotation_angle_yaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi),  # randomly rotate y axis
-            rotation_angle_zaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi),  #
+            # rotation_angle_zaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi),  #
             model_type='biophysical',
             model_processing='aibs_perisomatic',
             **model_props
         )
+        # NOTE: rotation_angle_zaxis is commented out to keep the
+        # apical dendrites of pyramidal cells parallel to the y axis
+        # during the simulation. Otherwise, the random rotation around the
+        # z axis will tilt the apical dendrites away from +y,
+        # which is not physiologically accurate for pyramidal cells and will
+        # yield to incorrect extracellular potentials.
+        # If you want to see the effect of random rotation around the z axis,
+        # you can set rotation_angle_zaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi)
+        # in build_network.py and re-run it.
 
     for model_props in point_models:
         n_cells = 75  # Just assume 75 cells for both point inhibitory and point excitatory
