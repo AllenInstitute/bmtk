@@ -8,8 +8,9 @@ class NodeSet(object):
         self._preselected_gids = None
 
         if isinstance(filter_params, list):
-            self._preselected_gids = filter_params
-        elif isinstance(filter_params, dict):
+            filter_params = {'node_id': filter_params}
+       
+        if isinstance(filter_params, dict):
             self._filter = filter_params.copy()
             self._populations = self._find_populations()
         else:
@@ -34,6 +35,9 @@ class NodeSet(object):
 
     def gids(self):
         if self._preselected_gids is not None:
+            # print('HERE')
+            # print(self.population_names())
+            # exit()
             for gid in self._preselected_gids:
                 yield gid
         else:
