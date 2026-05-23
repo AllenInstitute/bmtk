@@ -14,6 +14,8 @@ class IOUtils(object):
     Thus the bulk of the io and logging functions are put into their own class and can be overwritten by specific
     simulator modules
     """
+    _logger = None
+
     def __init__(self):
         self.mpi_rank = 0
         self.mpi_size = 1
@@ -21,7 +23,7 @@ class IOUtils(object):
         self._log_format = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
         self._log_level = logging.INFO
         self._log_to_console = True
-        self._logger = None
+        
 
         # Used by log_warning to keep track of previous shown messages
         self._warn_messages = set()
@@ -37,13 +39,13 @@ class IOUtils(object):
 
     @property
     def logger(self):
-        if self._logger is None:
+        if IOUtils._logger is None:
             # Create the logger the first time it is accessed
-            self._logger = logging.getLogger(self.__class__.__name__)
-            self._logger.setLevel(self._log_level)
+            IOUtils._logger = logging.getLogger(self.__class__.__name__)       
+            IOUtils._logger.setLevel(self._log_level)
             self._set_console_logging()
 
-        return self._logger
+        return IOUtils._logger
 
     def _set_console_logging(self):
         if not self._log_to_console:
