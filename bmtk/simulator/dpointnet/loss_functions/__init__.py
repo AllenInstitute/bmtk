@@ -36,6 +36,19 @@ class LossModules:
         return self._loss_modules[module_name]
 
 
+def add_loss_module(mod, module_name=None, overwrite=True):
+    LossModules().add_module(mod, module_name=module_name, overwrite=overwrite)
+
+
+def register_loss_module(_cls=None, *_, **wkargs):
+    def decorator(cls):
+        mod_name = wkargs.get('module_name', None)
+        overwrite = wkargs.get('overwrite', True)
+        LossModules().add_module(cls, module_name=mod_name, overwrite=overwrite)
+    
+    return decorator if _cls is None else decorator(_cls)
+
+
 LossModules().add_module(SpikeRateDistributionTarget, overwrite=False)
 LossModules().add_module(TargetFiringRate, overwrite=False)
 LossModules().add_module(OrientationSelectivityLoss, overwrite=False)

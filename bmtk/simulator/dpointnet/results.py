@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import h5py
 from pathlib import Path
-
+import itertools
+import tensorflow as tf
 
 from .id_maps import TFIDMap
 from .io_tools import io
@@ -13,6 +14,13 @@ class _SpikesResults:
     def __init__(self, parent, spikes_table):
         self._spikes_tables = spikes_table
         self.parent = parent
+
+    def mean_firing_rate(self):
+        n_neurons = self._spikes_tables.shape[-1]
+        n_batches = self.parent.batch_size
+        time_secs = 1000.0/(self.parent.dt*self.parent.seq_len)
+        mean_fr = time_secs*tf.reduce_sum(self._spikes_tables)/self.parent.batch_size/n_neurons
+        return mean_fr.numpy()
 
     def to_dataframe(self):
         batch_num, spike_steps, tf_ids = np.nonzero(self._spikes_tables)
@@ -25,7 +33,7 @@ class _SpikesResults:
             'timestamps': timestamps,
             'population': tf2bmtk_id_map.loc[tf_ids, 'population'].values
         })
-        
+
     def to_spikes_table(self):
         return self._spikes_tables
 
@@ -95,6 +103,62 @@ class _SpikesResults:
         else:
             self.__to_sonata_helper(file_path, spikes_df, overwrite=overwrite)
 
+    def raster(self, batch_nums=None, max_rows=5, show=True):
+        import matplotlib.pyplot as plt
+
+        spikes_df = self.to_dataframe()
+        if spikes_df is None or len(spikes_df) == 0:
+            fig, ax = plt.subplots()
+        else:
+            if batch_nums is None:
+                batch_nums = spikes_df['batch_num'].unique()
+            elif isinstance(batch_nums, (int, np.number)):
+                batch_nums = [batch_nums]
+            
+            n_batches = len(batch_nums)
+            fig, axes = _SpikesResults.make_subplot(n_batches, max_rows=max_rows)
+            for bnum, batch_df in spikes_df.groupby('batch_num'):
+                if bnum not in batch_nums:
+                    continue
+                else:         
+                    r, c, ax = next(axes)
+                    
+                    ax.scatter(batch_df['timestamps'], batch_df['node_ids'])
+                    ax.set_title(f'batch {bnum}')
+                    
+                    if c == 1:
+                        ax.set_ylabel('node id')
+                    if r == min(max_rows, n_batches) - 1:
+                        ax.set_xlabel('timestamps (ms)')
+        
+            plt.tight_layout()
+
+        if show:
+            plt.show()
+
+        return fig
+
+    @staticmethod
+    def make_subplot(n_batches, max_rows=5):
+        import matplotlib.pyplot as plt
+       
+        n_rows = min(n_batches, max_rows)
+        n_cols = int(np.ceil(n_batches/max_rows))
+        fig, axes = plt.subplots(n_rows, n_cols)
+        return fig, _SpikesResults.axes_generator(axes, n_rows, n_cols)
+
+    @staticmethod
+    def axes_generator(axes, n_rows, n_cols):
+        if n_rows*n_cols == 1:
+            yield 1, 1, axes
+        elif n_cols > 1:
+            for r, c in itertools.product(range(n_rows), range(n_cols)):
+                yield r, c, axes[r][c]
+        else:
+            for r in range(n_rows):
+                yield r, 1, axes[r]
+
+
 
 class _ModelState:
     def __init__(self, parent, model_state, **kwargs):
@@ -128,14 +192,13 @@ class _VoltageResults:
                 node_idxs = pop_df.index.values
                 
                 if self.parent.batch_size == 1:
-                    batch_data_paths = [(1, 'data')]
+                    batch_data_paths = [(0, 'data')]
                 elif batch_num is not None:
                     batch_data_paths = [(batch_num, 'data')]
                 else:
                     batch_data_paths = [(batch_num, f'data/batch_{batch_num}') for batch_num in range(self.parent.batch_size)]
-                
+
                 for b_num, b_path in batch_data_paths:
-                    # data = self.voltages_table[batch_num, :, node_idxs]
                     data = self.voltages_table.numpy()[b_num, :, node_idxs]
                     pop_grp.create_dataset(b_path, data=data.T)
 

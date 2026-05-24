@@ -17,8 +17,7 @@
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float32",
-    "single_gpu_strategy": "one_device",
-    "tau_syns": [0.7579732, 1.60809441, 3.41168742, 7.23813909]
+    "single_gpu_strategy": "one_device"
   },
   
   "rnn_cell_params": {
@@ -31,7 +30,8 @@
     "pseudo_gauss": false,
     "lr_scale": 1.0,
     "max_delay": 5,
-    "hard_reset": false
+    "hard_reset": false,
+    "tau_syns": [0.7579732, 1.60809441, 3.41168742, 7.23813909]
   },
 
   "training": {
@@ -124,7 +124,7 @@
 
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",
-    "synaptic_models_dir": "$MODELS_DIR/synaptic_models"      
+    "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"      
   },
 
   "networks": {

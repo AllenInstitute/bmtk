@@ -51,9 +51,6 @@ class Inference:
         else:
             return self.init_mod.get_state()
 
-
-
-
 class RNN:
     """The primary model and simulation class for dpointnet.
 
@@ -119,8 +116,22 @@ class RNN:
     def input_modules(self):
         return self._input_generators_mods
 
-    def get_inputs_mods(self, mod_name=None, ):
-        pass
+    def get_inputs_mods(self, mod_names=None):
+        if mod_names is None:
+            return list(self._input_generators_mods.values())
+        elif isinstance(mod_names, str):
+            return self._input_generators_mods[mod_names]
+        else:
+            mods = []
+            for mname in mod_names:
+                mods.append(self._input_generators_mods[mname])
+
+    def get_init_state(self, state_names=None):
+        return self._init_state
+
+    @property
+    def inference(self):
+        return self._inferences[0]
 
     @property
     def node_populations(self):
@@ -397,6 +408,9 @@ class RNN:
         return self._state_only_model
 
     def run_inference(self, spikes=None, initial_state=None, **kwargs):
+        if not self._model_built:
+            self.build()
+        
         # Fetch the spikes
         if spikes is None:
             if len(self._inferences) > 1:
@@ -407,8 +421,8 @@ class RNN:
         elif isinstance(spikes, DataIterator):
             spikes, y = spikes.next_spikes()
 
-        elif isinstance(spikes, (list, tuple)):
-            spikes = tf.concat(spikes, axis=2)
+        # elif isinstance(spikes, (list, tuple)):
+        #     spikes = tf.concat(spikes, axis=2)
 
         # Fetch model init state
         if initial_state is None:
@@ -423,9 +437,6 @@ class RNN:
                 inputs=self.model.inputs, 
                 outputs=self.model.get_layer('rsnn').output
             )
-
-        if not self._model_built:
-            self.build()
 
         # Run inputs through the model; fetch, package and return results
         out = self.extractor_model((spikes, initial_state))
@@ -481,6 +492,7 @@ class RNN:
             io.log_info('Training Model.')
             self.train()
 
+        results = None
         if len(self._inferences) > 1:
             raise NotImplementedError()
         elif len(self._inferences) == 1:
@@ -492,6 +504,7 @@ class RNN:
                 results.save_results(**inference.output_params)
 
         io.log_info('RNN.run() completed.')
+        return results
 
 
     def add_init_state(self, mod):
@@ -691,7 +704,7 @@ class RNN:
         init_state_params = config.get('initial_state', {})
         if init_state_params:
             mod_cls = StateModules().get_init_state_module(init_state_params['module'])
-            network.add_init_state(mod_cls(rnn_net=network, **init_state_params))
+            network.add_init_state(mod_cls(rnn=network, **init_state_params))
 
 
         # init_states = config.get('initial_states', None)

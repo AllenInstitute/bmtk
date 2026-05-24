@@ -27,15 +27,15 @@ class RandomSpikesGenerator(InputsGeneratorMod):
     def input_type():
         return 'spikes'
     
-    def create_generator(self, seq_len, dt=1.0, dtype=tf.float32, **kwargs):
+    def create_generator(self, seq_len=None, dt=1.0, dtype=tf.float32, **kwargs):
         self._dt = self._dt or dt
         _dtype = self._dtype or dtype
-        _seq_len = seq_len
+        _seq_len = seq_len or self.rnn.adjusted_seq_len
         self._lam = self._firing_rate*self._dt/1000.0
 
         def _generator():
             while True:
-                spikes = np.random.rand(_seq_len, self._n_nodes) < self._lam  # .astype(np.bool)
+                spikes = np.random.rand(_seq_len, self._n_nodes) <= self._lam  # .astype(np.bool)
                 yield spikes, {'firing_rate': self._firing_rate}
 
         data_set = tf.data.Dataset.from_generator(
