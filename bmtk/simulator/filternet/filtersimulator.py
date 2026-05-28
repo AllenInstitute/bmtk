@@ -206,9 +206,10 @@ class FilterSimulator(Simulator):
                 for mod in self._sim_mods:
                     mod.save(self, cell, ts, f_rates)
         # io.log_info('Max firing rate: {}'.format(np.max(max_fr)))
-        io.log_info('Done.')
         for mod in self._sim_mods:
             mod.finalize(self)
+
+        io.log_info('Done.')
 
     def local_cells(self):
         return self._network.cells()

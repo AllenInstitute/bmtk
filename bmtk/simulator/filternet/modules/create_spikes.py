@@ -7,11 +7,12 @@ from .base import SimModule
 from bmtk.utils.reports.spike_trains import SpikeTrains, pop_na, sort_order, sort_order_lu
 from bmtk.simulator.filternet.lgnmodel import poissongeneration as pg
 from bmtk.utils.io.ioutils import bmtk_world_comm
+from bmtk.simulator.filternet.io_tools import io
 
 
 class SpikesGenerator(SimModule):
     def __init__(self, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, tmp_dir='output',
-                 sort_order='node_id', compression='gzip'):
+                 sort_order='node_id', compression='gzip', clean_temp_files=True):
         def _get_file_path(file_name):
             if file_name is None or os.path.isabs(file_name):
                 return file_name
@@ -35,10 +36,12 @@ class SpikesGenerator(SimModule):
         self._save_nwb = spikes_file_nwb is not None
 
         self._tmpdir = tmp_dir
+        self._clean_temp_files = clean_temp_files
 
         # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir)
         self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
         self._sort_order = sort_order_lu[sort_order]
+        self._runtime_gid = bmtk_world_comm.global_uuid(default='filternet')
 
     def save(self, sim, cell, times, rates):
         try:
@@ -52,6 +55,7 @@ class SpikesGenerator(SimModule):
         self._spike_writer.add_spikes(node_ids=cell.gid, timestamps=spike_trains, population=cell.population)
 
     def finalize(self, sim):
+        io.log_debug('Writing spikes to file(s)...')
         self._spike_writer.flush()
 
         if self._save_csv:
@@ -64,6 +68,7 @@ class SpikesGenerator(SimModule):
             self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
 
         self._spike_writer.close()
+        io.log_debug('Writing spikes to file(s)... done.')
 
 
 def f_rate_to_spike_train(t, f_rate, random_seed, t_window_start, t_window_end, p_spike_max):
