@@ -451,8 +451,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.v_th = tf.constant(1.0, dtype=self.compute_dtype)
         self.v_reset = tf.constant(0.0, dtype=self.compute_dtype)
 
-        self.decay = tf.Variable(tf.gather(membrane_decay, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
-        self.current_factor = tf.Variable(tf.gather(current_factor, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
+        # Cast before constructing the Variable: tf.Variable does not auto-cast a
+        # float32 initial value to a float16 compute_dtype under mixed precision.
+        self.decay = tf.Variable(
+            tf.cast(tf.gather(membrane_decay, self._node_type_ids), self.compute_dtype),
+            trainable=False, dtype=self.compute_dtype)
+        self.current_factor = tf.Variable(
+            tf.cast(tf.gather(current_factor, self._node_type_ids), self.compute_dtype),
+            trainable=False, dtype=self.compute_dtype)
 
         ## TODO: This shouldn't be stored in a separate pickle.
         # path = os.path.join(glif_network["data_dir"], 'tf_data', 'syn_id_to_syn_weights_dict.pkl')
@@ -505,9 +511,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             dtype=self.variable_dtype
         ) # shape = (n_synapses,)
 
-        if self.variable_dtype != self.compute_dtype:
-            # Keep a non-trainable compute-lane shadow to avoid full-table casts
-            # in the recurrent custom gradient path at every timestep.
+        if self.variable_dtype != self.compute_dtype or individual_training:
+            # Keep a non-trainable compute-lane shadow. Two reasons:
+            #  (1) mixed precision: avoids casting the full weight table every timestep;
+            #  (2) the recurrent @tf.custom_gradient reads these weights inside the RNN
+            #      while_loop. If that read is the *trainable* variable (esp. a MirroredVariable
+            #      under MirroredStrategy), TF requires the grad to take a `variables` kwarg and
+            #      otherwise errors. Reading a non-trainable shadow avoids that. The shadow is
+            #      kept in sync via refresh_recurrent_weight_shadow() after each optimizer step.
             recurrent_weight_values_compute = tf.Variable(
                 tf.cast(self.recurrent_weight_values, self.compute_dtype),
                 name="sparse_recurrent_weights_compute",
@@ -646,6 +657,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
         print(f"    > # BKG input synapses {len(bkg_input_indices)}")
         del bkg_input_indices, bkg_input_weights, bkg_input_syn_ids, bkg_input_weight_positive #, bkg_input_delays
         '''
+
+    def refresh_recurrent_weight_shadow(self):
+        """Sync the compute-dtype shadow of the recurrent weights with the trained master.
+
+        Under mixed precision the forward uses ``recurrent_weight_values_compute`` (a
+        non-trainable float16 copy) while the optimizer updates the float32 master
+        ``recurrent_weight_values``. This must be called after each optimizer step, else the
+        forward keeps using stale weights and recurrent-weight training has no effect.
+        Matches the reference V1_GLIF_model.
+        """
+        if self.recurrent_weight_values_compute is self.recurrent_weight_values:
+            return
+        if not self.recurrent_weight_values.trainable:
+            return
+        self.recurrent_weight_values_compute.assign(
+            tf.cast(self.recurrent_weight_values, self.compute_dtype)
+        )
 
     def calculate_i_rec_with_custom_grad(self, rec_z_buf):
         return calculate_synaptic_currents(

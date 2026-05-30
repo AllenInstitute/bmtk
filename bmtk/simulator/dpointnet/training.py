@@ -113,6 +113,17 @@ class TrainingEngine:
         self._training_approach = training_approach
         self._training_fnc = None
 
+        # Gradient checkpointing (a.k.a. recompute_grad): recompute the per-timestep
+        # RNN activations during the backward pass instead of storing all of them across
+        # the unrolled sequence. This is required to fit full-network BPTT (seq_len ~500)
+        # on a single GPU; mirrors the reference V1_GLIF_model implementation.
+        # NOTE: default off for now. The recompute_grad wrapping does not yet reach the
+        # reference's memory profile (the per-timestep constant retention persists and, in
+        # at least one case, checkpointing increased peak memory). Re-enable by default once
+        # checkpointing is fixed to match V1_GLIF_model.
+        self.gradient_checkpointing = kwargs.get('gradient_checkpointing', False)
+        self._extractor_forward = None
+
         self._batch_indices = None
 
         self._inputs_sig_factory = None
@@ -272,6 +283,19 @@ class TrainingEngine:
 
         return self._inputs_sig_factory
 
+    def _run_extractor(self, x, init_state):
+        """Run the extractor (RNN) forward pass, optionally with gradient checkpointing.
+
+        When ``gradient_checkpointing`` is enabled, the forward is wrapped in
+        ``tf.recompute_grad`` so the per-timestep activations are recomputed during the
+        backward pass rather than retained for the whole sequence. The forward path is
+        deterministic (background spikes are supplied as explicit inputs), so the recompute
+        reproduces the original forward exactly.
+        """
+        if self.gradient_checkpointing and self._extractor_forward is not None:
+            return self._extractor_forward(x, init_state)
+        return self.rnn.extractor_model((x, init_state))
+
     def _train_step_single(self, x, y, init_state):
         """Main training step when there is only one parameter (eg. one set of inputs/loss functions). 
             1. Feedforward input is applied to spike inputs "x" with model state "init_state"
@@ -285,7 +309,7 @@ class TrainingEngine:
         loss_vals = {pname: {}}
         input_spikes = x[0]
         with tf.GradientTape() as tape:
-            _out = self.rnn.extractor_model((input_spikes, init_state))
+            _out = self._run_extractor(input_spikes, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
 
@@ -297,7 +321,7 @@ class TrainingEngine:
                     model_state=_model_state,
                     y=y
                 )
-                _total_loss += _loss
+                _total_loss += tf.cast(_loss, tf.float32)
                 loss_vals[pname][loss_name] = _loss
 
             _total_loss = tf.cast(_total_loss, tf.float32)
@@ -326,7 +350,7 @@ class TrainingEngine:
         x_concat = tf.concat(xs, axis=0)
         sigs = self.inputs_signature_factory.build(ys)
         with tf.GradientTape() as tape:
-            _out = self.rnn.extractor_model((x_concat, init_state))
+            _out = self._run_extractor(x_concat, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
 
@@ -344,7 +368,7 @@ class TrainingEngine:
                         model_state=_pstate,
                         y=ysig
                     )
-                    _total_loss += _loss
+                    _total_loss += tf.cast(_loss, tf.float32)
                     loss_vals[p.name][loss_name] = _loss
             
             _total_loss = tf.cast(_total_loss, tf.float32)
@@ -369,7 +393,7 @@ class TrainingEngine:
         for p, x, y in zip(self.parameters, xs, ys):
             loss_vals[p.name] = {}
             with tf.GradientTape() as tape:
-                _out = self.rnn.extractor_model((x, init_state))
+                _out = self._run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
 
@@ -382,7 +406,7 @@ class TrainingEngine:
                         y=y
                     )
                     loss_vals[p.name][loss_name] = _loss
-                    _total_loss += _loss
+                    _total_loss += tf.cast(_loss, tf.float32)
 
                 _total_loss = tf.cast(_total_loss, tf.float32)
                 total_loss = tf.nn.scale_regularization_loss(_total_loss)
@@ -422,7 +446,7 @@ class TrainingEngine:
                         y=y
                     )
                     loss_vals[p.name][loss_name] = _loss
-                    _total_loss += _loss
+                    _total_loss += tf.cast(_loss, tf.float32)
 
                 _total_loss = tf.cast(_total_loss, tf.float32)
                 total_loss = tf.nn.scale_regularization_loss(_total_loss)
@@ -453,7 +477,7 @@ class TrainingEngine:
                         y=ysig
                     )
                     loss_vals[p.name][loss_name] = _loss
-                    _total_loss += _loss
+                    _total_loss += tf.cast(_loss, tf.float32)
             
             _total_loss = tf.cast(_total_loss, tf.float32)
             total_loss = tf.nn.scale_regularization_loss(_total_loss)
@@ -502,6 +526,16 @@ class TrainingEngine:
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
         init_state = self.init_state.get_state()
 
+        # Build the gradient-checkpointed forward ONCE, eagerly, before the @tf.function
+        # train step is traced. tf.recompute_grad must wrap the function in eager context;
+        # applying it lazily during graph tracing does not establish the checkpoint
+        # boundary and the per-timestep activations are retained anyway.
+        if self.gradient_checkpointing and self._extractor_forward is None:
+            @tf.recompute_grad
+            def extractor_forward(x, fwd_init_state):
+                return self.rnn.extractor_model((x, fwd_init_state))
+            self._extractor_forward = extractor_forward
+
         try:
             self.callbacks.on_train_begin()
             for epoch in range(self.n_epochs):
@@ -511,6 +545,11 @@ class TrainingEngine:
                     self.callbacks.on_step_start()
                     spikes, ys = input_itr.next_spikes()
                     step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
+                    # Propagate the just-updated master recurrent weights into the compute-dtype
+                    # shadow used by the forward pass (no-op when not using a shadow).
+                    cell = getattr(self.rnn, '_cell', None)
+                    if cell is not None and hasattr(cell, 'refresh_recurrent_weight_shadow'):
+                        cell.refresh_recurrent_weight_shadow()
                     self.callbacks.on_step_end(step_loss_vals)
 
                 validation_loss = self._distributed_validation_step(spikes, ys, init_state=init_state, training_approach=self.training_approach)

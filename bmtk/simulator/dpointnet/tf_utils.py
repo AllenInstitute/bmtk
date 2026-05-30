@@ -18,6 +18,38 @@ def enable_gpu_memory_growth():
             )
 
 
+def enable_tensorflow_optimizations(enabled=True):
+    """Enable Grappler graph optimizations (matches the reference V1_GLIF_model).
+
+    The critical one for this model is ``loop_optimization``: it performs loop-invariant
+    code motion, hoisting the constant connectivity-variable reads (recurrent/LGN
+    indices, weights, syn_ids) OUT of the RNN tf.while_loop body. Without it, TF re-reads
+    those large tables every timestep and stacks them for the backward pass, which makes
+    backward memory scale with seq_len and OOMs full-network training. ``min_graph_nodes=0``
+    lets Grappler optimize the many small subgraphs in this model.
+    """
+    if not enabled:
+        return
+    try:
+        tf.config.optimizer.set_experimental_options({
+            "layout_optimizer": True,
+            "constant_folding": True,
+            "shape_optimization": True,
+            "remapping": True,
+            "arithmetic_optimization": True,
+            "dependency_optimization": True,
+            "loop_optimization": True,
+            "function_optimization": True,
+            "scoped_allocator_optimization": True,
+            "pin_to_host_optimization": False,
+            "implementation_selector": True,
+            "auto_parallel": True,
+            "min_graph_nodes": 0,
+        })
+    except Exception as exc:  # pragma: no cover - defensive
+        io.log_warning(f'Could not set TensorFlow optimizer options: {exc}')
+
+
 def cleanup_tensorflow():
     tf.keras.backend.clear_session()
     gc.collect()

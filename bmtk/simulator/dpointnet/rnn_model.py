@@ -116,7 +116,13 @@ class RNN:
         self._adjusted_batch_size = None
 
         tf_utils.enable_gpu_memory_growth()
-        self.strategy = tf.distribute.OneDeviceStrategy(device='/gpu:0')
+        tf_utils.enable_tensorflow_optimizations()
+        # MirroredStrategy (matches the reference V1_GLIF_model). With variables created in
+        # strategy.scope() (see build()), the connectivity-variable reads are hoisted out of
+        # the RNN while_loop as loop-invariant captures instead of being stacked per timestep;
+        # OneDeviceStrategy does NOT do this and OOMs on the full network. Single visible GPU
+        # => effectively one device.
+        self.strategy = tf.distribute.MirroredStrategy()
 
     @property
     def input_modules(self):
@@ -352,41 +358,50 @@ class RNN:
             state_input_holder = None
             full_inputs = extrn_inputs
 
+        # Build the model (cell + RNN + variables) INSIDE the distribution strategy scope.
+        # Required for MirroredStrategy (variables must be created in scope), and it is also
+        # what makes the loop-invariant connectivity-variable reads be hoisted out of the RNN
+        # while_loop instead of stacked per timestep (the cause of full-network OOM). Mirrors
+        # the reference V1_GLIF_model, which builds create_model() within strategy.scope().
         cell_params = {} if self.cell_params is None else self.cell_params
-        self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
-        self.zero_state, state_names = self._cell.zero_state(self.batch_size, self.dtype, with_names=True)
+        with self.strategy.scope():
+            self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
+            self.zero_state, state_names = self._cell.zero_state(self.batch_size, self.dtype, with_names=True)
 
-        if use_state_input:
-            initial_state_holder = tuple(
-                tf.keras.layers.Input(shape=s.shape[1:], dtype=s.dtype, name=n)
-                for s, n in zip(self.zero_state, state_names)
-            )
-            rnn_initial_state = tf.nest.map_structure(tf.identity, initial_state_holder)
-        else:
-            initial_state_holder = None
-            rnn_initial_state = self.zero_state
-            
-        rnn = tf.keras.layers.RNN(self._cell, return_sequences=True, return_state=return_state, name='rsnn')
-        rnn_layer = rnn(full_inputs, initial_state=rnn_initial_state)
-
-        rnn_out = rnn_layer[0] if return_state else rnn_layer
-        spikes_output = rnn_out[0]
-
-        output = tf.keras.layers.Dense(n_output, name='projection', trainable=False)(spikes_output)
-
-        if use_state_input:
-            if use_dummy_state_input:
-                inputs = [extrn_inputs, state_input_holder, initial_state_holder]
+            if use_state_input:
+                initial_state_holder = tuple(
+                    tf.keras.layers.Input(shape=s.shape[1:], dtype=s.dtype, name=n)
+                    for s, n in zip(self.zero_state, state_names)
+                )
+                rnn_initial_state = tf.nest.map_structure(tf.identity, initial_state_holder)
             else:
-                inputs = [extrn_inputs, initial_state_holder]
-        else:
-            if use_dummy_state_input:
-                inputs = [extrn_inputs, state_input_holder]
-            else:
-                inputs = [extrn_inputs]
+                initial_state_holder = None
+                rnn_initial_state = self.zero_state
 
-        self.model = tf.keras.Model(inputs=inputs, outputs=[output])
-        self.model.build((_batch_size, _seq_len, n_spiking_inputs))
+            rnn = tf.keras.layers.RNN(self._cell, return_sequences=True, return_state=return_state, name='rsnn')
+            # Keep the cell's provided state dtypes instead of letting Keras autocast them to the
+            # compute dtype. Matches the reference (V1_GLIF_model create_model).
+            rnn._autocast = False
+            rnn_layer = rnn(full_inputs, initial_state=rnn_initial_state)
+
+            rnn_out = rnn_layer[0] if return_state else rnn_layer
+            spikes_output = rnn_out[0]
+
+            output = tf.keras.layers.Dense(n_output, name='projection', trainable=False)(spikes_output)
+
+            if use_state_input:
+                if use_dummy_state_input:
+                    inputs = [extrn_inputs, state_input_holder, initial_state_holder]
+                else:
+                    inputs = [extrn_inputs, initial_state_holder]
+            else:
+                if use_dummy_state_input:
+                    inputs = [extrn_inputs, state_input_holder]
+                else:
+                    inputs = [extrn_inputs]
+
+            self.model = tf.keras.Model(inputs=inputs, outputs=[output])
+            self.model.build((_batch_size, _seq_len, n_spiking_inputs))
         self._model_built = True
 
     @property
@@ -471,26 +486,29 @@ class RNN:
             inference.close()
 
     def train(self, training_engine=None):
-        if self.extractor_model is None:
-            self.extractor_model = tf.keras.Model(
-                inputs=self.model.inputs, 
-                outputs=self.model.get_layer('rsnn').output
-            )
+        with self.strategy.scope():
+            if self.extractor_model is None:
+                self.extractor_model = tf.keras.Model(
+                    inputs=self.model.inputs,
+                    outputs=self.model.get_layer('rsnn').output
+                )
 
         training_engine = training_engine or self.training_engine
         if training_engine is None:
             io.log_debug('No training condition has been set, skipping training.')
 
-        ## Build the optimizer 
-        optimizer = training_engine.optimizer
-        optimizer.build(self.model.trainable_variables)
+        ## Build the optimizer (in strategy scope so its slot variables are created correctly)
+        with self.strategy.scope():
+            optimizer = training_engine.optimizer
+            optimizer.build(self.model.trainable_variables)
 
         if self.dtype == 'float16':
-            # Prevent gradient underflow in mixed-float16 training.
-            if self.mixed_precision_module is None:
-                from tensorflow.keras import mixed_precision as mixed_precision_module
-
+            # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
+            # must be set back on the engine so the train step scales the loss / unscales
+            # the gradients (scale_loss_for_optimizer only acts on a LossScaleOptimizer).
+            from tensorflow.keras import mixed_precision as mixed_precision_module
             optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
+            training_engine.set_optimizer(optimizer)
 
         training_engine.train()
 
@@ -739,11 +757,13 @@ class RNN:
             n_epochs = train_dict['n_epochs']
             steps_per_epoch = train_dict['steps_per_epoch']
             training_approach = train_dict.get('training_approach', None)
+            gradient_checkpointing = train_dict.get('gradient_checkpointing', False)
             training_engine = network.set_training(
                 rnn=network,
-                n_epochs=n_epochs, 
+                n_epochs=n_epochs,
                 steps_per_epoch=steps_per_epoch,
-                training_approach=training_approach
+                training_approach=training_approach,
+                gradient_checkpointing=gradient_checkpointing
             )
 
             learning_rate = train_dict['learning_rate']
