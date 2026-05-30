@@ -48,6 +48,7 @@ class SpikesFilesGenerator(InputsGeneratorMod):
         super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
         self.nodes_pop = self.input_network.population_name
         self.n_nodes = self.input_network.n_nodes
+        self.input_network.options['input_type'] = 'spikes'
 
         self.background_noise_rate = background_noise_rate
         self.dropout_prob = dropout_prob
