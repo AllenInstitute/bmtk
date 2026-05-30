@@ -1,16 +1,24 @@
 import argparse
+import os
+import sys
+import traceback
 
 from bmtk.simulator import dpointnet
 
 
 def run(config_path):
+    rnn_network = None
     config = dpointnet.Config.from_json(config_path)
     config.build_env()
 
-    rnn_network = dpointnet.RNN.from_config(config)
-    rnn_network.build()
-    results = rnn_network.run_inference()
-    print(results)
+    try:
+        rnn_network = dpointnet.RNN.from_config(config)
+        rnn_network.build()
+        results = rnn_network.run_inference()
+        print(results)
+    finally:
+        if rnn_network is not None:
+            rnn_network.cleanup()
     # rnn_network.save_weights()
     # rnn_network.predict()
     # results = rnn_network.inference()
@@ -29,4 +37,13 @@ if __name__ == '__main__':
     )
 
     args, _ = parser.parse_known_args()
-    run(args.config_path)
+    try:
+        run(args.config_path)
+    except Exception:
+        traceback.print_exc()
+        dpointnet.cleanup_tensorflow()
+        sys.stdout.flush()
+        sys.stderr.flush()
+        os._exit(1)
+    finally:
+        dpointnet.cleanup_tensorflow()

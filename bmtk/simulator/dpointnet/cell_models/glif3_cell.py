@@ -452,7 +452,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.v_reset = tf.constant(0.0, dtype=self.compute_dtype)
 
         self.decay = tf.Variable(tf.gather(membrane_decay, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
-        self.current_factor = tf.Variable(tf.gather(membrane_decay, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
+        self.current_factor = tf.Variable(tf.gather(current_factor, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
 
         ## TODO: This shouldn't be stored in a separate pickle.
         # path = os.path.join(glif_network["data_dir"], 'tf_data', 'syn_id_to_syn_weights_dict.pkl')
@@ -545,14 +545,16 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             input_props['input_indices'] = tf.Variable(input_indices, trainable=False, dtype=tf.int64)
 
+            input_type = input_network['input_type']
+            input_options = input_network.get('options', {})
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
-            input_trainable = input_network['options'].get('trainable', False)
+            input_trainable = input_options.get('trainable', False)
 
             input_props['input_weight_values'] = tf.Variable(
-                input_weights * input_network['options'].get('weight_scale', 1.0) / lr_scale,
+                input_weights * input_options.get('weight_scale', 1.0) / lr_scale,
                 name=f'{input_name}_input_weights',
                 constraint=SignedConstraint(input_weight_positive),
-                trainable=input_trainable, # input_network['options'].get('trainable', False),
+                trainable=input_trainable,
                 dtype=self.variable_dtype
             )
             input_props['input_syn_ids'] = tf.constant(input_syn_ids, dtype=tf.int64) # for efficiency this needs to be in int64
@@ -561,23 +563,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             #         input_indices, 
             #         n_source_neurons=input_dense_shape[1]
             #     )
-            input_type = input_network['options'].get('input_type', 'spikes')
-            input_props['type'] = input_type
+            input_props['input_type'] = input_type
             if input_type == 'spikes':
                 input_props['pre_input_ind_table'] = make_pre_ind_table(
                     input_indices, 
                     n_source_neurons=input_dense_shape[1]
                 )
                 end_indx = self.inputs_idx[idx] + n_input_nodes
-            elif input_type == 'noisy_current':
-                firing_rate = input_network['options'].get('firing_rate', 250.0)
-                input_props['spike_prob'] = tf.constant(firing_rate * 0.001, dtype=self.compute_dtype)
-                input_props['pre_input_ind_table'] = make_pre_ind_table(
-                    input_indices, 
-                    n_source_neurons=input_dense_shape[1]
-                )
-                end_indx = self.inputs_idx[idx]
-            elif input_type == 'current_input':
+            elif input_type == 'current':
                 end_indx = self.inputs_idx[idx] + n_input_nodes
             else:
                 raise ValueError(f'Unknown input type {input_type}')
@@ -708,8 +701,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Compute weighted basis factors
         basis_factors = tf.gather(self.synaptic_basis_weights, new_syn_ids, axis=0)  # shape (n_active_connections, n_syn_basis)
         # Accumulate currents in variable_dtype for better numerical fidelity, then cast once.
+        n_pre_spikes = tf.cast(tf.gather_nd(x_t, non_zero_indices), dtype=self.compute_dtype)
         new_weights = tf.cast(new_weights, self.compute_dtype)
-        new_weights_final = new_weights[:, tf.newaxis] * basis_factors
+        new_weights_final = (new_weights * tf.repeat(n_pre_spikes, post_in_degree))[:, tf.newaxis] * basis_factors
         # new_weights_final = new_weights[:, tf.newaxis] * basis_factors
 
         # Calculate input currents
@@ -862,14 +856,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
-            if input_net['type'] == 'noisy_current':
-                extern_currents.append(self.calculate_noise_current(batch_size, noise_step, input_net))
+            input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
+            if input_net['input_type'] == 'current':
+                extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes))
             else:
-                input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
-                if input_net['type'] == 'current_input':
-                    extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes))
-                else:
-                    extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
+                extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
         
         rec_inputs = i_rec + tf.add_n(extern_currents)
 

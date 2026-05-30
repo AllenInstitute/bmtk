@@ -502,22 +502,25 @@ class TrainingEngine:
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
         init_state = self.init_state.get_state()
 
-        self.callbacks.on_train_begin()
-        for epoch in range(self.n_epochs):
-            self.callbacks.on_epoch_start()
-            
-            for step in range(self.steps_per_epoch):
-                self.callbacks.on_step_start()
-                spikes, ys = input_itr.next_spikes()
-                step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
-                self.callbacks.on_step_end(step_loss_vals)
+        try:
+            self.callbacks.on_train_begin()
+            for epoch in range(self.n_epochs):
+                self.callbacks.on_epoch_start()
+                
+                for step in range(self.steps_per_epoch):
+                    self.callbacks.on_step_start()
+                    spikes, ys = input_itr.next_spikes()
+                    step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
+                    self.callbacks.on_step_end(step_loss_vals)
 
-            validation_loss = self._distributed_validation_step(spikes, ys, init_state=init_state, training_approach=self.training_approach)
-            stop = self.callbacks.on_epoch_end(validation_loss)
-            if stop:
-                break
+                validation_loss = self._distributed_validation_step(spikes, ys, init_state=init_state, training_approach=self.training_approach)
+                stop = self.callbacks.on_epoch_end(validation_loss)
+                if stop:
+                    break
 
-        self.callbacks.on_train_end()
+            self.callbacks.on_train_end()
+        finally:
+            input_itr.close()
     
 
     '''

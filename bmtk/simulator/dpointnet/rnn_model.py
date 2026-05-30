@@ -51,6 +51,11 @@ class Inference:
         else:
             return self.init_mod.get_state()
 
+    def close(self):
+        if self._data_itr is not None:
+            self._data_itr.close()
+            self._data_itr = None
+
 class RNN:
     """The primary model and simulation class for dpointnet.
 
@@ -110,6 +115,7 @@ class RNN:
         self.batch_size = batch_size
         self._adjusted_batch_size = None
 
+        tf_utils.enable_gpu_memory_growth()
         self.strategy = tf.distribute.OneDeviceStrategy(device='/gpu:0')
 
     @property
@@ -313,6 +319,18 @@ class RNN:
         _batch_size = batch_size or self.adjusted_batch_size
         _seq_len = seq_len or self.adjusted_seq_len
 
+        # Pre-populate the global syn_id mapping by scanning all networks (recurrent + inputs)
+        # BEFORE building any dict. This ensures the recurrent network's basis_weights table
+        # includes entries for input network dynamics_params as well.
+        from bmtk.simulator.dpointnet.network_adaptor import SONATANetwork
+        SONATANetwork.reset_global_syn_id_mapping()
+        all_networks = list(self._recurrent_networks.values()) + list(self._input_networks.values())
+        for net in all_networks:
+            if hasattr(net, '_synaptic_dyn_params'):
+                net._synaptic_dyn_params()
+
+        # Force rebuild of recurrent network dict (don't use cached version)
+        self._built_recurrent_net = None
         network = self.recurrent_network
         n_spiking_inputs = sum(i.n_spiking_nodes for i in self._input_networks.values())
         n_neurons = network['n_nodes']
@@ -447,6 +465,10 @@ class RNN:
             extractor_results=out
         )
         return extractor_results
+
+    def cleanup(self):
+        for inference in self._inferences:
+            inference.close()
 
     def train(self, training_engine=None):
         if self.extractor_model is None:

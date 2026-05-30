@@ -1,6 +1,7 @@
 import tensorflow as tf
 import pandas as pd
 import numpy as np
+from pathlib import Path
 
 from bmtk.simulator.dpointnet.lgn_tf.lgn import LGN
 from bmtk.simulator.dpointnet.io_tools import io
@@ -17,10 +18,18 @@ class LGNGenerator(InputsGeneratorMod):
         self.stimulus_opts = kwargs['stimulus_options']
         self.row_size = self.stimulus_opts['row_size']
         self.col_size = self.stimulus_opts['col_size']
+        self._cache_paths = self._resolve_cache_paths(kwargs)
+
+        if kwargs.get('cache_overwrite', False):
+            for cache_path in self._cache_paths.values():
+                if cache_path is not None:
+                    Path(cache_path).unlink(missing_ok=True)
+
         self.lgn = LGN(
             network=input_network,
             row_size=self.row_size,
             col_size=self.col_size,
+            **self._cache_paths,
         )
 
         self._generator = None
@@ -58,6 +67,43 @@ class LGNGenerator(InputsGeneratorMod):
     @staticmethod
     def input_type():
         return 'spikes'
+
+    def _resolve_cache_paths(self, kwargs):
+        if not kwargs.get('cache_enabled', True):
+            return {
+                'spon_frs_path': None,
+                'temp_krns_path': None,
+                'spatial_krns_path': None,
+            }
+
+        cache_prefix = kwargs.get('cache_file', None)
+        if cache_prefix:
+            cache_prefix = Path(cache_prefix)
+            cache_prefix.parent.mkdir(parents=True, exist_ok=True)
+            cache_prefix = cache_prefix.with_suffix('')
+        else:
+            cache_dir = kwargs.get('cache_dir', None)
+            if cache_dir:
+                cache_root = Path(cache_dir)
+            else:
+                network_cache_file = getattr(self.input_network, '_cache_file', None)
+                if network_cache_file:
+                    cache_root = Path(network_cache_file).parent / 'lgn_cache'
+                else:
+                    cache_root = Path.cwd() / 'lgn_cache'
+
+            cache_root.mkdir(parents=True, exist_ok=True)
+            cache_key = kwargs.get('cache_key', None)
+            if cache_key is None:
+                n_inputs = getattr(self.input_network, 'n_nodes', 'unknown')
+                cache_key = f'{self.population_name}_{n_inputs}_{self.row_size}x{self.col_size}'
+            cache_prefix = cache_root / cache_key
+
+        return {
+            'spon_frs_path': str(cache_prefix.parent / f'{cache_prefix.name}.spontaneous.pkl'),
+            'temp_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.temporal.pkl'),
+            'spatial_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.spatial.pkl'),
+        }
     
 
 def _stateless_seed_pair(seed, salt=0):
