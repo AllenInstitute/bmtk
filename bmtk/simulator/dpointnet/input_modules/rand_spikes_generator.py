@@ -10,14 +10,14 @@ from .inputs_base import InputsGeneratorMod
 class RandomSpikesGenerator(InputsGeneratorMod):
     def __init__(self, rnn, name, input_network, firing_rate, **kwargs):
         super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
-        # self.name = name
-        # self.network = input_network
         self._n_nodes = self.input_network.n_nodes
+        self.input_network.options['input_type'] = 'spikes'
 
         self._firing_rate = firing_rate
         self._dtype = kwargs.get('dtype', None)
         self._dt = kwargs.get('dt', None)
         self._lam = None       
+        self.rng = np.random.default_rng(seed=3000)
 
     @staticmethod
     def module():
@@ -35,7 +35,9 @@ class RandomSpikesGenerator(InputsGeneratorMod):
 
         def _generator():
             while True:
-                spikes = np.random.rand(_seq_len, self._n_nodes) <= self._lam  # .astype(np.bool)
+                spikes = self.rng.random((_seq_len, self._n_nodes)) <= self._lam  # .astype(np.bool)
+                
+                # spikes = np.random.rand(_seq_len, self._n_nodes) <= self._lam  # .astype(np.bool)
                 yield spikes, {'firing_rate': self._firing_rate}
 
         data_set = tf.data.Dataset.from_generator(
