@@ -14,7 +14,7 @@
     "t_start": 0.0,
     "default_seed": 3000,
     "train_recurrent_weights": true,
-    "dtype": "float32",
+    "dtype": "float16",
     "single_gpu_strategy": "one_device"
   },
   "rnn_cell_params": {
@@ -49,7 +49,7 @@
     },
     "optimizer": {
       "name": "adam",
-      "epsilon": 1.0e-07
+      "epsilon": 1e-07
     },
     "initial_state": {
       "module": "zero_state"
@@ -76,15 +76,14 @@
             "node_set": "bkg",
             "trainable": false,
             "input": "spikes",
-            "module": "noisy_current",
-            "seed": null,
+            "module": "random",
             "firing_rate": 250.0
           }
         },
         "loss_functions": {
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
-            "rate_cost": 100.0,
+            "rate_cost": 10000.0,
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
@@ -93,13 +92,13 @@
           },
           "evoked_voltage_regularizer": {
             "module": "VoltageRegularization",
-            "voltage_cost": 1.5,
+            "voltage_cost": 1.0,
             "penalty_mode": "range"
           },
           "evoked_sync_loss": {
             "enabled": true,
             "module": "SynchronizationLoss",
-            "sync_cost": 1.0,
+            "sync_cost": 1.5,
             "t_start": 0.2,
             "t_end": 0.5,
             "n_samples": 500,

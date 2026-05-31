@@ -363,14 +363,17 @@ class TrainingEngine:
                 _pstate = _model_state[pidx_beg:pidx_end]
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
-                        spikes=_pspikes, 
-                        voltages=_pvolts, 
+                        spikes=_pspikes,
+                        voltages=_pvolts,
                         model_state=_pstate,
                         y=ysig
                     )
                     _total_loss += tf.cast(_loss, tf.float32)
                     loss_vals[p.name][loss_name] = _loss
-            
+                # Advance to this parameter's slice of the concatenated batch so the next
+                # parameter's losses are computed on its own spikes/voltages (not [0:end]).
+                pidx_beg = pidx_end
+
             _total_loss = tf.cast(_total_loss, tf.float32)
             total_loss = tf.nn.scale_regularization_loss(_total_loss)
             all_losses.append(total_loss)

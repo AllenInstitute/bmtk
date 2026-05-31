@@ -687,6 +687,30 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.pre_ind_table
         )
 
+    def calculate_input_current_from_firing_probabilities(self, x_t, input_net):
+        """Input current when the input is firing PROBABILITIES (rate/'current' input) rather
+        than discrete spikes. Computes I[:, post, r] = sum_pre w[post,pre]*basis[type,r]*prob[pre]
+        via a per-receptor sparse-dense matmul. Ported from the reference V1_GLIF_model;
+        uses the per-input dict (input_net) like calculate_input_current_from_spikes.
+        """
+        batch_size = tf.shape(x_t)[0]
+        input_indices = input_net['input_indices']
+        input_weight_values = input_net['input_weight_values']
+        input_syn_ids = input_net['input_syn_ids']
+        input_dense_shape = input_net['input_dense_shape']
+
+        i_in = tf.TensorArray(dtype=self.compute_dtype, size=self._n_syn_basis)
+        for r_id in range(self._n_syn_basis):
+            input_weights_factors = tf.gather(self.synaptic_basis_weights[:, r_id], input_syn_ids, axis=0)
+            weights_syn_receptors = tf.cast(input_weight_values, self.compute_dtype) * input_weights_factors
+            sparse_w_in = tf.sparse.SparseTensor(input_indices, weights_syn_receptors, input_dense_shape)
+            i_receptor = tf.sparse.sparse_dense_matmul(sparse_w_in, tf.cast(x_t, self.compute_dtype), adjoint_b=True)
+            i_in = i_in.write(r_id, i_receptor)
+        i_in = i_in.stack()
+        i_in = tf.transpose(i_in)  # -> [batch, n_neurons, n_syn_basis] after reshape
+        i_in_flat = tf.reshape(i_in, [batch_size * self._n_neurons, self._n_syn_basis])
+        return i_in_flat
+
     def calculate_input_current_from_spikes(self, x_t, input_net):
         batch_size = tf.cast(tf.shape(x_t)[0], dtype=tf.int64) # int64
         n_post_neurons = input_net['input_dense_shape'][0]
@@ -886,7 +910,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         for idx, input_net in enumerate(self.inputs.values()):
             input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
             if input_net['input_type'] == 'current':
-                extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes))
+                extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes, input_net))
             else:
                 extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
         
