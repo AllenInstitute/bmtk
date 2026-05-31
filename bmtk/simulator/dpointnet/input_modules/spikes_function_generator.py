@@ -35,11 +35,13 @@ def spikes_function(_func=None, *_, **wkwargs):
 
 class SpikesFunctionGenerator(InputsGeneratorMod):
     def __init__(self, rnn, name, input_network, function_name, function_type='function', **kwargs):
-        self.name = name
-        self.network = input_network
+        super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
+        # self.name = name
+        # self.network = input_network
         self.fnc_name = function_name
         self.fnc_ptr = _spike_functions[function_name]
         self.n_nodes = self.network.n_nodes
+        self.input_network.options['input_type'] = 'spikes'
         
         _target_dtype = kwargs.get('target_dtype', tf.string)
         self.target_dtype = tf.dtypes.as_dtype(_target_dtype).name

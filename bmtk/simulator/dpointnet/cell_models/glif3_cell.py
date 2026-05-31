@@ -356,9 +356,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
             noise_seed=0,
             hard_reset=False,
             tau_syns=None,
+            synaptic_basis_weights=None,
             # current_input=False,
         ):
         super().__init__()
+
+        self.__seq_idx = 0
+
         _node_params = dict(glif_network['node_params'])
 
         voltage_scale = _node_params['V_th'] - _node_params['E_L']
@@ -468,7 +472,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # synaptic_basis_weights_ = np.array(list(syn_id_to_syn_weights_dict.values()))
         # synaptic_basis_weights_ = tf.constant(synaptic_basis_weights_, dtype=self.compute_dtype)
 
-        _synaptic_basis_weights = glif_network["synapses"]['dynamics_params']['basis_weights']
+        if synaptic_basis_weights is None:
+            _synaptic_basis_weights = glif_network["synapses"]['dynamics_params']['basis_weights']
+        elif isinstance(synaptic_basis_weights, str):
+            with open(synaptic_basis_weights, 'rb') as f:
+                syn_id_to_syn_weights_dict = pkl.load(f)
+            _synaptic_basis_weights = np.array(list(syn_id_to_syn_weights_dict.values()))
+        elif isinstance(synaptic_basis_weights, (list, np.ndarray)):
+            _synaptic_basis_weights = np.array(synaptic_basis_weights)
+        else:
+            raise NotImplementedError()
+        
         self.synaptic_basis_weights = tf.constant(_synaptic_basis_weights, dtype=self.compute_dtype)
 
         # TODO: Allow option to not have recurrent connectivity (eg. in case only want to train feedforward network)
@@ -533,15 +547,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.syn_ids = tf.constant(syn_ids, dtype=tf.int64) # this needs to be int64 for efficiency
         # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
         io.log_debug(f' > Added recurrent synapses: indices = {len(indices)}; trainable = {individual_training}')
-        
-        # print(f"    > # Recurrent synapses: {len(indices)}")
-
         del indices, weights, dense_shape, delays, syn_ids, recurrent_weight_positive
 
         ### Inputs
         # TODO: Inputs needs to be a list since order is extremely important
         self.inputs_idx = np.zeros(len(inputs) + 1, dtype=int)
         self.inputs = {}
+
         for idx, (input_name, input_network) in enumerate(inputs.items()):
             # TODO: Use a named tuple instead of dict
             input_props = {}
@@ -767,11 +779,18 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         return i_in_flat
 
-    def _dense_update_impl(self, batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs):
-        # new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
+    def update_psc(self, psc, psc_rise, rec_inputs):
         new_psc_rise = psc_rise * self.syn_decay + rec_inputs * self.psc_initial
         new_psc = psc * self.syn_decay + self._dt * self.syn_decay * psc_rise
-        
+        return new_psc, new_psc_rise
+
+
+    def _dense_update_impl(self, batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs):
+        # new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
+        # new_psc_rise = psc_rise * self.syn_decay + rec_inputs * self.psc_initial
+        # new_psc = psc * self.syn_decay + self._dt * self.syn_decay * psc_rise
+        new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
+
         # Calculate the ASC variables
         asc = tf.reshape(asc, (batch_size, self._n_neurons, 2))
         # new_asc = self.asc_decay * asc + tf.expand_dims(prev_z, axis=-1) * self.asc_amps
@@ -902,10 +921,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         z_buf, v, r, asc, psc_rise, psc, noise_step = states
         prev_z = z_buf[:, :self._n_neurons]
-        
+
         rec_z_buf = straight_through_dampen(z_buf, 1.0 - self._recurrent_dampening)
         i_rec = self.calculate_i_rec_with_custom_grad(rec_z_buf)
-        
+
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
             input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
@@ -913,14 +932,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes, input_net))
             else:
                 extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
-        
-        rec_inputs = i_rec + tf.add_n(extern_currents)
 
+        rec_inputs = i_rec + tf.add_n(extern_currents)
         # Reshape i_rec_flat back to [batch_size, num_neurons]
         rec_inputs = tf.reshape(rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis])
-
         # Scale with the learning rate
         rec_inputs = rec_inputs * self._lr_scale
+
         new_v, new_r, new_asc, new_psc_rise, new_psc = self._dense_update_impl(
             batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs
         )
@@ -932,7 +950,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             new_z = spike_gauss(v_sc, self._gauss_std, self._dampening_factor)
         else:
             new_z = spike_function(v_sc, self._dampening_factor)
-        
+
         # Generate the new spikes if the refractory period is concluded
         refractory_active = tf.greater(new_r, 0)
         new_z = tf.where(refractory_active, tf.zeros_like(new_z), new_z)
@@ -949,14 +967,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
         new_noise_step = noise_step + 1
         new_state = (new_z_buf, new_v, new_r, new_asc, new_psc_rise, new_psc, new_noise_step)
         return outputs, new_state
-
-        # Generate the new spikes if the refractory period is concluded
-        refractory_active = tf.greater(new_r, 0)
-        new_z = tf.where(refractory_active, tf.zeros_like(new_z), new_z)
-
-        # Add current spikes to the buffer
-        new_z_buf = tf.concat([new_z, z_buf[:, :-self._n_neurons]], axis=1)  # Shift buffer
-        return inputs, [states]
 
     @property
     def state_size(self):

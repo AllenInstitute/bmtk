@@ -34,7 +34,7 @@ def sort_indices_tf(indices, *arrays):
 
 
 class NetworkAdaptor:
-    def __init__(self, name, network_type):
+    def __init__(self, name, network_type, **options):
         self.name = name
         self.network_type = network_type
         self.componets_dir = None
@@ -49,6 +49,7 @@ class NetworkAdaptor:
         self._edge_type_ids = None
         self._target_populations = set()
         self._source_populations = set()
+        self.options = options
         
     @property
     def population_name(self):
@@ -154,15 +155,19 @@ class NetworkAdaptor:
         
         # These are network files that have been pre-processed in the (assumingly correct) layout and
         # stored as a pickle or npz file.
-        for net_dict in networks_dict.get('cached', []):
-            network_type = net_dict['type']
-            network_name = net_dict.get('name', None)
-            file_format = net_dict.get('file_format', None)
+        for cached_dict in networks_dict.get('cached', []):
+            network_type = cached_dict.pop('type')
+            network_name = cached_dict.pop('name', None)
+            file_format = cached_dict.pop('file_format', None)
+            file_path = cached_dict.pop('file_path', None)
 
-            io.log_debug(f'Loading network {network_name} from {net_dict["file_path"]}')
+            io.log_debug(f'Loading network {network_name} from {file_path}')
             net = CachedNetwork(
-                name=network_name, network_type=network_type, 
-                file_path=net_dict['file_path'], file_format=file_format
+                name=network_name, 
+                network_type=network_type, 
+                file_path=file_path, 
+                file_format=file_format, 
+                **cached_dict
             )
 
             # Make sure the same network is not accidentaly inserted twice.
@@ -288,8 +293,8 @@ class NetworkAdaptor:
 
 
 class CachedNetwork(NetworkAdaptor):
-    def __init__(self, name, file_path, network_type, file_format=None):
-        super().__init__(name=name, network_type=network_type)
+    def __init__(self, name, file_path, network_type, file_format=None, **options):
+        super().__init__(name=name, network_type=network_type, **options)
         self.file_path = file_path
         self.file_format = file_format or 'unknown'
         self.network_type = network_type
@@ -319,6 +324,20 @@ class CachedNetwork(NetworkAdaptor):
         self.name = self.name or self.network_dict.get('name', None)
         if self.name is None:
             raise ValueError(f'Could not find unique name for network {self.file_path}. Pass in "name" option.')
+       
+        if self.network_type == 'recurrent':
+            if 'tf_id_to_bmtk_id' in self.network_dict:
+                node_ids = self.network_dict['tf_id_to_bmtk_id']
+            else:
+                node_ids = np.arange(self.network['n_nodes'], dtype=np.int64)
+        elif self.network_type == 'input':
+            node_ids = np.arange(self.network_dict['n_inputs'], dtype=np.int64)
+
+        TFIDMap().add_bmtk_ids(
+            population_name=self.population_name, 
+            node_ids=node_ids,
+            network_type=network_type
+        )
 
     @property
     def n_nodes(self):
@@ -327,8 +346,10 @@ class CachedNetwork(NetworkAdaptor):
     def to_dict(self):
         with open(self.file_path, 'rb') as f:
             network = pkl.load(f)
+        network['options'] = self.options
+        
         return network
-    
+       
     def get_nodes_df(self):
         raise NotImplementedError()
 
@@ -348,31 +369,6 @@ class CachedNetwork(NetworkAdaptor):
             network_dict = pkl.load(f)
         raise NotImplementedError()
 
-
-    # @staticmethod
-    # def load_cached_network(path, net_type, name, file_format):
-    #         network_type = net_dict['type']
-    #         network_name = net_dict.get('name', None)
-    #         file_format = net_dict.get('file_format', None)
-
-    #         net = PklNetwork(
-    #             name=net_dict['name'], network_type=network_type, 
-    #             file_path=net_dict['file_path'], file_format=net_dict['file_format']
-    #         )
-
-    #         # Make sure the same network is not accidentaly inserted twice.
-    #         if net.name in names:
-    #             raise ValueError(f'Found multiple networks with name "{network_name}.')
-    #         else:
-    #             names.add(network_name)
-
-    #         if network_type == 'recurrent':
-    #             rec_networks.append(net)
-    #         elif network_type == 'input':
-    #             input_networks.append(net)
-    #         else:
-    #             raise ValueError(f'Invalid "type" property value {network_type} in networks; valid options: "recurrent", "input"')
-           
 
 class SONATANetwork(NetworkAdaptor):
     # Class-level shared mapping: dynamics_params_path -> global index.
@@ -712,8 +708,13 @@ class SONATANetwork(NetworkAdaptor):
 
     def to_dict(self):
         if self.network_type == 'recurrent':
-            return self._build_recurrent_dict()
+            net_dict = self._build_recurrent_dict()
+            # return self._build_recurrent_dict()
         elif self.network_type == 'input':
-            return self._build_input_dict()
+            net_dict = self._build_input_dict()
+            # return self._build_input_dict()
         else:
             raise ValueError(f'Unknown network_type {self.network_type}')
+
+        net_dict['options'] = self.options
+        return net_dict
