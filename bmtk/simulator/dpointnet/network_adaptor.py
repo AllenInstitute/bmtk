@@ -119,17 +119,23 @@ class NetworkAdaptor:
             'edge_type_id': self._edge_type_ids
         })
     
+    def filter_ids(self, **query):
+        raise NotImplementedError()
+
     def add_components_dirs(self, components_dirs=None):
         self.componets_dir = components_dirs
 
     def add_edges(self, edges_pop):
         pass
 
-    def filter_nodes(self, query):
-        pass
-
     def build(self, **opt_args):
         pass
+
+    def get_bmtk_ids(self, **filter):
+        raise NotImplementedError()
+    
+    def get_tf_ids(self, **filter):
+        raise NotImplementedError()
 
     @staticmethod
     def merge(networks):
@@ -289,7 +295,6 @@ class CachedNetwork(NetworkAdaptor):
         self.file_path = file_path
         self.file_format = file_format or 'unknown'
         self.network_type = network_type
-
         self.file_path = Path(file_path)
         if not self.file_path.exists():
             raise FileNotFoundError(f'Could not find network file {file_path}')
@@ -378,6 +383,9 @@ class SONATANetwork(NetworkAdaptor):
             network_type=network_type
         )
 
+        # for node in sonata_node_pop.filter(ei='i'):
+        #     print(node.node_id)
+
     @property
     def md5hexsdigest(self):
         raise NotImplementedError()
@@ -448,6 +456,22 @@ class SONATANetwork(NetworkAdaptor):
         if basis_weights_file:
             basis_weights_df = pd.read_csv(basis_weights_file)# .set_index('name')
             self._basis_weights = {r['name']: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
+
+    def get_bmtk_ids(self, **filter):
+        node_ids = {self._sonata_node_pop.name: []}
+        for n in self._sonata_node_pop.filter(**filter):
+            node_ids[self._sonata_node_pop.name].append(n.node_id)
+
+        return node_ids
+    
+    def get_tf_ids(self, **filter):
+        bmtk2tf_id_map = TFIDMap().recurrent_bmtk_ids()
+        node_ids_dict = self.get_bmtk_ids(**filter)
+        tf_ids = np.empty(0, dtype=int)
+        for pop_name, pop_node_ids in node_ids_dict.items():
+            _pop_tf_ids = bmtk2tf_id_map[pop_name][pop_node_ids]
+            tf_ids = np.concatenate((tf_ids, _pop_tf_ids))
+        return tf_ids
 
     def _synaptic_dyn_params(self, format='dict'):
         dynamic_params_idx_lu = {}

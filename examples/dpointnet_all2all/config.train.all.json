@@ -47,8 +47,8 @@
   },
 
   "training": {
-    "n_epochs": 3,
-    "steps_per_epoch": 5,
+    "n_epochs": 2,
+    "steps_per_epoch": 3,
     "training_approach": "inseries",
     "learning_rate": {
       "schedule": "warmup_cosine",
@@ -79,7 +79,7 @@
         "loss_functions": {
           "firing_rate_regularizer": {
             "module": "TargetFiringRate",
-            "firing_rate": 20.0
+            "firing_rate": 15.0
           },
           "voltage_regularizer": {
             "module": "VoltageRegularization",
