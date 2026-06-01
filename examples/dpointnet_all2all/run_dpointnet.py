@@ -9,7 +9,7 @@ def run(config_path):
 
     rnn_network = dpointnet.RNN.from_config(config)
     results = rnn_network.run()
-    # results.spikes.raster(batch_num=0, show=True)
+    results.spikes.raster(batch_nums=0, show=True)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

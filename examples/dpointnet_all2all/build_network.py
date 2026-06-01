@@ -5,8 +5,6 @@ from bmtk.builder import NetworkBuilder
 n_exc = 200
 n_inh = 100
 
-
-
 rnet = NetworkBuilder('glifs')
 rnet.add_nodes(
     N=n_exc,
@@ -94,7 +92,7 @@ cm = vnet.add_edges(
 )
 cm.add_properties(
     names='syn_weight',
-    rule=lambda *_: np.random.uniform(1.0, 10.0)
+    rule=lambda *_: np.random.uniform(5.0, 30.0)
 )
 
 cm = vnet.add_edges(
@@ -106,7 +104,7 @@ cm = vnet.add_edges(
 )
 cm.add_properties(
     names='syn_weight',
-    rule=lambda *_: np.random.uniform(1.0, 10.0)
+    rule=lambda *_: np.random.uniform(5.0, 30.0)
 )
 
 vnet.build()

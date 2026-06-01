@@ -141,9 +141,6 @@ class RNN:
     def training_engine(self):
         return self._training_engine
 
-    # def add_input_network(self, network):
-    #     pass
-
     @property
     def adjusted_batch_size(self):
         if self.training_engine is not None:
@@ -161,7 +158,6 @@ class RNN:
     @property
     def inputs_populations(self):
         return self._inputs_order
-
 
     @property
     def ordered_inputs_populations(self):
