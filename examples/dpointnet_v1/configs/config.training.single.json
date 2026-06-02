@@ -38,7 +38,7 @@
   "training": {
     "n_epochs": 2,
     "steps_per_epoch": 3,
-    "training_approach": "batched",
+    "training_approach": "parallel",
     "learning_rate": {
       "schedule": "warmup_cosine",
       "warmup_start_lr": 0.08,
@@ -57,7 +57,7 @@
     "parameters": [
       {
         "name": "evoked",
-        "training_approach": "batched",
+        "training_approach": "parallel",
         "inputs": {
           "lgn_inputs": {
             "node_set": "lgn",
