@@ -21,8 +21,8 @@
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
     "gauss_std": 0.5,
-    "dampening_factor": 0.3,
-    "recurrent_dampening_factor": 0.5,
+    "dampening_factor": 0.1,
+    "recurrent_dampening_factor": 0.1,
     "voltage_gradient_dampening": 0.5,
     "recurrent_weight_scale": 1.0,
     "pseudo_gauss": false,
@@ -61,10 +61,10 @@
     },
     "bkg_random": {
       "node_set": "bkg",
-      "trainable": false,
+      "trainable": true,
       "input": "spikes",
       "module": "random",
-      "firing_rate": 10.0
+      "firing_rate": 250.0
     }
   },
   "initial_states": {
@@ -84,16 +84,12 @@
     "steps_per_epoch": 2,
     "training_approach": "batched",
     "learning_rate": {
-      "schedule": "warmup_cosine",
-      "warmup_start_lr": 0.08,
-      "warmup_target_lr": 0.04,
-      "warmup_steps": 120,
-      "cosine_steps": 880,
-      "min_lr": 0.001
+      "schedule": "none",
+      "learning_rate": 0.005
     },
     "optimizer": {
-      "name": "adam",
-      "epsilon": 1e-07
+      "name": "exp_adam",
+      "epsilon": 1e-11
     },
     "initial_stateX": {
       "module": "zero_state"
@@ -130,13 +126,15 @@
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
+            "core_radius": 200.0,
             "stimulus_type": "drifting_gratings",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
           "evoked_voltage_regularizer": {
             "module": "VoltageRegularization",
             "voltage_cost": 1.0,
-            "penalty_mode": "range"
+            "penalty_mode": "range",
+            "core_radius": 200.0
           },
           "evoked_sync_loss": {
             "enabled": true,
@@ -147,7 +145,8 @@
             "n_samples": 500,
             "stimulus_type": "drifting_gratings",
             "neuropixels_data_dir": "Synchronization_data",
-            "data_dir": "./GLIF_network"
+            "data_dir": "./GLIF_network",
+            "core_radius": 200.0
           }
         }
       },
@@ -164,6 +163,7 @@
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
+            "core_radius": 200.0,
             "stimulus_type": "spontaneous",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           }

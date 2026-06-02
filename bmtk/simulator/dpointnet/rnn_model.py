@@ -626,6 +626,16 @@ class RNN:
                 input_population = mod_params['node_set']
                 input_network = self.get_input_network(input_population)
 
+                # Honor config-level input weight options (e.g. trainable, weight_scale) so the
+                # cell's input weights follow the config. These end up in the network's options
+                # dict, which is what to_dict() exposes and the GLIF cell reads when creating the
+                # input weight Variable. Without this the config's per-input "trainable" was a
+                # no-op and inputs (incl. the background) could never be trained (cf. the
+                # reference V1_GLIF_model which trains the bkg "rest_of_brain" weights).
+                for _opt in ('trainable', 'weight_scale'):
+                    if _opt in mod_params:
+                        input_network.options[_opt] = mod_params[_opt]
+
                 io.log_info(f'Building "{mod_name}" inputs for {input_population}')
                 module_cls = inputs_modules_lu.get_module(
                     input_type=mod_params['input'],
