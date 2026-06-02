@@ -167,7 +167,7 @@ class TrainingEngine:
             seq_len = p0.seq_len
             for pi in self._parameters[1:]:
                 if pi.seq_len != seq_len:
-                    raise ValueError(f'Training Parameters for {p0.name} and {pi.name} have different batch_size ({p0.seq_len} != {pi.seq_len}).'
+                    raise ValueError(f'Training Parameters for {p0.name} and {pi.name} have different seq_len ({p0.seq_len} != {pi.seq_len}).'
                                      f' For "{self._training_approach}" training approach they must be the same')
             return seq_len
         
@@ -243,7 +243,7 @@ class TrainingEngine:
             
             else:
                 if self._training_approach is None or self._training_approach == '':
-                    raise ValueError('Training Error: When using more than one one training parameters please specify "training_approach", Options: parallel, series, series_accumulate')
+                    raise ValueError('Training Error: When using more than one training parameter please specify "training_approach", Options: parallel, series, series_accumulate')
                 elif self._training_approach == 'parallel':
                     self._training_fnc = self._train_step_parallel
                 elif self._training_approach in ['series', 'series_accumulate']:
