@@ -139,7 +139,7 @@ class TrainingEngine:
         if self.training_approach == 'single':
             return self._parameters[0].batch_size
         
-        elif self.training_approach in ['inseries', 'sequential']:
+        elif self.training_approach in ['series', 'series_accumulate']:
             p0 = self._parameters[0]
             batch_size = p0.batch_size
             for pi in self._parameters[1:]:
@@ -148,21 +148,21 @@ class TrainingEngine:
                                      f' For "{self.training_approach}" training approach they must be the same')
             return batch_size
         
-        elif self.training_approach == 'batched':
+        elif self.training_approach == 'parallel':
             batch_size = 0
             for p in self._parameters:
                 batch_size += p.batch_size
             return batch_size
         
         else:
-            raise ValueError(f'Unknown "trainging approach" {self.training_approach}')
+            raise ValueError(f'Unknown "training_approach" {self.training_approach}')
 
     @property
     def adjusted_seq_len(self):
         if self._training_approach == 'single':
             return self._parameters[0].seq_len
         
-        elif self._training_approach in ['inseries', 'batched']:
+        elif self._training_approach in ['series', 'series_accumulate', 'parallel']:
             p0 = self._parameters[0]
             seq_len = p0.seq_len
             for pi in self._parameters[1:]:
@@ -171,14 +171,8 @@ class TrainingEngine:
                                      f' For "{self._training_approach}" training approach they must be the same')
             return seq_len
         
-        elif self._training_approach == 'sequential':
-            seq_len = 0
-            for p in self._parameters:
-                seq_len += p.seq_len
-            return seq_len
-        
         else:
-            raise ValueError(f'Unknown "trainging approach {self._training_approach}')
+            raise ValueError(f'Unknown "training_approach" {self._training_approach}')
 
     def set_learning_rate(self, learning_rate):
         self._learning_rate = learning_rate
@@ -233,11 +227,11 @@ class TrainingEngine:
                 self._training_approach = 'single'
             
             else:
-                io.log_debug(f'{self.__class__.__name__}: "training_approach" not set for multi-parameter training, defaulting to "batched"')
-                self._training_approach = 'batched'
+                io.log_debug(f'{self.__class__.__name__}: "training_approach" not set for multi-parameter training, defaulting to "parallel"')
+                self._training_approach = 'parallel'
 
         if self._training_approach == 'single' and self.n_parameters > 1:
-            raise ValueError(f'{self.__class__.__name__}: Attempting to use "single" training approach when more than one parameter. Please use options: inseries, batched, sequential.')
+            raise ValueError(f'{self.__class__.__name__}: Attempting to use "single" training approach when more than one parameter. Please use options: parallel, series, series_accumulate.')
 
         return self._training_approach
 
@@ -249,13 +243,11 @@ class TrainingEngine:
             
             else:
                 if self._training_approach is None or self._training_approach == '':
-                    raise ValueError('Training Error: When using more than one one training parameters please specify "training_approach", Options: batched, sequential, inseries')
-                elif self._training_approach == 'batched':
-                    self._training_fnc = self._train_step_batched
-                elif self._training_approach == 'sequential':
-                    self._training_fnc = self._train_step_sequential
-                elif self._training_approach == 'inseries':
-                    self._training_fnc = self._train_step_inseries
+                    raise ValueError('Training Error: When using more than one one training parameters please specify "training_approach", Options: parallel, series, series_accumulate')
+                elif self._training_approach == 'parallel':
+                    self._training_fnc = self._train_step_parallel
+                elif self._training_approach in ['series', 'series_accumulate']:
+                    self._training_fnc = self._train_step_series
                 else:
                     raise ValueError(f'Training Error: Invalid training approach "{self._training_approach}"')
 
@@ -296,6 +288,17 @@ class TrainingEngine:
             return self._extractor_forward(x, init_state)
         return self.rnn.extractor_model((x, init_state))
 
+    @staticmethod
+    def _add_gradients(accumulated, current):
+        if accumulated is None:
+            return current
+        if current is None:
+            return accumulated
+        if isinstance(accumulated, tf.IndexedSlices) or isinstance(current, tf.IndexedSlices):
+            accumulated = tf.convert_to_tensor(accumulated)
+            current = tf.convert_to_tensor(current)
+        return accumulated + current
+
     def _train_step_single(self, x, y, init_state):
         """Main training step when there is only one parameter (eg. one set of inputs/loss functions). 
             1. Feedforward input is applied to spike inputs "x" with model state "init_state"
@@ -303,7 +306,7 @@ class TrainingEngine:
             3. losses are summed together to calculate gradients.
             4. Gradients are applied to optimizers to update weights.
         
-        TODO: This function should be able to be merged with _train_step_inseries.
+        TODO: This function should be able to be merged with _train_step_series.
         """
         pname = self.parameters[0].name
         loss_vals = {pname: {}}
@@ -336,9 +339,55 @@ class TrainingEngine:
 
         return loss_vals
 
+    def _train_step_parameter_gradients(self, x, y, init_state, parameter_index):
+        """Compute one parameter set's gradients without applying them."""
+        p = self.parameters[parameter_index]
+        ysig = InputsSignatureFactory.InputsSignature(
+            copy.deepcopy(self.inputs_signature_factory.lu_tables[parameter_index]),
+            y
+        )
+        loss_vals = {p.name: {}}
+        with tf.GradientTape() as tape:
+            _out = self._run_extractor(x, init_state)
+            _spikes_out, _v_out = _out[0]
+            _model_state = _out[1:]
 
-    def _train_step_batched(self, xs, ys, init_state):
-        """Main training step for 'batched' approach to training multiple parameters. All the inputs from
+            _total_loss = 0.0
+            for loss_name, loss_fnc in p.loss_functions.items():
+                _loss = loss_fnc(
+                    spikes=_spikes_out,
+                    voltages=_v_out,
+                    model_state=_model_state,
+                    y=ysig
+                )
+                _total_loss += tf.cast(_loss, tf.float32)
+                loss_vals[p.name][loss_name] = _loss
+
+            _total_loss = tf.cast(_total_loss, tf.float32)
+            total_loss = tf.nn.scale_regularization_loss(_total_loss)
+            loss_for_grad = optimizers.scale_loss_for_optimizer(self.optimizer, total_loss)
+            loss_vals['__total_loss'] = total_loss
+
+        grads = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
+        grads = optimizers.unscale_gradients_for_optimizer(self.optimizer, grads)
+        return loss_vals, grads
+
+    @tf.function
+    def _distributed_train_step_parameter_gradients(self, x, y, init_state, parameter_index):
+        return self.rnn.strategy.run(
+            self._train_step_parameter_gradients,
+            args=(x, y, init_state, parameter_index)
+        )
+
+    def _apply_gradients(self, grads):
+        self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+
+    @tf.function
+    def _distributed_apply_gradients(self, grads):
+        return self.rnn.strategy.run(self._apply_gradients, args=(grads,))
+
+    def _train_step_parallel(self, xs, ys, init_state):
+        """Main training step for 'parallel' approach to training multiple parameters. All the inputs from
         each parameter is concated together so that if there are N parameters with inputs each "batch_size", 
         a single feedforward step of "N*batch_size" is executed instead. The results are then separated and
         loss functions applied to each parameter, summed together, then returned.
@@ -387,10 +436,7 @@ class TrainingEngine:
         loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
         return loss_vals
 
-    def _train_step_sequential(self, xs, ys, init_state):
-        raise NotImplementedError()
-
-    def _train_step_inseries(self, xs, ys, init_state, apply_gradients=True):
+    def _train_step_series(self, xs, ys, init_state):
         loss_vals = {}
         all_losses = []
         for p, x, y in zip(self.parameters, xs, ys):
@@ -423,6 +469,36 @@ class TrainingEngine:
         loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
         return loss_vals
 
+    def _distributed_train_step_series_accumulate(self, xs, ys, init_state):
+        """Series execution with one accumulated optimizer update.
+
+        Each parameter set is traced/executed separately so TensorFlow can release the
+        sequence activations between parameter sets. Gradients are accumulated and applied
+        once, instead of applying one optimizer update per parameter as normal series does.
+        """
+        loss_vals = {}
+        all_losses = []
+        accum_grads = None
+
+        for parameter_index, (p, x, y) in enumerate(zip(self.parameters, xs, ys)):
+            param_loss_vals, grads = self._distributed_train_step_parameter_gradients(
+                x, y, init_state, parameter_index
+            )
+            loss_vals[p.name] = param_loss_vals[p.name]
+            all_losses.append(param_loss_vals['__total_loss'])
+            if accum_grads is None:
+                accum_grads = list(grads)
+            else:
+                accum_grads = [
+                    self._add_gradients(accum_grad, grad)
+                    for accum_grad, grad in zip(accum_grads, grads)
+                ]
+
+        self._distributed_apply_gradients(accum_grads)
+
+        loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
+        return loss_vals
+
     @tf.function
     def _distributed_train_step(self, x, y, init_state):
         return self.rnn.strategy.run(
@@ -431,7 +507,7 @@ class TrainingEngine:
         )
 
     def _validation_step(self, xs, ys, init_state, training_approach):
-        if training_approach in ['inseries', 'single']:
+        if training_approach in ['series', 'series_accumulate', 'single']:
             loss_vals = {}
             all_losses = []
             for p, x, y in zip(self.parameters, xs, ys):
@@ -457,7 +533,7 @@ class TrainingEngine:
 
             loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
         
-        elif training_approach == 'batched':
+        elif training_approach == 'parallel':
             x_concat = tf.concat(xs, axis=0)
             sigs = self.inputs_signature_factory.build(ys)
             _out = self.rnn.extractor_model((x_concat, init_state))
@@ -482,15 +558,13 @@ class TrainingEngine:
                     loss_vals[p.name][loss_name] = _loss
                     _total_loss += tf.cast(_loss, tf.float32)
                 # Advance to this parameter's slice so the next parameter's validation losses
-                # are computed on its own batch segment (mirrors the fix in _train_step_batched).
+                # are computed on its own batch segment (mirrors the fix in _train_step_parallel).
                 pidx_beg = pidx_end
 
             _total_loss = tf.cast(_total_loss, tf.float32)
             total_loss = tf.nn.scale_regularization_loss(_total_loss)
             loss_vals['__total_loss'] = total_loss
 
-        elif training_approach == 'sequential':
-            raise NotImplementedError()
         else:
             raise ValueError(f'Unknown training approach method "{training_approach}"')
 
@@ -550,7 +624,10 @@ class TrainingEngine:
                 for step in range(self.steps_per_epoch):
                     self.callbacks.on_step_start()
                     spikes, ys = input_itr.next_spikes()
-                    step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
+                    if self.training_approach == 'series_accumulate':
+                        step_loss_vals = self._distributed_train_step_series_accumulate(spikes, ys, init_state=init_state)
+                    else:
+                        step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
                     # Propagate the just-updated master recurrent weights into the compute-dtype
                     # shadow used by the forward pass (no-op when not using a shadow).
                     cell = getattr(self.rnn, '_cell', None)
