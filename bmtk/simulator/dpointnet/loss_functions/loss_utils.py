@@ -176,9 +176,15 @@ def get_pop_names(network, core_radius = None, n_selected_neurons=None, data_dir
 def isolate_core_neurons(network, radius=None, n_selected_neurons=None, data_dir='GLIF_network'):
     path_to_h5 = os.path.join(data_dir, 'network/v1_nodes.h5')
     with h5py.File(path_to_h5, mode='r') as node_h5:
-        x = np.array(node_h5['nodes']['v1']['0']['x'][()])[network['tf_id_to_bmtk_id']]
-        z = np.array(node_h5['nodes']['v1']['0']['z'][()])[network['tf_id_to_bmtk_id']]
-        
+        x = np.array(node_h5['nodes']['v1']['0']['x'][()])
+        z = np.array(node_h5['nodes']['v1']['0']['z'][()])
+    # The reference V1_GLIF_model reorders neurons (tf vs bmtk id); dpointnet keeps the
+    # native SONATA order (no 'tf_id_to_bmtk_id'), in which case the file order is the
+    # model order and no reindexing is needed.
+    if isinstance(network, dict) and ('tf_id_to_bmtk_id' in network):
+        x = x[network['tf_id_to_bmtk_id']]
+        z = z[network['tf_id_to_bmtk_id']]
+
     r = np.sqrt(x ** 2 + z ** 2)
     if radius is not None:
         selected_mask = r < radius
@@ -187,6 +193,21 @@ def isolate_core_neurons(network, radius=None, n_selected_neurons=None, data_dir
         selected_mask = np.isin(np.arange(len(r)), selected_mask)
     
     return selected_mask
+
+
+def resolve_core_mask(network, core_mask=None, core_radius=None, data_dir='GLIF_network'):
+    """Resolve a boolean core mask for a loss function.
+
+    If an explicit ``core_mask`` is given it is used as-is. Otherwise, if a ``core_radius``
+    is given, the central-core mask is computed from neuron positions (sqrt(x^2+z^2)<radius),
+    matching the reference V1_GLIF_model's ``loss_core_radius``. Returns ``None`` if neither
+    is provided (loss applies to all neurons).
+    """
+    if core_mask is not None:
+        return core_mask
+    if core_radius is not None:
+        return isolate_core_neurons(network, radius=core_radius, data_dir=data_dir)
+    return None
 
 
 def pop_name_to_cell_type(pop_name, ignore_l5e_subtypes=False):

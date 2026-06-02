@@ -6,9 +6,7 @@
     "$NETWORK_DIR": "$BASE_DIR/GLIF_network/network",
     "$MODELS_DIR": "$BASE_DIR/GLIF_network/components"
   },
-  
   "target_simulator": "RNN",
-
   "run": {
     "seq_len": 500,
     "dt": 1.0,
@@ -16,13 +14,10 @@
     "t_start": 0.0,
     "default_seed": 3000,
     "train_recurrent_weights": true,
-    "dtype": "float32",
+    "dtype": "float16",
     "single_gpu_strategy": "one_device",
-    "checkpoint": {
-        
-    }    
+    "checkpoint": {}
   },
-  
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
     "gauss_std": 0.5,
@@ -33,9 +28,14 @@
     "pseudo_gauss": false,
     "lr_scale": 1.0,
     "max_delay": 5,
-    "hard_reset": false
+    "hard_reset": false,
+    "tau_syns": [
+      0.7579732,
+      1.60809441,
+      3.41168742,
+      7.23813909
+    ]
   },
-
   "training": {
     "n_epochs": 3,
     "steps_per_epoch": 5,
@@ -49,7 +49,7 @@
     },
     "optimizer": {
       "name": "adam",
-      "epsilon": 1.0e-07
+      "epsilon": 1e-07
     },
     "initial_state": {
       "module": "from_input",
@@ -61,21 +61,20 @@
           "module": "lgn_tf",
           "stimulus_type": "gray_screen",
           "stimulus_options": {
-              "contrast": 0.0,
-              "row_size": 80,
-              "col_size": 120
+            "contrast": 0.0,
+            "row_size": 80,
+            "col_size": 120
           },
           "cell_params": {
-              "input_weight_scale": 1.0
+            "input_weight_scale": 1.0
           }
         },
         "bkg_inputs": {
-            "node_set": "bkg",
-            "trainable": false,
-            "input": "spikes",
-            "module": "noisy_current",
-            "seed": null,
-            "firing_rate": 250.0
+          "node_set": "bkg",
+          "trainable": false,
+          "input": "spikes",
+          "module": "random",
+          "firing_rate": 250.0
         }
       }
     },
@@ -90,52 +89,46 @@
             "module": "lgn_tf",
             "stimulus_type": "drifting_gratings",
             "stimulus_options": {
-                "orientation": null,
-                "temporal_f": 2.0,
-                "row_size": 80,
-                "col_size": 120                      
-              }
-            },
-            "bkg_inputs": {
-              "node_set": "bkg",
-              "trainable": false,
-              "input": "spikes",
-              "module": "noisy_current",
-              "seed": null,
-              "firing_rate": 250.0
+              "orientation": null,
+              "temporal_f": 2.0,
+              "row_size": 80,
+              "col_size": 120
             }
+          },
+          "bkg_inputs": {
+            "node_set": "bkg",
+            "trainable": false,
+            "input": "spikes",
+            "module": "random",
+            "firing_rate": 250.0
+          }
         },
         "loss_functions": {
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
-            "rate_cost": 100.0,
+            "rate_cost": 10000.0,
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
             "stimulus_type": "drifting_gratings",
-            "neuropixels_df": "$BASE_DIR/Neuropixels_data/v1_OSI_DSI_DF.csv"
+            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           }
         }
       }
     ]
   },
-
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
     "log_level": "DEBUG",
     "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
     "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
-    "callbacks": {
-
-    }
+    "callbacks": {}
   },
-
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",
-    "synaptic_models_dir": "$MODELS_DIR/synaptic_models"      
+    "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"
   },
-
   "networks": {
     "nodes": [
       {
@@ -157,7 +150,7 @@
     ],
     "edges": [
       {
-        "edges_file": "$NETWORK_DIR/v1_v1_edges.filtered.h5",
+        "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
         "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
       },
       {

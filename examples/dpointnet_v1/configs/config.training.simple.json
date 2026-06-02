@@ -6,9 +6,7 @@
     "$NETWORK_DIR": "$BASE_DIR/GLIF_network/network",
     "$MODELS_DIR": "$BASE_DIR/GLIF_network/components"
   },
-  
   "target_simulator": "RNN",
-
   "run": {
     "seq_len": 500,
     "dt": 1.0,
@@ -16,10 +14,9 @@
     "t_start": 0.0,
     "default_seed": 3000,
     "train_recurrent_weights": true,
-    "dtype": "float32",
+    "dtype": "float16",
     "single_gpu_strategy": "one_device"
   },
-  
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
     "gauss_std": 0.5,
@@ -31,31 +28,33 @@
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [0.7579732, 1.60809441, 3.41168742, 7.23813909]
+    "tau_syns": [
+      0.7579732,
+      1.60809441,
+      3.41168742,
+      7.23813909
+    ]
   },
-
   "inputs": {
-      "lgn_random": {
-        "node_set": "lgn",
-        "input": "spikes",
-        "module": "random",
-        "firing_rate": 10.0
-      },
-      "bkg_random": {
-        "node_set": "bkg",
-        "trainable": false,
-        "input": "spikes",
-        "module": "random",
-        "firing_rate": 10.0
-      }
+    "lgn_random": {
+      "node_set": "lgn",
+      "input": "spikes",
+      "module": "random",
+      "firing_rate": 10.0
+    },
+    "bkg_random": {
+      "node_set": "bkg",
+      "trainable": false,
+      "input": "spikes",
+      "module": "random",
+      "firing_rate": 10.0
+    }
   },
-
   "initial_states": {
     "zero_init_state": {
       "module": "zero_state"
     }
   },
-
   "training": {
     "n_epochs": 1,
     "steps_per_epoch": 2,
@@ -70,14 +69,17 @@
     },
     "optimizer": {
       "name": "adam",
-      "epsilon": 1.0e-07
+      "epsilon": 1e-07
     },
     "initial_state": {
       "module": "zero_state"
     },
-    "initial_stateOLD":{
+    "initial_stateOLD": {
       "module": "from_input",
-      "inputs": ["lgn_spont", "bkg_random"]
+      "inputs": [
+        "lgn_spont",
+        "bkg_random"
+      ]
     },
     "callbacks": {
       "class": "Callbacks",
@@ -94,22 +96,22 @@
         "loss_functions": {
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
-            "rate_cost": 100.0,
+            "rate_cost": 10000.0,
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
             "stimulus_type": "drifting_gratings",
-            "neuropixels_df": "$BASE_DIR/Neuropixels_data/v1_OSI_DSI_DF.csv"
+            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
           "evoked_voltage_regularizer": {
             "module": "VoltageRegularization",
-            "voltage_cost": 1.5,
+            "voltage_cost": 1.0,
             "penalty_mode": "range"
           },
           "evoked_sync_loss": {
             "enabled": true,
             "module": "SynchronizationLoss",
-            "sync_cost": 1.0,
+            "sync_cost": 1.5,
             "t_start": 0.2,
             "t_end": 0.5,
             "n_samples": 500,
@@ -121,23 +123,18 @@
       }
     ]
   },
-
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
     "log_level": "DEBUG",
     "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
     "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
-    "callbacks": {
-
-    }
+    "callbacks": {}
   },
-
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",
-    "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"      
+    "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"
   },
-
   "networks": {
     "nodes": [
       {
@@ -155,7 +152,7 @@
     ],
     "edges": [
       {
-        "edges_file": "$NETWORK_DIR/v1_v1_edges.filtered.h5",
+        "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
         "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
       },
       {

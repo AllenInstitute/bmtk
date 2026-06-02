@@ -284,6 +284,76 @@ def get_new_inds_table(indices, weights, syn_ids, non_zero_cols, pre_ind_table):
     return new_indices, new_weights, new_syn_ids, post_in_degree, all_synapse_inds
 
 
+@tf.custom_gradient
+def calculate_input_currents(x_t, input_indices, input_weight_values, input_weight_values_compute,
+                             input_dense_shape, synaptic_basis_weights, input_syn_ids, pre_input_ind_table):
+    """Memory-efficient input (LGN/background) synaptic current, mirroring
+    ``calculate_synaptic_currents`` but for an external spike input ``x_t``.
+
+    Forward: I[b,post,r] = sum_pre( x_t[b,pre] * W_in[post,pre] * basis[type,r] ), where
+    ``x_t[b,pre]`` may be a multi-spike count (not just 0/1). Forward reads the compute-dtype
+    shadow ``input_weight_values_compute``; the custom backward returns the gradient w.r.t. the
+    trainable master ``input_weight_values`` and recomputes the cheap basis gather instead of
+    retaining per-timestep activations. The plain-autodiff version stacked those activations
+    across the whole sequence, which dominated background-input memory at high firing rates.
+    No gradient flows to ``x_t`` (external input).
+    """
+    batch_size = tf.cast(tf.shape(x_t)[0], dtype=tf.int64)
+    # input_dense_shape may be a Python/int32 tuple; force int64 for segment-id arithmetic
+    n_post_neurons = tf.cast(input_dense_shape[0], dtype=tf.int64)
+    compute_dtype = synaptic_basis_weights.dtype
+
+    if x_t.dtype == tf.bool:
+        non_zero_indices = tf.where(x_t)
+    else:
+        non_zero_indices = tf.where(x_t > 0)
+    batch_indices = non_zero_indices[:, 0]
+    pre_neuron_indices = non_zero_indices[:, 1]
+
+    new_indices, new_weights, new_syn_ids, post_in_degree, all_synaptic_inds = get_new_inds_table(
+        input_indices, input_weight_values_compute, input_syn_ids, pre_neuron_indices, pre_input_ind_table
+    )
+
+    batch_indices_per_connection = tf.repeat(batch_indices, post_in_degree)
+    post_neuron_indices = new_indices[:, 0]
+    segment_ids = batch_indices_per_connection * n_post_neurons + post_neuron_indices
+    segment_ids = tf.cast(segment_ids, dtype=tf.int32)
+    num_segments = tf.cast(batch_size * n_post_neurons, dtype=tf.int32)
+
+    basis_factors = tf.gather(synaptic_basis_weights, new_syn_ids, axis=0)
+    new_syn_ids = tf.cast(new_syn_ids, dtype=tf.int32)  # int32 to reduce VRAM (reused in backward)
+    # Per-connection presynaptic spike count (supports multi-spike inputs).
+    n_pre_spikes = tf.cast(tf.gather_nd(x_t, non_zero_indices), compute_dtype)
+    n_pre_per_connection = tf.repeat(n_pre_spikes, post_in_degree)
+    new_weights = tf.cast(new_weights, compute_dtype)
+    new_weights_final = (new_weights * n_pre_per_connection)[:, tf.newaxis] * basis_factors
+    i_in_flat = tf.math.unsorted_segment_sum(new_weights_final, segment_ids, num_segments)
+
+    def grad(dy):
+        # dL/dW_in[syn] = sum_b,r( dy[b,post[syn],r] * n_pre_spikes[syn] * basis[type[syn],r] )
+        dnew_weights = tf.gather(dy, segment_ids)                                     # [n_active, n_basis]
+        basis_factors_grad = tf.gather(synaptic_basis_weights, new_syn_ids, axis=0)   # recomputed (saves VRAM)
+        de_dweight_connection = tf.einsum('cr,cr->c', dnew_weights, basis_factors_grad) * n_pre_per_connection
+        de_dweight_values = tf.math.unsorted_segment_sum(
+            data=de_dweight_connection,
+            segment_ids=all_synaptic_inds,
+            num_segments=tf.shape(input_weight_values)[0],
+        )
+        de_dweight_values = tf.cast(de_dweight_values, dtype=input_weight_values.dtype)
+        return [
+            None,               # x_t (external input)
+            None,               # input_indices (constant)
+            de_dweight_values,  # input_weight_values (master, matches trainable dtype)
+            None,               # input_weight_values_compute (non-trainable shadow)
+            None,               # input_dense_shape[0] (constant)
+            None,               # input_dense_shape[1] (constant)
+            None,               # synaptic_basis_weights (constant)
+            None,               # input_syn_ids (constant)
+            None,               # pre_input_ind_table (constant)
+        ]
+
+    return i_in_flat, grad
+
 
 @njit(cache=True)
 def _build_csr_order_numba(pre_ids, n_source_neurons):
@@ -455,8 +525,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.v_th = tf.constant(1.0, dtype=self.compute_dtype)
         self.v_reset = tf.constant(0.0, dtype=self.compute_dtype)
 
-        self.decay = tf.Variable(tf.gather(membrane_decay, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
-        self.current_factor = tf.Variable(tf.gather(current_factor, self._node_type_ids), trainable=False, dtype=self.compute_dtype)
+        # Cast before constructing the Variable: tf.Variable does not auto-cast a
+        # float32 initial value to a float16 compute_dtype under mixed precision.
+        self.decay = tf.Variable(
+            tf.cast(tf.gather(membrane_decay, self._node_type_ids), self.compute_dtype),
+            trainable=False, dtype=self.compute_dtype)
+        self.current_factor = tf.Variable(
+            tf.cast(tf.gather(current_factor, self._node_type_ids), self.compute_dtype),
+            trainable=False, dtype=self.compute_dtype)
 
         ## TODO: This shouldn't be stored in a separate pickle.
         # path = os.path.join(glif_network["data_dir"], 'tf_data', 'syn_id_to_syn_weights_dict.pkl')
@@ -519,9 +595,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             dtype=self.variable_dtype
         ) # shape = (n_synapses,)
 
-        if self.variable_dtype != self.compute_dtype:
-            # Keep a non-trainable compute-lane shadow to avoid full-table casts
-            # in the recurrent custom gradient path at every timestep.
+        if self.variable_dtype != self.compute_dtype or individual_training:
+            # Keep a non-trainable compute-lane shadow. Two reasons:
+            #  (1) mixed precision: avoids casting the full weight table every timestep;
+            #  (2) the recurrent @tf.custom_gradient reads these weights inside the RNN
+            #      while_loop. If that read is the *trainable* variable (esp. a MirroredVariable
+            #      under MirroredStrategy), TF requires the grad to take a `variables` kwarg and
+            #      otherwise errors. Reading a non-trainable shadow avoids that. The shadow is
+            #      kept in sync via refresh_recurrent_weight_shadow() after each optimizer step.
             recurrent_weight_values_compute = tf.Variable(
                 tf.cast(self.recurrent_weight_values, self.compute_dtype),
                 name="sparse_recurrent_weights_compute",
@@ -557,39 +638,46 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             input_props['input_indices'] = tf.Variable(input_indices, trainable=False, dtype=tf.int64)
 
+            input_type = input_network['input_type']
+            input_options = input_network.get('options', {})
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
-            input_trainable = input_network['options'].get('trainable', False)
+            input_trainable = input_options.get('trainable', False)
 
             input_props['input_weight_values'] = tf.Variable(
-                input_weights * input_network['options'].get('weight_scale', 1.0) / lr_scale,
+                input_weights * input_options.get('weight_scale', 1.0) / lr_scale,
                 name=f'{input_name}_input_weights',
                 constraint=SignedConstraint(input_weight_positive),
-                trainable=input_trainable, # input_network['options'].get('trainable', False),
+                trainable=input_trainable,
                 dtype=self.variable_dtype
             )
+            # Non-trainable compute-dtype shadow (mirrors the recurrent weights): the input-current
+            # @tf.custom_gradient reads this in the forward (avoids casting in fp16 and avoids reading
+            # a trainable MirroredVariable inside the RNN while_loop), while the gradient targets the
+            # master above. Kept in sync via refresh_recurrent_weight_shadow() after each step.
+            if self.variable_dtype != self.compute_dtype or input_trainable:
+                _input_weight_compute = tf.Variable(
+                    tf.cast(input_props['input_weight_values'], self.compute_dtype),
+                    name=f'{input_name}_input_weights_compute',
+                    trainable=False,
+                    dtype=self.compute_dtype,
+                )
+                input_props['input_weight_values_compute'] = self._no_dependency(_input_weight_compute)
+            else:
+                input_props['input_weight_values_compute'] = input_props['input_weight_values']
             input_props['input_syn_ids'] = tf.constant(input_syn_ids, dtype=tf.int64) # for efficiency this needs to be in int64
             # if not self._current_input:
             #     input_props['pre_input_ind_table'] = make_pre_ind_table(
             #         input_indices, 
             #         n_source_neurons=input_dense_shape[1]
             #     )
-            input_type = input_network['options'].get('input_type', 'spikes')
-            input_props['type'] = input_type
+            input_props['input_type'] = input_type
             if input_type == 'spikes':
                 input_props['pre_input_ind_table'] = make_pre_ind_table(
                     input_indices, 
                     n_source_neurons=input_dense_shape[1]
                 )
                 end_indx = self.inputs_idx[idx] + n_input_nodes
-            elif input_type == 'noisy_current':
-                firing_rate = input_network['options'].get('firing_rate', 250.0)
-                input_props['spike_prob'] = tf.constant(firing_rate * 0.001, dtype=self.compute_dtype)
-                input_props['pre_input_ind_table'] = make_pre_ind_table(
-                    input_indices, 
-                    n_source_neurons=input_dense_shape[1]
-                )
-                end_indx = self.inputs_idx[idx]
-            elif input_type == 'current_input':
+            elif input_type == 'current':
                 end_indx = self.inputs_idx[idx] + n_input_nodes
             else:
                 raise ValueError(f'Unknown input type {input_type}')
@@ -666,6 +754,30 @@ class GLIF3Cell(tf.keras.layers.Layer):
         del bkg_input_indices, bkg_input_weights, bkg_input_syn_ids, bkg_input_weight_positive #, bkg_input_delays
         '''
 
+    def refresh_recurrent_weight_shadow(self):
+        """Sync the compute-dtype shadow of the recurrent weights with the trained master.
+
+        Under mixed precision the forward uses ``recurrent_weight_values_compute`` (a
+        non-trainable float16 copy) while the optimizer updates the float32 master
+        ``recurrent_weight_values``. This must be called after each optimizer step, else the
+        forward keeps using stale weights and recurrent-weight training has no effect.
+        Matches the reference V1_GLIF_model.
+        """
+        if (self.recurrent_weight_values_compute is not self.recurrent_weight_values
+                and self.recurrent_weight_values.trainable):
+            self.recurrent_weight_values_compute.assign(
+                tf.cast(self.recurrent_weight_values, self.compute_dtype)
+            )
+
+        # Also sync any trainable input-weight shadows (e.g. trainable background weights),
+        # which the input-current custom gradient reads in its forward pass.
+        for input_net in self.inputs.values():
+            master = input_net.get('input_weight_values')
+            shadow = input_net.get('input_weight_values_compute')
+            if shadow is None or shadow is master or not master.trainable:
+                continue
+            shadow.assign(tf.cast(master, self.compute_dtype))
+
     def calculate_i_rec_with_custom_grad(self, rec_z_buf):
         return calculate_synaptic_currents(
             rec_z_buf,
@@ -678,60 +790,44 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.pre_ind_table
         )
 
+    def calculate_input_current_from_firing_probabilities(self, x_t, input_net):
+        """Input current when the input is firing PROBABILITIES (rate/'current' input) rather
+        than discrete spikes. Computes I[:, post, r] = sum_pre w[post,pre]*basis[type,r]*prob[pre]
+        via a per-receptor sparse-dense matmul. Ported from the reference V1_GLIF_model;
+        uses the per-input dict (input_net) like calculate_input_current_from_spikes.
+        """
+        batch_size = tf.shape(x_t)[0]
+        input_indices = input_net['input_indices']
+        input_weight_values = input_net['input_weight_values']
+        input_syn_ids = input_net['input_syn_ids']
+        input_dense_shape = input_net['input_dense_shape']
+
+        i_in = tf.TensorArray(dtype=self.compute_dtype, size=self._n_syn_basis)
+        for r_id in range(self._n_syn_basis):
+            input_weights_factors = tf.gather(self.synaptic_basis_weights[:, r_id], input_syn_ids, axis=0)
+            weights_syn_receptors = tf.cast(input_weight_values, self.compute_dtype) * input_weights_factors
+            sparse_w_in = tf.sparse.SparseTensor(input_indices, weights_syn_receptors, input_dense_shape)
+            i_receptor = tf.sparse.sparse_dense_matmul(sparse_w_in, tf.cast(x_t, self.compute_dtype), adjoint_b=True)
+            i_in = i_in.write(r_id, i_receptor)
+        i_in = i_in.stack()
+        i_in = tf.transpose(i_in)  # -> [batch, n_neurons, n_syn_basis] after reshape
+        i_in_flat = tf.reshape(i_in, [batch_size * self._n_neurons, self._n_syn_basis])
+        return i_in_flat
+
     def calculate_input_current_from_spikes(self, x_t, input_net):
-        batch_size = tf.cast(tf.shape(x_t)[0], dtype=tf.int64) # int64
-        n_post_neurons = input_net['input_dense_shape'][0]
-        # n_post_neurons = self.lgn_input_dense_shape[0]
-        
-        # Find the indices of non-zero inputs
-        if x_t.dtype == tf.bool:
-            non_zero_indices = tf.where(x_t)
-        else:
-            non_zero_indices = tf.where(x_t > 0)
-
-        batch_indices = non_zero_indices[:, 0]  # int64
-        pre_neuron_indices = non_zero_indices[:, 1] #int64
-
-        # Get the indices into self.recurrent_indices for each pre_neuron_index
-        # self.pre_ind_table is a RaggedTensor or a list of lists mapping pre_neuron_index to indices in recurrent_indices
-        new_indices, new_weights, new_syn_ids, post_in_degree, _ = get_new_inds_table(
+        # Memory-efficient input current via the @tf.custom_gradient module function: the forward
+        # reads the compute-dtype shadow and the backward recomputes the cheap basis gather (instead
+        # of retaining per-timestep activations), while the gradient targets the trainable master.
+        return calculate_input_currents(
+            x_t,
             input_net['input_indices'],
             input_net['input_weight_values'],
+            input_net['input_weight_values_compute'],
+            input_net['input_dense_shape'],
+            self.synaptic_basis_weights,
             input_net['input_syn_ids'],
-            pre_neuron_indices,
-            input_net['pre_input_ind_table']
-            
-            
-            # self.input_indices,
-            # self.input_weight_values,
-            # self.input_syn_ids,
-            # pre_neuron_indices,
-            # self.pre_input_ind_table
+            input_net['pre_input_ind_table'],
         )
-
-        # Expand batch_indices to match the length of inds_flat
-        batch_indices_per_connection = tf.repeat(batch_indices, post_in_degree) #int64
-        # Get post-synaptic neuron indices
-        post_neuron_indices = new_indices[:, 0] #int64
-        # Compute segment IDs
-        segment_ids = batch_indices_per_connection * n_post_neurons + post_neuron_indices
-        segment_ids = tf.cast(segment_ids, dtype=tf.int32)
-        num_segments = tf.cast(batch_size * n_post_neurons, dtype=tf.int32)
-        # Compute weighted basis factors
-        basis_factors = tf.gather(self.synaptic_basis_weights, new_syn_ids, axis=0)  # shape (n_active_connections, n_syn_basis)
-        # Accumulate currents in variable_dtype for better numerical fidelity, then cast once.
-        new_weights = tf.cast(new_weights, self.compute_dtype)
-        new_weights_final = new_weights[:, tf.newaxis] * basis_factors
-        # new_weights_final = new_weights[:, tf.newaxis] * basis_factors
-
-        # Calculate input currents
-        i_in_flat = tf.math.unsorted_segment_sum(new_weights_final, segment_ids, num_segments)
-
-        # Cast back to compute_dtype to keep downstream state buffers compact.
-        # if i_in_flat.dtype != self.compute_dtype:
-        #     i_in_flat = tf.cast(i_in_flat, dtype=self.compute_dtype)
-
-        return i_in_flat
 
     def update_psc(self, psc, psc_rise, rec_inputs):
         new_psc_rise = psc_rise * self.syn_decay + rec_inputs * self.psc_initial
@@ -881,15 +977,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
-            if input_net['type'] == 'noisy_current':
-                extern_currents.append(self.calculate_noise_current(batch_size, noise_step, input_net))
+            input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
+            if input_net['input_type'] == 'current':
+                extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes, input_net))
             else:
-                input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
-                # tf.print('input_spikes = ', tf.math.count_nonzero(input_spikes))
-                if input_net['type'] == 'current_input':
-                    extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes))
-                else:
-                    extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
+                extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
 
         rec_inputs = i_rec + tf.add_n(extern_currents)
         # Reshape i_rec_flat back to [batch_size, num_neurons]

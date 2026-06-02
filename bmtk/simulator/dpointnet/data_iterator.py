@@ -14,6 +14,10 @@ class DataIterator:
         self._is_built = False
         self._ret_list = False
 
+    def close(self):
+        self.data_itrs = []
+        self._is_built = False
+
     def build(self):
         self._is_built = False
         if isinstance(self.input_mods, InputsGeneratorMod):

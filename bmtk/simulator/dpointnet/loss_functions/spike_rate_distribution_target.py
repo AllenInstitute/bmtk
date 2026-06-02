@@ -28,11 +28,17 @@ class SpikeRateDistributionTarget:
         self._pre_delay = int(pre_delay)
         self._post_delay = int(post_delay)
         self._rates_dampening = rates_dampening
-        self._core_mask = core_mask
         self._data_dir = data_dir
         self._dtype = dtype
         self._seed = seed
         self._neuropixels_df = neuropixels_df
+
+        # Restrict the rate-matching loss to a central core (matches the reference
+        # V1_GLIF_model's loss_core_radius). With no core, the loss averages over all
+        # ~66k neurons, which dilutes the per-neuron (and per-weight) gradient ~4x.
+        self._core_mask = loss_utils.resolve_core_mask(
+            self._network, core_mask, kwargs.get('core_radius'), self._data_dir
+        )
 
         # Mapping of stimulus type to neuropixels feature
         # If deprecated arguments are used, map them to stimulus_type

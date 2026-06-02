@@ -43,6 +43,7 @@ class NetworkAdaptor:
         # "current", or "na" (for unknown). Each input network can support multiple training
         # and predictions inputs but only of the same type.  
         self._input_type = None
+        self._input_options = {}
         self._source_tf_ids = None
         self._target_tf_ids = None
         self._edge_type_ids = None
@@ -86,6 +87,10 @@ class NetworkAdaptor:
             return self.n_nodes
         else:
             return 0
+
+    @property
+    def input_options(self):
+        return self._input_options
 
     @property
     def source_tf_ids(self):
@@ -146,6 +151,10 @@ class NetworkAdaptor:
         rec_networks = []
         input_networks = []
         names = set()
+
+        # Reset shared syn_id mapping so all SONATA networks built here share
+        # a single consistent set of syn_ids / basis_weights indices.
+        SONATANetwork.reset_global_syn_id_mapping()
 
         if networks_dict.keys() == {'networks'}:
             networks_dict = networks_dict['networks']
@@ -367,6 +376,18 @@ class CachedNetwork(NetworkAdaptor):
 
 
 class SONATANetwork(NetworkAdaptor):
+    # Class-level shared mapping: dynamics_params_path -> global index.
+    # Ensures all network instances (recurrent + inputs) use consistent syn_ids
+    # that index into a single shared basis_weights table.
+    _global_dyn_params_idx_lu = {}
+    _global_ordered_dyn_param_dicts = []
+
+    @classmethod
+    def reset_global_syn_id_mapping(cls):
+        """Reset the shared syn_id mapping (call before building a new model)."""
+        cls._global_dyn_params_idx_lu = {}
+        cls._global_ordered_dyn_param_dicts = []
+
     def __init__(self, sonata_node_pop, network_type, cache_file=False, filter=None, **opt_args):
         super().__init__(name=sonata_node_pop.name, network_type=network_type)
         self._sonata_node_pop = sonata_node_pop
@@ -474,8 +495,10 @@ class SONATANetwork(NetworkAdaptor):
         return tf_ids
 
     def _synaptic_dyn_params(self, format='dict'):
-        dynamic_params_idx_lu = {}
-        ordered_dyn_param_dicts = []
+        # Use class-level shared mapping to ensure all networks (recurrent + inputs)
+        # assign consistent syn_ids that index into one global basis_weights table.
+        dynamic_params_idx_lu = SONATANetwork._global_dyn_params_idx_lu
+        ordered_dyn_param_dicts = SONATANetwork._global_ordered_dyn_param_dicts
 
         data_table = {}
         for edge_pop in self._sonata_edge_pops:
@@ -553,7 +576,7 @@ class SONATANetwork(NetworkAdaptor):
         self._target_tf_ids = np.zeros(n_edges, dtype=np.uint32)
         self._edge_type_ids = np.zeros(n_edges, dtype=np.uint32)
         weights = np.zeros(n_edges, dtype=np.float32)
-        delays = np.zeros(n_edges, dtype=np.uint32)
+        delays = np.zeros(n_edges, dtype=np.float32)
         syn_ids = np.zeros(n_edges, dtype=np.uint8)
         syn_dyn_params, syn_dyn_parms_lu = self._synaptic_dyn_params()
         
@@ -614,7 +637,7 @@ class SONATANetwork(NetworkAdaptor):
                 'asc_amps': np.array(self._dynamics_params_lu['asc_amps'], dtype=np.float32)
             },
             'synapses': {
-                'indices': np.column_stack((self._target_tf_ids, self._source_tf_ids)),
+                'indices': indices,
                 'weights': weights.astype(np.float32),
                 'delays': delays,
                 'dense_shape': (n_nodes, n_nodes),
@@ -645,8 +668,8 @@ class SONATANetwork(NetworkAdaptor):
         self._source_tf_ids = np.zeros((n_edges,), dtype=np.uint32)
         self._target_tf_ids = np.zeros(n_edges, dtype=np.uint32)
         self._edge_type_ids = np.zeros(n_edges, dtype=np.uint32)
-        weights = np.zeros(n_edges, dtype=np.uint32)
-        delays = np.zeros(n_edges, dtype=np.uint32)
+        weights = np.zeros(n_edges, dtype=np.float32)
+        delays = np.zeros(n_edges, dtype=np.float32)
         syn_ids = np.zeros(n_edges, dtype=np.uint8)
 
         idx_beg, idx_end = 0, 0
@@ -690,13 +713,14 @@ class SONATANetwork(NetworkAdaptor):
         net_dict = {
             'name': self.name,
             'network_type': self.network_type,
+            'input_type': self.input_type,
             'node_params': node_params,
             'n_inputs': len(self._sonata_node_pop.node_ids),
             'indices': np.column_stack((self._target_tf_ids, self._source_tf_ids)),
             'weights': weights,
             'delays': delays,
             'syn_ids': syn_ids,
-            'options': {}
+            'options': dict(self.input_options)
         }
 
         if self._cache_file and not Path(self._cache_file).exists():

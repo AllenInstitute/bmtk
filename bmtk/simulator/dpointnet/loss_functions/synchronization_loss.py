@@ -18,8 +18,11 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         self._t_end = t_end
         self._t_start_seconds = int(t_start * 1000)
         self._t_end_seconds = int(t_end * 1000)
-        self._core_mask = core_mask
         self._data_dir = data_dir
+        # Resolve core mask from an explicit mask or a core_radius (matches reference loss_core_radius).
+        self._core_mask = loss_utils.resolve_core_mask(
+            self._network, core_mask, kwargs.get('core_radius'), data_dir
+        )
         self._neuropixels_data_dir = neuropixels_data_dir
         self._dtype = dtype
         self._n_samples = n_samples
@@ -27,7 +30,7 @@ class SynchronizationLoss(tf.keras.layers.Layer):
 
         pop_names = loss_utils.get_pop_names(self._network)
         if self._core_mask is not None:
-            pop_names = pop_names[core_mask]
+            pop_names = pop_names[self._core_mask]
         node_ei = np.array([pop_name[0] for pop_name in pop_names])
         node_id = np.arange(len(node_ei))
         
