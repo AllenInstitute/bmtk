@@ -54,10 +54,18 @@ class LGNGenerator(InputsGeneratorMod):
         _seq_len = seq_len
         if _seq_len is None:
             raise ValueError(f'No "seq_len" value set, please specify number of time-steps.')
+        stimulus_opts = dict(self.stimulus_opts)
+        seed = stimulus_opts.pop('seed', None)
+        if seed is None and self.rnn.default_seed is not None:
+            if self.stimulus_type == 'drifting_gratings':
+                seed = self.rnn.default_seed + 10000
+            elif self.stimulus_type in ['grey_screen', 'gray_screen']:
+                seed = self.rnn.default_seed + 20000
         return self._generator_fn(
             lgn_network=self.lgn,
             seq_len=_seq_len,
-            **self.stimulus_opts
+            seed=seed,
+            **stimulus_opts
         )
 
     @staticmethod
@@ -119,6 +127,26 @@ def _fold_in_seed(seed_pair, value):
     return tf.random.experimental.stateless_fold_in(
         seed_pair, tf.cast(value, tf.int32)
     )
+
+
+def _sample_seed_pair(seed, salt=0, sample_idx=0, stream=0):
+    if seed is None:
+        return None
+    max_int32 = 2**31 - 1
+    seed_int = int(seed) % max_int32
+    mixed = (
+        seed_int
+        + int(salt) * 1009
+        + int(sample_idx) * 9176
+        + int(stream) * 131071
+    ) % max_int32
+    return tf.constant([mixed, (mixed + 104729) % max_int32], dtype=tf.int32)
+
+
+def _as_scalar_tensor(value, dtype, name):
+    value = tf.cast(value, dtype)
+    value = tf.reshape(value, [])
+    return tf.ensure_shape(value, [])
 
 
 @tf.function(jit_compile=True)
@@ -214,7 +242,7 @@ def create_drifting_gratings_generator(
     # )
 
     duration =  seq_len - pre_delay - post_delay
-    base_seed = _stateless_seed_pair(seed, salt=1001)
+    base_seed = None if seed is None else int(seed)
 
     if orientation is not None:
         if not pd.api.types.is_list_like(orientation):
@@ -232,10 +260,9 @@ def create_drifting_gratings_generator(
             orientation_seed = None
             spike_seed = None
             if base_seed is not None:
-                sample_seed = _fold_in_seed(base_seed, sample_idx)
-                orientation_seed = _fold_in_seed(sample_seed, 0)
-                phase_seed = _fold_in_seed(sample_seed, 1)
-                spike_seed = _fold_in_seed(sample_seed, 2)
+                orientation_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=0)
+                phase_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=1)
+                spike_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=2)
 
             if orientation is None:
                 # generate randdomly.
@@ -262,7 +289,7 @@ def create_drifting_gratings_generator(
             if billeh_phase:
                 mov_theta += 180
             # Ensure theta is a Tensor to avoid tf.function retracing on Python scalars.
-            mov_theta = tf.cast(mov_theta, dtype)
+            mov_theta = _as_scalar_tensor(mov_theta, dtype, 'theta')
 
             # Generate a random phase
             if phase_seed is None:
@@ -271,6 +298,7 @@ def create_drifting_gratings_generator(
                 phase = tf.random.stateless_uniform(
                     shape=(), seed=tf.cast(phase_seed, tf.int32), minval=0, maxval=360, dtype=dtype
                 )
+            phase = _as_scalar_tensor(phase, dtype, 'phase')
 
             movie = make_drifting_grating_stimulus(
                 row_size=row_size, 
@@ -353,15 +381,14 @@ def create_grey_screen_generator(
     #     network=network,
     #     row_size=row_size, col_size=col_size
     # )
-    base_seed = _stateless_seed_pair(seed, salt=2001)
+    base_seed = None if seed is None else int(seed)
 
     def _g():
         sample_idx = 0
         while True:
             spike_seed = None
             if base_seed is not None:
-                sample_seed = _fold_in_seed(base_seed, sample_idx)
-                spike_seed = _fold_in_seed(sample_seed, 0)
+                spike_seed = _sample_seed_pair(base_seed, salt=2001, sample_idx=sample_idx, stream=0)
 
             # Create a gray screen (all zeros)
             # gray_screen = tf.zeros((seq_len, row_size, col_size, 1), dtype=dtype)
@@ -416,4 +443,3 @@ def create_grey_screen_generator(
         # )
     )
     return data_set
-

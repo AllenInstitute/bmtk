@@ -3,6 +3,7 @@ from .target_firing_rates import TargetFiringRate
 from .orientation_selectivity_loss import OrientationSelectivityLoss
 from .voltage_regularization import VoltageRegularization
 from .synchronization_loss import SynchronizationLoss
+from .weight_regularization import EMDWeightRegularization
 
 
 class LossModules:
@@ -54,3 +55,4 @@ LossModules().add_module(TargetFiringRate, overwrite=False)
 LossModules().add_module(OrientationSelectivityLoss, overwrite=False)
 LossModules().add_module(VoltageRegularization, overwrite=False)
 LossModules().add_module(SynchronizationLoss, overwrite=False)
+LossModules().add_module(EMDWeightRegularization, overwrite=False)

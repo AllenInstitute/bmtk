@@ -563,6 +563,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         syn_ids = np.array(glif_network["synapses"]["syn_ids"])
         delays = np.array(glif_network["synapses"]["delays"])
         weights = (weights/voltage_scale[self._node_type_ids[indices[:, 0]]])  # Scale down the recurrent weights
+        # Per-edge factor to invert the load-time scaling on export (recover physical syn_weight):
+        # physical = internal * voltage_scale[target] * lr_scale / recurrent_weight_scale.
+        self._recurrent_export_factor = (
+            voltage_scale[self._node_type_ids[indices[:, 0]]] * lr_scale / recurrent_weight_scale
+        ).astype(np.float32)
         delays = np.round(np.clip(delays, dt, self.max_delay)/dt).astype(np.int32) # Use the maximum delay to clip the synaptic delays
         indices[:, 1] = indices[:, 1] + self._n_neurons * (delays - 1) # Introduce the delays in the presynaptic neuron indices
 
@@ -640,6 +645,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
             input_type = input_network['input_type']
             input_options = input_network.get('options', {})
+            # Per-edge factor to invert the load-time scaling on export (recover physical syn_weight):
+            # physical = internal * voltage_scale[target] * lr_scale / weight_scale.
+            input_props['export_factor'] = (
+                voltage_scale[self._node_type_ids[input_indices[:, 0]]]
+                * lr_scale / input_options.get('weight_scale', 1.0)
+            ).astype(np.float32)
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
             input_trainable = input_options.get('trainable', False)
 

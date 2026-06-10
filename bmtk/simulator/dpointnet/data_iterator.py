@@ -45,7 +45,7 @@ class DataIterator:
             if generator is None:
                 self.data_itrs.append(None)
             else:                    
-                dataset = generator.batch(self.batch_size).prefetch(tf.data.AUTOTUNE)
+                dataset = generator.batch(self.batch_size)
                 itr = iter(dataset)
                 self.data_itrs.append(itr)
 
@@ -75,7 +75,7 @@ class DataIterator:
                 if generator is None:
                     _itrs.append(None)
                 else:                    
-                    dataset = generator.batch(bs).prefetch(tf.data.AUTOTUNE)
+                    dataset = generator.batch(bs)
                     itr = iter(dataset)
                     _itrs.append(itr)
             self.data_itrs.append(_itrs)

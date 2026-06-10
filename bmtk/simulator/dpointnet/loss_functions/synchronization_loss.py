@@ -6,10 +6,11 @@ from . import loss_utils
 
 
 class SynchronizationLoss(tf.keras.layers.Layer):
-    def __init__(self, rnn, sync_cost=10, t_start=0.0, t_end=0.5, n_samples=50, 
+    def __init__(self, rnn, sync_cost=10, t_start=0.0, t_end=0.5, n_samples=50,
                  neuropixels_data_dir='Synchronization_data',
                  data_dir='GLIF_network',
-                 session='evoked', dtype=tf.float32, core_mask=None, seed=42, **kwargs):
+                 session=None, dtype=tf.float32, core_mask=None, seed=42,
+                 stimulus_type='drifting_gratings', **kwargs):
         super(SynchronizationLoss, self).__init__(dtype=dtype)
         self._rnn = rnn
         self._network = rnn.recurrent_network
@@ -27,6 +28,16 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         self._dtype = dtype
         self._n_samples = n_samples
         self._base_seed = seed
+        if session is None:
+            if stimulus_type in ['spontaneous', 'gray']:
+                session = 'spont'
+            elif stimulus_type == 'drifting_gratings':
+                session = 'evoked'
+            else:
+                raise ValueError(
+                    f"Unknown stimulus_type: {stimulus_type}. Choose among "
+                    "'spontaneous', 'gray', or 'drifting_gratings'."
+                )
 
         pop_names = loss_utils.get_pop_names(self._network)
         if self._core_mask is not None:

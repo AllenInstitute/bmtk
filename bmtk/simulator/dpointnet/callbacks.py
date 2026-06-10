@@ -150,10 +150,14 @@ class Callbacks:
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch Finished.')
-            io.log_info(f'>>   Validation Loss: {val_loss}')
+            io.log_info(
+                f'>>   Validation Loss: {self._format_value(val_loss)} '
+                f'(Rate: {self._format_mean_rate(validation_losses)})'
+            )
+            for loss_line in self._format_loss_components(validation_losses):
+                io.log_info(f'>>                    {loss_line}')
             for gpu_mem in self._gpu_mem_usage():
-                io.log_info(f'>>   Tensorflow GPU "{gpu_mem.name}" Memory Usage: Used {gpu_mem.tf_current:.2f} GiB, Peak Usage: {gpu_mem.tf_peak:.2f} GiB.')
-                io.log_info(f'>>   Total GPU "{gpu_mem.name}" Memory Usage: Used: {gpu_mem.gpu_used:.2f} GiB, Free: {gpu_mem.gpu_free:.2f} GiB, Total: {gpu_mem.gpu_total:.2f} GiB')
+                io.log_info(f'>>   {self._format_gpu_mem(gpu_mem)}')
 
     def on_step_start(self):
         self.tot_step_num += 1
@@ -168,13 +172,73 @@ class Callbacks:
         self._step_loss_rates.append(loss_vals['__total_loss'])
 
         if self.verbosity >= Verbosity.on_step:
-            io.log_info(f'>>> Step {self.epoch_step_num}/{self.steps_per_epoch}')
-            io.log_info(f'>>>   Loss: {loss_vals["__total_loss"]}')
-            io.log_info(f'>>>   Step running time: {step_time:.2f}s')
+            epoch_width = max(2, len(str(self.n_epochs)))
+            step_width = max(2, len(str(self.steps_per_epoch)))
+            io.log_info(
+                f'>>> Epoch {self.epoch_num:{epoch_width}d}/{self.n_epochs:{epoch_width}d}, '
+                f'Step {self.epoch_step_num:{step_width}d}/{self.steps_per_epoch:{step_width}d} '
+                f'(run time: {step_time:.2f} s, Rate: {self._format_mean_rate(loss_vals)})'
+            )
+            loss_prefix = f'Loss: {self._format_value(loss_vals["__total_loss"])} '
+            loss_lines = self._format_loss_components(loss_vals)
+            if loss_lines:
+                io.log_info(f'>>>   {loss_prefix}{loss_lines[0]}')
+                for loss_line in loss_lines[1:]:
+                    io.log_info(f'>>>   {" " * len(loss_prefix)}{loss_line}')
+            else:
+                io.log_info(f'>>>   {loss_prefix.rstrip()}')
 
             for gpu_mem in self._gpu_mem_usage():
-                io.log_info(f'>>>   Tensorflow GPU "{gpu_mem.name}" Memory Usage: Used {gpu_mem.tf_current:.2f} GiB, Peak Usage: {gpu_mem.tf_peak:.2f} GiB.')
-                io.log_info(f'>>>   Total GPU "{gpu_mem.name}" Memory Usage: Used: {gpu_mem.gpu_used:.2f} GiB, Free: {gpu_mem.gpu_free:.2f} GiB, Total: {gpu_mem.gpu_total:.2f} GiB')
+                io.log_info(f'>>>   {self._format_gpu_mem(gpu_mem)}')
+
+    def _format_value(self, value):
+        return f'{self._as_float(value):.4f}'
+
+    def _format_loss_components(self, loss_vals):
+        component_values = []
+        for pname, pval in loss_vals.items():
+            if not isinstance(pval, dict):
+                continue
+            values = []
+            for loss_name, loss_val in pval.items():
+                if loss_name.startswith('__'):
+                    continue
+                values.append(f'{self._as_float(loss_val):8.4f}')
+            if values:
+                component_values.append((pname, values))
+
+        if not component_values:
+            return []
+
+        pname_width = max(len(pname) for pname, _ in component_values)
+        return [
+            f'({pname:<{pname_width}}: {", ".join(values)})'
+            for pname, values in component_values
+        ]
+
+    def _format_mean_rate(self, loss_vals):
+        rates = []
+        for pval in loss_vals.values():
+            if isinstance(pval, dict) and '__mean_rate' in pval:
+                rates.append(self._as_float(pval['__mean_rate']))
+        if not rates:
+            return 'n/a'
+        return f'{np.mean(rates):.4f}'
+
+    @staticmethod
+    def _as_float(value):
+        if hasattr(value, 'values'):
+            value = value.values[0]
+        if hasattr(value, 'numpy'):
+            value = value.numpy()
+        return float(value)
+
+    @staticmethod
+    def _format_gpu_mem(gpu_mem):
+        return (
+            f'"{gpu_mem.name}" Memory Used: {gpu_mem.gpu_used:6.2f} GiB, '
+            f'Free {gpu_mem.gpu_free:6.2f} GiB, Total {gpu_mem.gpu_total:6.2f} GiB.'
+        )
 
     def _record_memory_usage(self):
         if not self._gpu_devices:
