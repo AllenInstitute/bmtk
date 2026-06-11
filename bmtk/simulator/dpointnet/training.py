@@ -301,6 +301,7 @@ class TrainingEngine:
             return {}
 
         if self._has_orientation(y):
+            self._update_normalizers(parameter, spikes, y)
             return {
                 'normalizer': tf.stop_gradient(tf.identity(self._normalizers['v1_ema'])),
                 'batch_size_hint': parameter.batch_size,
@@ -404,7 +405,6 @@ class TrainingEngine:
         grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
         self.optimizer.apply_gradients(zip(grad, self.rnn.model.trainable_variables))
-        self._update_normalizers(self.parameters[0], _spikes_out, y)
 
         return loss_vals
 
@@ -442,7 +442,6 @@ class TrainingEngine:
 
         grads = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grads = optimizers.unscale_gradients_for_optimizer(self.optimizer, grads)
-        self._update_normalizers(p, _spikes_out, ysig)
         return loss_vals, grads
 
     @tf.function
@@ -484,7 +483,6 @@ class TrainingEngine:
         """
         loss_vals = {}
         all_losses = []
-        normalizer_updates = []
         x_concat = tf.concat(xs, axis=0)
         sigs = self.inputs_signature_factory.build(ys)
         with tf.GradientTape() as tape:
@@ -501,7 +499,6 @@ class TrainingEngine:
                 _pstate = _model_state[pidx_beg:pidx_end]
                 loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_pspikes), tf.float32)
                 self._record_signature_metrics(loss_vals, p.name, ysig)
-                normalizer_updates.append((p, _pspikes, ysig))
                 loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
@@ -526,8 +523,6 @@ class TrainingEngine:
         grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
         self.optimizer.apply_gradients(zip(grad, self.rnn.model.trainable_variables))
-        for p, spikes, ysig in normalizer_updates:
-            self._update_normalizers(p, spikes, ysig)
 
         loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
         return loss_vals
@@ -565,7 +560,6 @@ class TrainingEngine:
             grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
             grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
             self.optimizer.apply_gradients(zip(grad, self.rnn.model.trainable_variables))
-            self._update_normalizers(p, _spikes_out, y)
 
         loss_vals['__total_loss'] = tf.reduce_mean(all_losses)
         return loss_vals
