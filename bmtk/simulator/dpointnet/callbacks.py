@@ -1,6 +1,7 @@
 from time import time
 from enum import IntEnum
 from datetime import datetime
+import os
 import subprocess
 import tensorflow as tf
 import pandas as pd
@@ -119,6 +120,9 @@ class Callbacks:
         if self.verbosity >= Verbosity.on_train:
             io.log_info(f'> Training Started @ {self.time}')
 
+        allocator = os.environ.get('TF_GPU_ALLOCATOR', '')
+        self._append_performance_to_csv('tf_gpu_allocator', None, None, allocator or 'default')
+
     def on_train_end(self, metrics=None, normalizers=None):
         self.training_time = time() - self.train_start_time
         self._append_performance_to_csv('training_time', None, None, self.training_time)
@@ -136,6 +140,7 @@ class Callbacks:
         self.epoch_start_time = time()
         self.epoch_num += 1
         self.epoch_step_num = 0
+        self._reset_tf_memory_stats()
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch {self.epoch_num}/{self.n_epochs} Started @ {self.time}')
@@ -150,6 +155,7 @@ class Callbacks:
         self.epoch_vallosses.append(val_loss)
         self._store_weights(val_loss)
         self._append_losses_to_csv('validation', self.epoch_num, 0, validation_losses)
+        self._append_gpu_memory_usage('epoch_end', self.epoch_num, None)
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch Finished.')
@@ -170,7 +176,7 @@ class Callbacks:
     def on_step_end(self, loss_vals):
         step_time = time() - self.step_start_time
         self._step_times.append(step_time)
-        self._record_memory_usage()
+        gpu_mem_info = self._record_memory_usage()
         self._append_performance_to_csv('step_timesteps', self.epoch_num, self.epoch_step_num, step_time)
         if self._step_memory_usage:
             self._append_performance_to_csv(
@@ -179,6 +185,7 @@ class Callbacks:
                 self.epoch_step_num,
                 self._step_memory_usage[-1],
             )
+        self._append_gpu_memory_usage('step', self.epoch_num, self.epoch_step_num, gpu_mem_info)
         self._step_loss_values.append(loss_vals)
         self._step_loss_rates.append(loss_vals['__total_loss'])
         self._append_losses_to_csv('step', self.epoch_num, self.epoch_step_num, loss_vals)
@@ -254,10 +261,35 @@ class Callbacks:
 
     def _record_memory_usage(self):
         if not self._gpu_devices:
-            return
-        
-        mem_usage = get_gpu_memory(gpu_id=0)
-        self._step_memory_usage.append(mem_usage)
+            return []
+
+        gpu_mem_info = self._gpu_mem_usage()
+        if gpu_mem_info:
+            self._step_memory_usage.append(gpu_mem_info[0].gpu_used)
+        return gpu_mem_info
+
+    def _reset_tf_memory_stats(self):
+        for gpu_id in range(len(self._gpu_devices)):
+            try:
+                tf.config.experimental.reset_memory_stats(f'GPU:{gpu_id}')
+            except (ValueError, RuntimeError):
+                pass
+
+    def _append_gpu_memory_usage(self, prefix, epoch_num, step_num, gpu_mem_info=None):
+        if gpu_mem_info is None:
+            gpu_mem_info = self._gpu_mem_usage()
+
+        for gpu_mem in gpu_mem_info:
+            metric_prefix = f'{prefix}_{gpu_mem.name.lower().replace(":", "")}'
+            metrics = {
+                f'{metric_prefix}_resident_used_gib': gpu_mem.gpu_used,
+                f'{metric_prefix}_resident_free_gib': gpu_mem.gpu_free,
+                f'{metric_prefix}_resident_total_gib': gpu_mem.gpu_total,
+                f'{metric_prefix}_tf_allocator_current_gib': gpu_mem.tf_current,
+                f'{metric_prefix}_tf_allocator_peak_gib': gpu_mem.tf_peak,
+            }
+            for name, value in metrics.items():
+                self._append_performance_to_csv(name, epoch_num, step_num, value)
     
     def _gpu_mem_usage(self):
         if not self._gpu_devices:

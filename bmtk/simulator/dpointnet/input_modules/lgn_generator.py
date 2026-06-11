@@ -33,6 +33,7 @@ class LGNGenerator(InputsGeneratorMod):
         )
 
         self._generator = None
+        self._grey_screen_probabilities = None
         if self.stimulus_type == 'drifting_gratings':
             self._generator_fn = create_drifting_gratings_generator
             # self.generator_fn = create_drifting_gratings_generator(
@@ -61,6 +62,22 @@ class LGNGenerator(InputsGeneratorMod):
                 seed = self.rnn.default_seed + 10000
             elif self.stimulus_type in ['grey_screen', 'gray_screen']:
                 seed = self.rnn.default_seed + 20000
+        if self.stimulus_type in ['grey_screen', 'gray_screen']:
+            if self._grey_screen_probabilities is None:
+                self._grey_screen_probabilities = compute_grey_screen_probabilities(
+                    lgn_network=self.lgn,
+                    seq_len=_seq_len,
+                    dtype=dtype,
+                    **stimulus_opts
+                )
+                self.lgn = None
+            return self._generator_fn(
+                probabilities=self._grey_screen_probabilities,
+                seq_len=_seq_len,
+                seed=seed,
+                dtype=dtype,
+                **stimulus_opts
+            )
         return self._generator_fn(
             lgn_network=self.lgn,
             seq_len=_seq_len,
@@ -366,10 +383,11 @@ def create_drifting_gratings_generator(
 
 
 def create_grey_screen_generator(
-        lgn_network,
         row_size, 
         col_size, 
         seq_len,
+        lgn_network=None,
+        probabilities=None,
         contrast=0.0,
         current_input=False,
         bmtk_compat=True,
@@ -382,6 +400,17 @@ def create_grey_screen_generator(
     #     network=network,
     #     row_size=row_size, col_size=col_size
     # )
+    if probabilities is None:
+        probabilities = compute_grey_screen_probabilities(
+            lgn_network=lgn_network,
+            row_size=row_size,
+            col_size=col_size,
+            seq_len=seq_len,
+            contrast=contrast,
+            bmtk_compat=bmtk_compat,
+            dtype=dtype,
+        )
+    probabilities = tf.convert_to_tensor(probabilities, dtype=dtype)
     base_seed = None if seed is None else int(seed)
 
     def _g():
@@ -391,38 +420,22 @@ def create_grey_screen_generator(
             if base_seed is not None:
                 spike_seed = _sample_seed_pair(base_seed, salt=2001, sample_idx=sample_idx, stream=0)
 
-            # Create a gray screen (all zeros)
-            # gray_screen = tf.zeros((seq_len, row_size, col_size, 1), dtype=dtype)
-            gray_screen = tf.ones((seq_len, row_size, col_size, 1), dtype=dtype)*contrast
-
-            # Process through LGN spatial filters
-            spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
-            del gray_screen
-
-            # Get firing rates from spatial response
-            firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
-
             if return_firing_rates:
-                yield firing_rates, 0.0
+                firing_rates = -1000.0 * tf.math.log(tf.maximum(1.0 - probabilities, tf.keras.backend.epsilon()))
+                yield firing_rates, {'contrast': tf.constant(contrast, dtype=dtype, shape=(1,))}
             else:
-                del spatial
-                # Sample spikes from firing rates
-                # Assuming dt = 1 ms
-                _p = 1 - tf.exp(-firing_rates / 1000.)  # Probability of spike in dt
-                del firing_rates
-
                 if current_input:
-                    _z = _p * 1.3
+                    _z = probabilities * 1.3
                 else:
                     if spike_seed is None:
-                        _z = tf.random.uniform(tf.shape(_p), dtype=dtype) < _p
+                        _z = tf.random.uniform(tf.shape(probabilities), dtype=dtype) < probabilities
                     else:
                         _z = tf.random.stateless_uniform(
-                            tf.shape(_p), 
-                            seed=spike_seed, 
+                            tf.shape(probabilities),
+                            seed=spike_seed,
                             dtype=dtype
-                        ) < _p
-                del _p
+                        ) < probabilities
+                    _z = tf.cast(_z, dtype)
 
                 yield _z, {'contrast': tf.constant(contrast, dtype=dtype, shape=(1,))}
             sample_idx += 1
@@ -431,7 +444,7 @@ def create_grey_screen_generator(
     data_set = tf.data.Dataset.from_generator(
         _g,
         output_signature=(
-            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes)), 
+            tf.TensorSpec(shape=probabilities.shape, dtype=dtype),
             {
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,))
             }
@@ -444,3 +457,25 @@ def create_grey_screen_generator(
         # )
     )
     return data_set
+
+
+def compute_grey_screen_probabilities(
+    lgn_network,
+    row_size,
+    col_size,
+    seq_len,
+    contrast=0.0,
+    bmtk_compat=True,
+    dtype=tf.float32,
+    **kwargs,
+):
+    if lgn_network is None:
+        raise ValueError('lgn_network is required when grey-screen probabilities are not already cached.')
+
+    gray_screen = tf.ones((seq_len, row_size, col_size, 1), dtype=dtype)*contrast
+    spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
+    del gray_screen
+    firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
+    del spatial
+    probabilities = 1 - tf.exp(-firing_rates / 1000.0)
+    return tf.convert_to_tensor(probabilities, dtype=dtype)
