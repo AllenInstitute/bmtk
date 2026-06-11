@@ -425,7 +425,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             # train_noise=True,
             noise_seed=0,
             hard_reset=False,
-            tau_syns=None,
+            tau_basis=None,
             synaptic_basis_weights=None,
             # current_input=False,
         ):
@@ -461,21 +461,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
         membrane_decay = np.exp(-dt / tau)
         current_factor = (1 - membrane_decay) / _node_params["g"]
 
-        # Determine the synaptic dynamic parameters for each of the 4 basis receptors.
-        if tau_syns is None:
-            raise ValueError(f'Invalid tau_syns = {tau_syns}, please pass in a numpy array or a path to a npy file.')
-        if isinstance(tau_syns, (str, Path)):
-            # tau_syns may be passed in either as a vector or stored in an npy file.
-            tau_path = tau_syns
-            tau_syns = np.load(tau_path)
-        elif isinstance(tau_syns, (list, tuple)):
-            tau_syns = np.array(tau_syns)
+        # Determine the dynamic parameters for each synaptic basis function.
+        if tau_basis is None:
+            raise ValueError(f'Invalid tau_basis = {tau_basis}, please pass in a numpy array or a path to a npy file.')
+        if isinstance(tau_basis, (str, Path)):
+            tau_path = tau_basis
+            tau_basis = np.load(tau_path)
+        elif isinstance(tau_basis, (list, tuple)):
+            tau_basis = np.array(tau_basis)
         
-        self._n_syn_basis = tau_syns.size
-        syn_decay_np = np.exp(-dt / tau_syns)
+        self._n_syn_basis = tau_basis.size
+        syn_decay_np = np.exp(-dt / tau_basis)
         syn_decay_np = np.tile(syn_decay_np, self._n_neurons)
         self.syn_decay = tf.constant(syn_decay_np[None, :], dtype=self.compute_dtype) # expand the dimension for processing different receptor types
-        psc_initial_np = np.e / tau_syns
+        psc_initial_np = np.e / tau_basis
         psc_initial_np = np.tile(psc_initial_np, self._n_neurons)
         self.psc_initial = tf.constant(psc_initial_np[None, :], dtype=self.compute_dtype) # expand the dimension for processing different receptor types
 

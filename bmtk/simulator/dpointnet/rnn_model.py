@@ -687,8 +687,9 @@ class RNN:
 
         # cell_type = config.get('RNN_cell', GLIF3Cell)
         
-        cell_model_params = config['rnn_cell_params']
+        cell_model_params = dict(config['rnn_cell_params'])
         cell_model_str = cell_model_params.pop('cell_model')
+        basis_weights_file = cell_model_params.pop('basis_weights_file', None)
         cell_model_cls = cell_models.get(cell_model_str, GLIF3Cell)
 
         network = cls(
@@ -713,11 +714,21 @@ class RNN:
             network._input_networks[in_net.name] = in_net
         """
             
-        if config.components:
+        components_dirs = dict(config.components) if config.components else {}
+        if basis_weights_file is not None:
+            existing_basis_weights_file = components_dirs.get('basis_weights_file')
+            if existing_basis_weights_file is not None and existing_basis_weights_file != basis_weights_file:
+                raise ValueError(
+                    'Conflicting basis_weights_file values in rnn_cell_params and components: '
+                    f'{basis_weights_file} != {existing_basis_weights_file}'
+                )
+            components_dirs['basis_weights_file'] = basis_weights_file
+
+        if components_dirs:
             for net in network._recurrent_networks.values():
-                net.add_components_dirs(config.components)
+                net.add_components_dirs(components_dirs)
             for net in network._input_networks.values():
-                net.add_components_dirs(config.components)
+                net.add_components_dirs(components_dirs)
 
         for input_name, input_mod in network.parse_input_mods_from_config(config.inputs):
             network.add_input(name=input_name, mod=input_mod)
