@@ -704,7 +704,8 @@ class TrainingEngine:
             input_batch_sizes.append(p.batch_size)
             input_seq_lens.append(p.seq_len)
         
-        input_itr = DataIterator(input_generators, input_batch_sizes, input_seq_lens, self.rnn.ordered_inputs_populations)
+        input_itr = DataIterator(input_generators, input_batch_sizes, input_seq_lens, self.rnn.ordered_inputs_populations,
+                                 fetch_in_graph=True)
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
         init_state = self.init_state.get_state()

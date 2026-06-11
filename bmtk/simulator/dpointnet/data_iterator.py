@@ -4,11 +4,12 @@ from bmtk.simulator.dpointnet.input_modules import InputsGeneratorMod
 
 
 class DataIterator:
-    def __init__(self, input_mods, batch_size, seq_len, ordered_populations=None):
+    def __init__(self, input_mods, batch_size, seq_len, ordered_populations=None, fetch_in_graph=False):
         self.input_mods = input_mods
         self.batch_size = batch_size
         self.seq_len = seq_len
         self.ordered_populations = ordered_populations
+        self.fetch_in_graph = fetch_in_graph
 
         self.data_itrs = []
         self._is_built = False
@@ -84,10 +85,23 @@ class DataIterator:
         if not self._is_built:
             self.build()
 
+        if self.fetch_in_graph:
+            if self._ret_list:
+                return self._next_spikes_list_graph()
+            return self._next_spikes_graph()
+
         if self._ret_list:
             return self._next_spikes_list()
         else:
             return self._next_spikes()
+
+    @tf.function(reduce_retracing=True)
+    def _next_spikes_list_graph(self):
+        return self._next_spikes_list()
+
+    @tf.function(reduce_retracing=True)
+    def _next_spikes_graph(self):
+        return self._next_spikes()
 
     
     def _next_spikes_list(self):
