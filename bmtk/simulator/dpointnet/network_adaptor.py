@@ -13,12 +13,16 @@ from .id_maps import TFIDMap
 from .io_tools import io
 
 
-def lex_sort_indices_np(indices, *arrays):
+def lex_sort_order_np(indices):
     max_ind = np.max(indices) + 1
     if np.iinfo(indices.dtype).max < max_ind * (max_ind + 1) :
         indices = indices.astype(np.int64)
     q = indices[:, 0] * max_ind + indices[:, 1]
-    sorted_ind = np.argsort(q)
+    return np.argsort(q)
+
+
+def lex_sort_indices_np(indices, *arrays):
+    sorted_ind = lex_sort_order_np(indices)
     sorted_arrays = list(map(lambda arr: arr[sorted_ind], [indices, *arrays]))
     return tuple(sorted_arrays)
 
@@ -617,9 +621,14 @@ class SONATANetwork(NetworkAdaptor):
                     raise Exception()
 
         indices = np.column_stack((self._target_tf_ids, self._source_tf_ids))
-        indices, weights, delays, syn_ids, self._edge_type_ids = lex_sort_indices_np(
-            indices, weights, delays, syn_ids, self._edge_type_ids
-        )
+        sort_order = lex_sort_order_np(indices)
+        indices = indices[sort_order]
+        weights = weights[sort_order]
+        delays = delays[sort_order]
+        syn_ids = syn_ids[sort_order]
+        self._edge_type_ids = self._edge_type_ids[sort_order]
+        self._target_tf_ids = self._target_tf_ids[sort_order]
+        self._source_tf_ids = self._source_tf_ids[sort_order]
 
         rec_dict = {
             'name': self.population_name,

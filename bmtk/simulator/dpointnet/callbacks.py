@@ -75,6 +75,8 @@ class Callbacks:
         self._step_memory_usage = []
         self._step_loss_rates = []
         self._step_loss_values = []
+        self._losses_header_written = False
+        self._performance_header_written = False
 
         self.epoch_losses = []
         self.epoch_vallosses = []
@@ -119,8 +121,7 @@ class Callbacks:
 
     def on_train_end(self, metrics=None, normalizers=None):
         self.training_time = time() - self.train_start_time
-        self._record_losses()
-        self._record_performance()
+        self._append_performance_to_csv('training_time', None, None, self.training_time)
 
         if len(self._saved_weights) > 1:
             for epoch_num, epoch_weights in self._saved_weights:
@@ -143,10 +144,12 @@ class Callbacks:
         epoch_time = time() - self.epoch_start_time
         self._epoch_times.append(epoch_time)
         self.epoch_losses.append(validation_losses)
+        self._append_performance_to_csv('epoch_timesteps', self.epoch_num, None, epoch_time)
 
         val_loss = validation_losses['__total_loss']
         self.epoch_vallosses.append(val_loss)
         self._store_weights(val_loss)
+        self._append_losses_to_csv('validation', self.epoch_num, 0, validation_losses)
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch Finished.')
@@ -168,8 +171,17 @@ class Callbacks:
         step_time = time() - self.step_start_time
         self._step_times.append(step_time)
         self._record_memory_usage()
+        self._append_performance_to_csv('step_timesteps', self.epoch_num, self.epoch_step_num, step_time)
+        if self._step_memory_usage:
+            self._append_performance_to_csv(
+                'gpu_memory_usage_per_step',
+                self.epoch_num,
+                self.epoch_step_num,
+                self._step_memory_usage[-1],
+            )
         self._step_loss_values.append(loss_vals)
         self._step_loss_rates.append(loss_vals['__total_loss'])
+        self._append_losses_to_csv('step', self.epoch_num, self.epoch_step_num, loss_vals)
 
         if self.verbosity >= Verbosity.on_step:
             epoch_width = max(2, len(str(self.n_epochs)))
@@ -366,6 +378,41 @@ class Callbacks:
             'loss_value': loss_vals
         }).to_csv(self.losses_table_csv, index=False)
 
+    def _append_losses_to_csv(self, loss_type, epoch_num, step_num, loss_vals):
+        if self.losses_table_csv is None:
+            return
+
+        records = []
+        for parameter_name, parameter_vals in loss_vals.items():
+            if isinstance(parameter_vals, dict):
+                for loss_name, loss_val in parameter_vals.items():
+                    records.append({
+                        'loss_type': loss_type,
+                        'epoch': epoch_num,
+                        'step': step_num,
+                        'parameter': parameter_name,
+                        'loss_function': loss_name,
+                        'loss_value': self._as_float(loss_val),
+                    })
+            else:
+                records.append({
+                    'loss_type': loss_type,
+                    'epoch': epoch_num,
+                    'step': step_num,
+                    'parameter': '',
+                    'loss_function': parameter_name,
+                    'loss_value': self._as_float(parameter_vals),
+                })
+
+        Path(self.losses_table_csv).parent.mkdir(exist_ok=True, parents=True)
+        pd.DataFrame.from_records(records).to_csv(
+            self.losses_table_csv,
+            mode='a' if self._losses_header_written else 'w',
+            header=not self._losses_header_written,
+            index=False,
+        )
+        self._losses_header_written = True
+
 
     def _record_performance(self):
         if self.performance_table_csv is None:
@@ -409,6 +456,24 @@ class Callbacks:
             'step': step_nums,
             'values': values,
         }).to_csv(self.performance_table_csv, index=False)
+
+    def _append_performance_to_csv(self, name, epoch_num, step_num, value):
+        if self.performance_table_csv is None:
+            return
+
+        Path(self.performance_table_csv).parent.mkdir(exist_ok=True, parents=True)
+        pd.DataFrame([{
+            'name': name,
+            'epoch': epoch_num,
+            'step': step_num,
+            'values': value,
+        }]).to_csv(
+            self.performance_table_csv,
+            mode='a' if self._performance_header_written else 'w',
+            header=not self._performance_header_written,
+            index=False,
+        )
+        self._performance_header_written = True
 
 
 def get_gpu_memory(gpu_id=0):

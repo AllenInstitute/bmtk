@@ -130,6 +130,13 @@ def _fold_in_seed(seed_pair, value):
 
 
 def _sample_seed_pair(seed, salt=0, sample_idx=0, stream=0):
+    seed_values = _sample_seed_values(seed, salt=salt, sample_idx=sample_idx, stream=stream)
+    if seed_values is None:
+        return None
+    return tf.constant(seed_values, dtype=tf.int32)
+
+
+def _sample_seed_values(seed, salt=0, sample_idx=0, stream=0):
     if seed is None:
         return None
     max_int32 = 2**31 - 1
@@ -140,7 +147,14 @@ def _sample_seed_pair(seed, salt=0, sample_idx=0, stream=0):
         + int(sample_idx) * 9176
         + int(stream) * 131071
     ) % max_int32
-    return tf.constant([mixed, (mixed + 104729) % max_int32], dtype=tf.int32)
+    return mixed, (mixed + 104729) % max_int32
+
+
+def _uniform_scalar(minval, maxval, seed_values=None, rng=None):
+    scalar_rng = np.random.default_rng(seed_values) if seed_values is not None else rng
+    if scalar_rng is None:
+        scalar_rng = np.random.default_rng()
+    return float(scalar_rng.uniform(minval, maxval))
 
 
 def _as_scalar_tensor(value, dtype, name):
@@ -254,14 +268,15 @@ def create_drifting_gratings_generator(
     def _g():
         if regular:
             theta = -45  # to make the first one 0
+        scalar_rng = None if base_seed is not None else np.random.default_rng()
         sample_idx = 0
         while True:
-            phase_seed = None
-            orientation_seed = None
+            phase_seed_values = None
+            orientation_seed_values = None
             spike_seed = None
             if base_seed is not None:
-                orientation_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=0)
-                phase_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=1)
+                orientation_seed_values = _sample_seed_values(base_seed, salt=1001, sample_idx=sample_idx, stream=0)
+                phase_seed_values = _sample_seed_values(base_seed, salt=1001, sample_idx=sample_idx, stream=1)
                 spike_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=2)
 
             if orientation is None:
@@ -269,16 +284,7 @@ def create_drifting_gratings_generator(
                 if regular:
                     theta = (theta + 45) % 360
                 else:
-                    if orientation_seed is None:
-                        theta = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
-                    else:
-                        theta = tf.random.stateless_uniform(
-                            shape=(),
-                            seed=orientation_seed,
-                            minval=0,
-                            maxval=360,
-                            dtype=dtype,
-                        )
+                    theta = _uniform_scalar(0, 360, seed_values=orientation_seed_values, rng=scalar_rng)
             else:
                 theta = orientation[sample_idx % orientation_list_len]
                 # theta = orientation
@@ -292,12 +298,7 @@ def create_drifting_gratings_generator(
             mov_theta = _as_scalar_tensor(mov_theta, dtype, 'theta')
 
             # Generate a random phase
-            if phase_seed is None:
-                phase = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
-            else:
-                phase = tf.random.stateless_uniform(
-                    shape=(), seed=tf.cast(phase_seed, tf.int32), minval=0, maxval=360, dtype=dtype
-                )
+            phase = _uniform_scalar(0, 360, seed_values=phase_seed_values, rng=scalar_rng)
             phase = _as_scalar_tensor(phase, dtype, 'phase')
 
             movie = make_drifting_grating_stimulus(

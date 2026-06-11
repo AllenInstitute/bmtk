@@ -54,8 +54,10 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         
         # using the simulation length, limit bin_sizes to define at least 2 bins
         bin_sizes_mask = bin_sizes < (self._t_end - self._t_start)/2
-        self.bin_sizes = bin_sizes[bin_sizes_mask]
-        self.epsilon = 1e-7  # Small constant to avoid division by zero
+        bin_sizes = bin_sizes[bin_sizes_mask]
+        self._bin_sizes_ms = tuple(max(1, int(round(v * 1000.0))) for v in bin_sizes)
+        self._bin_sizes_ms_tf = tf.constant(self._bin_sizes_ms, dtype=tf.int32)
+        self._epsilon_tf = tf.constant(1e-7, dtype=self._dtype)
 
         # Load the experimental data
         duration = str(int((t_end - t_start) * 1000))
@@ -71,12 +73,10 @@ class SynchronizationLoss(tf.keras.layers.Layer):
     def module():
         return 'SynchronizationLoss'
     
-    def pop_fano_tf(self, spikes, bin_sizes):
+    def pop_fano_tf(self, spikes):
         spikes = tf.expand_dims(spikes, axis=-1)
-        fanos = tf.TensorArray(dtype=self._dtype, size=len(bin_sizes))
-        for i, bin_width in enumerate(bin_sizes):
-            bin_size = int(np.round(bin_width*1000))
-
+        fanos = tf.TensorArray(dtype=self._dtype, size=len(self._bin_sizes_ms))
+        for i, bin_size in enumerate(self._bin_sizes_ms):
             # Use convolution for efficient binning
             kernel = tf.ones((bin_size, 1, 1), dtype=self._dtype)
             convolved = tf.nn.conv1d(spikes, kernel, stride=bin_size, padding='VALID')
@@ -85,7 +85,7 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             # Compute mean and variance of spike counts
             mean_count = tf.reduce_mean(sp_counts, axis=1)
             var_count = tf.math.reduce_variance(sp_counts, axis=1)
-            mean_count = tf.maximum(mean_count, self.epsilon)
+            mean_count = tf.maximum(mean_count, self._epsilon_tf)
 
             fano_per_sample = var_count / mean_count
             fano = tf.reduce_mean(fano_per_sample)
@@ -99,16 +99,10 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         
         if trim:
             spikes = spikes[:, self._t_start_seconds:self._t_end_seconds, :]
-            bin_sizes = self.bin_sizes
-            experimental_fanos_mean = self.experimental_fanos_mean
-        else:
-            t_start = 0
-            t_end = spikes.shape[1] / 1000
-
-            # using the simulation length, limit bin_sizes to defin at least 2 bins
-            bin_sizes_mask = self.bin_sizes < (t_end - t_start) / 2
-            bin_sizes = self.bin_sizes[bin_sizes_mask]
-            experimental_fanos_mean = self.experimental_fanos_mean[bin_sizes_mask]
+        duration_ms = tf.cast(tf.shape(spikes)[1], tf.int32)
+        bin_limit_ms = duration_ms // 2
+        bin_sizes_mask = self._bin_sizes_ms_tf < bin_limit_ms
+        experimental_fanos_mean = tf.boolean_mask(self.experimental_fanos_mean, bin_sizes_mask)
         
         spikes = tf.cast(spikes, self._dtype)
 
@@ -145,10 +139,18 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             selected_spikes_sample = selected_spikes_sample.write(i, selected_spikes)
 
         selected_spikes_sample = selected_spikes_sample.stack()
-        fanos_mean = self.pop_fano_tf(selected_spikes_sample, bin_sizes=bin_sizes)
+        if selected_spikes_sample.dtype != self._dtype:
+            selected_spikes_sample = tf.cast(selected_spikes_sample, self._dtype)
+
+        fanos_mean = self.pop_fano_tf(selected_spikes_sample)
+        fanos_mean = tf.boolean_mask(fanos_mean, bin_sizes_mask)
 
         # Calculate MSE between experimental and calculated Fano Factors
-        mse_loss = tf.reduce_mean(tf.square(experimental_fanos_mean - fanos_mean))
+        mse_loss = tf.cond(
+            tf.size(experimental_fanos_mean) > 0,
+            lambda: tf.reduce_mean(tf.square(experimental_fanos_mean - fanos_mean)),
+            lambda: tf.constant(0.0, dtype=self._dtype),
+        )
 
         # Calculate the synchronization loss
         sync_loss = self._sync_cost * mse_loss
