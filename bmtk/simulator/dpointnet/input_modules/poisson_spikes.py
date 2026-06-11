@@ -1,6 +1,7 @@
-from .inputs_base import InputsGeneratorMod
 import numpy as np
 import tensorflow as tf
+
+from .inputs_base import InputsGeneratorMod
 
 
 class PoissonSpikes(InputsGeneratorMod):
@@ -23,20 +24,19 @@ class PoissonSpikes(InputsGeneratorMod):
         _seq_len = seq_len or self.rnn.adjusted_seq_len
         lam = self._firing_rate * dt / 1000.0
         rng = np.random.default_rng(self._seed)
-        # Yield in the requested dtype so it matches the dataset output_signature below:
-        # tf.data.from_generator requires the numpy dtype to match the TensorSpec dtype,
-        # otherwise mixed-float16 runs error.
         np_dtype = tf.as_dtype(dtype).as_numpy_dtype
 
         def _generator():
             while True:
-                spikes = rng.poisson(lam=lam, size=(_seq_len, self._n_nodes)).astype(np_dtype)
+                spikes = rng.poisson(lam=lam, size=(_seq_len, self._n_nodes)).astype(
+                    np_dtype
+                )
                 yield spikes, {'firing_rate': self._firing_rate}
 
         return tf.data.Dataset.from_generator(
             _generator,
             output_signature=(
                 tf.TensorSpec(shape=(_seq_len, self._n_nodes), dtype=dtype),
-                {'firing_rate': tf.TensorSpec(shape=(), dtype=tf.float32)}
-            )
+                {'firing_rate': tf.TensorSpec(shape=(), dtype=tf.float32)},
+            ),
         )

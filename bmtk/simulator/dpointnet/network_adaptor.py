@@ -479,8 +479,14 @@ class SONATANetwork(NetworkAdaptor):
         # To suppor the V1 model, allow users to pass in basis_weights_file, a csv file with synaptic params.       
         basis_weights_file = components_dirs.get('basis_weights_file', None)
         if basis_weights_file:
-            basis_weights_df = pd.read_csv(basis_weights_file)# .set_index('name')
-            self._basis_weights = {r['name']: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
+            basis_weights_df = pd.read_csv(basis_weights_file)
+            name_col = 'name' if 'name' in basis_weights_df.columns else 'connection_name'
+            if name_col not in basis_weights_df.columns:
+                raise ValueError(
+                    f'basis_weights_file {basis_weights_file} must contain either a "name" or '
+                    '"connection_name" column.'
+                )
+            self._basis_weights = {r[name_col]: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
 
     def get_bmtk_ids(self, **filter):
         node_ids = {self._sonata_node_pop.name: []}
