@@ -146,6 +146,7 @@ class Callbacks:
             io.log_info(f'>> Epoch {self.epoch_num}/{self.n_epochs} Started @ {self.time}')
 
     def on_epoch_end(self, validation_losses):
+        validation_losses = self._detach_loss_values(validation_losses)
         epoch_time = time() - self.epoch_start_time
         self._epoch_times.append(epoch_time)
         self.epoch_losses.append(validation_losses)
@@ -174,6 +175,7 @@ class Callbacks:
         self.step_start_time = time()
 
     def on_step_end(self, loss_vals):
+        loss_vals = self._detach_loss_values(loss_vals)
         step_time = time() - self.step_start_time
         self._step_times.append(step_time)
         gpu_mem_info = self._record_memory_usage()
@@ -251,6 +253,12 @@ class Callbacks:
         if hasattr(value, 'numpy'):
             value = value.numpy()
         return float(value)
+
+    @classmethod
+    def _detach_loss_values(cls, loss_vals):
+        if isinstance(loss_vals, dict):
+            return {name: cls._detach_loss_values(value) for name, value in loss_vals.items()}
+        return cls._as_float(loss_vals)
 
     @staticmethod
     def _format_gpu_mem(gpu_mem):
@@ -371,14 +379,14 @@ class Callbacks:
                         loss_type.append('step')
                         pnames.append(_pname)
                         loss_names.append(_lname)
-                        loss_vals.append(_lval.numpy())
+                        loss_vals.append(self._as_float(_lval))
                         epoch_nums.append(epoch_num)
                         step_nums.append(step_num)
                 else:
                     loss_type.append('step')
                     pnames.append('')
                     loss_names.append(_pname)
-                    loss_vals.append(_pval.numpy())
+                    loss_vals.append(self._as_float(_pval))
                     epoch_nums.append(epoch_num)
                     step_nums.append(step_num)
         
@@ -389,14 +397,14 @@ class Callbacks:
                         loss_type.append('validation')
                         pnames.append(_pname)
                         loss_names.append(_lname)
-                        loss_vals.append(_lval.numpy())
+                        loss_vals.append(self._as_float(_lval))
                         epoch_nums.append(epoch_num + 1)
                         step_nums.append(0)
                 else:
                     loss_type.append('validation')
                     pnames.append('')
                     loss_names.append(_pname)
-                    loss_vals.append(_pval.numpy())
+                    loss_vals.append(self._as_float(_pval))
                     epoch_nums.append(epoch_num + 1)
                     step_nums.append(0)
 

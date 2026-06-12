@@ -642,8 +642,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             input_props['input_indices'] = tf.Variable(input_indices, trainable=False, dtype=tf.int64)
 
-            input_type = input_network['input_type']
             input_options = input_network.get('options', {})
+            input_type = input_options.get('input_type', input_network['input_type'])
             # Per-edge factor to invert the load-time scaling on export (recover physical syn_weight):
             # physical = internal * voltage_scale[target] * lr_scale / weight_scale.
             input_props['export_factor'] = (
@@ -687,6 +687,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     n_source_neurons=input_dense_shape[1]
                 )
                 end_indx = self.inputs_idx[idx] + n_input_nodes
+            elif input_type == 'noisy_current':
+                firing_rate = input_options.get('firing_rate', 250.0)
+                input_props['spike_prob'] = tf.constant(firing_rate * dt / 1000.0, dtype=self.compute_dtype)
+                input_props['pre_input_ind_table'] = make_pre_ind_table(
+                    input_indices,
+                    n_source_neurons=input_dense_shape[1]
+                )
+                end_indx = self.inputs_idx[idx]
             elif input_type == 'current':
                 end_indx = self.inputs_idx[idx] + n_input_nodes
             else:
@@ -987,6 +995,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
+            if input_net['input_type'] == 'noisy_current':
+                extern_currents.append(self.calculate_noise_current(batch_size, noise_step, input_net))
+                continue
+
             input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
             if input_net['input_type'] == 'current':
                 extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes, input_net))

@@ -368,10 +368,15 @@ def create_drifting_gratings_generator(
             yield results, {'orientation': tf.constant(theta, dtype=dtype, shape=(1,)), 'contrast': tf.constant(contrast, dtype=dtype, shape=(1,)), 'duration': tf.constant(duration, dtype=dtype, shape=(1,))}
             sample_idx += 1
 
+    if return_firing_rates or current_input:
+        data_dtype = dtype
+    else:
+        data_dtype = tf.bool
+
     data_set = tf.data.Dataset.from_generator(
         _g, 
         output_signature=(
-            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=dtype),
+            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=data_dtype),
             {
                 'orientation': tf.TensorSpec(dtype=dtype, shape=(1,)), 
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,)), 
@@ -435,16 +440,20 @@ def create_grey_screen_generator(
                             seed=spike_seed,
                             dtype=dtype
                         ) < probabilities
-                    _z = tf.cast(_z, dtype)
 
                 yield _z, {'contrast': tf.constant(contrast, dtype=dtype, shape=(1,))}
             sample_idx += 1
 
 
+    if return_firing_rates or current_input:
+        data_dtype = dtype
+    else:
+        data_dtype = tf.bool
+
     data_set = tf.data.Dataset.from_generator(
         _g,
         output_signature=(
-            tf.TensorSpec(shape=probabilities.shape, dtype=dtype),
+            tf.TensorSpec(shape=probabilities.shape, dtype=data_dtype),
             {
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,))
             }

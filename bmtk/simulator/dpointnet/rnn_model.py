@@ -334,13 +334,22 @@ class RNN:
         # Force rebuild of recurrent network dict (don't use cached version)
         self._built_recurrent_net = None
         network = self.recurrent_network
-        n_spiking_inputs = sum(i.n_spiking_nodes for i in self._input_networks.values())
+        external_input_networks = [i for i in self._input_networks.values() if i.n_spiking_nodes > 0]
+        n_spiking_inputs = sum(i.n_spiking_nodes for i in external_input_networks)
+        external_input_dtype = self.dtype
+        external_populations = {i.name for i in external_input_networks}
+        external_mods = [
+            mod for mod in self._input_generators_mods.values()
+            if mod.population_name in external_populations
+        ]
+        if external_mods and all(type(mod).__name__ == 'LGNGenerator' for mod in external_mods):
+            external_input_dtype = tf.bool
         n_neurons = network['n_nodes']
         inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
 
         extrn_inputs = tf.keras.layers.Input(
             shape=(None, n_spiking_inputs,),
-            dtype=self.dtype,
+            dtype=external_input_dtype,
             name='external inputs'
         )
 
@@ -820,6 +829,7 @@ class RNN:
                 callbacks = cb_class(rnn=network, **callback_params)
                 training_engine.set_callbacks(callbacks=callbacks)
 
+            shared_loss_cache = {}
             for train_params_dict in train_dict['parameters']:
                 pname = train_params_dict['name']
                 pbatch_size = train_dict.get('batch_size', network.batch_size)
@@ -835,9 +845,26 @@ class RNN:
                     if not loss_fnc_params.get('enabled', True):
                         continue
                     loss_mod = LossModules().get_module(loss_fnc_params['module'])
+                    loss_obj = None
+                    if loss_fnc_params['module'] == 'EMDWeightRegularization':
+                        cache_key = tuple(
+                            sorted(
+                                (key, repr(value))
+                                for key, value in loss_fnc_params.items()
+                                if key != 'enabled'
+                            )
+                        )
+                        loss_obj = shared_loss_cache.get(cache_key)
+                        if loss_obj is None:
+                            loss_obj = loss_mod(rnn=network, **loss_fnc_params)
+                            shared_loss_cache[cache_key] = loss_obj
+
+                    if loss_obj is None:
+                        loss_obj = loss_mod(rnn=network, **loss_fnc_params)
+
                     training_params.add_loss_function(
                         name=loss_fnc_name,
-                        loss_mod=loss_mod(rnn=network, **loss_fnc_params)
+                        loss_mod=loss_obj
                     )
 
         inference_dict = config.get('inference', None)

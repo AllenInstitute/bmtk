@@ -176,7 +176,7 @@ class OrientationSelectivityLoss:
         
         return angle_loss * self._osi_cost
     
-    @tf.function(jit_compile=True)
+    @tf.function(jit_compile=False)
     def _compute_osi_dsi_core(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
         """Core of crowd_osi: cos weighting + per-(batch,type) segment means.
 

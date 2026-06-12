@@ -1,7 +1,6 @@
 import os
 
 os.environ.setdefault('TF_GPU_ALLOCATOR', 'cuda_malloc_async')
-os.environ.setdefault('XLA_FLAGS', '--xla_gpu_graph_level=0')
 
 from .rnn_model import RNN
 from .config import Config
