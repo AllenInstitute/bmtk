@@ -122,6 +122,7 @@ class TrainingEngine:
         # at least one case, checkpointing increased peak memory). Re-enable by default once
         # checkpointing is fixed to match V1_GLIF_model.
         self.gradient_checkpointing = kwargs.get('gradient_checkpointing', False)
+        self.regenerate_initial_state_each_epoch = kwargs.get('regenerate_initial_state_each_epoch', True)
         self._extractor_forward = None
 
         self._batch_indices = None
@@ -708,7 +709,9 @@ class TrainingEngine:
                                  fetch_in_graph=True)
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
-        init_state = self.init_state.get_state()
+        init_state = None
+        if not self.regenerate_initial_state_each_epoch:
+            init_state = self.init_state.get_state()
         self._prepare_normalizers()
 
         # Build the gradient-checkpointed forward ONCE, eagerly, before the @tf.function
@@ -725,6 +728,8 @@ class TrainingEngine:
             self.callbacks.on_train_begin()
             for epoch in range(self.n_epochs):
                 self.callbacks.on_epoch_start()
+                if self.regenerate_initial_state_each_epoch:
+                    init_state = self.init_state.get_state()
                 
                 for step in range(self.steps_per_epoch):
                     self.callbacks.on_step_start()

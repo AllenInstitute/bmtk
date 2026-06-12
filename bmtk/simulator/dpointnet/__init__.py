@@ -1,7 +1,3 @@
-import os
-
-os.environ.setdefault('TF_GPU_ALLOCATOR', 'cuda_malloc_async')
-
 from .rnn_model import RNN
 from .config import Config
 from .input_modules import InputModules

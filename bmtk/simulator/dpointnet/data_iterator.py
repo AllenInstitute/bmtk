@@ -117,7 +117,7 @@ class DataIterator:
                 _cspikes.append(s)
                 _cys.append(y)
 
-            concat_spikes = tf.concat(_cspikes, axis=2)
+            concat_spikes = self._concat_spikes(_cspikes)
             spikes.append(concat_spikes)
             ys.append(_cys)
         
@@ -133,5 +133,20 @@ class DataIterator:
             spikes.append(s)
             ys.append(y)
         
-        concat_spikes = tf.concat(spikes, axis=2)
+        concat_spikes = self._concat_spikes(spikes)
         return concat_spikes, ys
+
+    @staticmethod
+    def _concat_spikes(spikes):
+        if not spikes:
+            raise ValueError('DataIterator did not receive any active spike generators.')
+
+        non_bool_dtypes = [spike.dtype for spike in spikes if spike.dtype != tf.bool]
+        if non_bool_dtypes:
+            concat_dtype = non_bool_dtypes[0]
+            spikes = [
+                tf.cast(spike, concat_dtype) if spike.dtype != concat_dtype else spike
+                for spike in spikes
+            ]
+
+        return tf.concat(spikes, axis=2)

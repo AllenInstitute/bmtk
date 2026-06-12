@@ -784,12 +784,14 @@ class RNN:
             steps_per_epoch = train_dict['steps_per_epoch']
             training_approach = train_dict.get('training_approach', None)
             gradient_checkpointing = train_dict.get('gradient_checkpointing', False)
+            regenerate_initial_state_each_epoch = train_dict.get('regenerate_initial_state_each_epoch', True)
             training_engine = network.set_training(
                 rnn=network,
                 n_epochs=n_epochs,
                 steps_per_epoch=steps_per_epoch,
                 training_approach=training_approach,
-                gradient_checkpointing=gradient_checkpointing
+                gradient_checkpointing=gradient_checkpointing,
+                regenerate_initial_state_each_epoch=regenerate_initial_state_each_epoch
             )
 
             learning_rate = train_dict['learning_rate']
