@@ -60,7 +60,7 @@
       "node_set": "bkg",
       "trainable": true,
       "input": "spikes",
-      "module": "random",
+      "module": "noisy_current",
       "firing_rate": 250.0
     }
   },
@@ -120,9 +120,10 @@
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
             "rate_cost": 10000.0,
-            "pre_delay": 100.0,
+            "pre_delay": 0.0,
             "post_delay": 0.0,
-            "core_mask": null,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
             "stimulus_type": "drifting_gratings",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
@@ -147,6 +148,17 @@
             "module": "EMDWeightRegularization",
             "cost": 10.0,
             "data_dir": "./GLIF_network"
+          },
+          "evoked_odsi_loss": {
+            "module": "OrientationSelectivityLoss",
+            "osi_cost": 20.0,
+            "method": "crowd_osi",
+            "pre_delay": 0.0,
+            "post_delay": 0.0,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
+            "data_dir": "./GLIF_network",
+            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           }
         }
       },
@@ -160,9 +172,10 @@
           "spont_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
             "rate_cost": 10000.0,
-            "pre_delay": 100.0,
+            "pre_delay": 0.0,
             "post_delay": 0.0,
-            "core_mask": null,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
             "stimulus_type": "spontaneous",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
