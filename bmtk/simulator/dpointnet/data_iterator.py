@@ -32,12 +32,15 @@ class DataIterator:
         self._is_built = True
 
     def _build_singular(self):
-        self._ret_list = False        
+        self._ret_list = False
+        self.data_itrs = []
         if self.ordered_populations is not None:
             input_pops_order = {pop_name: idx for idx, pop_name in enumerate(self.ordered_populations)}
             ordered_mod_list = [None for _ in range(len(self.input_mods))]
-            while len(self.input_mods) > 0:
-                _mod = self.input_mods.pop(0)
+            # Non-destructive reorder (no pop) so build() can be called repeatedly,
+            # e.g. when the training loop rebuilds the iterator to recover from a
+            # transient tf.data error.
+            for _mod in self.input_mods:
                 ordered_mod_list[input_pops_order[_mod.population_name]] = _mod
             self.input_mods = ordered_mod_list
 
@@ -66,8 +69,9 @@ class DataIterator:
             if op is not None:
                 input_pops_order = {pop_name: idx for idx, pop_name in enumerate(self.ordered_populations)}
                 ordered_mod_list = [None for _ in range(len(imods))]
-                while len(imods) > 0:
-                    _mod = imods.pop(0)
+                # Non-destructive reorder (no pop) so build() can be called repeatedly
+                # (iterator rebuild on transient tf.data error must not consume input_mods).
+                for _mod in imods:
                     ordered_mod_list[input_pops_order[_mod.population_name]] = _mod
                 imods = ordered_mod_list
             

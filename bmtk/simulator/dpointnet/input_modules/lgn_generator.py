@@ -273,7 +273,9 @@ def create_drifting_gratings_generator(
     # )
 
     duration =  seq_len - pre_delay - post_delay
-    base_seed = None if seed is None else int(seed)
+    # Reference-matched stateless RNG (V1_GLIF_model/stim_dataset.py): build the base
+    # stateless seed pair once, then fold in the sample index and per-stream id below.
+    base_seed = None if seed is None else _stateless_seed_pair(int(seed), salt=1001)
 
     if orientation is not None:
         if not pd.api.types.is_list_like(orientation):
@@ -285,23 +287,31 @@ def create_drifting_gratings_generator(
     def _g():
         if regular:
             theta = -45  # to make the first one 0
-        scalar_rng = None if base_seed is not None else np.random.default_rng()
         sample_idx = 0
         while True:
-            phase_seed_values = None
-            orientation_seed_values = None
+            orientation_seed = None
+            phase_seed = None
             spike_seed = None
             if base_seed is not None:
-                orientation_seed_values = _sample_seed_values(base_seed, salt=1001, sample_idx=sample_idx, stream=0)
-                phase_seed_values = _sample_seed_values(base_seed, salt=1001, sample_idx=sample_idx, stream=1)
-                spike_seed = _sample_seed_pair(base_seed, salt=1001, sample_idx=sample_idx, stream=2)
+                # Reference schedule: fold the sample index into the base pair, then fold
+                # in 0/1/2 to get the orientation / phase / spike-sampling sub-streams.
+                sample_seed = _fold_in_seed(base_seed, sample_idx)
+                orientation_seed = _fold_in_seed(sample_seed, 0)
+                phase_seed = _fold_in_seed(sample_seed, 1)
+                spike_seed = _fold_in_seed(sample_seed, 2)
 
             if orientation is None:
-                # generate randdomly.
+                # generate randdomly. Keep theta a Python float (as the original
+                # _uniform_scalar path did) so the downstream tf.constant(theta, shape=(1,))
+                # yields a consistent (1,)-shaped orientation signature; the reference
+                # stateless_uniform value is preserved exactly by float().
                 if regular:
                     theta = (theta + 45) % 360
+                elif orientation_seed is None:
+                    theta = float(tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype))
                 else:
-                    theta = _uniform_scalar(0, 360, seed_values=orientation_seed_values, rng=scalar_rng)
+                    theta = float(tf.random.stateless_uniform(
+                        shape=(), seed=orientation_seed, minval=0, maxval=360, dtype=dtype))
             else:
                 theta = orientation[sample_idx % orientation_list_len]
                 # theta = orientation
@@ -314,8 +324,12 @@ def create_drifting_gratings_generator(
             # Ensure theta is a Tensor to avoid tf.function retracing on Python scalars.
             mov_theta = _as_scalar_tensor(mov_theta, dtype, 'theta')
 
-            # Generate a random phase
-            phase = _uniform_scalar(0, 360, seed_values=phase_seed_values, rng=scalar_rng)
+            # Generate a random phase (reference-matched stateless schedule)
+            if phase_seed is None:
+                phase = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+            else:
+                phase = tf.random.stateless_uniform(
+                    shape=(), seed=phase_seed, minval=0, maxval=360, dtype=dtype)
             phase = _as_scalar_tensor(phase, dtype, 'phase')
 
             movie = make_drifting_grating_stimulus(
@@ -416,14 +430,17 @@ def create_grey_screen_generator(
             dtype=dtype,
         )
     probabilities = tf.convert_to_tensor(probabilities, dtype=dtype)
-    base_seed = None if seed is None else int(seed)
+    # Reference-matched stateless RNG (V1_GLIF_model/stim_dataset.generate_gray_screen_stimulus).
+    base_seed = None if seed is None else _stateless_seed_pair(int(seed), salt=2001)
 
     def _g():
         sample_idx = 0
         while True:
             spike_seed = None
             if base_seed is not None:
-                spike_seed = _sample_seed_pair(base_seed, salt=2001, sample_idx=sample_idx, stream=0)
+                # Reference schedule: fold sample index then 0 for the spike sub-stream.
+                sample_seed = _fold_in_seed(base_seed, sample_idx)
+                spike_seed = _fold_in_seed(sample_seed, 0)
 
             if return_firing_rates:
                 firing_rates = -1000.0 * tf.math.log(tf.maximum(1.0 - probabilities, tf.keras.backend.epsilon()))

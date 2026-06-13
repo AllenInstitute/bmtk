@@ -478,7 +478,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         psc_initial_np = np.tile(psc_initial_np, self._n_neurons)
         self.psc_initial = tf.constant(psc_initial_np[None, :], dtype=self.compute_dtype) # expand the dimension for processing different receptor types
 
-        self.max_delay = int(np.round(np.min([np.max(glif_network["synapses"]["delays"]), max_delay])))
+        network_max_delay = np.max(glif_network["synapses"]["delays"])
+        if max_delay is None or max_delay <= 0:
+            self.max_delay = int(np.round(network_max_delay))
+        else:
+            self.max_delay = int(np.round(np.min([network_max_delay, max_delay])))
         
 
         # Gather the neuron parameters for every neuron

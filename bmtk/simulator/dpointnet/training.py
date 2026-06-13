@@ -696,6 +696,35 @@ class TrainingEngine:
         concat_spikes = tf.concat(spikes, axis=2)
         return concat_spikes, ys
 
+    def _next_spikes_with_retry(self, input_itr, max_retries=8):
+        """Fetch the next input batch, skipping rare malformed batches.
+
+        The LGN tf.data generator pipeline intermittently raises
+        InvalidArgumentError ("Shapes of all inputs must match ... Op:Pack")
+        when assembling a batch (~1 per 16-43 epochs), which otherwise kills
+        long runs. Re-fetching advances past the offending batch; a skipped
+        batch is negligible over thousands of steps. This is a robustness guard
+        around a pre-existing pipeline bug, not a correctness change.
+        """
+        last_err = None
+        for attempt in range(max_retries):
+            try:
+                return input_itr.next_spikes()
+            except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as e:
+                last_err = e
+                io.log_debug(
+                    f'{self.__class__.__name__}: next_spikes() raised {type(e).__name__} '
+                    f'(attempt {attempt + 1}/{max_retries}); rebuilding iterator and skipping batch.'
+                )
+                # A tf.data iterator that raised is in an undefined state; rebuild it
+                # (the LGN generators restart, which only reshuffles the stimulus stream).
+                try:
+                    input_itr.close()
+                    input_itr.build()
+                except Exception:
+                    pass
+        raise last_err
+
     def train(self):
         input_generators = []
         input_batch_sizes = []
@@ -705,8 +734,13 @@ class TrainingEngine:
             input_batch_sizes.append(p.batch_size)
             input_seq_lens.append(p.seq_len)
         
+        # fetch_in_graph=False: fetch the next batch eagerly. The in-graph path wraps the
+        # Python-generator fetch in @tf.function(reduce_retracing=True), which intermittently
+        # fails with an Op:Pack shape mismatch ([seq,n_input] vs []) on long runs (crashed
+        # ~epoch 16-22). Eager fetch avoids the tf.function packing; tf.data prefetch still
+        # overlaps the LGN generation with compute, and the model forward dominates step time.
         input_itr = DataIterator(input_generators, input_batch_sizes, input_seq_lens, self.rnn.ordered_inputs_populations,
-                                 fetch_in_graph=True)
+                                 fetch_in_graph=False)
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
         init_state = None
@@ -733,7 +767,7 @@ class TrainingEngine:
                 
                 for step in range(self.steps_per_epoch):
                     self.callbacks.on_step_start()
-                    spikes, ys = input_itr.next_spikes()
+                    spikes, ys = self._next_spikes_with_retry(input_itr)
                     if self.training_approach == 'series_accumulate':
                         step_loss_vals = self._distributed_train_step_series_accumulate(spikes, ys, init_state=init_state)
                     else:
