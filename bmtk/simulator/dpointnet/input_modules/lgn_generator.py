@@ -260,11 +260,11 @@ def create_drifting_gratings_generator(
         post_delay=0,
         current_input=False, 
         regular=False,
-        bmtk_compat=True, 
-        return_firing_rates=False, 
-        rotation='cw', 
+        bmtk_compat=True,
+        return_firing_rates=False,
+        rotation='ccw',  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
         billeh_phase=False,
-        dtype=tf.float32, 
+        dtype=tf.float32,
         seed=None):
 
     # lgn = LGN(
