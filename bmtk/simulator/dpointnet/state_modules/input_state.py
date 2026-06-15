@@ -16,7 +16,6 @@ class InitStateFromInputModule:
         self._init_state = None
         self._spikes_itrs = None
         self._last_state = None
-        self._reuse_last_state = False
 
     @property
     def init_state(self):
@@ -41,9 +40,6 @@ class InitStateFromInputModule:
         return self._spikes_itrs
 
     def get_state(self, max_retries=8, **kwargs):
-        if self._reuse_last_state and self._last_state is not None:
-            return self._last_state
-
         last_err = None
         self.state_model = self.rnn.state_only_model
         for attempt in range(max_retries):
@@ -51,12 +47,6 @@ class InitStateFromInputModule:
                 spikes_inputs, _ = self.spikes_itrs.next_spikes()
                 state_out = self.state_model([spikes_inputs, self.init_state])
                 self._last_state = state_out
-                if last_err is not None:
-                    self._reuse_last_state = True
-                    io.log_warning(
-                        f'{self.__class__.__name__}: recovered after transient get_state() '
-                        'failure; reusing this initial state for subsequent epochs.'
-                    )
                 return state_out
             except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as exc:
                 last_err = exc
@@ -71,7 +61,6 @@ class InitStateFromInputModule:
                     pass
 
         if self._last_state is not None:
-            self._reuse_last_state = True
             io.log_warning(
                 f'{self.__class__.__name__}: get_state() failed after {max_retries} attempts; '
                 'reusing the last successfully generated initial state.'
