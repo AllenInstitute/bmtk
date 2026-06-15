@@ -141,9 +141,14 @@ def _stateless_seed_pair(seed, salt=0):
 
 
 def _fold_in_seed(seed_pair, value):
-    return tf.random.experimental.stateless_fold_in(
-        seed_pair, tf.cast(value, tf.int32)
-    )
+    # BFC/GPU intermittently fails inside the stateless_fold_in implementation
+    # (StatelessRandomUniformFullIntV2 shape error) when called from tf.data
+    # Python generators. Keep TF's fold-in semantics but run this tiny seed-mix
+    # op on CPU; the downstream random sampling can still run on GPU.
+    with tf.device('/CPU:0'):
+        return tf.random.experimental.stateless_fold_in(
+            seed_pair, tf.cast(value, tf.int32)
+        )
 
 
 def _sample_seed_pair(seed, salt=0, sample_idx=0, stream=0):

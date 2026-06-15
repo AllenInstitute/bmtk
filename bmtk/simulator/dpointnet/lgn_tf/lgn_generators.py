@@ -16,9 +16,10 @@ def _stateless_seed_pair(seed, salt=0):
 
 
 def _fold_in_seed(seed_pair, value):
-    return tf.random.experimental.stateless_fold_in(
-        seed_pair, tf.cast(value, tf.int32)
-    )
+    with tf.device('/CPU:0'):
+        return tf.random.experimental.stateless_fold_in(
+            seed_pair, tf.cast(value, tf.int32)
+        )
 
 
 
