@@ -306,10 +306,10 @@ def create_drifting_gratings_generator(
                 if regular:
                     theta = (theta + 45) % 360
                 elif orientation_seed is None:
-                    theta = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+                    theta = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
                 else:
                     theta = tf.random.stateless_uniform(
-                        shape=(), seed=orientation_seed, minval=0, maxval=360, dtype=dtype)
+                        shape=[], seed=orientation_seed, minval=0, maxval=360, dtype=dtype)
             else:
                 theta = orientation[sample_idx % orientation_list_len]
                 # theta = orientation
@@ -324,10 +324,10 @@ def create_drifting_gratings_generator(
 
             # Generate a random phase (reference-matched stateless schedule)
             if phase_seed is None:
-                phase = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+                phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
             else:
                 phase = tf.random.stateless_uniform(
-                    shape=(), seed=phase_seed, minval=0, maxval=360, dtype=dtype)
+                    shape=[], seed=phase_seed, minval=0, maxval=360, dtype=dtype)
 
             movie = make_drifting_grating_stimulus(
                 row_size=row_size, 
