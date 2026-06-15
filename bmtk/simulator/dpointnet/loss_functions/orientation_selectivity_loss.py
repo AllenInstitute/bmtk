@@ -203,11 +203,18 @@ class OrientationSelectivityLoss:
         
         return angle_loss * self._osi_cost
     
-    @tf.function(jit_compile=False)
+    @tf.function(jit_compile=True)
     def _compute_osi_dsi_core(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
         """Core of crowd_osi: cos weighting + per-(batch,type) segment means.
 
         """
+        return self._compute_osi_dsi_impl(rates, radians_delta_angle, batch_size, node_type_ids, n_node_types)
+
+    @tf.function(jit_compile=True)
+    def _compute_osi_dsi_annulus_core(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
+        return self._compute_osi_dsi_impl(rates, radians_delta_angle, batch_size, node_type_ids, n_node_types)
+
+    def _compute_osi_dsi_impl(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
         weighted_osi_cos_responses = rates * tf.math.cos(2.0 * radians_delta_angle)
         weighted_dsi_cos_responses = rates * tf.math.cos(radians_delta_angle)
 
@@ -223,7 +230,7 @@ class OrientationSelectivityLoss:
 
         approximated_denominator = tf.math.unsorted_segment_mean(data_flat_rates, segment_ids_flat, num_segments=num_segments)
         approximated_denominator = tf.reshape(approximated_denominator, [batch_size, n_node_types])
-        approximated_denominator = tf.maximum(approximated_denominator, self._min_rates_threshold)
+        approximated_denominator = tf.maximum(approximated_denominator, 0.0005)
 
         osi_numerator = tf.math.unsorted_segment_mean(data_flat_weighted_osi, segment_ids_flat, num_segments=num_segments)
         osi_numerator = tf.reshape(osi_numerator, [batch_size, n_node_types])
@@ -235,7 +242,7 @@ class OrientationSelectivityLoss:
         dsi_approx_type = tf.reduce_mean(dsi_numerator / approximated_denominator, axis=0)
         return osi_approx_type, dsi_approx_type
 
-    def _crowd_osi_loss_for_selection(self, spikes, angle, normalizer, batch_size_hint, selection):
+    def _crowd_osi_loss_for_selection(self, spikes, angle, normalizer, batch_size_hint, selection, core_fn):
         delta_angle = angle[:, tf.newaxis] - selection['tuning_angles'][tf.newaxis, :]
         radians_delta_angle = delta_angle * (self._tf_pi / 180)
 
@@ -251,8 +258,24 @@ class OrientationSelectivityLoss:
             normalizer = tf.maximum(normalizer, self._min_rates_threshold)
             rates = rates / normalizer
 
-        batch_size = batch_size_hint if batch_size_hint is not None else tf.shape(rates)[0]
-        osi_approx_type, dsi_approx_type = self._compute_osi_dsi_core(
+        # Always use dynamic batch_size from the tensor (matching reference).
+        # A Python-int batch_size_hint creates a concrete shape in the XLA graph
+        # that causes CUDA_ERROR_GRAPH_EXEC_UPDATE_FAILURE if it ever varies.
+        batch_size = tf.shape(rates)[0]
+        if os.environ.get('DPOINTNET_OSI_DEBUG'):
+            tf.print(
+                'DPOINTNET_OSI_DEBUG',
+                'selection_width=', tf.shape(rates)[1],
+                'rates_static=', rates.shape,
+                'delta_static=', radians_delta_angle.shape,
+                'batch_size=', batch_size,
+                'node_type_ids_static=', selection['node_type_ids'].shape,
+                'n_node_types=', selection['n_node_types'],
+                'normalizer_is_none=', normalizer is None,
+                'core_fn=', getattr(core_fn, '__name__', 'unknown'),
+                summarize=-1,
+            )
+        osi_approx_type, dsi_approx_type = core_fn(
             rates,
             radians_delta_angle,
             batch_size,
@@ -284,6 +307,7 @@ class OrientationSelectivityLoss:
                 'cell_type_count': self.cell_type_count,
                 'osi_cost': tf.constant(self._osi_cost, dtype=self._dtype),
             },
+            self._compute_osi_dsi_core,
         )
         if self._annulus_crowd_osi is not None:
             loss += self._crowd_osi_loss_for_selection(
@@ -292,6 +316,7 @@ class OrientationSelectivityLoss:
                 normalizer,
                 batch_size_hint,
                 self._annulus_crowd_osi,
+                self._compute_osi_dsi_annulus_core,
             )
         return loss
 

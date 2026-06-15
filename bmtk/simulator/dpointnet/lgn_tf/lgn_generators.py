@@ -31,7 +31,7 @@ def movies_concat(movie, pre_delay, post_delay, dtype=tf.float32):
     return videos
 
 
-@tf.function(jit_compile=True) # using jit_compile can cause error with input shapes
+@tf.function(jit_compile=True)
 def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, image_duration=100, cpd=0.05,
                                    temporal_f=2, theta=0, phase=0, contrast=1.0, dtype=tf.float32):
     '''

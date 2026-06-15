@@ -301,17 +301,15 @@ def create_drifting_gratings_generator(
                 spike_seed = _fold_in_seed(sample_seed, 2)
 
             if orientation is None:
-                # generate randdomly. Keep theta a Python float (as the original
-                # _uniform_scalar path did) so the downstream tf.constant(theta, shape=(1,))
-                # yields a consistent (1,)-shaped orientation signature; the reference
-                # stateless_uniform value is preserved exactly by float().
+                # Generate randomly, keeping theta as a Tensor to match the reference
+                # stim_dataset.generate_drifting_grating_tuning path.
                 if regular:
                     theta = (theta + 45) % 360
                 elif orientation_seed is None:
-                    theta = float(tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype))
+                    theta = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
                 else:
-                    theta = float(tf.random.stateless_uniform(
-                        shape=(), seed=orientation_seed, minval=0, maxval=360, dtype=dtype))
+                    theta = tf.random.stateless_uniform(
+                        shape=(), seed=orientation_seed, minval=0, maxval=360, dtype=dtype)
             else:
                 theta = orientation[sample_idx % orientation_list_len]
                 # theta = orientation
@@ -322,7 +320,7 @@ def create_drifting_gratings_generator(
             if billeh_phase:
                 mov_theta += 180
             # Ensure theta is a Tensor to avoid tf.function retracing on Python scalars.
-            mov_theta = _as_scalar_tensor(mov_theta, dtype, 'theta')
+            mov_theta = tf.cast(mov_theta, dtype)
 
             # Generate a random phase (reference-matched stateless schedule)
             if phase_seed is None:
@@ -330,7 +328,6 @@ def create_drifting_gratings_generator(
             else:
                 phase = tf.random.stateless_uniform(
                     shape=(), seed=phase_seed, minval=0, maxval=360, dtype=dtype)
-            phase = _as_scalar_tensor(phase, dtype, 'phase')
 
             movie = make_drifting_grating_stimulus(
                 row_size=row_size, 

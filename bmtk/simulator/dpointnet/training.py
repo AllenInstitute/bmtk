@@ -352,6 +352,8 @@ class TrainingEngine:
         reproduces the original forward exactly.
         """
         if self.gradient_checkpointing and self._extractor_forward is not None:
+            if x.dtype == tf.bool:
+                x = tf.cast(x, self.rnn.dtype)
             return self._extractor_forward(x, init_state)
         return self.rnn.extractor_model((x, init_state))
 
@@ -755,6 +757,8 @@ class TrainingEngine:
         if self.gradient_checkpointing and self._extractor_forward is None:
             @tf.recompute_grad
             def extractor_forward(x, fwd_init_state):
+                if x.dtype == tf.bool:
+                    x = tf.cast(x, self.rnn.dtype)
                 return self.rnn.extractor_model((x, fwd_init_state))
             self._extractor_forward = extractor_forward
 
