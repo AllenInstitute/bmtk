@@ -10,7 +10,7 @@
   "run": {
     "seq_len": 500,
     "dt": 1.0,
-    "batch_size": 2,
+    "batch_size": 5,
     "t_start": 0.0,
     "default_seed": 3000,
     "train_recurrent_weights": true,
@@ -19,14 +19,14 @@
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
-    "gauss_std": 0.5,
-    "dampening_factor": 0.3,
-    "recurrent_dampening_factor": 0.5,
+    "gauss_std": 0.3,
+    "dampening_factor": 0.1,
+    "recurrent_dampening_factor": 0.1,
     "voltage_gradient_dampening": 0.5,
     "recurrent_weight_scale": 1.0,
     "pseudo_gauss": false,
     "lr_scale": 1.0,
-    "max_delay": 5,
+    "max_delay": 0,
     "hard_reset": false,
     "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
     "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
