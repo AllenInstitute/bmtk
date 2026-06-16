@@ -194,7 +194,7 @@ class PointNetwork(SimNetwork):
 
         return selected_edges
 
-    def add_spike_trains(self, spike_trains, node_set, sg_params={'precise_times': True}, t_offset=0.):
+    def add_spike_trains(self, spike_trains, node_set, sg_params={'precise_times': True}, t_offset=0.0, max_dt=1.0, parrot_neurons=False):
         # Build the virtual nodes
         src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
         virt_gid_map = self._virtual_gids
@@ -232,9 +232,17 @@ class PointNetwork(SimNetwork):
                     nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                     nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                     if np.isscalar(edge.nest_params['weight']):
-                        edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
-                                                             fill_value=edge.nest_params['weight'])
-                    self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                        edge.nest_params['weight'] = np.full(
+                            shape=len(nest_srcs),
+                            fill_value=edge.nest_params['weight']
+                        )
+                    
+                    if parrot_neurons:
+                        parrot_neurons = nest.Create('parrot_neuron', len(nest_srcs))
+                        nest.Connect(nest_srcs, parrot_neurons, conn_spec='one_to_one', syn_spec={'delay': np.full(len(parrot_neurons), fill_value=max_dt)})
+                        self._nest_connect(np.array(parrot_neurons), nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                    else:
+                        self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def _nest_connect(self, nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=None):
         """Calls nest.Connect but with some extra error logging and exception handling."""
