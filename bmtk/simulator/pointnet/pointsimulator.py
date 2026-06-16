@@ -211,7 +211,7 @@ class PointSimulator(Simulator):
 
             io.barrier()
 
-            io.log_info('Starting Simulation')
+            io.log_info('Simulation Started')
             n, res, data_res = self._get_block_trial(tstop)
             if n > 0:
                 for r in moves.range(n):

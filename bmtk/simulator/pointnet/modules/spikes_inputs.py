@@ -38,10 +38,11 @@ class SpikesInputsMod(SimulatorMod):
         self._spike_trains = None
         self._run_counter = 0
         self._warned = False
+        self._parrot_neurons = kwargs.get('use_parrot_neurons', False)
 
     def initialize(self, sim):
         io.log_info('Build virtual cell stimulations for {}'.format(self._name))
-        
+
         # if input_file is a list, then we'll load each file in the list
         if isinstance(self._params['input_file'], list):
             # if run_counter is greater than the length of the input_file list, then 
@@ -62,8 +63,6 @@ class SpikesInputsMod(SimulatorMod):
             input_path = self._params['input_file']
             t_offset = 0.0
         self._run_counter += 1
-
-            
         
         node_set = sim.net.get_node_set(self._params['node_set'])
        
@@ -91,4 +90,11 @@ class SpikesInputsMod(SimulatorMod):
                 **self._params
             )
 
-        sim.net.add_spike_trains(self._spike_trains, node_set, sim.get_spike_generator_params(), t_offset=t_offset)
+        sim.net.add_spike_trains(
+            self._spike_trains, 
+            node_set, 
+            sim.get_spike_generator_params(), 
+            t_offset=t_offset,
+            max_dt=sim.dt,
+            parrot_neurons=self._parrot_neurons
+        )
