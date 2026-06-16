@@ -1,0 +1,120 @@
+{
+    "manifest": {
+        "$BASE_DIR": ".",
+        "$OUTPUT_DIR": "$BASE_DIR/output_inference_dg45_3s",
+        "$NETWORK_DIR": "$BASE_DIR/GLIF_network/network",
+        "$TRAINED_NETWORK_DIR": "$BASE_DIR/training_callbacks_paper/network.trained_weights.best",
+        "$MODELS_DIR": "$BASE_DIR/GLIF_network/components"
+    },
+    "target_simulator": "RNN",
+    "run": {
+        "seq_len": 3000,
+        "dt": 1.0,
+        "batch_size": 1,
+        "t_start": 0.0,
+        "default_seed": 3000,
+        "train_recurrent_weights": false,
+        "dtype": "float16",
+        "checkpoint": {}
+    },
+    "rnn_cell_params": {
+        "cell_model": "GLIF3Cell",
+        "gauss_std": 0.3,
+        "dampening_factor": 0.1,
+        "recurrent_dampening_factor": 0.1,
+        "voltage_gradient_dampening": 0.5,
+        "recurrent_weight_scale": 1.0,
+        "pseudo_gauss": false,
+        "lr_scale": 1.0,
+        "max_delay": 0,
+        "hard_reset": false,
+        "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
+        "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
+    },
+    "inputs": {
+        "lgn_evoked": {
+            "node_set": "lgn",
+            "trainable": false,
+            "input": "spikes",
+            "module": "lgn_tf",
+            "stimulus_type": "drifting_gratings",
+            "stimulus_options": {
+                "orientation": 45.0,
+                "temporal_f": 2.0,
+                "row_size": 80,
+                "col_size": 120,
+                "pre_delay": 500,
+                "post_delay": 0
+            }
+        },
+        "bkg_random": {
+            "node_set": "bkg",
+            "trainable": true,
+            "input": "spikes",
+            "module": "noisy_current",
+            "firing_rate": 250.0
+        }
+    },
+    "initial_states": {
+        "zero_init_state": {
+            "module": "zero_state"
+        }
+    },
+    "inference": {
+        "initial_state": {
+            "module": "zero_state"
+        },
+        "inputs": [
+            "lgn_evoked",
+            "bkg_random"
+        ],
+        "output": {
+            "output_dir": "$OUTPUT_DIR",
+            "log_file": "log.txt",
+            "log_level": "DEBUG",
+            "spikes_file": "spikes_dg45_3s.h5",
+            "overwrite_results": true
+        }
+    },
+    "output": {
+        "output_dir": "$OUTPUT_DIR",
+        "log_file": "$OUTPUT_DIR/log.txt",
+        "log_level": "DEBUG",
+        "spikes_file": "$OUTPUT_DIR/spikes_dg45_3s.h5",
+        "overwrite_results": true
+    },
+    "components": {
+        "point_neuron_models_dir": "$MODELS_DIR/cell_models",
+        "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"
+    },
+    "networks": {
+        "nodes": [
+            {
+                "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
+                "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
+            },
+            {
+                "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
+                "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
+            },
+            {
+                "nodes_file": "$NETWORK_DIR/bkg_nodes.h5",
+                "node_types_file": "$NETWORK_DIR/bkg_node_types.csv"
+            }
+        ],
+        "edges": [
+            {
+                "edges_file": "$TRAINED_NETWORK_DIR/v1_v1_edges.h5",
+                "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
+            },
+            {
+                "edges_file": "$TRAINED_NETWORK_DIR/lgn_v1_edges.h5",
+                "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
+            },
+            {
+                "edges_file": "$TRAINED_NETWORK_DIR/bkg_v1_edges.h5",
+                "edge_types_file": "$NETWORK_DIR/bkg_v1_edge_types.csv"
+            }
+        ]
+    }
+}

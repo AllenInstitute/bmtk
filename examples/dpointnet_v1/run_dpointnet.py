@@ -31,7 +31,7 @@ if __name__ == '__main__':
         'config_path',
         type=str, 
         nargs='?', 
-        default='configs/config.training.target_fr.json'
+        default='configs/config.training.paper.json'
     )
 
     args, _ = parser.parse_known_args()
