@@ -7,7 +7,7 @@ from .inputs_base import InputsGeneratorMod
 
 
 
-class RandomSpikesGenerator(InputsGeneratorMod):
+class BernoulliSpikes(InputsGeneratorMod):
     def __init__(self, rnn, name, input_network, firing_rate, **kwargs):
         super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
         self._n_nodes = self.input_network.n_nodes
@@ -21,7 +21,7 @@ class RandomSpikesGenerator(InputsGeneratorMod):
 
     @staticmethod
     def module():
-        return 'random'
+        return 'bernoulli_spikes'
     
     @staticmethod
     def input_type():
@@ -50,3 +50,9 @@ class RandomSpikesGenerator(InputsGeneratorMod):
             )
         )
         return data_set
+
+
+class RandomSpikesGenerator(BernoulliSpikes):
+    @staticmethod
+    def module():
+        return 'random'

@@ -691,7 +691,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     n_source_neurons=input_dense_shape[1]
                 )
                 end_indx = self.inputs_idx[idx] + n_input_nodes
-            elif input_type == 'noisy_current':
+            elif input_type in ('poisson_spikes_internal', 'noisy_current'):
                 firing_rate = input_options.get('firing_rate', 250.0)
                 input_props['spike_prob'] = tf.constant(firing_rate * dt / 1000.0, dtype=self.compute_dtype)
                 input_props['pre_input_ind_table'] = make_pre_ind_table(
@@ -999,7 +999,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
-            if input_net['input_type'] == 'noisy_current':
+            if input_net['input_type'] in ('poisson_spikes_internal', 'noisy_current'):
                 extern_currents.append(self.calculate_noise_current(batch_size, noise_step, input_net))
                 continue
 
