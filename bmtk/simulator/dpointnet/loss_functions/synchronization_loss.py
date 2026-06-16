@@ -6,7 +6,7 @@ from . import loss_utils
 
 
 class SynchronizationLoss(tf.keras.layers.Layer):
-    def __init__(self, rnn, sync_cost=10, t_start=0.0, t_end=0.5, n_samples=50,
+    def __init__(self, rnn, sync_cost=10, t_start=0.0, t_end=500.0, n_samples=50,
                  neuropixels_data_dir='Synchronization_data',
                  data_dir='GLIF_network',
                  session=None, dtype=tf.float32, core_mask=None, seed=42,
@@ -15,10 +15,23 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         self._rnn = rnn
         self._network = rnn.recurrent_network
         self._sync_cost = sync_cost
-        self._t_start = t_start
-        self._t_end = t_end
-        self._t_start_seconds = int(t_start * 1000)
-        self._t_end_seconds = int(t_end * 1000)
+        self._t_start_ms = float(t_start)
+        self._t_end_ms = float(t_end)
+        if self._t_end_ms <= self._t_start_ms:
+            raise ValueError(
+                f'SynchronizationLoss expects t_start/t_end in ms with t_end > t_start; '
+                f'got t_start={t_start}, t_end={t_end}.'
+            )
+        if 0.0 < self._t_end_ms <= 10.0:
+            raise ValueError(
+                'SynchronizationLoss t_start/t_end are now specified in ms. '
+                f'Got t_start={t_start}, t_end={t_end}; if these are seconds, multiply by 1000 '
+                f'(t_start={self._t_start_ms * 1000:g}, t_end={self._t_end_ms * 1000:g}).'
+            )
+        self._t_start_idx = int(round(self._t_start_ms))
+        self._t_end_idx = int(round(self._t_end_ms))
+        duration_ms = self._t_end_idx - self._t_start_idx
+        duration_s = duration_ms / 1000.0
         self._data_dir = data_dir
         # Resolve core mask from an explicit mask or a core_radius (matches reference loss_core_radius).
         self._core_mask = loss_utils.resolve_core_mask(
@@ -53,14 +66,14 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         bin_sizes = np.logspace(-3, 0, 20)
         
         # using the simulation length, limit bin_sizes to define at least 2 bins
-        bin_sizes_mask = bin_sizes < (self._t_end - self._t_start)/2
+        bin_sizes_mask = bin_sizes < duration_s / 2
         bin_sizes = bin_sizes[bin_sizes_mask]
         self._bin_sizes_ms = tuple(max(1, int(round(v * 1000.0))) for v in bin_sizes)
         self._bin_sizes_ms_tf = tf.constant(self._bin_sizes_ms, dtype=tf.int32)
         self._epsilon_tf = tf.constant(1e-7, dtype=self._dtype)
 
         # Load the experimental data
-        duration = str(int((t_end - t_start) * 1000))
+        duration = str(duration_ms)
         experimental_data_path = os.path.join(self._neuropixels_data_dir, f'Fano_factor_v1', f'v1_fano_running_{duration}ms_{session}.npy')
         
         # experimental_data_path = os.path.join(data_dir, f'all_fano_300ms_{session}.npy')
@@ -98,7 +111,7 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             spikes = tf.boolean_mask(spikes, self._core_mask, axis=2)
         
         if trim:
-            spikes = spikes[:, self._t_start_seconds:self._t_end_seconds, :]
+            spikes = spikes[:, self._t_start_idx:self._t_end_idx, :]
         duration_ms = tf.cast(tf.shape(spikes)[1], tf.int32)
         bin_limit_ms = duration_ms // 2
         bin_sizes_mask = self._bin_sizes_ms_tf < bin_limit_ms
