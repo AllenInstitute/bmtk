@@ -1,6 +1,7 @@
 from time import time
 from enum import IntEnum
 from datetime import datetime
+import os
 import subprocess
 import tensorflow as tf
 import pandas as pd
@@ -75,6 +76,8 @@ class Callbacks:
         self._step_memory_usage = []
         self._step_loss_rates = []
         self._step_loss_values = []
+        self._losses_header_written = False
+        self._performance_header_written = False
 
         self.epoch_losses = []
         self.epoch_vallosses = []
@@ -117,10 +120,12 @@ class Callbacks:
         if self.verbosity >= Verbosity.on_train:
             io.log_info(f'> Training Started @ {self.time}')
 
+        allocator = os.environ.get('TF_GPU_ALLOCATOR', '')
+        self._append_performance_to_csv('tf_gpu_allocator', None, None, allocator or 'default')
+
     def on_train_end(self, metrics=None, normalizers=None):
         self.training_time = time() - self.train_start_time
-        self._record_losses()
-        self._record_performance()
+        self._append_performance_to_csv('training_time', None, None, self.training_time)
 
         if len(self._saved_weights) > 1:
             for epoch_num, epoch_weights in self._saved_weights:
@@ -135,25 +140,34 @@ class Callbacks:
         self.epoch_start_time = time()
         self.epoch_num += 1
         self.epoch_step_num = 0
+        self._reset_tf_memory_stats()
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch {self.epoch_num}/{self.n_epochs} Started @ {self.time}')
 
     def on_epoch_end(self, validation_losses):
+        validation_losses = self._detach_loss_values(validation_losses)
         epoch_time = time() - self.epoch_start_time
         self._epoch_times.append(epoch_time)
         self.epoch_losses.append(validation_losses)
+        self._append_performance_to_csv('epoch_timesteps', self.epoch_num, None, epoch_time)
 
         val_loss = validation_losses['__total_loss']
         self.epoch_vallosses.append(val_loss)
         self._store_weights(val_loss)
+        self._append_losses_to_csv('validation', self.epoch_num, 0, validation_losses)
+        self._append_gpu_memory_usage('epoch_end', self.epoch_num, None)
 
         if self.verbosity >= Verbosity.on_epoch:
             io.log_info(f'>> Epoch Finished.')
-            io.log_info(f'>>   Validation Loss: {val_loss}')
+            io.log_info(
+                f'>>   Validation Loss: {self._format_value(val_loss)} '
+                f'(Rate: {self._format_mean_rate(validation_losses)})'
+            )
+            for loss_line in self._format_loss_components(validation_losses):
+                io.log_info(f'>>                    {loss_line}')
             for gpu_mem in self._gpu_mem_usage():
-                io.log_info(f'>>   Tensorflow GPU "{gpu_mem.name}" Memory Usage: Used {gpu_mem.tf_current:.2f} GiB, Peak Usage: {gpu_mem.tf_peak:.2f} GiB.')
-                io.log_info(f'>>   Total GPU "{gpu_mem.name}" Memory Usage: Used: {gpu_mem.gpu_used:.2f} GiB, Free: {gpu_mem.gpu_free:.2f} GiB, Total: {gpu_mem.gpu_total:.2f} GiB')
+                io.log_info(f'>>   {self._format_gpu_mem(gpu_mem)}')
 
     def on_step_start(self):
         self.tot_step_num += 1
@@ -161,27 +175,129 @@ class Callbacks:
         self.step_start_time = time()
 
     def on_step_end(self, loss_vals):
+        loss_vals = self._detach_loss_values(loss_vals)
         step_time = time() - self.step_start_time
         self._step_times.append(step_time)
-        self._record_memory_usage()
+        gpu_mem_info = self._record_memory_usage()
+        self._append_performance_to_csv('step_timesteps', self.epoch_num, self.epoch_step_num, step_time)
+        if self._step_memory_usage:
+            self._append_performance_to_csv(
+                'gpu_memory_usage_per_step',
+                self.epoch_num,
+                self.epoch_step_num,
+                self._step_memory_usage[-1],
+            )
+        self._append_gpu_memory_usage('step', self.epoch_num, self.epoch_step_num, gpu_mem_info)
         self._step_loss_values.append(loss_vals)
         self._step_loss_rates.append(loss_vals['__total_loss'])
+        self._append_losses_to_csv('step', self.epoch_num, self.epoch_step_num, loss_vals)
 
         if self.verbosity >= Verbosity.on_step:
-            io.log_info(f'>>> Step {self.epoch_step_num}/{self.steps_per_epoch}')
-            io.log_info(f'>>>   Loss: {loss_vals["__total_loss"]}')
-            io.log_info(f'>>>   Step running time: {step_time:.2f}s')
+            epoch_width = max(2, len(str(self.n_epochs)))
+            step_width = max(2, len(str(self.steps_per_epoch)))
+            io.log_info(
+                f'>>> Epoch {self.epoch_num:{epoch_width}d}/{self.n_epochs:{epoch_width}d}, '
+                f'Step {self.epoch_step_num:{step_width}d}/{self.steps_per_epoch:{step_width}d} '
+                f'(run time: {step_time:.2f} s, Rate: {self._format_mean_rate(loss_vals)})'
+            )
+            loss_prefix = f'Loss: {self._format_value(loss_vals["__total_loss"])} '
+            loss_lines = self._format_loss_components(loss_vals)
+            if loss_lines:
+                io.log_info(f'>>>   {loss_prefix}{loss_lines[0]}')
+                for loss_line in loss_lines[1:]:
+                    io.log_info(f'>>>   {" " * len(loss_prefix)}{loss_line}')
+            else:
+                io.log_info(f'>>>   {loss_prefix.rstrip()}')
 
             for gpu_mem in self._gpu_mem_usage():
-                io.log_info(f'>>>   Tensorflow GPU "{gpu_mem.name}" Memory Usage: Used {gpu_mem.tf_current:.2f} GiB, Peak Usage: {gpu_mem.tf_peak:.2f} GiB.')
-                io.log_info(f'>>>   Total GPU "{gpu_mem.name}" Memory Usage: Used: {gpu_mem.gpu_used:.2f} GiB, Free: {gpu_mem.gpu_free:.2f} GiB, Total: {gpu_mem.gpu_total:.2f} GiB')
+                io.log_info(f'>>>   {self._format_gpu_mem(gpu_mem)}')
+
+    def _format_value(self, value):
+        return f'{self._as_float(value):.4f}'
+
+    def _format_loss_components(self, loss_vals):
+        component_values = []
+        for pname, pval in loss_vals.items():
+            if not isinstance(pval, dict):
+                continue
+            values = []
+            for loss_name, loss_val in pval.items():
+                if loss_name.startswith('__'):
+                    continue
+                values.append(f'{self._as_float(loss_val):8.4f}')
+            if values:
+                component_values.append((pname, values))
+
+        if not component_values:
+            return []
+
+        pname_width = max(len(pname) for pname, _ in component_values)
+        return [
+            f'({pname:<{pname_width}}: {", ".join(values)})'
+            for pname, values in component_values
+        ]
+
+    def _format_mean_rate(self, loss_vals):
+        rates = []
+        for pval in loss_vals.values():
+            if isinstance(pval, dict) and '__mean_rate' in pval:
+                rates.append(self._as_float(pval['__mean_rate']))
+        if not rates:
+            return 'n/a'
+        return f'{np.mean(rates):.4f}'
+
+    @staticmethod
+    def _as_float(value):
+        if hasattr(value, 'values'):
+            value = value.values[0]
+        if hasattr(value, 'numpy'):
+            value = value.numpy()
+        return float(value)
+
+    @classmethod
+    def _detach_loss_values(cls, loss_vals):
+        if isinstance(loss_vals, dict):
+            return {name: cls._detach_loss_values(value) for name, value in loss_vals.items()}
+        return cls._as_float(loss_vals)
+
+    @staticmethod
+    def _format_gpu_mem(gpu_mem):
+        return (
+            f'"{gpu_mem.name}" Memory Used: {gpu_mem.gpu_used:6.2f} GiB, '
+            f'Free {gpu_mem.gpu_free:6.2f} GiB, Total {gpu_mem.gpu_total:6.2f} GiB.'
+        )
 
     def _record_memory_usage(self):
         if not self._gpu_devices:
-            return
-        
-        mem_usage = get_gpu_memory(gpu_id=0)
-        self._step_memory_usage.append(mem_usage)
+            return []
+
+        gpu_mem_info = self._gpu_mem_usage()
+        if gpu_mem_info:
+            self._step_memory_usage.append(gpu_mem_info[0].gpu_used)
+        return gpu_mem_info
+
+    def _reset_tf_memory_stats(self):
+        for gpu_id in range(len(self._gpu_devices)):
+            try:
+                tf.config.experimental.reset_memory_stats(f'GPU:{gpu_id}')
+            except (ValueError, RuntimeError):
+                pass
+
+    def _append_gpu_memory_usage(self, prefix, epoch_num, step_num, gpu_mem_info=None):
+        if gpu_mem_info is None:
+            gpu_mem_info = self._gpu_mem_usage()
+
+        for gpu_mem in gpu_mem_info:
+            metric_prefix = f'{prefix}_{gpu_mem.name.lower().replace(":", "")}'
+            metrics = {
+                f'{metric_prefix}_resident_used_gib': gpu_mem.gpu_used,
+                f'{metric_prefix}_resident_free_gib': gpu_mem.gpu_free,
+                f'{metric_prefix}_resident_total_gib': gpu_mem.gpu_total,
+                f'{metric_prefix}_tf_allocator_current_gib': gpu_mem.tf_current,
+                f'{metric_prefix}_tf_allocator_peak_gib': gpu_mem.tf_peak,
+            }
+            for name, value in metrics.items():
+                self._append_performance_to_csv(name, epoch_num, step_num, value)
     
     def _gpu_mem_usage(self):
         if not self._gpu_devices:
@@ -263,14 +379,14 @@ class Callbacks:
                         loss_type.append('step')
                         pnames.append(_pname)
                         loss_names.append(_lname)
-                        loss_vals.append(_lval.numpy())
+                        loss_vals.append(self._as_float(_lval))
                         epoch_nums.append(epoch_num)
                         step_nums.append(step_num)
                 else:
                     loss_type.append('step')
                     pnames.append('')
                     loss_names.append(_pname)
-                    loss_vals.append(_pval.numpy())
+                    loss_vals.append(self._as_float(_pval))
                     epoch_nums.append(epoch_num)
                     step_nums.append(step_num)
         
@@ -281,14 +397,14 @@ class Callbacks:
                         loss_type.append('validation')
                         pnames.append(_pname)
                         loss_names.append(_lname)
-                        loss_vals.append(_lval.numpy())
+                        loss_vals.append(self._as_float(_lval))
                         epoch_nums.append(epoch_num + 1)
                         step_nums.append(0)
                 else:
                     loss_type.append('validation')
                     pnames.append('')
                     loss_names.append(_pname)
-                    loss_vals.append(_pval.numpy())
+                    loss_vals.append(self._as_float(_pval))
                     epoch_nums.append(epoch_num + 1)
                     step_nums.append(0)
 
@@ -301,6 +417,41 @@ class Callbacks:
             'loss_function': loss_names,
             'loss_value': loss_vals
         }).to_csv(self.losses_table_csv, index=False)
+
+    def _append_losses_to_csv(self, loss_type, epoch_num, step_num, loss_vals):
+        if self.losses_table_csv is None:
+            return
+
+        records = []
+        for parameter_name, parameter_vals in loss_vals.items():
+            if isinstance(parameter_vals, dict):
+                for loss_name, loss_val in parameter_vals.items():
+                    records.append({
+                        'loss_type': loss_type,
+                        'epoch': epoch_num,
+                        'step': step_num,
+                        'parameter': parameter_name,
+                        'loss_function': loss_name,
+                        'loss_value': self._as_float(loss_val),
+                    })
+            else:
+                records.append({
+                    'loss_type': loss_type,
+                    'epoch': epoch_num,
+                    'step': step_num,
+                    'parameter': '',
+                    'loss_function': parameter_name,
+                    'loss_value': self._as_float(parameter_vals),
+                })
+
+        Path(self.losses_table_csv).parent.mkdir(exist_ok=True, parents=True)
+        pd.DataFrame.from_records(records).to_csv(
+            self.losses_table_csv,
+            mode='a' if self._losses_header_written else 'w',
+            header=not self._losses_header_written,
+            index=False,
+        )
+        self._losses_header_written = True
 
 
     def _record_performance(self):
@@ -345,6 +496,24 @@ class Callbacks:
             'step': step_nums,
             'values': values,
         }).to_csv(self.performance_table_csv, index=False)
+
+    def _append_performance_to_csv(self, name, epoch_num, step_num, value):
+        if self.performance_table_csv is None:
+            return
+
+        Path(self.performance_table_csv).parent.mkdir(exist_ok=True, parents=True)
+        pd.DataFrame([{
+            'name': name,
+            'epoch': epoch_num,
+            'step': step_num,
+            'values': value,
+        }]).to_csv(
+            self.performance_table_csv,
+            mode='a' if self._performance_header_written else 'w',
+            header=not self._performance_header_written,
+            index=False,
+        )
+        self._performance_header_written = True
 
 
 def get_gpu_memory(gpu_id=0):

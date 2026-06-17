@@ -15,7 +15,8 @@
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float16",
-    "single_gpu_strategy": "one_device"
+    "single_gpu_strategy": "one_device",
+    "checkpoint": {}
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
@@ -28,12 +29,8 @@
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [
-      0.7579732,
-      1.60809441,
-      3.41168742,
-      7.23813909
-    ]
+    "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
+    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
   },
   "inputs": {
     "lgn_evoked": {
@@ -58,12 +55,12 @@
         "col_size": 120
       }
     },
-    "bkg_inputs": {
+    "bkg_random": {
       "node_set": "bkg",
       "trainable": false,
       "input": "spikes",
-      "module": "random",
-      "firing_rate": 250.0
+      "module": "poisson_spikes",
+      "firing_rate": 10.0
     }
   },
   "initial_states": {
@@ -74,14 +71,14 @@
       "module": "from_input",
       "inputs": [
         "lgn_spont",
-        "bkg_inputs"
+        "bkg_random"
       ]
     }
   },
   "training": {
     "n_epochs": 2,
-    "steps_per_epoch": 3,
-    "training_approach": "parallel",
+    "steps_per_epoch": 2,
+    "training_approach": "series",
     "learning_rate": {
       "schedule": "warmup_cosine",
       "warmup_start_lr": 0.08,
@@ -94,19 +91,33 @@
       "name": "adam",
       "epsilon": 1e-07
     },
+    "initial_stateX": {
+      "module": "zero_state"
+    },
     "initial_state": {
       "module": "from_input",
       "inputs": [
         "lgn_spont",
-        "bkg_inputs"
+        "bkg_random"
       ]
+    },
+    "callbacks": {
+      "class": "Callbacks",
+      "starting_epoch": 0,
+      "callbacks_dir": "training_callbacks",
+      "verbose": "on_step",
+      "epoch_store_weights": "best",
+      "epoch_cache_weights": false,
+      "sonata_output_dir": "network.trained_weights.best",
+      "losses_table_csv": "losses.csv",
+      "performance_table_csv": "performance.csv"
     },
     "parameters": [
       {
         "name": "evoked",
         "inputs": [
           "lgn_evoked",
-          "bkg_inputs"
+          "bkg_random"
         ],
         "loss_functions": {
           "evoked_rate_regularizer": {
@@ -140,7 +151,7 @@
         "name": "spontaneous",
         "inputs": [
           "lgn_spont",
-          "bkg_inputs"
+          "bkg_random"
         ],
         "loss_functions": {
           "spont_rate_regularizer": {
@@ -156,6 +167,7 @@
       }
     ]
   },
+  "inference": {},
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
@@ -165,25 +177,21 @@
   },
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",
-    "synaptic_models_dir": "$MODELS_DIR/synaptic_models",
-    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
+    "synaptic_models_dir": "$MODELS_DIR/synaptic_models_updated"
   },
   "networks": {
     "nodes": [
       {
         "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/v1_node_types.csv",
-        "trainable": true
+        "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
       },
       {
         "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv",
-        "trainable": false
+        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
       },
       {
         "nodes_file": "$NETWORK_DIR/bkg_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/bkg_node_types.csv",
-        "trainable": false
+        "node_types_file": "$NETWORK_DIR/bkg_node_types.csv"
       }
     ],
     "edges": [

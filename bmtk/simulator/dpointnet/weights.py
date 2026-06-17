@@ -1,4 +1,3 @@
-import tensorflow as tf
 import pandas as pd
 import numpy as np
 import h5py
@@ -22,8 +21,14 @@ class ModelWeights:
         self._network_weights = {}
         for name in self._networks:
             model_vals = cell.recurrent_weight_values if name == '<recurrent>' else self.cell.inputs[name]['input_weight_values']
-            model_vals = tf.identity(model_vals) if deep_copy else model_vals
+            model_vals = self._copy_to_host(model_vals) if deep_copy else model_vals
             self._network_weights[name] = model_vals
+
+    @staticmethod
+    def _copy_to_host(value):
+        if hasattr(value, 'numpy'):
+            return value.numpy().copy()
+        return np.array(value, copy=True)
 
     @property
     def networks(self):
@@ -45,7 +50,15 @@ class ModelWeights:
         for netname, netweights in self._network_weights.items():
             netadaptor = self.rnn.get_network(netname)
             conn_table_df = netadaptor.connection_table
-            conn_table_df['syn_weight'] = netweights
+            # Recover physical syn_weight from the internally-scaled weights the cell trains on
+            # (load divides by voltage_scale[target] * weight_scale / lr_scale; invert it here).
+            # Without this the exported SONATA weights are ~voltage_scale too small.
+            if netname == '<recurrent>':
+                export_factor = self.cell._recurrent_export_factor
+            else:
+                export_factor = self.cell.inputs[netname]['export_factor']
+            netweights_np = netweights.numpy() if hasattr(netweights, 'numpy') else netweights
+            conn_table_df['syn_weight'] = np.asarray(netweights_np, dtype=np.float32) * export_factor
 
             if ret_df is None:
                 ret_df = conn_table_df

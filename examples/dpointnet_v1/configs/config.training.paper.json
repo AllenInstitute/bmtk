@@ -1,7 +1,7 @@
 {
   "manifest": {
     "$BASE_DIR": ".",
-    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$OUTPUT_DIR": "$BASE_DIR/output_paper",
     "$INPUT_DIR": "$BASE_DIR/inputs",
     "$NETWORK_DIR": "$BASE_DIR/GLIF_network/network",
     "$MODELS_DIR": "$BASE_DIR/GLIF_network/components"
@@ -10,35 +10,31 @@
   "run": {
     "seq_len": 500,
     "dt": 1.0,
-    "batch_size": 2,
+    "batch_size": 5,
     "t_start": 0.0,
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float16",
-    "single_gpu_strategy": "one_device",
     "checkpoint": {}
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
-    "gauss_std": 0.5,
-    "dampening_factor": 0.3,
-    "recurrent_dampening_factor": 0.5,
+    "gauss_std": 0.3,
+    "dampening_factor": 0.1,
+    "recurrent_dampening_factor": 0.1,
     "voltage_gradient_dampening": 0.5,
     "recurrent_weight_scale": 1.0,
     "pseudo_gauss": false,
     "lr_scale": 1.0,
-    "max_delay": 5,
+    "max_delay": 0,
     "hard_reset": false,
-    "tau_syns": [
-      0.7579732,
-      1.60809441,
-      3.41168742,
-      7.23813909
-    ]
+    "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
+    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
   },
   "inputs": {
     "lgn_evoked": {
       "node_set": "lgn",
+      "trainable": false,
       "input": "spikes",
       "module": "lgn_tf",
       "stimulus_type": "drifting_gratings",
@@ -51,6 +47,7 @@
     },
     "lgn_spont": {
       "node_set": "lgn",
+      "trainable": false,
       "input": "spikes",
       "module": "lgn_tf",
       "stimulus_type": "grey_screen",
@@ -59,18 +56,12 @@
         "col_size": 120
       }
     },
-    "lgn_random": {
-      "node_set": "lgn",
-      "input": "spikes",
-      "module": "random",
-      "firing_rate": 20.0
-    },
     "bkg_random": {
       "node_set": "bkg",
-      "trainable": false,
+      "trainable": true,
       "input": "spikes",
-      "module": "random",
-      "firing_rate": 10.0
+      "module": "poisson_spikes_internal",
+      "firing_rate": 250.0
     }
   },
   "initial_states": {
@@ -86,23 +77,17 @@
     }
   },
   "training": {
-    "n_epochs": 2,
-    "steps_per_epoch": 2,
+    "n_epochs": 75,
+    "steps_per_epoch": 25,
     "training_approach": "series",
+    "gradient_checkpointing": false,
     "learning_rate": {
-      "schedule": "warmup_cosine",
-      "warmup_start_lr": 0.08,
-      "warmup_target_lr": 0.04,
-      "warmup_steps": 120,
-      "cosine_steps": 880,
-      "min_lr": 0.001
+      "schedule": "none",
+      "learning_rate": 0.005
     },
     "optimizer": {
-      "name": "adam",
-      "epsilon": 1e-07
-    },
-    "initial_stateX": {
-      "module": "zero_state"
+      "name": "exp_adam",
+      "epsilon": 1e-011
     },
     "initial_state": {
       "module": "from_input",
@@ -114,7 +99,7 @@
     "callbacks": {
       "class": "Callbacks",
       "starting_epoch": 0,
-      "callbacks_dir": "training_callbacks",
+      "callbacks_dir": "training_callbacks_paper",
       "verbose": "on_step",
       "epoch_store_weights": "best",
       "epoch_cache_weights": false,
@@ -133,27 +118,45 @@
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
             "rate_cost": 10000.0,
-            "pre_delay": 100.0,
+            "pre_delay": 0.0,
             "post_delay": 0.0,
-            "core_mask": null,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
             "stimulus_type": "drifting_gratings",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
           "evoked_voltage_regularizer": {
             "module": "VoltageRegularization",
             "voltage_cost": 1.0,
-            "penalty_mode": "range"
+            "penalty_mode": "threshold"
           },
           "evoked_sync_loss": {
             "enabled": true,
             "module": "SynchronizationLoss",
             "sync_cost": 1.5,
-            "t_start": 0.2,
-            "t_end": 0.5,
+            "t_start": 200.0,
+            "t_end": 500.0,
             "n_samples": 500,
             "stimulus_type": "drifting_gratings",
             "neuropixels_data_dir": "Synchronization_data",
+            "data_dir": "./GLIF_network",
+            "core_radius": 200.0
+          },
+          "evoked_weight_regularizer": {
+            "module": "EMDWeightRegularization",
+            "cost": 10.0,
             "data_dir": "./GLIF_network"
+          },
+          "evoked_odsi_loss": {
+            "module": "OrientationSelectivityLoss",
+            "osi_cost": 20.0,
+            "method": "crowd_osi",
+            "pre_delay": 0.0,
+            "post_delay": 0.0,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
+            "data_dir": "./GLIF_network",
+            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           }
         }
       },
@@ -167,32 +170,45 @@
           "spont_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
             "rate_cost": 10000.0,
-            "pre_delay": 100.0,
+            "pre_delay": 0.0,
             "post_delay": 0.0,
-            "core_mask": null,
+            "core_radius": 200.0,
+            "annulus_loss_weight": 0.1,
             "stimulus_type": "spontaneous",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
+          },
+          "spont_voltage_regularizer": {
+            "module": "VoltageRegularization",
+            "voltage_cost": 1.0,
+            "penalty_mode": "threshold"
+          },
+          "spont_sync_loss": {
+            "enabled": true,
+            "module": "SynchronizationLoss",
+            "sync_cost": 1.5,
+            "t_start": 200.0,
+            "t_end": 500.0,
+            "n_samples": 500,
+            "stimulus_type": "spontaneous",
+            "neuropixels_data_dir": "Synchronization_data",
+            "data_dir": "./GLIF_network",
+            "core_radius": 200.0
+          },
+          "spont_weight_regularizer": {
+            "module": "EMDWeightRegularization",
+            "cost": 10.0,
+            "data_dir": "./GLIF_network"
           }
         }
       }
-    ]
-  },
-  "inference": {
-    "initial_state": {
-      "module": "zero_state"
-    },
-    "inputs": [
-      "lgn_random",
-      "bkg_random"
     ]
   },
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
     "log_level": "DEBUG",
-    "spikes_file": "spike_trains.h5",
-    "voltages_file": "voltages.h5",
-    "states_file": "model_state.h5"
+    "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
+    "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5"
   },
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",

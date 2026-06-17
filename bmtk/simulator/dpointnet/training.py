@@ -122,6 +122,7 @@ class TrainingEngine:
         # at least one case, checkpointing increased peak memory). Re-enable by default once
         # checkpointing is fixed to match V1_GLIF_model.
         self.gradient_checkpointing = kwargs.get('gradient_checkpointing', False)
+        self.regenerate_initial_state_each_epoch = kwargs.get('regenerate_initial_state_each_epoch', True)
         self._extractor_forward = None
 
         self._batch_indices = None
@@ -129,6 +130,7 @@ class TrainingEngine:
         self._inputs_sig_factory = None
 
         self._callbacks = None
+        self._normalizers = None
 
     @property
     def optimizer(self):
@@ -252,6 +254,71 @@ class TrainingEngine:
                     raise ValueError(f'Training Error: Invalid training approach "{self._training_approach}"')
 
         return self._training_fnc
+
+    def _uses_ema_normalizer(self):
+        for parameter in self.parameters:
+            for loss_fnc in parameter.loss_functions.values():
+                if getattr(loss_fnc, 'uses_ema_normalizer', False):
+                    return True
+        return False
+
+    def _prepare_normalizers(self):
+        if self._normalizers is not None or not self._uses_ema_normalizer():
+            return
+
+        with self.rnn.strategy.scope():
+            self._normalizers = {
+                'v1_ema': tf.Variable(
+                    tf.fill(
+                        [self.rnn.recurrent_network['n_nodes']],
+                        tf.constant(0.003, dtype=tf.float32),
+                    ),
+                    trainable=False,
+                    name='V1_EMA',
+                    aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+                )
+            }
+
+    @staticmethod
+    def _has_orientation(y):
+        if y is None:
+            return False
+        if hasattr(y, 'ysigs'):
+            candidates = y.ysigs
+        elif isinstance(y, dict):
+            candidates = [y]
+        elif isinstance(y, (list, tuple)):
+            candidates = y
+        else:
+            return False
+
+        for sig in candidates:
+            if isinstance(sig, dict) and 'orientation' in sig:
+                return True
+        return False
+
+    def _prepare_loss_kwargs(self, parameter, spikes, y):
+        if self._normalizers is None:
+            return {}
+
+        if self._has_orientation(y):
+            self._update_normalizers(parameter, spikes, y)
+            return {
+                'normalizer': tf.stop_gradient(tf.identity(self._normalizers['v1_ema'])),
+                'batch_size_hint': parameter.batch_size,
+            }
+
+        return {}
+
+    def _update_normalizers(self, parameter, spikes, y):
+        if self._normalizers is None or not self._has_orientation(y):
+            return
+
+        for loss_fnc in parameter.loss_functions.values():
+            update_normalizers = getattr(loss_fnc, 'update_normalizers', None)
+            if update_normalizers is not None:
+                update_normalizers(tf.stop_gradient(spikes), self._normalizers)
+                break
         
     @property
     def inputs_signature_factory(self):
@@ -285,6 +352,8 @@ class TrainingEngine:
         reproduces the original forward exactly.
         """
         if self.gradient_checkpointing and self._extractor_forward is not None:
+            if x.dtype == tf.bool:
+                x = tf.cast(x, self.rnn.dtype)
             return self._extractor_forward(x, init_state)
         return self.rnn.extractor_model((x, init_state))
 
@@ -315,14 +384,17 @@ class TrainingEngine:
             _out = self._run_extractor(input_spikes, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
+            loss_vals[pname]['__mean_rate'] = tf.cast(tf.reduce_mean(_spikes_out), tf.float32)
 
             _total_loss = 0.0
+            loss_kwargs = self._prepare_loss_kwargs(self.parameters[0], _spikes_out, y)
             for loss_name, loss_fnc in self.parameters[0].loss_functions.items():
                 _loss = loss_fnc(
                     spikes=_spikes_out, 
                     voltages=_v_out, 
                     model_state=_model_state,
-                    y=y
+                    y=y,
+                    **loss_kwargs,
                 )
                 _total_loss += tf.cast(_loss, tf.float32)
                 loss_vals[pname][loss_name] = _loss
@@ -351,14 +423,17 @@ class TrainingEngine:
             _out = self._run_extractor(x, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
+            loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_spikes_out), tf.float32)
 
             _total_loss = 0.0
+            loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, ysig)
             for loss_name, loss_fnc in p.loss_functions.items():
                 _loss = loss_fnc(
                     spikes=_spikes_out,
                     voltages=_v_out,
                     model_state=_model_state,
-                    y=ysig
+                    y=ysig,
+                    **loss_kwargs,
                 )
                 _total_loss += tf.cast(_loss, tf.float32)
                 loss_vals[p.name][loss_name] = _loss
@@ -386,6 +461,21 @@ class TrainingEngine:
     def _distributed_apply_gradients(self, grads):
         return self.rnn.strategy.run(self._apply_gradients, args=(grads,))
 
+    @staticmethod
+    def _record_signature_metrics(loss_vals, pname, y):
+        candidates = y.ysigs if hasattr(y, 'ysigs') else y
+        if isinstance(candidates, dict):
+            candidates = [candidates]
+        elif not isinstance(candidates, (list, tuple)):
+            return
+
+        for sig in candidates:
+            if isinstance(sig, dict) and 'orientation' in sig:
+                orientation = tf.reshape(tf.cast(sig['orientation'], tf.float32), [-1])
+                loss_vals[pname]['__orientation_mean'] = tf.reduce_mean(orientation)
+                loss_vals[pname]['__orientation_first'] = orientation[0]
+                return
+
     def _train_step_parallel(self, xs, ys, init_state):
         """Main training step for 'parallel' approach to training multiple parameters. All the inputs from
         each parameter is concated together so that if there are N parameters with inputs each "batch_size", 
@@ -410,12 +500,16 @@ class TrainingEngine:
                 _pspikes = _spikes_out[pidx_beg:pidx_end]
                 _pvolts = _v_out[pidx_beg:pidx_end]
                 _pstate = _model_state[pidx_beg:pidx_end]
+                loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_pspikes), tf.float32)
+                self._record_signature_metrics(loss_vals, p.name, ysig)
+                loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,
                         voltages=_pvolts,
                         model_state=_pstate,
-                        y=ysig
+                        y=ysig,
+                        **loss_kwargs,
                     )
                     _total_loss += tf.cast(_loss, tf.float32)
                     loss_vals[p.name][loss_name] = _loss
@@ -445,14 +539,18 @@ class TrainingEngine:
                 _out = self._run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
+                loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_spikes_out), tf.float32)
+                self._record_signature_metrics(loss_vals, p.name, y)
 
                 _total_loss = 0.0
+                loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, y)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_spikes_out, 
                         voltages=_v_out, 
                         model_state=_model_state,
-                        y=y
+                        y=y,
+                        **loss_kwargs,
                     )
                     loss_vals[p.name][loss_name] = _loss
                     _total_loss += tf.cast(_loss, tf.float32)
@@ -515,14 +613,18 @@ class TrainingEngine:
                 _out = self.rnn.extractor_model((x, init_state))
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
+                loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_spikes_out), tf.float32)
+                self._record_signature_metrics(loss_vals, p.name, y)
 
                 _total_loss = 0.0
+                loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, y)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_spikes_out, 
                         voltages=_v_out, 
                         model_state=_model_state,
-                        y=y
+                        y=y,
+                        **loss_kwargs,
                     )
                     loss_vals[p.name][loss_name] = _loss
                     _total_loss += tf.cast(_loss, tf.float32)
@@ -548,12 +650,16 @@ class TrainingEngine:
                 _pspikes = _spikes_out[pidx_beg:pidx_end]
                 _pvolts = _v_out[pidx_beg:pidx_end]
                 _pstate = _model_state[pidx_beg:pidx_end]
+                loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_pspikes), tf.float32)
+                self._record_signature_metrics(loss_vals, p.name, ysig)
+                loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,
                         voltages=_pvolts,
                         model_state=_pstate,
-                        y=ysig
+                        y=ysig,
+                        **loss_kwargs,
                     )
                     loss_vals[p.name][loss_name] = _loss
                     _total_loss += tf.cast(_loss, tf.float32)
@@ -592,6 +698,35 @@ class TrainingEngine:
         concat_spikes = tf.concat(spikes, axis=2)
         return concat_spikes, ys
 
+    def _next_spikes_with_retry(self, input_itr, max_retries=8):
+        """Fetch the next input batch, skipping rare malformed batches.
+
+        The LGN tf.data generator pipeline intermittently raises
+        InvalidArgumentError ("Shapes of all inputs must match ... Op:Pack")
+        when assembling a batch (~1 per 16-43 epochs), which otherwise kills
+        long runs. Re-fetching advances past the offending batch; a skipped
+        batch is negligible over thousands of steps. This is a robustness guard
+        around a pre-existing pipeline bug, not a correctness change.
+        """
+        last_err = None
+        for attempt in range(max_retries):
+            try:
+                return input_itr.next_spikes()
+            except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as e:
+                last_err = e
+                io.log_debug(
+                    f'{self.__class__.__name__}: next_spikes() raised {type(e).__name__} '
+                    f'(attempt {attempt + 1}/{max_retries}); rebuilding iterator and skipping batch.'
+                )
+                # A tf.data iterator that raised is in an undefined state; rebuild it
+                # (the LGN generators restart, which only reshuffles the stimulus stream).
+                try:
+                    input_itr.close()
+                    input_itr.build()
+                except Exception:
+                    pass
+        raise last_err
+
     def train(self):
         input_generators = []
         input_batch_sizes = []
@@ -601,10 +736,19 @@ class TrainingEngine:
             input_batch_sizes.append(p.batch_size)
             input_seq_lens.append(p.seq_len)
         
-        input_itr = DataIterator(input_generators, input_batch_sizes, input_seq_lens, self.rnn.ordered_inputs_populations)
+        # fetch_in_graph=False: fetch the next batch eagerly. The in-graph path wraps the
+        # Python-generator fetch in @tf.function(reduce_retracing=True), which intermittently
+        # fails with an Op:Pack shape mismatch ([seq,n_input] vs []) on long runs (crashed
+        # ~epoch 16-22). Eager fetch avoids the tf.function packing; tf.data prefetch still
+        # overlaps the LGN generation with compute, and the model forward dominates step time.
+        input_itr = DataIterator(input_generators, input_batch_sizes, input_seq_lens, self.rnn.ordered_inputs_populations,
+                                 fetch_in_graph=False)
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
-        init_state = self.init_state.get_state()
+        init_state = None
+        if not self.regenerate_initial_state_each_epoch:
+            init_state = self.init_state.get_state()
+        self._prepare_normalizers()
 
         # Build the gradient-checkpointed forward ONCE, eagerly, before the @tf.function
         # train step is traced. tf.recompute_grad must wrap the function in eager context;
@@ -613,6 +757,8 @@ class TrainingEngine:
         if self.gradient_checkpointing and self._extractor_forward is None:
             @tf.recompute_grad
             def extractor_forward(x, fwd_init_state):
+                if x.dtype == tf.bool:
+                    x = tf.cast(x, self.rnn.dtype)
                 return self.rnn.extractor_model((x, fwd_init_state))
             self._extractor_forward = extractor_forward
 
@@ -620,10 +766,12 @@ class TrainingEngine:
             self.callbacks.on_train_begin()
             for epoch in range(self.n_epochs):
                 self.callbacks.on_epoch_start()
+                if self.regenerate_initial_state_each_epoch:
+                    init_state = self.init_state.get_state()
                 
                 for step in range(self.steps_per_epoch):
                     self.callbacks.on_step_start()
-                    spikes, ys = input_itr.next_spikes()
+                    spikes, ys = self._next_spikes_with_retry(input_itr)
                     if self.training_approach == 'series_accumulate':
                         step_loss_vals = self._distributed_train_step_series_accumulate(spikes, ys, init_state=init_state)
                     else:
@@ -640,7 +788,10 @@ class TrainingEngine:
                 if stop:
                     break
 
-            self.callbacks.on_train_end()
+            normalizers = None
+            if self._normalizers is not None:
+                normalizers = {name: value.numpy() for name, value in self._normalizers.items()}
+            self.callbacks.on_train_end(normalizers=normalizers)
         finally:
             input_itr.close()
     

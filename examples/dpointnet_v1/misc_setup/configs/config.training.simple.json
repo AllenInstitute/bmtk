@@ -15,8 +15,7 @@
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float16",
-    "single_gpu_strategy": "one_device",
-    "checkpoint": {}
+    "single_gpu_strategy": "one_device"
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
@@ -29,16 +28,32 @@
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [
-      0.7579732,
-      1.60809441,
-      3.41168742,
-      7.23813909
-    ]
+    "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
+    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
+  },
+  "inputs": {
+    "lgn_random": {
+      "node_set": "lgn",
+      "input": "spikes",
+      "module": "bernoulli_spikes",
+      "firing_rate": 10.0
+    },
+    "bkg_random": {
+      "node_set": "bkg",
+      "trainable": false,
+      "input": "spikes",
+      "module": "poisson_spikes",
+      "firing_rate": 10.0
+    }
+  },
+  "initial_states": {
+    "zero_init_state": {
+      "module": "zero_state"
+    }
   },
   "training": {
-    "n_epochs": 2,
-    "steps_per_epoch": 3,
+    "n_epochs": 1,
+    "steps_per_epoch": 2,
     "training_approach": "series",
     "learning_rate": {
       "schedule": "warmup_cosine",
@@ -55,31 +70,25 @@
     "initial_state": {
       "module": "zero_state"
     },
+    "initial_stateOLD": {
+      "module": "from_input",
+      "inputs": [
+        "lgn_spont",
+        "bkg_random"
+      ]
+    },
+    "callbacks": {
+      "class": "Callbacks",
+      "starting_epoch": 0,
+      "verbose": "on_step"
+    },
     "parameters": [
       {
         "name": "evoked",
-        "inputs": {
-          "lgn_inputs": {
-            "node_set": "lgn",
-            "trainable": true,
-            "input": "spikes",
-            "module": "lgn_tf",
-            "stimulus_type": "drifting_gratings",
-            "stimulus_options": {
-              "orientation": null,
-              "temporal_f": 2.0,
-              "row_size": 80,
-              "col_size": 120
-            }
-          },
-          "bkg_inputs": {
-            "node_set": "bkg",
-            "trainable": false,
-            "input": "spikes",
-            "module": "random",
-            "firing_rate": 250.0
-          }
-        },
+        "inputs": [
+          "lgn_random",
+          "bkg_random"
+        ],
         "loss_functions": {
           "evoked_rate_regularizer": {
             "module": "SpikeRateDistributionTarget",
@@ -107,40 +116,6 @@
             "data_dir": "./GLIF_network"
           }
         }
-      },
-      {
-        "name": "spontaneous",
-        "inputs": {
-          "lgn_inputs": {
-            "node_set": "lgn",
-            "trainable": true,
-            "input": "spikes",
-            "module": "lgn_tf",
-            "stimulus_type": "grey_screen",
-            "stimulus_options": {
-              "row_size": 80,
-              "col_size": 120
-            }
-          },
-          "bkg_inputs": {
-            "node_set": "bkg",
-            "trainable": false,
-            "input": "spikes",
-            "module": "random",
-            "firing_rate": 250.0
-          }
-        },
-        "loss_functions": {
-          "spont_rate_regularizer": {
-            "module": "SpikeRateDistributionTarget",
-            "rate_cost": 10000.0,
-            "pre_delay": 100.0,
-            "post_delay": 0.0,
-            "core_mask": null,
-            "stimulus_type": "spontaneous",
-            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
-          }
-        }
       }
     ]
   },
@@ -160,19 +135,15 @@
     "nodes": [
       {
         "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/v1_node_types.csv",
-        "cache_file": "$BASE_DIR/network_cache/v1_network.filtered.pkl",
-        "cache_check": "md5sum"
+        "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
       },
       {
         "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv",
-        "cache_file": "$BASE_DIR/network_cache/lgn_network.pkl"
+        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
       },
       {
         "nodes_file": "$NETWORK_DIR/bkg_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/bkg_node_types.csv",
-        "cache_file": "$BASE_DIR/network_cache/lgn_network.pkl"
+        "node_types_file": "$NETWORK_DIR/bkg_node_types.csv"
       }
     ],
     "edges": [

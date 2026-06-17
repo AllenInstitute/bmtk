@@ -3,9 +3,9 @@ import pandas as pd
 
 from .inputs_base import InputsGeneratorMod
 from .lgn_generator import LGNGenerator
-from .noisy_current import NoisyCurrent
+from .noisy_current import NoisyCurrent, PoissonSpikesInternal
 from .poisson_spikes import PoissonSpikes
-from .rand_spikes_generator import RandomSpikesGenerator
+from .rand_spikes_generator import BernoulliSpikes, RandomSpikesGenerator
 from .spikes_files_generator import SpikesFilesGenerator
 from .spikes_function_generator import SpikesFunctionGenerator, spikes_function
 
@@ -61,9 +61,11 @@ class InputModules:
 
 # input_modules_lu = InputModules()
 InputModules().add_module(NoisyCurrent, overwrite=False)
+InputModules().add_module(PoissonSpikesInternal, overwrite=False)
 InputModules().add_module(PoissonSpikes, overwrite=False)
 InputModules().add_module(LGNGenerator, overwrite=False)
 InputModules().add_module(LGNGenerator, module_name='lgn_tf', overwrite=False)
 InputModules().add_module(RandomSpikesGenerator, overwrite=False)
+InputModules().add_module(BernoulliSpikes, overwrite=False)
 InputModules().add_module(SpikesFilesGenerator, overwrite=False)
 InputModules().add_module(SpikesFunctionGenerator, overwrite=False)

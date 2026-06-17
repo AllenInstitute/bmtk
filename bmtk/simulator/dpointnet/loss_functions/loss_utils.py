@@ -195,6 +195,27 @@ def isolate_core_neurons(network, radius=None, n_selected_neurons=None, data_dir
     return selected_mask
 
 
+def get_tuning_angles(network, data_dir=''):
+    """Per-neuron preferred orientation (degrees) in the model's node order.
+
+    Mirrors get_pop_names' data_dir resolution and isolate_core_neurons' native-order
+    handling: dpointnet keeps the SONATA file order (no 'tf_id_to_bmtk_id' reindexing),
+    so the file order is the model order unless the reference reordering map is present.
+    """
+    if data_dir != '':  # if changed from default, use as is.
+        pass
+    elif isinstance(network, dict) and ("data_dir" in network):
+        data_dir = network["data_dir"]
+    else:
+        data_dir = 'GLIF_network'
+    path_to_h5 = os.path.join(data_dir, 'network/v1_nodes.h5')
+    with h5py.File(path_to_h5, mode='r') as node_h5:
+        tuning_angle = np.array(node_h5['nodes']['v1']['0']['tuning_angle'][()], dtype=np.float32)
+    if isinstance(network, dict) and ('tf_id_to_bmtk_id' in network):
+        tuning_angle = tuning_angle[network['tf_id_to_bmtk_id']]
+    return tuning_angle
+
+
 def resolve_core_mask(network, core_mask=None, core_radius=None, data_dir='GLIF_network'):
     """Resolve a boolean core mask for a loss function.
 

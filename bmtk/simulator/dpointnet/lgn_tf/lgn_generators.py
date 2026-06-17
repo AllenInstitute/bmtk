@@ -16,9 +16,10 @@ def _stateless_seed_pair(seed, salt=0):
 
 
 def _fold_in_seed(seed_pair, value):
-    return tf.random.experimental.stateless_fold_in(
-        seed_pair, tf.cast(value, tf.int32)
-    )
+    with tf.device('/CPU:0'):
+        return tf.random.experimental.stateless_fold_in(
+            seed_pair, tf.cast(value, tf.int32)
+        )
 
 
 
@@ -31,7 +32,7 @@ def movies_concat(movie, pre_delay, post_delay, dtype=tf.float32):
     return videos
 
 
-@tf.function(jit_compile=True) # using jit_compile can cause error with input shapes
+@tf.function(jit_compile=True)
 def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, image_duration=100, cpd=0.05,
                                    temporal_f=2, theta=0, phase=0, contrast=1.0, dtype=tf.float32):
     '''
@@ -102,11 +103,11 @@ def create_drifting_gratings_generator(
         post_delay=50,
         current_input=False, 
         regular=False,
-        bmtk_compat=True, 
-        return_firing_rates=False, 
-        rotation='cw', 
+        bmtk_compat=True,
+        return_firing_rates=False,
+        rotation='ccw',  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
         billeh_phase=False,
-        dtype=tf.float32, 
+        dtype=tf.float32,
         seed=None):
 
     lgn = LGN(
@@ -144,10 +145,10 @@ def create_drifting_gratings_generator(
                     theta = (theta + 45) % 360
                 else:
                     if orientation_seed is None:
-                        theta = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+                        theta = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
                     else:
                         theta = tf.random.stateless_uniform(
-                            shape=(),
+                            shape=[],
                             seed=orientation_seed,
                             minval=0,
                             maxval=360,
@@ -167,10 +168,10 @@ def create_drifting_gratings_generator(
 
             # Generate a random phase
             if phase_seed is None:
-                phase = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+                phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
             else:
                 phase = tf.random.stateless_uniform(
-                    shape=(), seed=tf.cast(phase_seed, tf.int32), minval=0, maxval=360, dtype=dtype
+                    shape=[], seed=tf.cast(phase_seed, tf.int32), minval=0, maxval=360, dtype=dtype
                 )
 
             movie = make_drifting_grating_stimulus(

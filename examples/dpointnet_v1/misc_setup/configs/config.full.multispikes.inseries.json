@@ -29,7 +29,7 @@
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [
+    "tau_basis": [
       0.7579732,
       1.60809441,
       3.41168742,
@@ -59,11 +59,17 @@
         "col_size": 120
       }
     },
+    "lgn_random": {
+      "node_set": "lgn",
+      "input": "spikes",
+      "module": "bernoulli_spikes",
+      "firing_rate": 20.0
+    },
     "bkg_random": {
       "node_set": "bkg",
       "trainable": false,
       "input": "spikes",
-      "module": "random",
+      "module": "poisson_spikes",
       "firing_rate": 10.0
     }
   },
@@ -171,13 +177,22 @@
       }
     ]
   },
-  "inference": {},
+  "inference": {
+    "initial_state": {
+      "module": "zero_state"
+    },
+    "inputs": [
+      "lgn_random",
+      "bkg_random"
+    ]
+  },
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
     "log_level": "DEBUG",
-    "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
-    "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5"
+    "spikes_file": "spike_trains.h5",
+    "voltages_file": "voltages.h5",
+    "states_file": "model_state.h5"
   },
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",

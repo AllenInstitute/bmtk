@@ -1,5 +1,6 @@
 import os
 
+# TensorFlow reads this on first import; keep it before dpointnet modules import tf.
 os.environ.setdefault('TF_GPU_ALLOCATOR', 'cuda_malloc_async')
 
 from .rnn_model import RNN

@@ -1,0 +1,117 @@
+{
+    "manifest": {
+        "$BASE_DIR": ".",
+        "$OUTPUT_DIR": "$BASE_DIR/output",
+        "$INPUT_DIR": "$BASE_DIR/inputs",
+        "$NETWORK_DIR": "$BASE_DIR/GLIF_network/network",
+        "$MODELS_DIR": "$BASE_DIR/GLIF_network/components"
+    },
+    
+
+    "matrix": {
+        "angle": [0.0, 45.0, 90.0, 135.0, 180.0],
+        "tr": [2.0, 4.0]
+    },
+
+    "target_simulator": "RNN",
+
+    "run": {
+        "seq_len": 500,
+        "dt": 1.0,
+        "batch_size": 5,
+        "t_start": 0.0,
+        "default_seed": 3000,
+        "train_recurrent_weights": true,
+        "dtype": "float32",
+        "single_gpu_strategy": "one_device",
+        "checkpoint": {
+
+        }    
+    },
+    
+    "rnn_cell_params": {
+        "cell_model": "GLIF3Cell",
+        "gauss_std": 0.5,
+        "dampening_factor": 0.3,
+        "recurrent_dampening_factor": 0.5,
+        "voltage_gradient_dampening": 0.5,
+        "recurrent_weight_scale": 1.0,
+        "pseudo_gauss": false,
+        "lr_scale": 1.0,
+        "max_delay": 5,
+        "hard_reset": false
+    },
+
+    "inputs": {
+        "lgn_inputs": {
+            "node_set": "lgn",
+            "trainable": true,
+            "input": "spikes",
+            "module": "lgn_tf",
+            "stimulus_type": "drifting_gratings",
+            "stimulus_options": {
+                "orientation": "${matrix:angle}",
+                "temporal_f": "${matrix:tf}",
+                "cpd": 0.04,
+                "contrast": 0.8,
+                "row_size": 80,
+                "col_size": 120,
+                "pre_delay": 50,
+                "post_delay": 50
+                
+            },
+            "cell_params": {
+                "input_weight_scale": 1.0
+            }
+
+        },
+        "bkg_inputs": {
+            "node_set": "bkg",
+            "trainable": false,
+            "input": "spikes",
+            "module": "poisson_spikes_internal",
+            "seed": null,
+            "firing_rate": 250.0
+        }
+
+    },
+
+    "output": {
+        "output_dir": "$OUTPUT_DIR",
+        "log_file": "log.txt",
+        "log_level": "DEBUG",
+        "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
+        "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
+        "callbacks": {
+
+        }
+    },
+
+    "components": {
+        "point_neuron_models_dir": "$MODELS_DIR/cell_models",
+        "synaptic_models_dir": "$MODELS_DIR/synaptic_models"      
+    },
+
+    "networks": {
+      "cached": [
+        {
+          "name": "v1",
+          "type": "recurrent",
+          "file_path": "$BASE_DIR/v1_network.pkl",
+          "file_format": "pkl"
+        },
+        {
+          "name": "lgn",
+          "type": "input",
+          "file_path": "$BASE_DIR/lgn_network_696.pkl",
+          "file_format": "pkl"
+        },
+        {
+          "name": "bkg",
+          "type": "input",
+          "file_path": "$BASE_DIR/bkg_network.pkl",
+          "file_format": "pkl"
+        }   
+      ]
+    }
+}

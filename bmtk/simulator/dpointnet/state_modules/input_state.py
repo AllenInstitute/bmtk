@@ -2,6 +2,7 @@ import tensorflow as tf
 from copy import copy
 
 from bmtk.simulator.dpointnet.data_iterator import DataIterator
+from bmtk.simulator.dpointnet.io_tools import io
 
 
 class InitStateFromInputModule:
@@ -14,6 +15,7 @@ class InitStateFromInputModule:
 
         self._init_state = None
         self._spikes_itrs = None
+        self._last_state = None
 
     @property
     def init_state(self):
@@ -37,8 +39,32 @@ class InitStateFromInputModule:
 
         return self._spikes_itrs
 
-    def get_state(self, **kwargs):
-        spikes_inputs, _ = self.spikes_itrs.next_spikes()
+    def get_state(self, max_retries=8, **kwargs):
+        last_err = None
         self.state_model = self.rnn.state_only_model
-        state_out = self.state_model([spikes_inputs, self.init_state])
-        return state_out
+        for attempt in range(max_retries):
+            try:
+                spikes_inputs, _ = self.spikes_itrs.next_spikes()
+                state_out = self.state_model([spikes_inputs, self.init_state])
+                self._last_state = state_out
+                return state_out
+            except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as exc:
+                last_err = exc
+                io.log_debug(
+                    f'{self.__class__.__name__}: get_state() raised {type(exc).__name__} '
+                    f'(attempt {attempt + 1}/{max_retries}); rebuilding iterator and retrying.'
+                )
+                try:
+                    self.spikes_itrs.close()
+                    self.spikes_itrs.build()
+                except Exception:
+                    pass
+
+        if self._last_state is not None:
+            io.log_warning(
+                f'{self.__class__.__name__}: get_state() failed after {max_retries} attempts; '
+                'reusing the last successfully generated initial state.'
+            )
+            return self._last_state
+
+        raise last_err

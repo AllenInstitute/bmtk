@@ -33,6 +33,7 @@ class LGNGenerator(InputsGeneratorMod):
         )
 
         self._generator = None
+        self._grey_screen_probabilities = None
         if self.stimulus_type == 'drifting_gratings':
             self._generator_fn = create_drifting_gratings_generator
             # self.generator_fn = create_drifting_gratings_generator(
@@ -54,10 +55,34 @@ class LGNGenerator(InputsGeneratorMod):
         _seq_len = seq_len
         if _seq_len is None:
             raise ValueError(f'No "seq_len" value set, please specify number of time-steps.')
+        stimulus_opts = dict(self.stimulus_opts)
+        seed = stimulus_opts.pop('seed', None)
+        if seed is None and self.rnn.default_seed is not None:
+            if self.stimulus_type == 'drifting_gratings':
+                seed = self.rnn.default_seed + 10000
+            elif self.stimulus_type in ['grey_screen', 'gray_screen']:
+                seed = self.rnn.default_seed + 20000
+        if self.stimulus_type in ['grey_screen', 'gray_screen']:
+            if self._grey_screen_probabilities is None:
+                self._grey_screen_probabilities = compute_grey_screen_probabilities(
+                    lgn_network=self.lgn,
+                    seq_len=_seq_len,
+                    dtype=dtype,
+                    **stimulus_opts
+                )
+                self.lgn = None
+            return self._generator_fn(
+                probabilities=self._grey_screen_probabilities,
+                seq_len=_seq_len,
+                seed=seed,
+                dtype=dtype,
+                **stimulus_opts
+            )
         return self._generator_fn(
             lgn_network=self.lgn,
             seq_len=_seq_len,
-            **self.stimulus_opts
+            seed=seed,
+            **stimulus_opts
         )
 
     @staticmethod
@@ -116,9 +141,48 @@ def _stateless_seed_pair(seed, salt=0):
 
 
 def _fold_in_seed(seed_pair, value):
-    return tf.random.experimental.stateless_fold_in(
-        seed_pair, tf.cast(value, tf.int32)
-    )
+    # BFC/GPU intermittently fails inside the stateless_fold_in implementation
+    # (StatelessRandomUniformFullIntV2 shape error) when called from tf.data
+    # Python generators. Keep TF's fold-in semantics but run this tiny seed-mix
+    # op on CPU; the downstream random sampling can still run on GPU.
+    with tf.device('/CPU:0'):
+        return tf.random.experimental.stateless_fold_in(
+            seed_pair, tf.cast(value, tf.int32)
+        )
+
+
+def _sample_seed_pair(seed, salt=0, sample_idx=0, stream=0):
+    seed_values = _sample_seed_values(seed, salt=salt, sample_idx=sample_idx, stream=stream)
+    if seed_values is None:
+        return None
+    return tf.constant(seed_values, dtype=tf.int32)
+
+
+def _sample_seed_values(seed, salt=0, sample_idx=0, stream=0):
+    if seed is None:
+        return None
+    max_int32 = 2**31 - 1
+    seed_int = int(seed) % max_int32
+    mixed = (
+        seed_int
+        + int(salt) * 1009
+        + int(sample_idx) * 9176
+        + int(stream) * 131071
+    ) % max_int32
+    return mixed, (mixed + 104729) % max_int32
+
+
+def _uniform_scalar(minval, maxval, seed_values=None, rng=None):
+    scalar_rng = np.random.default_rng(seed_values) if seed_values is not None else rng
+    if scalar_rng is None:
+        scalar_rng = np.random.default_rng()
+    return float(scalar_rng.uniform(minval, maxval))
+
+
+def _as_scalar_tensor(value, dtype, name):
+    value = tf.cast(value, dtype)
+    value = tf.reshape(value, [])
+    return tf.ensure_shape(value, [])
 
 
 @tf.function(jit_compile=True)
@@ -201,11 +265,11 @@ def create_drifting_gratings_generator(
         post_delay=0,
         current_input=False, 
         regular=False,
-        bmtk_compat=True, 
-        return_firing_rates=False, 
-        rotation='cw', 
+        bmtk_compat=True,
+        return_firing_rates=False,
+        rotation='ccw',  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
         billeh_phase=False,
-        dtype=tf.float32, 
+        dtype=tf.float32,
         seed=None):
 
     # lgn = LGN(
@@ -214,7 +278,9 @@ def create_drifting_gratings_generator(
     # )
 
     duration =  seq_len - pre_delay - post_delay
-    base_seed = _stateless_seed_pair(seed, salt=1001)
+    # Reference-matched stateless RNG (V1_GLIF_model/stim_dataset.py): build the base
+    # stateless seed pair once, then fold in the sample index and per-stream id below.
+    base_seed = None if seed is None else _stateless_seed_pair(int(seed), salt=1001)
 
     if orientation is not None:
         if not pd.api.types.is_list_like(orientation):
@@ -228,30 +294,27 @@ def create_drifting_gratings_generator(
             theta = -45  # to make the first one 0
         sample_idx = 0
         while True:
-            phase_seed = None
             orientation_seed = None
+            phase_seed = None
             spike_seed = None
             if base_seed is not None:
+                # Reference schedule: fold the sample index into the base pair, then fold
+                # in 0/1/2 to get the orientation / phase / spike-sampling sub-streams.
                 sample_seed = _fold_in_seed(base_seed, sample_idx)
                 orientation_seed = _fold_in_seed(sample_seed, 0)
                 phase_seed = _fold_in_seed(sample_seed, 1)
                 spike_seed = _fold_in_seed(sample_seed, 2)
 
             if orientation is None:
-                # generate randdomly.
+                # Generate randomly, keeping theta as a Tensor to match the reference
+                # stim_dataset.generate_drifting_grating_tuning path.
                 if regular:
                     theta = (theta + 45) % 360
+                elif orientation_seed is None:
+                    theta = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
                 else:
-                    if orientation_seed is None:
-                        theta = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
-                    else:
-                        theta = tf.random.stateless_uniform(
-                            shape=(),
-                            seed=orientation_seed,
-                            minval=0,
-                            maxval=360,
-                            dtype=dtype,
-                        )
+                    theta = tf.random.stateless_uniform(
+                        shape=[], seed=orientation_seed, minval=0, maxval=360, dtype=dtype)
             else:
                 theta = orientation[sample_idx % orientation_list_len]
                 # theta = orientation
@@ -264,13 +327,12 @@ def create_drifting_gratings_generator(
             # Ensure theta is a Tensor to avoid tf.function retracing on Python scalars.
             mov_theta = tf.cast(mov_theta, dtype)
 
-            # Generate a random phase
+            # Generate a random phase (reference-matched stateless schedule)
             if phase_seed is None:
-                phase = tf.random.uniform(shape=(), minval=0, maxval=360, dtype=dtype)
+                phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
             else:
                 phase = tf.random.stateless_uniform(
-                    shape=(), seed=tf.cast(phase_seed, tf.int32), minval=0, maxval=360, dtype=dtype
-                )
+                    shape=[], seed=phase_seed, minval=0, maxval=360, dtype=dtype)
 
             movie = make_drifting_grating_stimulus(
                 row_size=row_size, 
@@ -322,10 +384,15 @@ def create_drifting_gratings_generator(
             yield results, {'orientation': tf.constant(theta, dtype=dtype, shape=(1,)), 'contrast': tf.constant(contrast, dtype=dtype, shape=(1,)), 'duration': tf.constant(duration, dtype=dtype, shape=(1,))}
             sample_idx += 1
 
+    if return_firing_rates or current_input:
+        data_dtype = dtype
+    else:
+        data_dtype = tf.bool
+
     data_set = tf.data.Dataset.from_generator(
         _g, 
         output_signature=(
-            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=dtype),
+            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=data_dtype),
             {
                 'orientation': tf.TensorSpec(dtype=dtype, shape=(1,)), 
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,)), 
@@ -337,10 +404,11 @@ def create_drifting_gratings_generator(
 
 
 def create_grey_screen_generator(
-        lgn_network,
         row_size, 
         col_size, 
         seq_len,
+        lgn_network=None,
+        probabilities=None,
         contrast=0.0,
         current_input=False,
         bmtk_compat=True,
@@ -353,57 +421,58 @@ def create_grey_screen_generator(
     #     network=network,
     #     row_size=row_size, col_size=col_size
     # )
-    base_seed = _stateless_seed_pair(seed, salt=2001)
+    if probabilities is None:
+        probabilities = compute_grey_screen_probabilities(
+            lgn_network=lgn_network,
+            row_size=row_size,
+            col_size=col_size,
+            seq_len=seq_len,
+            contrast=contrast,
+            bmtk_compat=bmtk_compat,
+            dtype=dtype,
+        )
+    probabilities = tf.convert_to_tensor(probabilities, dtype=dtype)
+    # Reference-matched stateless RNG (V1_GLIF_model/stim_dataset.generate_gray_screen_stimulus).
+    base_seed = None if seed is None else _stateless_seed_pair(int(seed), salt=2001)
 
     def _g():
         sample_idx = 0
         while True:
             spike_seed = None
             if base_seed is not None:
+                # Reference schedule: fold sample index then 0 for the spike sub-stream.
                 sample_seed = _fold_in_seed(base_seed, sample_idx)
                 spike_seed = _fold_in_seed(sample_seed, 0)
 
-            # Create a gray screen (all zeros)
-            # gray_screen = tf.zeros((seq_len, row_size, col_size, 1), dtype=dtype)
-            gray_screen = tf.ones((seq_len, row_size, col_size, 1), dtype=dtype)*contrast
-
-            # Process through LGN spatial filters
-            spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
-            del gray_screen
-
-            # Get firing rates from spatial response
-            firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
-
             if return_firing_rates:
-                yield firing_rates, 0.0
+                firing_rates = -1000.0 * tf.math.log(tf.maximum(1.0 - probabilities, tf.keras.backend.epsilon()))
+                yield firing_rates, {'contrast': tf.constant(contrast, dtype=dtype, shape=(1,))}
             else:
-                del spatial
-                # Sample spikes from firing rates
-                # Assuming dt = 1 ms
-                _p = 1 - tf.exp(-firing_rates / 1000.)  # Probability of spike in dt
-                del firing_rates
-
                 if current_input:
-                    _z = _p * 1.3
+                    _z = probabilities * 1.3
                 else:
                     if spike_seed is None:
-                        _z = tf.random.uniform(tf.shape(_p), dtype=dtype) < _p
+                        _z = tf.random.uniform(tf.shape(probabilities), dtype=dtype) < probabilities
                     else:
                         _z = tf.random.stateless_uniform(
-                            tf.shape(_p), 
-                            seed=spike_seed, 
+                            tf.shape(probabilities),
+                            seed=spike_seed,
                             dtype=dtype
-                        ) < _p
-                del _p
+                        ) < probabilities
 
                 yield _z, {'contrast': tf.constant(contrast, dtype=dtype, shape=(1,))}
             sample_idx += 1
 
 
+    if return_firing_rates or current_input:
+        data_dtype = dtype
+    else:
+        data_dtype = tf.bool
+
     data_set = tf.data.Dataset.from_generator(
         _g,
         output_signature=(
-            tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes)), 
+            tf.TensorSpec(shape=probabilities.shape, dtype=data_dtype),
             {
                 'contrast': tf.TensorSpec(dtype=dtype, shape=(1,))
             }
@@ -417,3 +486,24 @@ def create_grey_screen_generator(
     )
     return data_set
 
+
+def compute_grey_screen_probabilities(
+    lgn_network,
+    row_size,
+    col_size,
+    seq_len,
+    contrast=0.0,
+    bmtk_compat=True,
+    dtype=tf.float32,
+    **kwargs,
+):
+    if lgn_network is None:
+        raise ValueError('lgn_network is required when grey-screen probabilities are not already cached.')
+
+    gray_screen = tf.ones((seq_len, row_size, col_size, 1), dtype=dtype)*contrast
+    spatial = lgn_network.spatial_response(gray_screen, bmtk_compat)
+    del gray_screen
+    firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
+    del spatial
+    probabilities = 1 - tf.exp(-firing_rates / 1000.0)
+    return tf.convert_to_tensor(probabilities, dtype=dtype)

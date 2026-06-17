@@ -91,7 +91,13 @@ class IOUtils(object):
 
         # Create logger handle for writing to log.txt file
         if log_file is not None:
-            file_logger = logging.FileHandler(log_file)
+            log_file = os.path.abspath(log_file)
+            for handler in list(self.logger.handlers):
+                if isinstance(handler, logging.FileHandler) and os.path.abspath(handler.baseFilename) == log_file:
+                    self.logger.removeHandler(handler)
+                    handler.close()
+
+            file_logger = logging.FileHandler(log_file, mode='w')
             file_logger.setFormatter(self._log_format)
             self.logger.addHandler(file_logger)
             self.log_info('Created log file', all_ranks=False)  # write first message only on rank 0

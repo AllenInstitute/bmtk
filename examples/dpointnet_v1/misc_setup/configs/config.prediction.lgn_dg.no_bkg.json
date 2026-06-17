@@ -69,7 +69,7 @@
             "node_set": "bkg",
             "trainable": false,
             "input": "spikes",
-            "module": "noisy_current",
+            "module": "poisson_spikes_internal",
             "seed": null,
             "firing_rate": 250.0
         }
@@ -79,7 +79,6 @@
     "output": {
         "output_dir": "$OUTPUT_DIR",
         "log_file": "log.txt",
-        "log_level": "DEBUG",
         "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
         "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
         "callbacks": {
@@ -93,25 +92,29 @@
     },
 
     "networks": {
-      "cached": [
-        {
-          "name": "v1",
-          "type": "recurrent",
-          "file_path": "$BASE_DIR/v1_network.pkl",
-          "file_format": "pkl"
-        },
-        {
-          "name": "lgn",
-          "type": "input",
-          "file_path": "$BASE_DIR/lgn_network_696.pkl",
-          "file_format": "pkl"
-        },
-        {
-          "name": "bkg",
-          "type": "input",
-          "file_path": "$BASE_DIR/bkg_network.pkl",
-          "file_format": "pkl"
-        }   
-      ]
-    }
+        "nodes": [
+          {
+            "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/v1_node_types.csv",
+            "cache_file": "$BASE_DIR/network_cache/v1_network.pkl",
+            "cache_check": "md5sum"
+          },
+          {
+            "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/lgn_node_types.csv",
+            "cache_file": "$BASE_DIR/network_cache/lgn_network.pkl"
+          }
+        ],
+        "edges": [
+          {
+            "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
+          },
+          {
+            "edges_file": "$NETWORK_DIR/lgn_v1_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
+          }
+        ]
+      }
+
 }

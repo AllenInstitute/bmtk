@@ -15,66 +15,82 @@
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float16",
-    "single_gpu_strategy": "one_device"
+    "single_gpu_strategy": "one_device",
+    "checkpoint": {}
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
     "gauss_std": 0.5,
-    "dampening_factor": 0.3,
-    "recurrent_dampening_factor": 0.5,
+    "dampening_factor": 0.1,
+    "recurrent_dampening_factor": 0.1,
     "voltage_gradient_dampening": 0.5,
     "recurrent_weight_scale": 1.0,
     "pseudo_gauss": false,
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [
-      0.7579732,
-      1.60809441,
-      3.41168742,
-      7.23813909
-    ]
+    "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
+    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
   },
   "inputs": {
-    "lgn_random": {
+    "lgn_evoked": {
       "node_set": "lgn",
       "input": "spikes",
-      "module": "random",
-      "firing_rate": 10.0
+      "module": "lgn_tf",
+      "stimulus_type": "drifting_gratings",
+      "stimulus_options": {
+        "orientation": null,
+        "temporal_f": 2.0,
+        "row_size": 80,
+        "col_size": 120
+      }
+    },
+    "lgn_spont": {
+      "node_set": "lgn",
+      "input": "spikes",
+      "module": "lgn_tf",
+      "stimulus_type": "grey_screen",
+      "stimulus_options": {
+        "row_size": 80,
+        "col_size": 120
+      }
     },
     "bkg_random": {
       "node_set": "bkg",
-      "trainable": false,
+      "trainable": true,
       "input": "spikes",
-      "module": "random",
-      "firing_rate": 10.0
+      "module": "poisson_spikes",
+      "firing_rate": 250.0
     }
   },
   "initial_states": {
     "zero_init_state": {
       "module": "zero_state"
+    },
+    "grey_screen_init_state": {
+      "module": "from_input",
+      "inputs": [
+        "lgn_spont",
+        "bkg_random"
+      ]
     }
   },
   "training": {
-    "n_epochs": 1,
+    "n_epochs": 2,
     "steps_per_epoch": 2,
-    "training_approach": "series",
+    "training_approach": "parallel",
     "learning_rate": {
-      "schedule": "warmup_cosine",
-      "warmup_start_lr": 0.08,
-      "warmup_target_lr": 0.04,
-      "warmup_steps": 120,
-      "cosine_steps": 880,
-      "min_lr": 0.001
+      "schedule": "none",
+      "learning_rate": 0.005
     },
     "optimizer": {
-      "name": "adam",
-      "epsilon": 1e-07
+      "name": "exp_adam",
+      "epsilon": 1e-11
     },
-    "initial_state": {
+    "initial_stateX": {
       "module": "zero_state"
     },
-    "initial_stateOLD": {
+    "initial_state": {
       "module": "from_input",
       "inputs": [
         "lgn_spont",
@@ -84,13 +100,19 @@
     "callbacks": {
       "class": "Callbacks",
       "starting_epoch": 0,
-      "verbose": "on_step"
+      "callbacks_dir": "training_callbacks",
+      "verbose": "on_step",
+      "epoch_store_weights": "best",
+      "epoch_cache_weights": false,
+      "sonata_output_dir": "network.trained_weights.best",
+      "losses_table_csv": "losses.csv",
+      "performance_table_csv": "performance.csv"
     },
     "parameters": [
       {
         "name": "evoked",
         "inputs": [
-          "lgn_random",
+          "lgn_evoked",
           "bkg_random"
         ],
         "loss_functions": {
@@ -100,13 +122,15 @@
             "pre_delay": 100.0,
             "post_delay": 0.0,
             "core_mask": null,
+            "core_radius": 200.0,
             "stimulus_type": "drifting_gratings",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           },
           "evoked_voltage_regularizer": {
             "module": "VoltageRegularization",
             "voltage_cost": 1.0,
-            "penalty_mode": "range"
+            "penalty_mode": "range",
+            "core_radius": 200.0
           },
           "evoked_sync_loss": {
             "enabled": true,
@@ -117,19 +141,39 @@
             "n_samples": 500,
             "stimulus_type": "drifting_gratings",
             "neuropixels_data_dir": "Synchronization_data",
-            "data_dir": "./GLIF_network"
+            "data_dir": "./GLIF_network",
+            "core_radius": 200.0
+          }
+        }
+      },
+      {
+        "name": "spontaneous",
+        "inputs": [
+          "lgn_spont",
+          "bkg_random"
+        ],
+        "loss_functions": {
+          "spont_rate_regularizer": {
+            "module": "SpikeRateDistributionTarget",
+            "rate_cost": 10000.0,
+            "pre_delay": 100.0,
+            "post_delay": 0.0,
+            "core_mask": null,
+            "core_radius": 200.0,
+            "stimulus_type": "spontaneous",
+            "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
           }
         }
       }
     ]
   },
+  "inference": {},
   "output": {
     "output_dir": "$OUTPUT_DIR",
     "log_file": "log.txt",
     "log_level": "DEBUG",
     "spikes_file": "spikes_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
-    "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5",
-    "callbacks": {}
+    "voltages_file": "voltages.h5_ori${matrix:angle}_tf${matrix:tf}_${bmtk:batch_num}.h5"
   },
   "components": {
     "point_neuron_models_dir": "$MODELS_DIR/cell_models",

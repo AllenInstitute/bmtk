@@ -20,11 +20,13 @@ class SpikeRateDistributionTarget:
             seed=42, 
             dtype=tf.float32,
             neuropixels_df=None, # 'Neuropixels_data/v1_OSI_DSI_DF.csv', 
+            annulus_loss_weight=0.0,
             **kwargs
         ):
         self._rnn = rnn
         self._network = rnn.recurrent_network
         self._rate_cost = rate_cost
+        self._annulus_loss_weight = float(annulus_loss_weight or 0.0)
         self._pre_delay = int(pre_delay)
         self._post_delay = int(post_delay)
         self._rates_dampening = rates_dampening
@@ -56,13 +58,17 @@ class SpikeRateDistributionTarget:
         else:
             raise ValueError(f"Unknown stimulus_type: {stimulus_type}. Choose among 'spontaneous/gray', 'drifting_gratings', or 'natural_stimuli'.")
 
-        self._target_rates = self.get_neuropixels_firing_rates()
+        self._target_rates = self.get_neuropixels_firing_rates(self._core_mask)
+        self._annulus_target_rates = None
+        if self._annulus_loss_weight > 0.0 and self._core_mask is not None:
+            annulus_mask = ~np.asarray(self._core_mask, dtype=bool)
+            self._annulus_target_rates = self.get_neuropixels_firing_rates(annulus_mask)
 
     @staticmethod
     def module():
         return 'SpikeRateDistributionTarget'
 
-    def get_neuropixels_firing_rates(self):
+    def get_neuropixels_firing_rates(self, core_mask=None):
         """Processes neuropixels data to obtain neurons average firing rates.
 
         Returns:
@@ -96,7 +102,7 @@ class SpikeRateDistributionTarget:
             for cell_type, subdf in np_df.groupby("cell_type")
         }
         population_ids = loss_utils.get_population_neuron_ids(
-            self._network, data_dir=self._data_dir, core_mask=self._core_mask
+            self._network, data_dir=self._data_dir, core_mask=core_mask
         )
 
         target_firing_rates = {}
@@ -131,6 +137,13 @@ class SpikeRateDistributionTarget:
         rates = tf.reduce_mean(spikes, (0, 1)) # calculate the mean firing rate over time and batch
 
         reg_loss = loss_utils.compute_spike_rate_target_loss(rates, self._target_rates, dtype=self._dtype)
+        if self._annulus_target_rates is not None:
+            annulus_loss = loss_utils.compute_spike_rate_target_loss(
+                rates,
+                self._annulus_target_rates,
+                dtype=self._dtype,
+            )
+            reg_loss += self._annulus_loss_weight * annulus_loss
 
         return reg_loss * self._rate_cost
     

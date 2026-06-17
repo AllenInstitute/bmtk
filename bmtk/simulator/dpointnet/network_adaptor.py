@@ -13,12 +13,16 @@ from .id_maps import TFIDMap
 from .io_tools import io
 
 
-def lex_sort_indices_np(indices, *arrays):
+def lex_sort_order_np(indices):
     max_ind = np.max(indices) + 1
     if np.iinfo(indices.dtype).max < max_ind * (max_ind + 1) :
         indices = indices.astype(np.int64)
     q = indices[:, 0] * max_ind + indices[:, 1]
-    sorted_ind = np.argsort(q)
+    return np.argsort(q)
+
+
+def lex_sort_indices_np(indices, *arrays):
+    sorted_ind = lex_sort_order_np(indices)
     sorted_arrays = list(map(lambda arr: arr[sorted_ind], [indices, *arrays]))
     return tuple(sorted_arrays)
 
@@ -475,8 +479,14 @@ class SONATANetwork(NetworkAdaptor):
         # To suppor the V1 model, allow users to pass in basis_weights_file, a csv file with synaptic params.       
         basis_weights_file = components_dirs.get('basis_weights_file', None)
         if basis_weights_file:
-            basis_weights_df = pd.read_csv(basis_weights_file)# .set_index('name')
-            self._basis_weights = {r['name']: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
+            basis_weights_df = pd.read_csv(basis_weights_file)
+            name_col = 'name' if 'name' in basis_weights_df.columns else 'connection_name'
+            if name_col not in basis_weights_df.columns:
+                raise ValueError(
+                    f'basis_weights_file {basis_weights_file} must contain either a "name" or '
+                    '"connection_name" column.'
+                )
+            self._basis_weights = {r[name_col]: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
 
     def get_bmtk_ids(self, **filter):
         node_ids = {self._sonata_node_pop.name: []}
@@ -617,9 +627,14 @@ class SONATANetwork(NetworkAdaptor):
                     raise Exception()
 
         indices = np.column_stack((self._target_tf_ids, self._source_tf_ids))
-        indices, weights, delays, syn_ids, self._edge_type_ids = lex_sort_indices_np(
-            indices, weights, delays, syn_ids, self._edge_type_ids
-        )
+        sort_order = lex_sort_order_np(indices)
+        indices = indices[sort_order]
+        weights = weights[sort_order]
+        delays = delays[sort_order]
+        syn_ids = syn_ids[sort_order]
+        self._edge_type_ids = self._edge_type_ids[sort_order]
+        self._target_tf_ids = self._target_tf_ids[sort_order]
+        self._source_tf_ids = self._source_tf_ids[sort_order]
 
         rec_dict = {
             'name': self.population_name,

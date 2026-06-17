@@ -4,11 +4,12 @@ from bmtk.simulator.dpointnet.input_modules import InputsGeneratorMod
 
 
 class DataIterator:
-    def __init__(self, input_mods, batch_size, seq_len, ordered_populations=None):
+    def __init__(self, input_mods, batch_size, seq_len, ordered_populations=None, fetch_in_graph=False):
         self.input_mods = input_mods
         self.batch_size = batch_size
         self.seq_len = seq_len
         self.ordered_populations = ordered_populations
+        self.fetch_in_graph = fetch_in_graph
 
         self.data_itrs = []
         self._is_built = False
@@ -31,12 +32,15 @@ class DataIterator:
         self._is_built = True
 
     def _build_singular(self):
-        self._ret_list = False        
+        self._ret_list = False
+        self.data_itrs = []
         if self.ordered_populations is not None:
             input_pops_order = {pop_name: idx for idx, pop_name in enumerate(self.ordered_populations)}
             ordered_mod_list = [None for _ in range(len(self.input_mods))]
-            while len(self.input_mods) > 0:
-                _mod = self.input_mods.pop(0)
+            # Non-destructive reorder (no pop) so build() can be called repeatedly,
+            # e.g. when the training loop rebuilds the iterator to recover from a
+            # transient tf.data error.
+            for _mod in self.input_mods:
                 ordered_mod_list[input_pops_order[_mod.population_name]] = _mod
             self.input_mods = ordered_mod_list
 
@@ -65,8 +69,9 @@ class DataIterator:
             if op is not None:
                 input_pops_order = {pop_name: idx for idx, pop_name in enumerate(self.ordered_populations)}
                 ordered_mod_list = [None for _ in range(len(imods))]
-                while len(imods) > 0:
-                    _mod = imods.pop(0)
+                # Non-destructive reorder (no pop) so build() can be called repeatedly
+                # (iterator rebuild on transient tf.data error must not consume input_mods).
+                for _mod in imods:
                     ordered_mod_list[input_pops_order[_mod.population_name]] = _mod
                 imods = ordered_mod_list
             
@@ -84,10 +89,23 @@ class DataIterator:
         if not self._is_built:
             self.build()
 
+        if self.fetch_in_graph:
+            if self._ret_list:
+                return self._next_spikes_list_graph()
+            return self._next_spikes_graph()
+
         if self._ret_list:
             return self._next_spikes_list()
         else:
             return self._next_spikes()
+
+    @tf.function(reduce_retracing=True)
+    def _next_spikes_list_graph(self):
+        return self._next_spikes_list()
+
+    @tf.function(reduce_retracing=True)
+    def _next_spikes_graph(self):
+        return self._next_spikes()
 
     
     def _next_spikes_list(self):
@@ -103,7 +121,7 @@ class DataIterator:
                 _cspikes.append(s)
                 _cys.append(y)
 
-            concat_spikes = tf.concat(_cspikes, axis=2)
+            concat_spikes = self._concat_spikes(_cspikes)
             spikes.append(concat_spikes)
             ys.append(_cys)
         
@@ -119,5 +137,20 @@ class DataIterator:
             spikes.append(s)
             ys.append(y)
         
-        concat_spikes = tf.concat(spikes, axis=2)
+        concat_spikes = self._concat_spikes(spikes)
         return concat_spikes, ys
+
+    @staticmethod
+    def _concat_spikes(spikes):
+        if not spikes:
+            raise ValueError('DataIterator did not receive any active spike generators.')
+
+        non_bool_dtypes = [spike.dtype for spike in spikes if spike.dtype != tf.bool]
+        if non_bool_dtypes:
+            concat_dtype = non_bool_dtypes[0]
+            spikes = [
+                tf.cast(spike, concat_dtype) if spike.dtype != concat_dtype else spike
+                for spike in spikes
+            ]
+
+        return tf.concat(spikes, axis=2)

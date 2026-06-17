@@ -15,7 +15,8 @@
     "default_seed": 3000,
     "train_recurrent_weights": true,
     "dtype": "float16",
-    "single_gpu_strategy": "one_device"
+    "single_gpu_strategy": "one_device",
+    "checkpoint": {}
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
@@ -28,7 +29,7 @@
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
-    "tau_syns": [
+    "tau_basis": [
       0.7579732,
       1.60809441,
       3.41168742,
@@ -36,9 +37,8 @@
     ]
   },
   "training": {
-    "n_epochs": 2,
-    "steps_per_epoch": 3,
-    "training_approach": "parallel",
+    "n_epochs": 3,
+    "steps_per_epoch": 5,
     "learning_rate": {
       "schedule": "warmup_cosine",
       "warmup_start_lr": 0.08,
@@ -52,12 +52,35 @@
       "epsilon": 1e-07
     },
     "initial_state": {
-      "module": "zero_state"
+      "module": "from_input",
+      "inputs": {
+        "lgn_gray_screen": {
+          "enabled": true,
+          "node_set": "lgn",
+          "input": "spikes",
+          "module": "lgn_tf",
+          "stimulus_type": "gray_screen",
+          "stimulus_options": {
+            "contrast": 0.0,
+            "row_size": 80,
+            "col_size": 120
+          },
+          "cell_params": {
+            "input_weight_scale": 1.0
+          }
+        },
+        "bkg_inputs": {
+          "node_set": "bkg",
+          "trainable": false,
+          "input": "spikes",
+          "module": "poisson_spikes",
+          "firing_rate": 250.0
+        }
+      }
     },
     "parameters": [
       {
         "name": "evoked",
-        "training_approach": "parallel",
         "inputs": {
           "lgn_inputs": {
             "node_set": "lgn",
@@ -76,7 +99,7 @@
             "node_set": "bkg",
             "trainable": false,
             "input": "spikes",
-            "module": "random",
+            "module": "poisson_spikes",
             "firing_rate": 250.0
           }
         },
@@ -89,22 +112,6 @@
             "core_mask": null,
             "stimulus_type": "drifting_gratings",
             "neuropixels_df": "$BASE_DIR/Neuropixels_data/OSI_DSI_neuropixels_v4.csv.gz"
-          },
-          "evoked_voltage_regularizer": {
-            "module": "VoltageRegularization",
-            "voltage_cost": 1.0,
-            "penalty_mode": "range"
-          },
-          "evoked_sync_loss": {
-            "enabled": true,
-            "module": "SynchronizationLoss",
-            "sync_cost": 1.5,
-            "t_start": 0.2,
-            "t_end": 0.5,
-            "n_samples": 500,
-            "stimulus_type": "drifting_gratings",
-            "neuropixels_data_dir": "Synchronization_data",
-            "data_dir": "./GLIF_network"
           }
         }
       }
@@ -127,7 +134,7 @@
       {
         "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
         "node_types_file": "$NETWORK_DIR/v1_node_types.csv",
-        "cache_file": "$BASE_DIR/network_cache/v1_network.filtered.pkl",
+        "cache_file": "$BASE_DIR/network_cache/v1_network.pkl",
         "cache_check": "md5sum"
       },
       {
