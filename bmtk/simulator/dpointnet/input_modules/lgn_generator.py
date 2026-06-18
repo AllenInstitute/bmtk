@@ -256,6 +256,7 @@ def create_drifting_gratings_generator(
         lgn_network,
         seq_len,
         orientation=None, 
+    phase=None,
         temporal_f=2, 
         cpd=0.04, 
         contrast=0.8,                             
@@ -288,6 +289,8 @@ def create_drifting_gratings_generator(
         orientation_list_len = len(orientation)
     else:
         orientation_list_len = -1
+
+    fixed_phase = phase
 
     def _g():
         if regular:
@@ -328,7 +331,9 @@ def create_drifting_gratings_generator(
             mov_theta = tf.cast(mov_theta, dtype)
 
             # Generate a random phase (reference-matched stateless schedule)
-            if phase_seed is None:
+            if fixed_phase is not None:
+                phase = fixed_phase
+            elif phase_seed is None:
                 phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
             else:
                 phase = tf.random.stateless_uniform(
