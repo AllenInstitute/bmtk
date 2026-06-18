@@ -256,7 +256,6 @@ def create_drifting_gratings_generator(
         lgn_network,
         seq_len,
         orientation=None, 
-    phase=None,
         temporal_f=2, 
         cpd=0.04, 
         contrast=0.8,                             
@@ -271,7 +270,8 @@ def create_drifting_gratings_generator(
         rotation='ccw',  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
         billeh_phase=False,
         dtype=tf.float32,
-        seed=None):
+        seed=None,
+        phase=None):
 
     # lgn = LGN(
     #     network=network,
@@ -332,7 +332,7 @@ def create_drifting_gratings_generator(
 
             # Generate a random phase (reference-matched stateless schedule)
             if fixed_phase is not None:
-                phase = fixed_phase
+                phase = tf.cast(fixed_phase, dtype)
             elif phase_seed is None:
                 phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
             else:

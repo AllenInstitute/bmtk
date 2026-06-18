@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 from bmtk.simulator.dpointnet.rnn_model import Inference, RNN
+from bmtk.simulator.dpointnet.state_modules.cached_states import CachedInitState
 
 
 class DummyResults:
@@ -172,3 +173,12 @@ def test_inference_initial_state_uses_inference_batch_size():
 
     assert inference.get_initial_state() == 'state-batch-1'
     assert inference.init_mod.batch_sizes == [1]
+
+
+def test_cached_init_state_requires_rnn(tmp_path):
+    cache_file = tmp_path / 'state.npz'
+    cache_file.write_bytes(b'not-used')
+    init_state = CachedInitState(str(cache_file), file_type='npz')
+
+    with pytest.raises(ValueError, match='requires an RNN instance'):
+        init_state.get_state()

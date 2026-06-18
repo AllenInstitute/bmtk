@@ -573,7 +573,7 @@ class RNN:
 
         results = {} if len(self._inferences) > 1 else None
         for inference in self._inferences:
-            io.log_info(f'Runing Inference on Model ({inference.name}).')
+            io.log_info(f'Running Inference on Model ({inference.name}).')
             inference_results = self.run_inference(inference=inference)
             if inference.output_params:
                 io.log_info('Saving Results to file.')
