@@ -134,7 +134,8 @@ class SpikeRateDistributionTarget:
         if spikes.dtype != self._dtype:
             spikes = tf.cast(spikes, self._dtype)
 
-        rates = tf.reduce_mean(spikes, (0, 1)) # calculate the mean firing rate over time and batch
+        leading_axes = tf.range(tf.maximum(tf.rank(spikes) - 1, 0))
+        rates = tf.reduce_mean(spikes, axis=leading_axes) # calculate the mean firing rate over time and batch
 
         reg_loss = loss_utils.compute_spike_rate_target_loss(rates, self._target_rates, dtype=self._dtype)
         if self._annulus_target_rates is not None:

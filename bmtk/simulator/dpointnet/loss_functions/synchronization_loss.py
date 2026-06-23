@@ -37,6 +37,9 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         self._core_mask = loss_utils.resolve_core_mask(
             self._network, core_mask, kwargs.get('core_radius'), data_dir
         )
+        self._core_indices = None
+        if self._core_mask is not None:
+            self._core_indices = tf.constant(np.flatnonzero(self._core_mask), dtype=tf.int32)
         self._neuropixels_data_dir = neuropixels_data_dir
         self._dtype = dtype
         self._n_samples = n_samples
@@ -107,8 +110,19 @@ class SynchronizationLoss(tf.keras.layers.Layer):
         return fanos.stack()
     
     def __call__(self, spikes, trim=True, **kwargs):
-        if self._core_mask is not None:
-            spikes = tf.boolean_mask(spikes, self._core_mask, axis=2)
+        spikes = tf.convert_to_tensor(spikes)
+        if spikes.shape.rank is None:
+            spikes = tf.cond(
+                tf.equal(tf.rank(spikes), 2),
+                lambda: tf.expand_dims(spikes, axis=0),
+                lambda: spikes,
+            )
+            spikes.set_shape([None, None, None])
+        elif spikes.shape.rank == 2:
+            spikes = tf.expand_dims(spikes, axis=0)
+
+        if self._core_indices is not None:
+            spikes = tf.gather(spikes, self._core_indices, axis=2)
         
         if trim:
             spikes = spikes[:, self._t_start_idx:self._t_end_idx, :]

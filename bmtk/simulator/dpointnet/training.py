@@ -355,7 +355,7 @@ class TrainingEngine:
             if x.dtype == tf.bool:
                 x = tf.cast(x, self.rnn.dtype)
             return self._extractor_forward(x, init_state)
-        return self.rnn.extractor_model((x, init_state))
+        return self.rnn.run_extractor(x, init_state)
 
     @staticmethod
     def _add_gradients(accumulated, current):
@@ -610,7 +610,7 @@ class TrainingEngine:
             all_losses = []
             for p, x, y in zip(self.parameters, xs, ys):
                 loss_vals[p.name] = {}
-                _out = self.rnn.extractor_model((x, init_state))
+                _out = self.rnn.run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
                 loss_vals[p.name]['__mean_rate'] = tf.cast(tf.reduce_mean(_spikes_out), tf.float32)
@@ -638,7 +638,7 @@ class TrainingEngine:
         elif training_approach == 'parallel':
             x_concat = tf.concat(xs, axis=0)
             sigs = self.inputs_signature_factory.build(ys)
-            _out = self.rnn.extractor_model((x_concat, init_state))
+            _out = self.rnn.run_extractor(x_concat, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
 
@@ -759,7 +759,8 @@ class TrainingEngine:
             def extractor_forward(x, fwd_init_state):
                 if x.dtype == tf.bool:
                     x = tf.cast(x, self.rnn.dtype)
-                return self.rnn.extractor_model((x, fwd_init_state))
+                flat_out = self.rnn.extractor_model(self.rnn.model_inputs(x, fwd_init_state))
+                return self.rnn._unpack_extractor_output(flat_out)
             self._extractor_forward = extractor_forward
 
         try:

@@ -79,7 +79,8 @@ class OrientationSelectivityLoss:
             post_delay=self._post_delay,
             trim=trim,
         )
-        evoked_rates = tf.cast(tf.reduce_mean(spikes, axis=[0, 1]), tf.float32)
+        leading_axes = tf.range(tf.maximum(tf.rank(spikes) - 1, 0))
+        evoked_rates = tf.cast(tf.reduce_mean(spikes, axis=leading_axes), tf.float32)
         v1_ema = normalizers['v1_ema']
         v1_ema.assign(self._ema_decay * v1_ema + (1.0 - self._ema_decay) * evoked_rates)
     

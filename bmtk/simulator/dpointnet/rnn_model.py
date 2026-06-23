@@ -369,7 +369,7 @@ class RNN:
                 shape=(None, n_neurons),
                 name='internal state inputs'
             )
-            full_inputs = tf.concat((extrn_inputs, internal_state_inputs), -1)
+            full_inputs = tf.keras.layers.Concatenate(axis=-1)([extrn_inputs, internal_state_inputs])
         else:
             state_input_holder = None
             full_inputs = extrn_inputs
@@ -389,7 +389,7 @@ class RNN:
                     tf.keras.layers.Input(shape=s.shape[1:], dtype=s.dtype, name=n)
                     for s, n in zip(self.zero_state, state_names)
                 )
-                rnn_initial_state = tf.nest.map_structure(tf.identity, initial_state_holder)
+                rnn_initial_state = list(initial_state_holder)
             else:
                 initial_state_holder = None
                 rnn_initial_state = self.zero_state
@@ -400,16 +400,16 @@ class RNN:
             rnn._autocast = False
             rnn_layer = rnn(full_inputs, initial_state=rnn_initial_state)
 
-            rnn_out = rnn_layer[0] if return_state else rnn_layer
+            rnn_out, _ = self._split_rnn_layer_output(rnn_layer)
             spikes_output = rnn_out[0]
 
             output = tf.keras.layers.Dense(n_output, name='projection', trainable=False)(spikes_output)
 
             if use_state_input:
                 if use_dummy_state_input:
-                    inputs = [extrn_inputs, state_input_holder, initial_state_holder]
+                    inputs = [extrn_inputs, state_input_holder] + list(initial_state_holder)
                 else:
-                    inputs = [extrn_inputs, initial_state_holder]
+                    inputs = [extrn_inputs] + list(initial_state_holder)
             else:
                 if use_dummy_state_input:
                     inputs = [extrn_inputs, state_input_holder]
@@ -417,8 +417,62 @@ class RNN:
                     inputs = [extrn_inputs]
 
             self.model = tf.keras.Model(inputs=inputs, outputs=[output])
-            self.model.build((_batch_size, _seq_len, n_spiking_inputs))
         self._model_built = True
+
+    def model_inputs(self, spikes, initial_state=None, state_inputs=None):
+        inputs = [spikes]
+        if state_inputs is not None:
+            inputs.append(state_inputs)
+        if initial_state is not None:
+            inputs.extend(tf.nest.flatten(initial_state))
+        return inputs
+
+    def _build_extractor_model(self):
+        rnn_out, rnn_state = self._split_rnn_layer_output(self.model.get_layer('rsnn').output)
+        return tf.keras.Model(
+            inputs=self.model.inputs,
+            outputs=list(rnn_out) + list(rnn_state)
+        )
+
+    def _split_rnn_layer_output(self, rnn_layer_output):
+        if isinstance(rnn_layer_output, (list, tuple)):
+            sequence_output = rnn_layer_output[0]
+            state_output = rnn_layer_output[1:]
+        else:
+            sequence_output = rnn_layer_output
+            state_output = []
+
+        if isinstance(sequence_output, (list, tuple)):
+            return list(sequence_output), list(state_output)
+
+        output_shape = sequence_output.shape
+        output_rank = getattr(output_shape, 'rank', None)
+        if output_rank is None and output_shape is not None:
+            output_rank = len(output_shape)
+
+        n_neurons = getattr(self._cell, '_n_neurons', None)
+        if n_neurons is not None and output_rank is not None and output_rank >= 3 and output_shape[-1] == n_neurons * 2:
+            return [sequence_output[..., :n_neurons], sequence_output[..., n_neurons:]], list(state_output)
+
+        if output_rank is not None and output_rank >= 4 and output_shape[0] == 2:
+            return [sequence_output[0], sequence_output[1]], list(state_output)
+        if output_rank is not None and output_rank >= 4 and output_shape[1] == 2:
+            return [sequence_output[:, 0], sequence_output[:, 1]], list(state_output)
+
+        return [sequence_output], list(state_output)
+
+    @staticmethod
+    def _unpack_extractor_output(flat_output):
+        flat_output = tuple(flat_output)
+        return ((flat_output[0], flat_output[1]),) + flat_output[2:]
+
+    def run_extractor(self, spikes, initial_state):
+        if self.extractor_model is None:
+            with self.strategy.scope():
+                self.extractor_model = self._build_extractor_model()
+        return self._unpack_extractor_output(
+            self.extractor_model(self.model_inputs(spikes, initial_state))
+        )
 
     @property
     def rsnn_layer(self):
@@ -450,7 +504,7 @@ class RNN:
             else:
                 state_out = state_rnn(full_inputs)
             self._state_only_model = tf.keras.Model(
-                inputs=self.model.inputs, 
+                inputs=self.model.inputs,
                 outputs=state_out[1:]
             )
 
@@ -502,14 +556,8 @@ class RNN:
                 initial_state = inference_obj.get_initial_state()
        
         # Get version of model for pass-through only and reutrns spikes, voltages, and model states
-        if self.extractor_model is None:
-            self.extractor_model = tf.keras.Model(
-                inputs=self.model.inputs, 
-                outputs=self.model.get_layer('rsnn').output
-            )
-
         # Run inputs through the model; fetch, package and return results
-        out = self.extractor_model((spikes, initial_state))
+        out = self.run_extractor(spikes, initial_state)
         result_seq_len = inference_obj.effective_seq_len if inference_obj is not None else self.seq_len
         result_batch_size = inference_obj.effective_batch_size if inference_obj is not None else self.batch_size
         extractor_results = RNNExtractorResults(
@@ -525,12 +573,9 @@ class RNN:
             inference.close()
 
     def train(self, training_engine=None):
-        with self.strategy.scope():
-            if self.extractor_model is None:
-                self.extractor_model = tf.keras.Model(
-                    inputs=self.model.inputs,
-                    outputs=self.model.get_layer('rsnn').output
-                )
+        if self.extractor_model is None:
+            with self.strategy.scope():
+                self.extractor_model = self._build_extractor_model()
 
         training_engine = training_engine or self.training_engine
         if training_engine is None:
@@ -539,15 +584,13 @@ class RNN:
         ## Build the optimizer (in strategy scope so its slot variables are created correctly)
         with self.strategy.scope():
             optimizer = training_engine.optimizer
+            if self.dtype == 'float16' and not optimizers.optimizer_supports_loss_scaling(optimizer):
+                # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
+                # must be built and applied as the active optimizer, especially under Keras 3.
+                from tensorflow.keras import mixed_precision as mixed_precision_module
+                optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
+                training_engine.set_optimizer(optimizer)
             optimizer.build(self.model.trainable_variables)
-
-        if self.dtype == 'float16':
-            # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
-            # must be set back on the engine so the train step scales the loss / unscales
-            # the gradients (scale_loss_for_optimizer only acts on a LossScaleOptimizer).
-            from tensorflow.keras import mixed_precision as mixed_precision_module
-            optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
-            training_engine.set_optimizer(optimizer)
 
         training_engine.train()
 
@@ -655,14 +698,14 @@ class RNN:
     def predict(self, spike_inputs, initial_state=None, **kwargs):
         if self.extractor_model is None:
             self.extractor_model = tf.keras.Model(
-                inputs=self.model.inputs, 
+                inputs=self.model.inputs,
                 outputs=self.model.get_layer('rsnn').output
             )
         
         if initial_state is None:
             initial_state = self.zero_state
 
-        out = self.extractor_model((spike_inputs, initial_state))
+        out = self.extractor_model(self.model_inputs(spike_inputs, initial_state))
         return out[0]
     '''
 
@@ -906,11 +949,12 @@ class RNN:
             # begging of training.
             optimizer_params = train_dict['optimizer']
             optimizer_name = optimizer_params['name']
-            optimizer = optimizers.create_optimizer(
-                optimizer=optimizer_name, 
-                learning_rate=learning_rate,
-                optimizer_params=optimizer_params, 
-            )
+            with network.strategy.scope():
+                optimizer = optimizers.create_optimizer(
+                    optimizer=optimizer_name,
+                    learning_rate=learning_rate,
+                    optimizer_params=optimizer_params,
+                )
             training_engine.set_optimizer(optimizer)
 
             ## Process "init_states"

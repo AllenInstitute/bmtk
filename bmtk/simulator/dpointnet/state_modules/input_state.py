@@ -52,7 +52,9 @@ class InitStateFromInputModule:
         for attempt in range(max_retries):
             try:
                 spikes_inputs, _ = self.spikes_itrs(batch_size).next_spikes()
-                state_out = self.state_model([spikes_inputs, self.init_state(batch_size)])
+                state_out = self.state_model(
+                    self.rnn.model_inputs(spikes_inputs, self.init_state(batch_size))
+                )
                 self._last_state = state_out
                 return state_out
             except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as exc:
