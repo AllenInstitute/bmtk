@@ -200,6 +200,10 @@ class NodePopulation(Population):
         return np.array(self._node_id_ds)
 
     @property
+    def n_nodes(self):
+        return self._nrows
+
+    @property
     def gids(self):
         if self.has_gids:
             return np.array(self._index_gid2row.index)
