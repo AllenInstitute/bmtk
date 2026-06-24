@@ -1,5 +1,11 @@
+import inspect
+
 import tensorflow as tf
 import math
+
+
+def _optimizer_init_accepts(argument_name):
+    return argument_name in inspect.signature(tf.keras.optimizers.Optimizer.__init__).parameters
 
 
 def build_learning_rate(lr_schedule, **lr_params):
@@ -17,17 +23,22 @@ def build_learning_rate(lr_schedule, **lr_params):
 
 
 def optimizer_supports_loss_scaling(optimizer):
-    return hasattr(optimizer, 'get_scaled_loss') and hasattr(optimizer, 'get_unscaled_gradients')
+    return (
+        hasattr(optimizer, 'scale_loss') or
+        (hasattr(optimizer, 'get_scaled_loss') and hasattr(optimizer, 'get_unscaled_gradients'))
+    )
 
 
 def scale_loss_for_optimizer(optimizer, loss):
-    if optimizer_supports_loss_scaling(optimizer):
+    if hasattr(optimizer, 'scale_loss'):
+        return optimizer.scale_loss(loss)
+    if hasattr(optimizer, 'get_scaled_loss'):
         return optimizer.get_scaled_loss(loss)
     return loss
 
 
 def unscale_gradients_for_optimizer(optimizer, gradients):
-    if optimizer_supports_loss_scaling(optimizer):
+    if hasattr(optimizer, 'get_unscaled_gradients'):
         return optimizer.get_unscaled_gradients(gradients)
     
     return gradients
@@ -172,7 +183,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         **kwargs
     ):
         """Create a new ExponentiatedAdam optimizer."""
-        super().__init__(
+        base_kwargs = dict(
             name=name,
             weight_decay=weight_decay,
             clipnorm=clipnorm,
@@ -181,14 +192,36 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
             use_ema=use_ema,
             ema_momentum=ema_momentum,
             ema_overwrite_frequency=ema_overwrite_frequency,
-            jit_compile=jit_compile,
             **kwargs
         )
-        self._learning_rate = self._build_learning_rate(learning_rate)
+        if _optimizer_init_accepts('jit_compile'):
+            base_kwargs['jit_compile'] = jit_compile
+        try:
+            super().__init__(learning_rate=learning_rate, **base_kwargs)
+        except TypeError as exc:
+            if 'learning_rate' not in str(exc):
+                raise
+            super().__init__(**base_kwargs)
+            self._learning_rate = self._build_learning_rate(learning_rate)
         self.beta_1 = beta_1
         self.beta_2 = beta_2
         self.epsilon = epsilon
         self.amsgrad = amsgrad
+
+    def _add_slot_variable(self, variable, name):
+        try:
+            return self.add_variable_from_reference(
+                model_variable=variable, variable_name=name
+            )
+        except TypeError:
+            return self.add_variable_from_reference(
+                reference_variable=variable, name=name
+            )
+
+    def _get_variable_index(self, variable):
+        if hasattr(tf.keras.optimizers.Optimizer, '_get_variable_index'):
+            return super()._get_variable_index(variable)
+        return self._index_dict[self._var_key(variable)]
 
     def build(self, var_list):
         """Initialize optimizer variables.
@@ -198,31 +231,19 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         - v (second moment)
         - vhat (if amsgrad=True, for the max of second moments).
         """
-        super().build(var_list)
-        if hasattr(self, "_built") and self._built:
+        if getattr(self, "_slots_built", False):
             return
-        self._built = True
+        super().build(var_list)
+        self._slots_built = True
         self._momentums = []
         self._velocities = []
         for var in var_list:
-            self._momentums.append(
-                self.add_variable_from_reference(
-                    model_variable=var, variable_name="m"
-                )
-            )
-            self._velocities.append(
-                self.add_variable_from_reference(
-                    model_variable=var, variable_name="v"
-                )
-            )
+            self._momentums.append(self._add_slot_variable(var, "m"))
+            self._velocities.append(self._add_slot_variable(var, "v"))
         if self.amsgrad:
             self._velocity_hats = []
             for var in var_list:
-                self._velocity_hats.append(
-                    self.add_variable_from_reference(
-                        model_variable=var, variable_name="vhat"
-                    )
-                )
+                self._velocity_hats.append(self._add_slot_variable(var, "vhat"))
 
     def _coalesce_indexed_slices(self, grad, variable_dtype=None, index_dtype=tf.int32):
         """Coalesce duplicate indices in an IndexedSlices gradient."""
@@ -243,8 +264,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
 
         return tf.IndexedSlices(coalesced_values, unique_idx, dense_shape)
 
-    @tf.function(jit_compile=True)
-    def update_step(self, gradient, variable):
+    def update_step(self, gradient, variable, learning_rate=None):
         """Update step given gradient and the associated model variable."""
         # if isinstance(gradient, tf.IndexedSlices):
         #     gradient = tf.convert_to_tensor(gradient)
@@ -257,14 +277,16 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         beta_2_power = tf.pow(beta_2_t, local_step)
 
         # Get the current learning rate (supports schedules)
-        lr = tf.cast(self.learning_rate, variable.dtype)
+        if learning_rate is None:
+            learning_rate = self.learning_rate
+        lr = tf.cast(learning_rate, variable.dtype)
         # Standard Adam alpha correction
         alpha = lr * tf.sqrt(1 - beta_2_power) / (1 - beta_1_power)
 
         # Fetch the slot variables for this parameter
-        var_key = self._var_key(variable)
-        m = self._momentums[self._index_dict[var_key]]
-        v = self._velocities[self._index_dict[var_key]]
+        var_index = self._get_variable_index(variable)
+        m = self._momentums[var_index]
+        v = self._velocities[var_index]
 
         # ------------------------
         # Sparse vs. Dense branch
@@ -295,7 +317,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
             )
             # 3) AMSGrad if needed
             if self.amsgrad:
-                vhat = self._velocity_hats[self._index_dict[var_key]]
+                vhat = self._velocity_hats[var_index]
                 vhat.assign(tf.maximum(vhat, v))
                 v_used = vhat
             else:
@@ -337,7 +359,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
             v.assign_add((tf.square(gradient) - v) * (1 - beta_2_t))
             # 3) AMSGrad
             if self.amsgrad:
-                vhat = self._velocity_hats[self._index_dict[var_key]]
+                vhat = self._velocity_hats[var_index]
                 vhat.assign(tf.maximum(vhat, v))
                 v_used = vhat
             else:
@@ -356,11 +378,13 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
 
     def get_config(self):
         config = super().get_config()
+        if hasattr(self, '_serialize_hyperparameter') and hasattr(self, '_learning_rate'):
+            learning_rate = self._serialize_hyperparameter(self._learning_rate)
+        else:
+            learning_rate = config.get('learning_rate', self.learning_rate)
         config.update(
             {
-                "learning_rate": self._serialize_hyperparameter(
-                    self._learning_rate
-                ),
+                "learning_rate": learning_rate,
                 "beta_1": self.beta_1,
                 "beta_2": self.beta_2,
                 "epsilon": self.epsilon,

@@ -22,9 +22,7 @@ class VoltageRegularization:
 
     @tf.function(jit_compile=True)
     def _safe_global_mean(self, penalty):
-        penalty = tf.reduce_mean(penalty, axis=0)
-        penalty = tf.reduce_mean(penalty, axis=0)
-        return tf.reduce_mean(tf.cast(penalty, tf.float32), axis=0)
+        return tf.reduce_mean(tf.cast(penalty, tf.float32))
 
     @tf.function(jit_compile=True)
     def _compute_range_loss(self, voltages):

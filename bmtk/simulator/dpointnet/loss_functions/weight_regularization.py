@@ -111,4 +111,4 @@ class EMDWeightRegularization:
     def __call__(self, **kwargs):
         # Weight regularizer: independent of activity (spikes/voltages). Reads the current
         # trainable recurrent weights so gradients flow back to them.
-        return self._compute(self._weights)
+        return self._compute(tf.convert_to_tensor(self._weights))

@@ -24,8 +24,11 @@ from .data_iterator import DataIterator
 
 
 class Inference:
-    def __init__(self, rnn):
+    def __init__(self, rnn, name='inference', batch_size=None, seq_len=None):
         self.rnn = rnn
+        self.name = name
+        self.batch_size = batch_size
+        self.seq_len = seq_len
         self.init_mod = None
         self.input_mods = []
         self._data_itr = None
@@ -33,12 +36,20 @@ class Inference:
         self.output_params = None
 
     @property
+    def effective_batch_size(self):
+        return self.batch_size or self.rnn.adjusted_batch_size
+
+    @property
+    def effective_seq_len(self):
+        return self.seq_len or self.rnn.adjusted_seq_len
+
+    @property
     def data_itr(self):
         if self._data_itr is None:
             self._data_itr = DataIterator(
                 input_mods=self.input_mods,
-                batch_size=self.rnn.adjusted_batch_size,
-                seq_len=self.rnn.adjusted_seq_len,
+                batch_size=self.effective_batch_size,
+                seq_len=self.effective_seq_len,
                 ordered_populations=self.rnn.ordered_inputs_populations
             )
             self._data_itr.build()
@@ -49,7 +60,7 @@ class Inference:
         if self.init_mod is None:
             return None
         else:
-            return self.init_mod.get_state()
+            return self.init_mod.get_state(batch_size=self.effective_batch_size)
 
     def close(self):
         if self._data_itr is not None:
@@ -358,7 +369,7 @@ class RNN:
                 shape=(None, n_neurons),
                 name='internal state inputs'
             )
-            full_inputs = tf.concat((extrn_inputs, internal_state_inputs), -1)
+            full_inputs = tf.keras.layers.Concatenate(axis=-1)([extrn_inputs, internal_state_inputs])
         else:
             state_input_holder = None
             full_inputs = extrn_inputs
@@ -378,7 +389,7 @@ class RNN:
                     tf.keras.layers.Input(shape=s.shape[1:], dtype=s.dtype, name=n)
                     for s, n in zip(self.zero_state, state_names)
                 )
-                rnn_initial_state = tf.nest.map_structure(tf.identity, initial_state_holder)
+                rnn_initial_state = list(initial_state_holder)
             else:
                 initial_state_holder = None
                 rnn_initial_state = self.zero_state
@@ -389,16 +400,16 @@ class RNN:
             rnn._autocast = False
             rnn_layer = rnn(full_inputs, initial_state=rnn_initial_state)
 
-            rnn_out = rnn_layer[0] if return_state else rnn_layer
+            rnn_out, _ = self._split_rnn_layer_output(rnn_layer)
             spikes_output = rnn_out[0]
 
             output = tf.keras.layers.Dense(n_output, name='projection', trainable=False)(spikes_output)
 
             if use_state_input:
                 if use_dummy_state_input:
-                    inputs = [extrn_inputs, state_input_holder, initial_state_holder]
+                    inputs = [extrn_inputs, state_input_holder] + list(initial_state_holder)
                 else:
-                    inputs = [extrn_inputs, initial_state_holder]
+                    inputs = [extrn_inputs] + list(initial_state_holder)
             else:
                 if use_dummy_state_input:
                     inputs = [extrn_inputs, state_input_holder]
@@ -406,8 +417,62 @@ class RNN:
                     inputs = [extrn_inputs]
 
             self.model = tf.keras.Model(inputs=inputs, outputs=[output])
-            self.model.build((_batch_size, _seq_len, n_spiking_inputs))
         self._model_built = True
+
+    def model_inputs(self, spikes, initial_state=None, state_inputs=None):
+        inputs = [spikes]
+        if state_inputs is not None:
+            inputs.append(state_inputs)
+        if initial_state is not None:
+            inputs.extend(tf.nest.flatten(initial_state))
+        return inputs
+
+    def _build_extractor_model(self):
+        rnn_out, rnn_state = self._split_rnn_layer_output(self.model.get_layer('rsnn').output)
+        return tf.keras.Model(
+            inputs=self.model.inputs,
+            outputs=list(rnn_out) + list(rnn_state)
+        )
+
+    def _split_rnn_layer_output(self, rnn_layer_output):
+        if isinstance(rnn_layer_output, (list, tuple)):
+            sequence_output = rnn_layer_output[0]
+            state_output = rnn_layer_output[1:]
+        else:
+            sequence_output = rnn_layer_output
+            state_output = []
+
+        if isinstance(sequence_output, (list, tuple)):
+            return list(sequence_output), list(state_output)
+
+        output_shape = sequence_output.shape
+        output_rank = getattr(output_shape, 'rank', None)
+        if output_rank is None and output_shape is not None:
+            output_rank = len(output_shape)
+
+        n_neurons = getattr(self._cell, '_n_neurons', None)
+        if n_neurons is not None and output_rank is not None and output_rank >= 3 and output_shape[-1] == n_neurons * 2:
+            return [sequence_output[..., :n_neurons], sequence_output[..., n_neurons:]], list(state_output)
+
+        if output_rank is not None and output_rank >= 4 and output_shape[0] == 2:
+            return [sequence_output[0], sequence_output[1]], list(state_output)
+        if output_rank is not None and output_rank >= 4 and output_shape[1] == 2:
+            return [sequence_output[:, 0], sequence_output[:, 1]], list(state_output)
+
+        return [sequence_output], list(state_output)
+
+    @staticmethod
+    def _unpack_extractor_output(flat_output):
+        flat_output = tuple(flat_output)
+        return ((flat_output[0], flat_output[1]),) + flat_output[2:]
+
+    def run_extractor(self, spikes, initial_state):
+        if self.extractor_model is None:
+            with self.strategy.scope():
+                self.extractor_model = self._build_extractor_model()
+        return self._unpack_extractor_output(
+            self.extractor_model(self.model_inputs(spikes, initial_state))
+        )
 
     @property
     def rsnn_layer(self):
@@ -439,22 +504,45 @@ class RNN:
             else:
                 state_out = state_rnn(full_inputs)
             self._state_only_model = tf.keras.Model(
-                inputs=self.model.inputs, 
+                inputs=self.model.inputs,
                 outputs=state_out[1:]
             )
 
         return self._state_only_model
 
-    def run_inference(self, spikes=None, initial_state=None, **kwargs):
+    def _select_inference(self, inference=None):
+        if inference is None:
+            if len(self._inferences) > 1:
+                raise ValueError(
+                    'Multiple inference conditions are configured. Specify the inference name or object.'
+                )
+            elif len(self._inferences) == 1:
+                return self._inferences[0]
+            else:
+                return None
+
+        if isinstance(inference, Inference):
+            return inference
+
+        for inference_obj in self._inferences:
+            if inference_obj.name == inference:
+                return inference_obj
+
+        raise ValueError(f'No inference condition named "{inference}".')
+
+    def run_inference(self, spikes=None, initial_state=None, inference=None, **kwargs):
         if not self._model_built:
             self.build()
+
+        inference_obj = None
+        if inference is not None or spikes is None or initial_state is None:
+            inference_obj = self._select_inference(inference)
         
         # Fetch the spikes
         if spikes is None:
-            if len(self._inferences) > 1:
-                raise NotImplementedError()
-            elif len(self._inferences) == 1:
-                spikes, y = self._inferences[0].data_itr.next_spikes()
+            if inference_obj is None:
+                raise ValueError('No inference input is configured. Pass spikes or add an inference block.')
+            spikes, y = inference_obj.data_itr.next_spikes()
         
         elif isinstance(spikes, DataIterator):
             spikes, y = spikes.next_spikes()
@@ -464,24 +552,18 @@ class RNN:
 
         # Fetch model init state
         if initial_state is None:
-            if len(self._inferences) > 1:
-                raise NotImplementedError()
-            elif len(self._inferences) == 1:
-                initial_state = self._inferences[0].get_initial_state()
+            if inference_obj is not None:
+                initial_state = inference_obj.get_initial_state()
        
         # Get version of model for pass-through only and reutrns spikes, voltages, and model states
-        if self.extractor_model is None:
-            self.extractor_model = tf.keras.Model(
-                inputs=self.model.inputs, 
-                outputs=self.model.get_layer('rsnn').output
-            )
-
         # Run inputs through the model; fetch, package and return results
-        out = self.extractor_model((spikes, initial_state))
+        out = self.run_extractor(spikes, initial_state)
+        result_seq_len = inference_obj.effective_seq_len if inference_obj is not None else self.seq_len
+        result_batch_size = inference_obj.effective_batch_size if inference_obj is not None else self.batch_size
         extractor_results = RNNExtractorResults(
-            seq_len=self.seq_len,
+            seq_len=result_seq_len,
             dt=self.dt,
-            batch_size=self.batch_size,
+            batch_size=result_batch_size,
             extractor_results=out
         )
         return extractor_results
@@ -491,12 +573,9 @@ class RNN:
             inference.close()
 
     def train(self, training_engine=None):
-        with self.strategy.scope():
-            if self.extractor_model is None:
-                self.extractor_model = tf.keras.Model(
-                    inputs=self.model.inputs,
-                    outputs=self.model.get_layer('rsnn').output
-                )
+        if self.extractor_model is None:
+            with self.strategy.scope():
+                self.extractor_model = self._build_extractor_model()
 
         training_engine = training_engine or self.training_engine
         if training_engine is None:
@@ -505,15 +584,13 @@ class RNN:
         ## Build the optimizer (in strategy scope so its slot variables are created correctly)
         with self.strategy.scope():
             optimizer = training_engine.optimizer
+            if self.dtype == 'float16' and not optimizers.optimizer_supports_loss_scaling(optimizer):
+                # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
+                # must be built and applied as the active optimizer, especially under Keras 3.
+                from tensorflow.keras import mixed_precision as mixed_precision_module
+                optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
+                training_engine.set_optimizer(optimizer)
             optimizer.build(self.model.trainable_variables)
-
-        if self.dtype == 'float16':
-            # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
-            # must be set back on the engine so the train step scales the loss / unscales
-            # the gradients (scale_loss_for_optimizer only acts on a LossScaleOptimizer).
-            from tensorflow.keras import mixed_precision as mixed_precision_module
-            optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
-            training_engine.set_optimizer(optimizer)
 
         training_engine.train()
 
@@ -537,16 +614,18 @@ class RNN:
             io.log_info('Training Model.')
             self.train()
 
-        results = None
-        if len(self._inferences) > 1:
-            raise NotImplementedError()
-        elif len(self._inferences) == 1:
-            io.log_info('Runing Inference on Model.')
-            results = self.run_inference()
-            inference = self._inferences[0]
+        results = {} if len(self._inferences) > 1 else None
+        for inference in self._inferences:
+            io.log_info(f'Running Inference on Model ({inference.name}).')
+            inference_results = self.run_inference(inference=inference)
             if inference.output_params:
                 io.log_info('Saving Results to file.')
-                results.save_results(**inference.output_params)
+                inference_results.save_results(**inference.output_params)
+
+            if isinstance(results, dict):
+                results[inference.name] = inference_results
+            else:
+                results = inference_results
 
         io.log_info('RNN.run() completed.')
         return results
@@ -555,18 +634,78 @@ class RNN:
     def add_init_state(self, mod):
         self._init_state = mod
 
+    @staticmethod
+    def _normalized_inference_configs(inference_config):
+        if not inference_config:
+            return []
+
+        if isinstance(inference_config, list):
+            return inference_config
+
+        if not isinstance(inference_config, dict):
+            raise ValueError('The inference config must be a dictionary or list of dictionaries.')
+
+        inference_parameters = inference_config.get('parameters', None)
+        if inference_parameters is None:
+            return [inference_config]
+
+        shared_config = {key: value for key, value in inference_config.items() if key != 'parameters'}
+        normalized_configs = []
+        for parameter_config in inference_parameters:
+            if not isinstance(parameter_config, dict):
+                raise ValueError('Each inference parameter must be a dictionary.')
+
+            merged_config = {**shared_config, **parameter_config}
+            for key in ('initial_state', 'output'):
+                if isinstance(shared_config.get(key), dict) and isinstance(parameter_config.get(key), dict):
+                    merged_config[key] = {**shared_config[key], **parameter_config[key]}
+            normalized_configs.append(merged_config)
+
+        return normalized_configs
+
+    @classmethod
+    def _add_inferences_from_config(cls, network, config, inference_config):
+        inference_configs = cls._normalized_inference_configs(inference_config)
+        multiple_inferences = len(inference_configs) > 1
+
+        for inference_index, inference_dict in enumerate(inference_configs):
+            if 'inputs' not in inference_dict:
+                raise ValueError('Each inference config must include an "inputs" field.')
+
+            default_name = f'inference_{inference_index}' if multiple_inferences else 'inference'
+            inference = Inference(
+                rnn=network,
+                name=inference_dict.get('name', default_name),
+                batch_size=inference_dict.get('batch_size'),
+                seq_len=inference_dict.get('seq_len'),
+            )
+            for input_name, input_mod in network.parse_input_mods_from_config(inference_dict['inputs']):
+                inference.input_mods.append(input_mod)
+
+            init_state_dict = inference_dict.get('initial_state', {})
+            if init_state_dict:
+                module = init_state_dict['module']
+                mod_cls = StateModules().get_init_state_module(module)
+                inference.init_mod = mod_cls(rnn=network, **init_state_dict)
+
+            output = inference_dict.get('output', config.output)
+            if output is not None:
+                inference.output_params = output
+
+            network.add_inference(inference)
+
     '''
     def predict(self, spike_inputs, initial_state=None, **kwargs):
         if self.extractor_model is None:
             self.extractor_model = tf.keras.Model(
-                inputs=self.model.inputs, 
+                inputs=self.model.inputs,
                 outputs=self.model.get_layer('rsnn').output
             )
         
         if initial_state is None:
             initial_state = self.zero_state
 
-        out = self.extractor_model((spike_inputs, initial_state))
+        out = self.extractor_model(self.model_inputs(spike_inputs, initial_state))
         return out[0]
     '''
 
@@ -810,11 +949,12 @@ class RNN:
             # begging of training.
             optimizer_params = train_dict['optimizer']
             optimizer_name = optimizer_params['name']
-            optimizer = optimizers.create_optimizer(
-                optimizer=optimizer_name, 
-                learning_rate=learning_rate,
-                optimizer_params=optimizer_params, 
-            )
+            with network.strategy.scope():
+                optimizer = optimizers.create_optimizer(
+                    optimizer=optimizer_name,
+                    learning_rate=learning_rate,
+                    optimizer_params=optimizer_params,
+                )
             training_engine.set_optimizer(optimizer)
 
             ## Process "init_states"
@@ -871,21 +1011,7 @@ class RNN:
 
         inference_dict = config.get('inference', None)
         if inference_dict:
-            inference = Inference(rnn=network)
-            for input_name, input_mod in network.parse_input_mods_from_config(inference_dict['inputs']):
-                inference.input_mods.append(input_mod)
-
-            init_state_dict = inference_dict.get('initial_state', {})
-            if init_state_dict:
-                module = init_state_dict['module']
-                mod_cls = StateModules().get_init_state_module(module)
-                inference.init_mod = mod_cls(rnn=network, **init_state_dict)
-
-            output = inference_dict.get('output', config.output)
-            if output is not None:
-                inference.output_params = output
-
-            network.add_inference(inference)
+            cls._add_inferences_from_config(network, config, inference_dict)
 
 
         return network

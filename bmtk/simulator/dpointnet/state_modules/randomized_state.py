@@ -87,8 +87,9 @@ class RandomizedStateModule:
 
         return self._function_ptrs
 
-    def get_state(self, rnn, batch_size=None, **kwargs):
-        self._rnn = rnn
+    def get_state(self, rnn=None, batch_size=None, **kwargs):
+        if rnn is not None:
+            self._rnn = rnn
         batch_size = batch_size or self._rnn.batch_size
-        state_vals = [f(batch_size=rnn.batch_size) for f in self.function_pointers]
+        state_vals = [f(batch_size=batch_size) for f in self.function_pointers]
         return state_vals

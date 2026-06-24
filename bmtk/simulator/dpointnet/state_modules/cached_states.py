@@ -7,6 +7,7 @@ from pathlib import Path
 
 class CachedInitState:
     def __init__(self, file_paths, file_type='mixed', **kwargs):
+        self._rnn = kwargs.get('rnn')
         if file_paths is None:
             raise ValueError(f'CachedInitState: No file_paths specified, unable to load init_state.')
 
@@ -81,7 +82,13 @@ class CachedInitState:
 
         raise RuntimeError(f'Could not load {file_path}')
 
-    def get_state(self, rnn, **kwargs):
+    def get_state(self, rnn=None, **kwargs):
+        rnn = rnn or self._rnn
+        if rnn is None:
+            raise ValueError(
+                'CachedInitState requires an RNN instance. Pass rnn to get_state() '
+                'or construct CachedInitState with rnn=... .'
+            )
         selected_file = np.random.choice(self.all_cache_files)
         if not Path(selected_file).exists():
             raise FileExistsError(f'Could not find init_state file {selected_file}')

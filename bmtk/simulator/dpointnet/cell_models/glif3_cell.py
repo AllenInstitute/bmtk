@@ -12,6 +12,15 @@ try:
 except Exception:
     HAS_NUMBA = False
 
+    def njit(*args, **kwargs):
+        if args and callable(args[0]) and len(args) == 1 and not kwargs:
+            return args[0]
+
+        def decorator(func):
+            return func
+
+        return decorator
+
 
 def make_pre_ind_table(indices, n_source_neurons):
     # Validate inputs
@@ -404,6 +413,21 @@ def straight_through_dampen(x, dampening):
 
 
 class GLIF3Cell(tf.keras.layers.Layer):
+    def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
+        initial_value = np.asarray(initial_value)
+        return self.add_weight(
+            name=name,
+            shape=initial_value.shape,
+            dtype=dtype,
+            initializer=tf.keras.initializers.Constant(initial_value),
+            trainable=trainable,
+            constraint=constraint,
+        )
+
+    def _untracked_variable(self, variable):
+        return variable
+
+
     def __init__(
             self, 
             glif_network,
@@ -597,7 +621,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             individual_training = False
             per_type_training = False
 
-        self.recurrent_weight_values = tf.Variable(
+        self.recurrent_weight_values = self._tracked_weight(
             weights * recurrent_weight_scale / lr_scale,
             name="sparse_recurrent_weights",
             constraint=SignedConstraint(recurrent_weight_positive),
@@ -620,7 +644,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 dtype=self.compute_dtype,
             )
             # Keep untracked so older checkpoints remain loadable with assert_consumed().
-            self.recurrent_weight_values_compute = self._no_dependency(recurrent_weight_values_compute)
+            self.recurrent_weight_values_compute = self._untracked_variable(recurrent_weight_values_compute)
         else:
             self.recurrent_weight_values_compute = self.recurrent_weight_values
 
@@ -659,7 +683,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
             input_trainable = input_options.get('trainable', False)
 
-            input_props['input_weight_values'] = tf.Variable(
+            input_props['input_weight_values'] = self._tracked_weight(
                 input_weights * input_options.get('weight_scale', 1.0) / lr_scale,
                 name=f'{input_name}_input_weights',
                 constraint=SignedConstraint(input_weight_positive),
@@ -677,7 +701,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     trainable=False,
                     dtype=self.compute_dtype,
                 )
-                input_props['input_weight_values_compute'] = self._no_dependency(_input_weight_compute)
+                input_props['input_weight_values_compute'] = self._untracked_variable(_input_weight_compute)
             else:
                 input_props['input_weight_values_compute'] = input_props['input_weight_values']
             input_props['input_syn_ids'] = tf.constant(input_syn_ids, dtype=tf.int64) # for efficiency this needs to be in int64
@@ -889,10 +913,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # new_v = self.decay * dampened_v + self.current_factor * c1 - prev_z
         # Update the voltage according to the LIF equation and the refractory period
         # New r is a variable that accounts for the refractory period in which a neuron cannot spike
-        # prev_spike = tf.cast(prev_z > 0, self._refractory_state_dtype)
-        prev_spike = tf.cast(prev_z, dtype=self._refractory_state_dtype)
-        # new_r = tf.maximum(r + prev_spike * self.t_ref_steps - 1, 0)
-        new_r = tf.stop_gradient(tf.maximum(r + prev_spike * self.t_ref_steps - 1, 0)) # prevent gradients from flowing through the refractory state
+        refractory_dtype = r.dtype
+        prev_spike = tf.cast(prev_z, dtype=refractory_dtype)
+        t_ref_steps = tf.cast(self.t_ref_steps, dtype=refractory_dtype)
+        new_r = tf.stop_gradient(
+            tf.maximum(
+                r + prev_spike * t_ref_steps - tf.cast(1, refractory_dtype),
+                tf.cast(0, refractory_dtype)
+            )
+        ) # prevent gradients from flowing through the refractory state
 
         if self._hard_reset:
             # Here we keep the voltage at the reset value during the refractory period
@@ -1037,16 +1066,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Add current spikes to the buffer
         new_z_buf = tf.concat([new_z, z_buf[:, :-self._n_neurons]], axis=1)  # Shift buffer
 
-        outputs = (
-            new_z,
-            new_v,
-            # new_v * self.voltage_scale + self.voltage_offset,
-            # (input_current + tf.reduce_sum(asc, axis=-1)) * self.voltage_scale,
-        )
+        outputs = tf.concat([new_z, new_v], axis=-1)
         # Increment persistent noise_step counter (never reset across epochs)
         self.noise_step.assign_add(1)
         new_state = (new_z_buf, new_v, new_r, new_asc, new_psc_rise, new_psc)
         return outputs, new_state
+
+    @property
+    def output_size(self):
+        return self._n_neurons * 2
 
     @property
     def state_size(self):

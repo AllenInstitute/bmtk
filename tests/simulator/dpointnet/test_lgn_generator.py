@@ -1,5 +1,8 @@
 from pathlib import Path
+import inspect
 from types import SimpleNamespace
+
+import tensorflow as tf
 
 import bmtk.simulator.dpointnet.input_modules.lgn_generator as lgn_generator
 
@@ -66,3 +69,48 @@ def test_lgn_generator_honors_custom_cache_file_and_overwrite(tmp_path, monkeypa
     assert kwargs['temp_krns_path'] == str(stale_files[1])
     assert kwargs['spatial_krns_path'] == str(stale_files[2])
     assert all(not file_path.exists() for file_path in stale_files)
+
+
+def test_drifting_gratings_phase_is_keyword_compatible_and_cast(monkeypatch):
+    signature = inspect.signature(lgn_generator.create_drifting_gratings_generator)
+    parameters = list(signature.parameters)
+    assert parameters.index('phase') > parameters.index('seed')
+
+    captured = {}
+
+    def make_movie(**kwargs):
+        captured['phase'] = kwargs['phase']
+        return tf.zeros((kwargs['image_duration'], kwargs['row_size'], kwargs['col_size']), dtype=kwargs['dtype'])
+
+    class DummyLGNNetwork:
+        n_nodes = 2
+
+        def spatial_response(self, videos, bmtk_compat):
+            return (videos,)
+
+        def firing_rates_from_spatial(self, videos):
+            return tf.ones((5, self.n_nodes), dtype=tf.float16)
+
+    monkeypatch.setattr(lgn_generator, 'make_drifting_grating_stimulus', make_movie)
+    monkeypatch.setattr(
+        lgn_generator,
+        'movies_concat',
+        lambda movie, pre_delay, post_delay, dtype: movie,
+    )
+
+    dataset = lgn_generator.create_drifting_gratings_generator(
+        DummyLGNNetwork(),
+        5,
+        [0],
+        2,
+        0.04,
+        0.8,
+        3,
+        4,
+        current_input=True,
+        dtype=tf.float16,
+        phase=90,
+    )
+    next(iter(dataset))
+
+    assert captured['phase'].dtype == tf.float16
