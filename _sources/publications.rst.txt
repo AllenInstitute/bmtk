@@ -35,6 +35,8 @@ The BioNet module of BMTK was described in an earlier paper. If using BioNet, pl
 
 **How to cite the V1 models:**
 
-Development of BMTK and SONATA was driven to a large degree by our efforts to model cortical circuits. Models of the mouse primary visual cortex (area V1) are `publicly available here <https://portal.brain-map.org/explore/models/mv1-all-layers>`_ and should be cited as follows:
+Development of BMTK and SONATA was driven to a large degree by our efforts to model cortical circuits. Models of the mouse primary visual cortex (area V1) are `publicly available here <https://brain-map.org/our-research/computational-modelling>`_ and should be cited as follows:
 
-[1] Billeh, Y. N., Cai, B., Gratiy, S. L., Dai, K., Iyer, R., Gouwens, N. W., Abbasi-Asl, R., Jia, X., Siegle, J. H., Olsen, S. R., Koch, C., Mihalas, S., & Arkhipov, A. (2020). Systematic Integration of Structural and Functional Data into Multi-scale Models of Mouse Primary Visual Cortex. Neuron, 106(3), 388-403.e18. https://doi.org/10.1016/j.neuron.2020.01.040 
+[1] 2026 V1 model: Ito, S., Haufler, D., Fraile, J. G., Dai, K., Aman, J., Chen, G., Mirasso, C., Maass, W., & Arkhipov, A. (2026). Deep-learning-assisted simulation of a cortical circuit: integrating anatomy, physiology and function. bioRxiv, 2026.03.13.711751. https://doi.org/10.64898/2026.03.13.711751
+
+[2] 2020 V1 model: Billeh, Y. N., Cai, B., Gratiy, S. L., Dai, K., Iyer, R., Gouwens, N. W., Abbasi-Asl, R., Jia, X., Siegle, J. H., Olsen, S. R., Koch, C., Mihalas, S., & Arkhipov, A. (2020). Systematic Integration of Structural and Functional Data into Multi-scale Models of Mouse Primary Visual Cortex. Neuron, 106(3), 388-403.e18. https://doi.org/10.1016/j.neuron.2020.01.040

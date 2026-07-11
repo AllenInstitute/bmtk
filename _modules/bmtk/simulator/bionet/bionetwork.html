@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.bionet.bionetwork &#8212; Brain Modeling Toolkit 1.1.3 documentation</title>
+    <title>bmtk.simulator.bionet.bionetwork &#8212; Brain Modeling Toolkit 1.2.0 documentation</title>
   
   
   
@@ -26,44 +26,51 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../../_static/documentation_options.js?v=cb7bf70b"></script>
+    <script src="../../../../_static/documentation_options.js?v=6efca38a"></script>
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/bmtk/simulator/bionet/bionetwork';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.3" />
+  <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="../../../../_static/searchtools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script src="../../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -89,7 +96,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -115,8 +122,8 @@
       
     
     
-    <img src="../../../../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
-    <img src="../../../../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.1.3 documentation - Home"/>
+    <img src="../../../../_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+    <img src="../../../../_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
   
   
 </a></div>
@@ -207,11 +214,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -324,11 +338,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
@@ -550,7 +571,7 @@
 <div class="viewcode-block" id="BioNetwork.add_nodes">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.add_nodes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_population</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span><span class="o">.</span><span class="n">add_pool</span><span class="p">(</span><span class="n">node_population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_population</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span><span class="o">.</span><span class="n">add_pool</span><span class="p">(</span><span class="n">node_population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_population</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BioNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">node_population</span><span class="p">)</span></div>
 
 
@@ -829,6 +850,142 @@
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+
+
+    <span class="n">INTFIRE_ATTRS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">,</span> <span class="s1">&#39;refrac&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;taum&#39;</span><span class="p">,</span> <span class="s1">&#39;taus&#39;</span><span class="p">,</span> <span class="s1">&#39;ib&#39;</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;taue&#39;</span><span class="p">,</span> <span class="s1">&#39;taui1&#39;</span><span class="p">,</span> <span class="s1">&#39;taui2&#39;</span><span class="p">,</span> <span class="s1">&#39;i1&#39;</span><span class="p">,</span> <span class="s1">&#39;i2&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BioNetwork.inspect_cells">
+<a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.inspect_cells">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inspect_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+
+        <span class="n">cell_mechs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;node_type_id&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;sec_name&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;attr_name&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;mech_name&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;attr_val&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+        <span class="n">sect_counts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;nsections&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;nsegments&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+        
+        <span class="n">filtered_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="nb">filter</span> <span class="o">=</span> <span class="nb">filter</span> <span class="ow">or</span> <span class="s1">&#39;all&#39;</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span><span class="o">.</span><span class="n">fetch_nodes</span><span class="p">():</span>
+            <span class="n">filtered_gids</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">population_name</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_cells</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filtered_gids</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span>
+                <span class="n">sect_counts</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span>
+                <span class="n">sect_counts</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                <span class="n">sect_counts</span><span class="p">[</span><span class="s1">&#39;nsections&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">))</span>
+                <span class="n">sect_counts</span><span class="p">[</span><span class="s1">&#39;nsegments&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">))</span>
+                
+                <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                    <span class="n">sec_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;Ra&#39;</span><span class="p">):</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">])</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">])</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;sec_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_name</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;mech_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Ra&#39;</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">Ra</span><span class="p">)</span>
+                        <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">mech_name</span><span class="p">,</span> <span class="n">mech_props</span> <span class="ow">in</span> <span class="n">sec</span><span class="o">.</span><span class="n">psection</span><span class="p">()[</span><span class="s1">&#39;density_mechs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_val</span> <span class="ow">in</span> <span class="n">mech_props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">])</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">])</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;sec_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;mech_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mech_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">attr_val</span><span class="p">))</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;mechanism&#39;</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">ion_name</span><span class="p">,</span> <span class="n">ion_props</span> <span class="ow">in</span> <span class="n">sec</span><span class="o">.</span><span class="n">psection</span><span class="p">()[</span><span class="s1">&#39;ions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_val</span> <span class="ow">in</span> <span class="n">ion_props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">])</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">])</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;sec_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;mech_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">attr_val</span><span class="p">))</span>
+                            <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ion&#39;</span><span class="p">)</span>
+       
+            <span class="k">elif</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span> <span class="s1">&#39;point&#39;</span><span class="p">,</span> <span class="s1">&#39;point_process&#39;</span><span class="p">]:</span>
+                <span class="n">process_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">attr_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">attr_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">INTFIRE_ATTRS</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">population_name</span><span class="p">)</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">])</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">])</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;sec_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;NA&#39;</span><span class="p">)</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;mech_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">process_name</span><span class="p">)</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;attr_val&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">))</span>
+                    <span class="n">cell_mechs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ARTIFICIAL_CELL&#39;</span><span class="p">)</span>       
+
+        <span class="n">agg_mech</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cell_mechs</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">,</span> <span class="s1">&#39;sec_name&#39;</span><span class="p">,</span> <span class="s1">&#39;mech_name&#39;</span><span class="p">,</span> <span class="s1">&#39;attr_name&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="n">mechs_df</span> <span class="o">=</span> <span class="n">agg_mech</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">mechs_df</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mechs_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;attr_name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;mech_name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;mechanism&#39;</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>       
+
+        <span class="n">sect_lu</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sect_counts</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_id&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">mechs_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">csv_str</span> <span class="o">=</span> <span class="n">mechs_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">csv_str</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mechs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">pop</span><span class="p">,</span> <span class="n">pop_df</span> <span class="ow">in</span> <span class="n">mechs_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;population&#39;</span><span class="p">):</span>
+                <span class="n">mechs_dict</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_df</span> <span class="ow">in</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">):</span>
+                    <span class="n">mechs_dict</span><span class="p">[</span><span class="n">pop</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;node_type_id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_df</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                        <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="n">node_df</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="s1">&#39;nsections&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">sect_lu</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">pop</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)][</span><span class="s1">&#39;nsections&#39;</span><span class="p">]),</span>
+                        <span class="s1">&#39;nsegments&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">sect_lu</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">pop</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)][</span><span class="s1">&#39;nsegments&#39;</span><span class="p">])</span>
+                    <span class="p">}</span>
+                    <span class="k">for</span> <span class="n">sec</span><span class="p">,</span> <span class="n">sec_df</span> <span class="ow">in</span> <span class="n">node_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;sec_name&#39;</span><span class="p">):</span>
+                        <span class="n">mechs_dict</span><span class="p">[</span><span class="n">pop</span><span class="p">][</span><span class="n">node_id</span><span class="p">][</span><span class="n">sec</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sec_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                            <span class="n">mechs_dict</span><span class="p">[</span><span class="n">pop</span><span class="p">][</span><span class="n">node_id</span><span class="p">][</span><span class="n">sec</span><span class="p">][</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;attr_name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;default_value&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;attr_val&#39;</span><span class="p">]),</span> <span class="s1">&#39;mechanism&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;mech_name&#39;</span><span class="p">],</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]}</span>
+
+            <span class="k">if</span> <span class="n">output_path</span><span class="p">:</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">mechs_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pprint</span><span class="p">(</span><span class="n">mechs_dict</span><span class="p">)</span></div>
 </div>
 
 </pre></div>
@@ -854,8 +1011,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -867,7 +1024,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

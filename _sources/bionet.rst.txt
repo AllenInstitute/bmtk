@@ -237,6 +237,29 @@ And in the config
   cell’s ECP.
 
 
+**Saving ECP to NWB (Neurodata without Borders) format**
+
+You can save the recorded extraceullar field to NWB format by specifying the "file_name_nwb" option.
+
+.. code:: json
+
+    {
+        "ecp": {
+            "cells": "all",
+            "variable_name": "v",
+            "module": "extracellular",
+            "electrode_positions": "components/xelectrode/linear_probe.csv",
+            "file_name": "ecp.h5",
+            "file_name_nwb": "session_data.nwb"
+        }
+    }
+
+In the above case will create an ElectricalSeries acquistion in the session_data.nwb file which can be analyzed
+using pynwb, Matlab, pynapple, or other tools that support the reading of the NWB ecephys data. If the same session
+nwb is also being used to write spikes or membrane properties, BMTK will attempt to append all data of the same
+simulation "session" into a single file. 
+
+
 Synaptic Variables
 ++++++++++++++++++
 Similar to recording from membrane potential, by setting the ``module`` parameter to ``netcon_report``, you can record the
