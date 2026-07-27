@@ -1,6 +1,5 @@
 from .base import BPTTLearningRule, LearningRule, LearningRuleObservations, WeightSurface
 from .eprop import EPropLearningRule
-from .modprop import ModPropLearningRule
 from .three_factor import ThreeFactorLearningRule
 
 
@@ -45,4 +44,3 @@ def register_learning_rule(_cls=None, *, name=None, overwrite=True):
 LearningRules().add_rule(BPTTLearningRule, overwrite=False)
 LearningRules().add_rule(EPropLearningRule, overwrite=False)
 LearningRules().add_rule(ThreeFactorLearningRule, overwrite=False)
-LearningRules().add_rule(ModPropLearningRule, overwrite=False)

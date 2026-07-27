@@ -1,5 +1,4 @@
 import argparse
-import copy
 import json
 import tempfile
 from pathlib import Path
@@ -20,13 +19,6 @@ RULES = {
         'name': 'three_factor',
         'signal': 'spike',
         'surfaces': ['<recurrent>'],
-        'edge_chunk_size': 4096,
-    },
-    'modprop': {
-        'name': 'modprop',
-        'surfaces': ['<recurrent>'],
-        'filter_taps': 3,
-        'mean_activity': 0.5,
         'edge_chunk_size': 4096,
     },
 }
@@ -104,7 +96,7 @@ def run(rule_name, task_name='voltage_control', batch_size=None):
         config_data = json.load(config_file)
 
     config_data['manifest']['$BASE_DIR'] = example_dir.as_posix()
-    rule_config = copy.deepcopy(RULES[rule_name])
+    rule_config = dict(RULES[rule_name])
     if rule_name == 'three_factor' and task_name == 'voltage_control':
         rule_config['signal'] = 'voltage'
     config_data['training']['learning_rule'] = rule_config

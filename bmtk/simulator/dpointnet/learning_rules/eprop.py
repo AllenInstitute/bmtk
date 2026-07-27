@@ -131,30 +131,6 @@ class EPropLearningRule(LearningRule):
             + tf.cast(observations.voltage_learning_signal, tf.float32)
         )
 
-    def _prepare_rule_state(self, observations, pseudo_derivative):
-        del observations, pseudo_derivative
-        return ()
-
-    def _initial_chunk_state(self, batch_size, edge_count):
-        del batch_size, edge_count
-        return ()
-
-    def _accumulate_gradient(
-            self,
-            time,
-            post_ids,
-            post_local_factor,
-            membrane_eligibility,
-            pseudo_derivative,
-            observations,
-            rule_state,
-            chunk_state):
-        del time, post_ids, pseudo_derivative, observations, rule_state
-        gradient = tf.reduce_mean(
-            post_local_factor * membrane_eligibility, axis=0
-        )
-        return gradient, chunk_state
-
     def _surrogate_derivative(self, observations):
         cell = self.rnn._cell
         voltages = observations.voltages
@@ -222,7 +198,6 @@ class EPropLearningRule(LearningRule):
             clip = tf.cast(self.learning_signal_clip, local_factor.dtype)
             local_factor = tf.clip_by_value(local_factor, -clip, clip)
         local_factor_by_time = tf.transpose(local_factor, [1, 2, 0])
-        rule_state = self._prepare_rule_state(observations, pseudo_derivative)
         cell = self.rnn._cell
         n_basis = cell._n_syn_basis
         synaptic_basis_weights = tf.cast(cell.synaptic_basis_weights, tf.float32)
@@ -302,19 +277,18 @@ class EPropLearningRule(LearningRule):
                 [batch_size, edge_count], dtype=tf.float32
             )
             gradient = tf.zeros([edge_count], dtype=tf.float32)
-            chunk_state = self._initial_chunk_state(batch_size, edge_count)
             edge_basis = tf.gather(synaptic_basis_weights, chunk_synapse_types)
             post_membrane_decay = tf.gather(membrane_decay, post_ids)[tf.newaxis, :]
             post_current_factor = tf.gather(current_factor, post_ids)[tf.newaxis, :]
 
             def time_condition(time, rise_eligibility, current_eligibility,
-                               membrane_eligibility, edge_gradient, local_chunk_state):
+                               membrane_eligibility, edge_gradient):
                 del rise_eligibility, current_eligibility
-                del membrane_eligibility, edge_gradient, local_chunk_state
+                del membrane_eligibility, edge_gradient
                 return time < seq_len
 
             def time_body(time, rise_eligibility, current_eligibility,
-                          membrane_eligibility, edge_gradient, local_chunk_state):
+                          membrane_eligibility, edge_gradient):
                 post_local_factor = tf.transpose(
                     tf.gather(local_factor_by_time[time], post_ids)
                 )
@@ -332,17 +306,9 @@ class EPropLearningRule(LearningRule):
                 )
                 # GLIF3 stops gradients through spikes entering ASC, so ASC has no
                 # weight-eligibility contribution in the cell's differentiation contract.
-                gradient_increment, local_chunk_state = self._accumulate_gradient(
-                    time=time,
-                    post_ids=post_ids,
-                    post_local_factor=post_local_factor,
-                    membrane_eligibility=new_membrane_eligibility,
-                    pseudo_derivative=pseudo_derivative,
-                    observations=observations,
-                    rule_state=rule_state,
-                    chunk_state=local_chunk_state,
+                edge_gradient += tf.reduce_mean(
+                    post_local_factor * new_membrane_eligibility, axis=0
                 )
-                edge_gradient += gradient_increment
                 new_current_eligibility = (
                     current_eligibility * synaptic_decay
                     + dt * synaptic_decay * rise_eligibility
@@ -360,10 +326,9 @@ class EPropLearningRule(LearningRule):
                     new_current_eligibility,
                     new_membrane_eligibility,
                     edge_gradient,
-                    local_chunk_state,
                 )
 
-            _, _, _, _, gradient, _ = tf.while_loop(
+            _, _, _, _, gradient = tf.while_loop(
                 time_condition,
                 time_body,
                 (
@@ -372,7 +337,6 @@ class EPropLearningRule(LearningRule):
                     psc_eligibility,
                     voltage_eligibility,
                     gradient,
-                    chunk_state,
                 ),
                 parallel_iterations=1,
             )
@@ -416,6 +380,7 @@ class EPropLearningRule(LearningRule):
             if constraint is not None:
                 value = constraint(value)
             variable.assign(value)
+
     def on_global_step_end(self):
         self.update_step.assign_add(1)
 

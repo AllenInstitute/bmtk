@@ -10,7 +10,6 @@ from bmtk.simulator.dpointnet.learning_rules import (
     EPropLearningRule,
     LearningRuleObservations,
     LearningRules,
-    ModPropLearningRule,
     ThreeFactorLearningRule,
     WeightSurface,
     register_learning_rule,
@@ -67,30 +66,6 @@ def _observations():
         ),
         voltage_learning_signal=tf.zeros([1, 3, 2], dtype=tf.float32),
         direct_weight_gradients=(tf.zeros([1]), tf.zeros([1])),
-    )
-
-
-def _modprop_observations():
-    observations = _observations()
-    return replace(
-        observations,
-        input_spikes=tf.concat(
-            [observations.input_spikes, tf.zeros([1, 1, 1])], axis=1
-        ),
-        spikes=tf.concat(
-            [observations.spikes, tf.zeros([1, 1, 2])], axis=1
-        ),
-        voltages=tf.concat(
-            [observations.voltages, tf.ones([1, 1, 2])], axis=1
-        ),
-        spike_learning_signal=tf.concat(
-            [
-                observations.spike_learning_signal,
-                tf.constant([[[2.0, 0.0]]]),
-            ],
-            axis=1,
-        ),
-        voltage_learning_signal=tf.zeros([1, 4, 2]),
     )
 
 
@@ -190,140 +165,6 @@ def test_three_factor_selects_spike_or_voltage_modulator():
     np.testing.assert_allclose(voltage_gradient.numpy(), [1.0])
     with pytest.raises(ValueError, match='Unknown three-factor signal'):
         ThreeFactorLearningRule(signal='irrelevant')
-
-
-def test_modprop_adds_delayed_type_specific_modulation():
-    rnn, _, _ = _fake_rnn()
-    filters = np.zeros((2, 2, 1), dtype=np.float32)
-    filters[0, 0, 0] = 2.0
-    filters[0, 1, 0] = 3.0
-    observations = _modprop_observations()
-
-    eprop = EPropLearningRule(
-        edge_chunk_size=1, surfaces=('<recurrent>', 'lgn')
-    )
-    eprop.build(rnn)
-    modprop = ModPropLearningRule(
-        modulatory_filters=filters,
-        edge_chunk_size=1,
-        surfaces=('<recurrent>', 'lgn'),
-    )
-    modprop.build(rnn)
-    eprop_updates = {
-        surface.name: gradient
-        for surface, gradient in eprop.compute_updates(observations)
-    }
-    modprop_updates = {
-        surface.name: gradient
-        for surface, gradient in modprop.compute_updates(observations)
-    }
-
-    np.testing.assert_allclose(
-        modprop_updates['<recurrent>'] - eprop_updates['<recurrent>'], [1.0]
-    )
-    np.testing.assert_allclose(
-        modprop_updates['lgn'] - eprop_updates['lgn'], [3.0]
-    )
-
-
-def test_modprop_supports_configurable_batch_size():
-    rnn, _, _ = _fake_rnn()
-    observations = _modprop_observations()
-    batch_size = 3
-    observations = replace(
-        observations,
-        input_spikes=tf.repeat(observations.input_spikes, batch_size, axis=0),
-        spikes=tf.repeat(observations.spikes, batch_size, axis=0),
-        voltages=tf.repeat(observations.voltages, batch_size, axis=0),
-        initial_state=(
-            tf.repeat(observations.initial_state[0], batch_size, axis=0),
-        ),
-        spike_learning_signal=tf.repeat(
-            observations.spike_learning_signal, batch_size, axis=0
-        ),
-        voltage_learning_signal=tf.repeat(
-            observations.voltage_learning_signal, batch_size, axis=0
-        ),
-    )
-    rule = ModPropLearningRule(
-        modulatory_filters=np.ones((2, 2, 2), dtype=np.float32),
-        edge_chunk_size=1,
-        surfaces=('<recurrent>',),
-    )
-    rule.build(rnn)
-
-    gradient = rule.compute_updates(observations)[0][1]
-
-    assert gradient.shape == (1,)
-    assert bool(tf.reduce_all(tf.math.is_finite(gradient)))
-
-
-def test_modprop_builds_fixed_filters_from_initial_type_weights():
-    rnn, _, _ = _fake_rnn()
-    rule = ModPropLearningRule(
-        filter_taps=2,
-        mean_activity=0.5,
-        surfaces=('<recurrent>',),
-    )
-    rule.build(rnn)
-
-    np.testing.assert_array_equal(rule.node_type_values.numpy(), [10, 20])
-    np.testing.assert_allclose(
-        rule.modulatory_filters.numpy(),
-        np.array([[[0.0, 0.0], [1.0, 0.0]],
-                  [[0.0, 0.0], [0.0, 0.0]]]),
-    )
-    assert not rule.modulatory_filters.trainable
-
-    config = rule.get_config()
-    rnn._cell.recurrent_weight_values.assign([9.0])
-    name = config.pop('name')
-    rebuilt = LearningRules().get_rule(name)(**config)
-    rebuilt.build(rnn)
-    np.testing.assert_allclose(
-        rebuilt.modulatory_filters.numpy(),
-        rule.modulatory_filters.numpy(),
-    )
-
-
-def test_modprop_rejects_irrelevant_or_inconsistent_filter_options():
-    filters = np.zeros((2, 2, 1), dtype=np.float32)
-    with pytest.raises(ValueError, match='mean_activity is irrelevant'):
-        ModPropLearningRule(
-            mean_activity=0.5, modulatory_filters=filters
-        )
-    with pytest.raises(ValueError, match='provides 1 taps'):
-        rnn, _, _ = _fake_rnn()
-        rule = ModPropLearningRule(
-            filter_taps=2,
-            modulatory_filters=filters,
-            surfaces=('<recurrent>',),
-        )
-        rule.build(rnn)
-
-
-def test_modprop_config_and_filter_checkpoint_round_trip(tmp_path):
-    filters = np.arange(8, dtype=np.float32).reshape(2, 2, 2)
-    rnn, _, _ = _fake_rnn()
-    rule = ModPropLearningRule(
-        modulatory_filters=filters,
-        edge_chunk_size=4,
-        surfaces=('<recurrent>',),
-    )
-    rule.build(rnn)
-    config = rule.get_config()
-    name = config.pop('name')
-    rebuilt = LearningRules().get_rule(name)(**config)
-    rebuilt.build(rnn)
-    assert rebuilt.get_config() == rule.get_config()
-
-    rule.modulatory_filters.assign(tf.zeros_like(rule.modulatory_filters))
-    checkpoint_path = tf.train.Checkpoint(rule=rule).save(
-        str(tmp_path / 'modprop')
-    )
-    rebuilt.modulatory_filters.assign(tf.ones_like(rebuilt.modulatory_filters))
-    tf.train.Checkpoint(rule=rebuilt).restore(checkpoint_path).assert_consumed()
-    np.testing.assert_allclose(rebuilt.modulatory_filters.numpy(), 0.0)
 
 
 def test_three_factor_config_round_trip():
