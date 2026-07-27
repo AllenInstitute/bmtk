@@ -8,6 +8,8 @@ from .callbacks import Callbacks
 from .callbacks import callback_classes
 from .io_tools import io
 from .data_iterator import DataIterator
+from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
+from .learning_rules import LearningRuleObservations
 
 
 class TrainingParameters:
@@ -112,6 +114,7 @@ class TrainingEngine:
         self._init_state_mod = None
         self._training_approach = training_approach
         self._training_fnc = None
+        self._learning_rule = BPTTLearningRule()
 
         # Gradient checkpointing (a.k.a. recompute_grad): recompute the per-timestep
         # RNN activations during the backward pass instead of storing all of them across
@@ -182,6 +185,27 @@ class TrainingEngine:
     def set_optimizer(self, optimizer):
         self._optimizer = optimizer
 
+    @property
+    def learning_rule(self):
+        if not hasattr(self, '_learning_rule'):
+            self._learning_rule = BPTTLearningRule()
+        return self._learning_rule
+
+    def set_learning_rule(self, learning_rule='bptt', **params):
+        if isinstance(learning_rule, str):
+            learning_rule = LearningRules().get_rule(learning_rule)(**params)
+        elif params:
+            raise ValueError('Learning-rule parameters cannot accompany an instantiated rule.')
+        if not isinstance(learning_rule, LearningRule):
+            raise TypeError('learning_rule must be a registered name or LearningRule instance.')
+        if self.n_parameters and self.training_approach not in learning_rule.supported_training_approaches:
+            raise ValueError(
+                f'Learning rule "{learning_rule.module()}" does not support '
+                f'training_approach="{self.training_approach}".'
+            )
+        self._learning_rule = learning_rule
+        self._training_fnc = None
+
     def add_parameters(self, name, batch_size=None, seq_len=None):
         training_params = TrainingParameters(name, batch_size=batch_size, seq_len=seq_len)
         self._parameters.append(training_params)
@@ -240,6 +264,19 @@ class TrainingEngine:
     @property
     def step_train_function(self):
         if self._training_fnc is None:
+            if not self.learning_rule.uses_bptt:
+                if self.n_parameters != 1:
+                    raise ValueError(
+                        f'Learning rule "{self.learning_rule.module()}" currently requires '
+                        'exactly one training parameter.'
+                    )
+                if self.training_approach not in self.learning_rule.supported_training_approaches:
+                    raise ValueError(
+                        f'Learning rule "{self.learning_rule.module()}" does not support '
+                        f'training_approach="{self.training_approach}".'
+                    )
+                self._training_fnc = self._train_step_local_single
+                return self._training_fnc
             if self.n_parameters == 1:
                 self._training_fnc = self._train_step_single
             
@@ -254,6 +291,83 @@ class TrainingEngine:
                     raise ValueError(f'Training Error: Invalid training approach "{self._training_approach}"')
 
         return self._training_fnc
+
+    def _train_step_local_single(self, x, y, init_state):
+        parameter = self.parameters[0]
+        pname = parameter.name
+        loss_vals = {pname: {}}
+        input_spikes = x[0]
+        out = self._run_extractor(input_spikes, init_state)
+        spikes_out, voltages_out = (tf.stop_gradient(value) for value in out[0])
+        model_state = tf.nest.map_structure(tf.stop_gradient, out[1:])
+        loss_vals[pname]['__mean_rate'] = tf.cast(tf.reduce_mean(spikes_out), tf.float32)
+
+        selected_variables = [
+            surface.variable for surface in self.learning_rule.weight_surfaces
+        ]
+        selected_variable_ids = {id(variable) for variable in selected_variables}
+        all_weight_variables = list(self.rnn.model.trainable_variables)
+
+        with tf.GradientTape() as signal_tape:
+            signal_tape.watch(spikes_out)
+            signal_tape.watch(voltages_out)
+            total_loss = tf.constant(0.0, dtype=tf.float32)
+            loss_kwargs = self._prepare_loss_kwargs(parameter, spikes_out, y)
+            for loss_name, loss_fnc in parameter.loss_functions.items():
+                loss = loss_fnc(
+                    spikes=spikes_out,
+                    voltages=voltages_out,
+                    model_state=model_state,
+                    y=y,
+                    **loss_kwargs,
+                )
+                total_loss += tf.cast(loss, tf.float32)
+                loss_vals[pname][loss_name] = loss
+            total_loss = tf.nn.scale_regularization_loss(total_loss)
+            loss_for_signal = optimizers.scale_loss_for_optimizer(
+                self.optimizer, total_loss
+            )
+
+        local_gradients = signal_tape.gradient(
+            loss_for_signal,
+            [spikes_out, voltages_out] + all_weight_variables,
+        )
+        local_gradients = optimizers.unscale_gradients_for_local_rule(
+            self.optimizer, local_gradients
+        )
+        spike_learning_signal = local_gradients[0]
+        if spike_learning_signal is None:
+            spike_learning_signal = tf.zeros_like(spikes_out)
+        voltage_learning_signal = local_gradients[1]
+        if voltage_learning_signal is None:
+            voltage_learning_signal = tf.zeros_like(voltages_out)
+
+        weight_gradients_by_id = {}
+        for variable, gradient in zip(all_weight_variables, local_gradients[2:]):
+            if gradient is not None and id(variable) not in selected_variable_ids:
+                raise ValueError(
+                    f'Loss depends directly on excluded weight surface "{variable.name}". '
+                    'Include that surface in training.learning_rule.surfaces.'
+                )
+            weight_gradients_by_id[id(variable)] = gradient
+        direct_weight_gradients = tuple(
+            weight_gradients_by_id.get(id(variable))
+            if weight_gradients_by_id.get(id(variable)) is not None
+            else tf.zeros_like(variable)
+            for variable in selected_variables
+        )
+        updates = self.learning_rule.compute_updates(LearningRuleObservations(
+            input_spikes=input_spikes,
+            spikes=spikes_out,
+            voltages=voltages_out,
+            initial_state=init_state,
+            spike_learning_signal=spike_learning_signal,
+            voltage_learning_signal=voltage_learning_signal,
+            direct_weight_gradients=direct_weight_gradients,
+        ))
+        self.learning_rule.apply_updates(self.optimizer, updates)
+        loss_vals['__total_loss'] = tf.reduce_mean(total_loss)
+        return loss_vals
 
     def _uses_ema_normalizer(self):
         for parameter in self.parameters:
@@ -777,6 +891,7 @@ class TrainingEngine:
                         step_loss_vals = self._distributed_train_step_series_accumulate(spikes, ys, init_state=init_state)
                     else:
                         step_loss_vals = self._distributed_train_step(spikes, ys, init_state=init_state)
+                    self.learning_rule.on_global_step_end()
                     # Propagate the just-updated master recurrent weights into the compute-dtype
                     # shadow used by the forward pass (no-op when not using a shadow).
                     cell = getattr(self.rnn, '_cell', None)

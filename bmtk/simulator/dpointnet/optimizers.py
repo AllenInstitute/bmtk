@@ -44,6 +44,32 @@ def unscale_gradients_for_optimizer(optimizer, gradients):
     return gradients
 
 
+def unscale_gradients_for_local_rule(optimizer, gradients):
+    """Return physical gradients before local-rule clipping or transformations."""
+    if hasattr(optimizer, 'get_unscaled_gradients'):
+        return optimizer.get_unscaled_gradients(gradients)
+    if hasattr(optimizer, 'dynamic_scale'):
+        scale = optimizer.dynamic_scale
+        return [
+            None if gradient is None
+            else gradient / tf.cast(scale, gradient.dtype)
+            for gradient in gradients
+        ]
+    return gradients
+
+
+def prepare_local_gradients_for_optimizer(optimizer, gradients):
+    """Restore Keras 3 loss scaling before LossScaleOptimizer.apply_gradients."""
+    if hasattr(optimizer, 'dynamic_scale'):
+        scale = optimizer.dynamic_scale
+        return [
+            None if gradient is None
+            else gradient * tf.cast(scale, gradient.dtype)
+            for gradient in gradients
+        ]
+    return gradients
+
+
 def create_optimizer(optimizer, learning_rate, optimizer_params=None):
     if isinstance(optimizer, tf.keras.optimizers.Optimizer):
         return optimizer

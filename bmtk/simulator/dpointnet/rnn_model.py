@@ -15,6 +15,7 @@ from .input_modules import InputModules
 from .state_modules import StateModules
 from .results import RNNExtractorResults
 from .loss_functions import LossModules
+from .learning_rules import LearningRules
 from . import optimizers
 from .training import TrainingEngine
 from .callbacks import callback_classes
@@ -584,13 +585,22 @@ class RNN:
         ## Build the optimizer (in strategy scope so its slot variables are created correctly)
         with self.strategy.scope():
             optimizer = training_engine.optimizer
-            if self.dtype == 'float16' and not optimizers.optimizer_supports_loss_scaling(optimizer):
+            training_engine.learning_rule.build(self)
+            if (self.dtype == 'float16'
+                    and not optimizers.optimizer_supports_loss_scaling(optimizer)):
                 # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
                 # must be built and applied as the active optimizer, especially under Keras 3.
                 from tensorflow.keras import mixed_precision as mixed_precision_module
                 optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
                 training_engine.set_optimizer(optimizer)
-            optimizer.build(self.model.trainable_variables)
+            if training_engine.learning_rule.uses_bptt:
+                optimizer_variables = self.model.trainable_variables
+            else:
+                optimizer_variables = [
+                    surface.variable
+                    for surface in training_engine.learning_rule.weight_surfaces
+                ]
+            optimizer.build(optimizer_variables)
 
         training_engine.train()
 
@@ -956,6 +966,20 @@ class RNN:
                     optimizer_params=optimizer_params,
                 )
             training_engine.set_optimizer(optimizer)
+
+            learning_rule_params = train_dict.get('learning_rule', {'name': 'bptt'})
+            if isinstance(learning_rule_params, str):
+                learning_rule_name = learning_rule_params
+                learning_rule_params = {}
+            elif isinstance(learning_rule_params, dict):
+                learning_rule_params = dict(learning_rule_params)
+                learning_rule_name = learning_rule_params.pop('name', 'bptt')
+            else:
+                raise TypeError('training.learning_rule must be a name or dictionary.')
+            learning_rule_cls = LearningRules().get_rule(learning_rule_name)
+            training_engine.set_learning_rule(
+                learning_rule_cls(**learning_rule_params)
+            )
 
             ## Process "init_states"
             training_init_state_params = train_dict.get('initial_state', {})
