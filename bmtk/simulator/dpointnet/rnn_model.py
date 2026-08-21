@@ -328,6 +328,16 @@ class RNN:
         if self._model_built and not rebuild:
             io.log_debug('Model already built. Skipping.')
             return
+        if rebuild and self._cell is not None:
+            close_fused_cuda = getattr(self._cell, 'close_fused_cuda', None)
+            if close_fused_cuda is not None:
+                close_fused_cuda()
+            self.model = None
+            self.extractor_model = None
+            self._state_only_model = None
+            self._rsnn_layer = None
+            self.zero_state = None
+            self._model_built = False
 
         _batch_size = batch_size or self.adjusted_batch_size
         _seq_len = seq_len or self.adjusted_seq_len
@@ -571,6 +581,10 @@ class RNN:
     def cleanup(self):
         for inference in self._inferences:
             inference.close()
+        if self._cell is not None:
+            close_fused_cuda = getattr(self._cell, 'close_fused_cuda', None)
+            if close_fused_cuda is not None:
+                close_fused_cuda()
 
     def train(self, training_engine=None):
         if self.extractor_model is None:
@@ -590,6 +604,10 @@ class RNN:
                 from tensorflow.keras import mixed_precision as mixed_precision_module
                 optimizer = mixed_precision_module.LossScaleOptimizer(optimizer)
                 training_engine.set_optimizer(optimizer)
+                io.log_info(
+                    'Mixed-precision optimizer loss scaling enabled with '
+                    'LossScaleOptimizer.'
+                )
             optimizer.build(self.model.trainable_variables)
 
         training_engine.train()
