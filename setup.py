@@ -70,6 +70,15 @@ setup(
     packages=find_packages(exclude=['bmtk.tests', 'bmtk.tests.*', '*tests*']),
     # package_data={'': ['*.md', '*.txt', '*.cfg', '**/*.json', '**/*.hoc']},
     include_package_data=True,
+    package_data={
+        'bmtk.simulator.dpointnet.custom_ops': ['*.cc', '*.cu.cc', '*.sh'],
+    },
+    entry_points={
+        'console_scripts': [
+            'bmtk-build-dpointnet-cuda='
+            'bmtk.simulator.dpointnet.custom_ops.build:main',
+        ],
+    },
     platforms='any'
 
 )
