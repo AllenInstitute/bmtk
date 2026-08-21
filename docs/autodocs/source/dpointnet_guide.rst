@@ -31,6 +31,32 @@ or without a gpu:
 
     $ pip install tensorflow
 
+Optional fused CUDA operator
+----------------------------
+
+DPointNet can use a fused CUDA operator for recurrent and input synaptic currents. This optional operator
+requires an NVIDIA CUDA toolkit with ``nvcc``, a C++17 compiler, and a GPU-enabled TensorFlow installation.
+Build it from the same environment in which BMTK and TensorFlow are installed:
+
+::
+
+  $ python -m bmtk.simulator.dpointnet.custom_ops.build
+
+This module form ensures that the build uses the active Python environment and does not require a console script on
+``PATH``. Installing this version of BMTK also creates ``bmtk-build-dpointnet-cuda`` in the environment's executable
+directory; the shortcut is available when that environment is activated.
+
+The build targets compute capabilities 7.0, 7.5, 8.0, 8.6, 8.9, and 9.0 by default, with PTX for the
+highest target. To build for a different set of architectures, provide space-separated architecture numbers:
+
+::
+
+  $ DPOINTNET_CUDA_ARCHS="80 86 90" python -m bmtk.simulator.dpointnet.custom_ops.build
+
+The operator requires exactly one visible GPU. Set ``use_fused_cuda`` to ``true`` in ``rnn_cell_params`` to
+require the operator, or to ``"auto"`` to use it when available and otherwise fall back to TensorFlow. The
+default is ``false``. Rebuild the operator after changing TensorFlow or CUDA installations.
+
 
 Overview
 ========
@@ -207,6 +233,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - synaptic_basis_weights
                   -
                   - <None>
+                * - use_fused_cuda
+                  - Use the optional fused CUDA synaptic-current operator. ``True`` requires it; ``"auto"`` falls back to TensorFlow when unavailable.
+                  - False
 
 
 Setting the Network Model
