@@ -173,6 +173,9 @@ def build_csr_connectivity(
             raise TypeError(f'{name} must contain numeric integer values.')
         if not np.all(np.isfinite(values)) or not np.all(values == np.floor(values)):
             raise ValueError(f'{name} must contain finite integer values.')
+        int64_info = np.iinfo(np.int64)
+        if np.any(values < int64_info.min) or np.any(values > int64_info.max):
+            raise ValueError(f'{name} values must be within the int64 range.')
 
     indices = indices.astype(np.int64, copy=False)
     synapse_types = synapse_types.astype(np.int64, copy=False)

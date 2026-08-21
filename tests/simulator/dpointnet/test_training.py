@@ -8,6 +8,7 @@ tf = pytest.importorskip("tensorflow")
 from bmtk.simulator.dpointnet import training
 from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
 from bmtk.simulator.dpointnet.network_adaptor import lex_sort_order_np
+from bmtk.simulator.dpointnet.rnn_model import RNN
 from bmtk.simulator.dpointnet.optimizers import (
     ExponentiatedAdam,
     optimizer_supports_loss_scaling,
@@ -95,14 +96,46 @@ def test_training_refreshes_weight_shadows_after_each_step(monkeypatch):
     assert cell.refresh_count == engine.steps_per_epoch
 
 
-def test_lex_sort_order_avoids_uint32_overflow():
+def test_lex_sort_order_avoids_integer_overflow():
     indices = np.array(
-        [[65535, 65535], [65536, 0], [0, 1]], dtype=np.uint32
+        [
+            [np.iinfo(np.uint32).max, np.iinfo(np.uint32).max],
+            [np.iinfo(np.uint32).max - 1, np.iinfo(np.uint32).max],
+            [0, 0],
+        ],
+        dtype=np.uint32,
     )
 
     order = lex_sort_order_np(indices)
 
-    np.testing.assert_array_equal(order, [2, 0, 1])
+    np.testing.assert_array_equal(order, [2, 1, 0])
+
+
+def test_rnn_wraps_float16_optimizer_with_loss_scaling():
+    class FakeTrainingEngine:
+        def __init__(self):
+            self.optimizer = tf.keras.optimizers.SGD()
+            self.trained = False
+
+        def set_optimizer(self, optimizer):
+            self.optimizer = optimizer
+
+        def train(self):
+            self.trained = True
+
+    rnn = object.__new__(RNN)
+    rnn.extractor_model = object()
+    rnn.strategy = tf.distribute.get_strategy()
+    rnn.dtype = tf.float16
+    rnn.model = SimpleNamespace(trainable_variables=[])
+    engine = FakeTrainingEngine()
+
+    rnn.train(engine)
+
+    assert isinstance(
+        engine.optimizer, tf.keras.mixed_precision.LossScaleOptimizer
+    )
+    assert engine.trained
 
 
 def test_base_optimizer_scale_loss_method_is_not_active_loss_scaling():

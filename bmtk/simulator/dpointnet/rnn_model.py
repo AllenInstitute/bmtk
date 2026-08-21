@@ -598,7 +598,7 @@ class RNN:
         ## Build the optimizer (in strategy scope so its slot variables are created correctly)
         with self.strategy.scope():
             optimizer = training_engine.optimizer
-            if self.dtype == 'float16' and not optimizers.optimizer_supports_loss_scaling(optimizer):
+            if self.dtype == tf.float16 and not optimizers.optimizer_supports_loss_scaling(optimizer):
                 # Prevent gradient underflow in mixed-float16 training. The wrapped optimizer
                 # must be built and applied as the active optimizer, especially under Keras 3.
                 from tensorflow.keras import mixed_precision as mixed_precision_module

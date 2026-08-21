@@ -14,11 +14,7 @@ from .io_tools import io
 
 
 def lex_sort_order_np(indices):
-    max_ind = int(np.max(indices)) + 1
-    if np.iinfo(indices.dtype).max < max_ind * (max_ind + 1):
-        indices = indices.astype(np.int64)
-    q = indices[:, 0] * max_ind + indices[:, 1]
-    return np.argsort(q)
+    return np.lexsort((indices[:, 1], indices[:, 0]))
 
 
 def lex_sort_indices_np(indices, *arrays):

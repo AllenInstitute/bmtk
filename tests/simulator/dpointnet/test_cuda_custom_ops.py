@@ -14,6 +14,7 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _csr_index_dtype,
 )
 from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
+    _fused_cuda_dtype_error,
     _validate_fused_cuda_option,
 )
 
@@ -98,10 +99,61 @@ def test_build_csr_connectivity_rejects_non_integer_metadata(
         build_csr_connectivity(indices, synapse_types, 1, 1, 1)
 
 
+@pytest.mark.parametrize(
+    ('indices', 'synapse_types', 'n_source_neurons', 'n_synapse_types'),
+    [
+        (
+            np.array([[0, np.iinfo(np.uint64).max]], dtype=np.uint64),
+            np.array([0]),
+            int(np.iinfo(np.uint64).max) + 1,
+            1,
+        ),
+        (
+            np.array([[0, 0]]),
+            np.array([np.iinfo(np.uint64).max], dtype=np.uint64),
+            1,
+            int(np.iinfo(np.uint64).max) + 1,
+        ),
+    ],
+)
+def test_build_csr_connectivity_rejects_metadata_outside_int64(
+        indices, synapse_types, n_source_neurons, n_synapse_types):
+    with pytest.raises(ValueError, match='int64 range'):
+        build_csr_connectivity(
+            indices,
+            synapse_types,
+            n_source_neurons,
+            1,
+            n_synapse_types,
+        )
+
+
+@pytest.mark.parametrize(
+    'value',
+    [
+        'auto',
+        np.str_('auto'),
+        b'auto',
+        np.bytes_('auto'),
+        np.array('auto'),
+        np.array(b'auto'),
+    ],
+)
+def test_fused_cuda_option_accepts_string_scalars(value):
+    assert _validate_fused_cuda_option(value) == 'auto'
+
+
 @pytest.mark.parametrize('value', [0, 1, np.bool_(False), np.bool_(True)])
 def test_fused_cuda_option_rejects_non_boolean_lookalikes(value):
     with pytest.raises(ValueError, match='use_fused_cuda'):
         _validate_fused_cuda_option(value)
+
+
+def test_fused_cuda_dtype_error_describes_unsupported_policy():
+    assert _fused_cuda_dtype_error(tf.float16, tf.float32) is None
+    message = _fused_cuda_dtype_error(tf.bfloat16, tf.float32)
+    assert 'compute_dtype=bfloat16' in message
+    assert 'variable_dtype=float32' in message
 
 
 def test_fused_availability_respects_visible_devices(monkeypatch):
@@ -295,6 +347,40 @@ def test_fused_currents_support_int64_connectivity():
         result.numpy(),
         _reference_currents(spikes, master_weights, basis).numpy(),
     )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason='Fused CUDA op is unavailable.')
+def test_fused_currents_support_empty_connectivity_and_gradients():
+    connectivity = build_csr_connectivity(
+        np.empty((0, 2), dtype=np.int64),
+        np.empty((0,), dtype=np.int64),
+        3,
+        2,
+        2,
+    )
+    master_weights = tf.Variable([], dtype=tf.float32)
+    csr_weights = reorder_csr_values(master_weights, connectivity)
+    basis = tf.constant([[1.0, 0.5], [0.25, 2.0]], dtype=tf.float32)
+    spikes = tf.Variable([[1.0, 0.0, 2.0]], dtype=tf.float32)
+
+    with tf.GradientTape() as tape:
+        currents = fused_spike_currents(
+            spikes,
+            master_weights,
+            csr_weights,
+            connectivity,
+            basis,
+            n_post=2,
+            compute_spike_gradient=True,
+        )
+        loss = tf.reduce_sum(currents)
+    spike_gradient, weight_gradient = tape.gradient(
+        loss, [spikes, master_weights]
+    )
+
+    np.testing.assert_array_equal(currents.numpy(), np.zeros((2, 2)))
+    np.testing.assert_array_equal(spike_gradient.numpy(), np.zeros((1, 3)))
+    assert weight_gradient.shape == (0,)
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason='Fused CUDA op is unavailable.')

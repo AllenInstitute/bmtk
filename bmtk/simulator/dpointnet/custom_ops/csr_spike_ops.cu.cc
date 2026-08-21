@@ -2,6 +2,7 @@
 
 #define EIGEN_USE_GPU
 
+#include <algorithm>
 #include <limits>
 
 #include "tensorflow/core/framework/op_kernel.h"
@@ -44,7 +45,8 @@ __global__ void CsrReorderKernel(
 inline int BlockCountFor(int64_t count, int threads, const GPUDevice& device) {
   const int64_t requested = (count + threads - 1) / threads;
   const int maximum = device.getNumGpuMultiProcessors() * 8;
-  return static_cast<int>(std::min<int64_t>(requested, maximum));
+  return static_cast<int>(
+      std::max<int64_t>(1, std::min<int64_t>(requested, maximum)));
 }
 
 template <typename T>

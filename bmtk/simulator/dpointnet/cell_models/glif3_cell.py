@@ -418,9 +418,32 @@ def straight_through_dampen(x, dampening):
 
 
 def _validate_fused_cuda_option(value):
-    if value is True or value is False or value == 'auto' and isinstance(value, str):
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        value = value.item()
+    if value is True or value is False:
         return value
+    if isinstance(value, (bytes, np.bytes_)):
+        try:
+            value = value.decode('utf-8')
+        except UnicodeDecodeError:
+            pass
+    if isinstance(value, (str, np.str_)) and value == 'auto':
+        return 'auto'
     raise ValueError('use_fused_cuda must be true, false, or "auto".')
+
+
+def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
+    compute_dtype = tf.as_dtype(compute_dtype)
+    variable_dtype = tf.as_dtype(variable_dtype)
+    if (compute_dtype in (tf.float16, tf.float32)
+            and variable_dtype == tf.float32):
+        return None
+    return (
+        'the fused operator requires float16 or float32 computation and '
+        'float32 variables; got '
+        f'compute_dtype={compute_dtype.name}, '
+        f'variable_dtype={variable_dtype.name}'
+    )
 
 
 
@@ -471,23 +494,24 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         self.__seq_idx = 0
         use_fused_cuda = _validate_fused_cuda_option(use_fused_cuda)
-        fused_dtype_supported = (
-            tf.as_dtype(self.compute_dtype) in (tf.float16, tf.float32)
-            and tf.as_dtype(self.variable_dtype) == tf.float32
+        fused_dtype_error = _fused_cuda_dtype_error(
+            self.compute_dtype, self.variable_dtype
         )
-        fused_available = fused_cuda_available() and fused_dtype_supported
+        fused_available = fused_cuda_available() and fused_dtype_error is None
         if use_fused_cuda is True and not fused_available:
+            unavailable_reason = fused_dtype_error or cuda_op_status()
             raise RuntimeError(
                 'use_fused_cuda=True but the fused DPointNet CUDA operator '
-                f'is unavailable: {cuda_op_status()}'
+                f'is unavailable: {unavailable_reason}'
             )
         self._use_fused_cuda = fused_available and (
             use_fused_cuda is True or use_fused_cuda == 'auto'
         )
         if use_fused_cuda == 'auto' and not self._use_fused_cuda:
+            unavailable_reason = fused_dtype_error or cuda_op_status()
             io.log_warning(
                 'DPointNet fused CUDA currents are unavailable; using the '
-                f'TensorFlow fallback. Status: {cuda_op_status()}'
+                f'TensorFlow fallback. Status: {unavailable_reason}'
             )
         elif self._use_fused_cuda:
             io.log_info(f'DPointNet fused CUDA currents enabled ({cuda_op_status()}).')
