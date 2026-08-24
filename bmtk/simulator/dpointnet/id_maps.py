@@ -101,3 +101,9 @@ class TFIDMap:
                 ret_df = pd.concat([ret_df, tmp_df])
 
         return ret_df.set_index('tf_ids')
+
+    def reset(self):
+        self._bmtk_populations = {}
+        self._recurrent_tf_indices = [0]
+        self._recurrent_populations = []
+        self._initialized = True

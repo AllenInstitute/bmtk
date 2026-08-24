@@ -8,6 +8,7 @@ Running Network Simulations with BMTK
 
     bionet
     pointnet
+    dpointnet_guide
     filternet
     popnet
 

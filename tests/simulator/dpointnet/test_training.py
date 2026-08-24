@@ -7,6 +7,13 @@ tf = pytest.importorskip("tensorflow")
 
 from bmtk.simulator.dpointnet import training
 from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+from bmtk.simulator.dpointnet.network_adaptor import lex_sort_order_np
+from bmtk.simulator.dpointnet.rnn_model import RNN
+from bmtk.simulator.dpointnet.optimizers import (
+    ExponentiatedAdam,
+    optimizer_supports_loss_scaling,
+    scale_loss_for_optimizer,
+)
 
 
 def test_refresh_weight_shadows_after_multiple_optimizer_steps():
@@ -87,3 +94,86 @@ def test_training_refreshes_weight_shadows_after_each_step(monkeypatch):
     engine.train()
 
     assert cell.refresh_count == engine.steps_per_epoch
+
+
+def test_lex_sort_order_avoids_integer_overflow():
+    indices = np.array(
+        [
+            [np.iinfo(np.uint32).max, np.iinfo(np.uint32).max],
+            [np.iinfo(np.uint32).max - 1, np.iinfo(np.uint32).max],
+            [0, 0],
+        ],
+        dtype=np.uint32,
+    )
+
+    order = lex_sort_order_np(indices)
+
+    np.testing.assert_array_equal(order, [2, 1, 0])
+
+
+def test_rnn_wraps_float16_optimizer_with_loss_scaling():
+    class FakeTrainingEngine:
+        def __init__(self):
+            self.optimizer = tf.keras.optimizers.SGD()
+            self.learning_rule = SimpleNamespace(
+                build=lambda rnn: None,
+                uses_bptt=True,
+            )
+            self.trained = False
+
+        def set_optimizer(self, optimizer):
+            self.optimizer = optimizer
+
+        def train(self):
+            self.trained = True
+
+    rnn = object.__new__(RNN)
+    rnn.extractor_model = object()
+    rnn.strategy = tf.distribute.get_strategy()
+    rnn.dtype = tf.float16
+    rnn.model = SimpleNamespace(trainable_variables=[])
+    engine = FakeTrainingEngine()
+
+    rnn.train(engine)
+
+    assert isinstance(
+        engine.optimizer, tf.keras.mixed_precision.LossScaleOptimizer
+    )
+    assert engine.trained
+
+
+def test_base_optimizer_scale_loss_method_is_not_active_loss_scaling():
+    optimizer = ExponentiatedAdam(learning_rate=0.005)
+
+    assert not optimizer_supports_loss_scaling(optimizer)
+    np.testing.assert_allclose(
+        scale_loss_for_optimizer(optimizer, tf.constant(1.0)).numpy(),
+        1.0,
+    )
+
+
+def test_loss_scale_optimizer_is_active_loss_scaling():
+    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(
+        ExponentiatedAdam(learning_rate=0.005)
+    )
+
+    assert optimizer_supports_loss_scaling(optimizer)
+    assert scale_loss_for_optimizer(optimizer, tf.constant(1.0)).numpy() > 1.0
+
+
+def test_loss_scaling_preserves_small_gradient_through_float16_activation():
+    activation = tf.Variable(1.0, dtype=tf.float16)
+    with tf.GradientTape() as tape:
+        loss = tf.cast(activation, tf.float32) * tf.constant(1.0e-8)
+    unscaled_gradient = tape.gradient(loss, activation)
+
+    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(
+        ExponentiatedAdam(learning_rate=0.005)
+    )
+    with tf.GradientTape() as tape:
+        loss = tf.cast(activation, tf.float32) * tf.constant(1.0e-8)
+        scaled_loss = scale_loss_for_optimizer(optimizer, loss)
+    scaled_gradient = tape.gradient(scaled_loss, activation)
+
+    assert unscaled_gradient.numpy() == 0.0
+    assert scaled_gradient.numpy() > 0.0

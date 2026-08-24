@@ -24,10 +24,6 @@ BMTK: The Brain Modeling Toolkit
       <a href="https://signup.e2ma.net/signup/2010845/1976001/" style="float: right; font-size: x-large; font-weight: bold;">
          <button>Subscribe to our newsletter</button>
       </a>
-
-      <a href="https://neuroai-multimodal-workshop.github.io/" style="float: right; font-size: x-large; font-weight: bold;">
-         <button>Join the AAAI 2026 NeuroAI workshop</button>
-      </a>
    </div>
 
 About BMTK

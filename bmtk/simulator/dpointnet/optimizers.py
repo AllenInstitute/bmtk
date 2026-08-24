@@ -23,10 +23,16 @@ def build_learning_rate(lr_schedule, **lr_params):
 
 
 def optimizer_supports_loss_scaling(optimizer):
-    return (
-        hasattr(optimizer, 'scale_loss') or
-        (hasattr(optimizer, 'get_scaled_loss') and hasattr(optimizer, 'get_unscaled_gradients'))
+    if hasattr(optimizer, 'get_scaled_loss') and hasattr(optimizer, 'get_unscaled_gradients'):
+        return True
+    # Keras 3 exposes scale_loss() on every optimizer, even when
+    # loss_scale_factor is None and the method is a no-op.
+    loss_scale_optimizer = getattr(
+        tf.keras.mixed_precision, 'LossScaleOptimizer', ()
     )
+    if isinstance(optimizer, loss_scale_optimizer):
+        return True
+    return getattr(optimizer, 'loss_scale_factor', None) is not None
 
 
 def scale_loss_for_optimizer(optimizer, loss):

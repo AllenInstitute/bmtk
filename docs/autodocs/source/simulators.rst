@@ -9,6 +9,7 @@ Simulation Engines
 
    bionet
    pointnet
+   dpointnet_guide
    popnet
    filternet
 
