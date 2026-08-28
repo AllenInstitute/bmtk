@@ -340,7 +340,7 @@ Spiking Stimulus
 
   .. tab-item:: Python
 
-    .. code:: python
+    TBA
 
 
 

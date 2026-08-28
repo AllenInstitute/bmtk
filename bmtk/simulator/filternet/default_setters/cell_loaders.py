@@ -224,6 +224,8 @@ def default_cell_loader(node, template_name, dynamics_params):
             # Get spontaneous firing rate, either from the cell property of calculate from experimental data
             if 'spont_fr' in node:
                 spont_fr = node['spont_fr']
+            elif 'spont_fr' in dynamics_params:
+                spont_fr = dynamics_params['spont_fr']
             else:
                 exp_prs_dict = get_data_metrics_for_each_subclass(cell_type)
                 subclass_prs_dict = exp_prs_dict[tf_str]

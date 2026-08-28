@@ -1,5 +1,13 @@
+#########
 FilterNet
-=========
+#########
+
+.. toctree::
+    :hidden:
+    :maxdepth: 3
+
+    Visual Models <filternet_visual_models>
+    Auditory Models <filternet_auditory_models>
 
 .. figure:: _static/images/bmtk_architecture_filternet_highlight.jpg
    :scale: 40%
@@ -24,8 +32,127 @@ PointNet, or PopNet. The procedure is as follows:
 4. Use the spike trains generated in Step #2 to see how the network of neurons would respond to different stimuli.
 
 
+FilterNet Networks
+==================
+
+As with other simulator engines, ex :doc:`BioNet <bionet>` and :doc:`PointNet <pointnet>`, FilterNet engine will take a network of 
+individual nodes/cells to calculate firing-rates and/or spike-trains of indvidual cells based on incoming stimuli. 
+Unlike BioNet and PointNet that attempts to recreate the electrophysical properties of cells and synapses, FilterNet 
+uses special "*filters*" to convert sensory inputs like images, movies, and auditory files into cellular 
+activity.
+
+First step to use FilterNet is to create a (currently non-recurrently connected) network of cells to model the sensory 
+system you are trying to model. More specifically a collection of different cells and cell-types, spatially arranged
+to collect various stimuli from different parts of the receptive field. The prefered method is to use the 
+:doc:`BMTK Network Builder <builder>` to create one or more SONATA circuit file(s), then reference the file in the 
+SONATA simulation config. Alternatively you can use the BMTK Python API to add cells one-at-a-time:
+
+
+.. tab-set::
+
+   .. tab-item:: Importing SONATA Networks
+      
+      If you already have an existing SONATA network of *filter* nodes/cells, you can import the network into your 
+      simulation prior to calling ``run`` function by creating a SONATA JSON config that reference the circuit file(s)
+      like below:
+      
+      .. code:: json
+         :caption: config.simulation.json
+
+         {
+            "networks": {
+               "nodes": [
+               {
+                  "nodes_file": "$NETWORK_DIR/filter_nodes.h5",
+                  "node_types_file": "$NETWORK_DIR/filter_node_types.csv"
+               }
+               ]
+            }
+         }
+
+      Then you can run a simulation using the config file through the command line:
+
+      .. code:: bash
+
+         $ python -m bmtk.simulator.filternet config.simulation.json
+
+      Or through Python/Jupyter notebook
+
+      .. code:: python
+
+         from bmtk.simulator import filternet
+
+         config = filternet.Config.from_json('config.filternet_flash.json')
+         config.build_env()
+
+         net = filternet.FilterNetwork.from_config(config)
+         
+   
+   .. tab-item:: Creating Network with Python API
+
+      You may also use the BMTK Python API to add individual nodes/cells one-at-a-time using the ``add_node()`` and/or 
+      ``add_nodes()
+
+
+      .. code:: python
+
+         from bmtk.simulator import filternet 
+
+         net = filternet.FilterNetwork(...)
+         toff_ids = net.add_node(
+            node_id=0
+            model_template='lgnmodel:tOFF',
+            x=120.0,
+            y=60.0,
+            ...        # node-specific params
+         )
+         ton_ids = net.add_nodes(
+            N=100,
+            model_template='lgnmodel:tON',
+            x=np.random.uniform(0.0, 240.0, 100),
+            y=np.random.uniform(0.0, 120.0, 100),
+            dynamic_params='./components/models/tON_TF8.json'
+         )
+
+
+Cell Models and Attributes
+--------------------------
+
+When building your network it is important to specify the type of model (using the ``model_type`` and 
+``model_template`` attributes), which defines the general behavior of a cell for a given type of stimulus. Plus 
+different model-types have different parameters that are required in order for the simulation to run correctly.
+
+
+Currently FilterNet supports two general categories of sensory networks - :doc:`VISUAL <filternet_visual_models>`
+and :doc:`AUDITORY <filternet_auditory_models>`. The available 
+cell-models, required parameters, and how the cells maps to the receptive field will be different depending on the 
+input type. 
+
+
+.. list-table:: Attributes used by FilterNet
+   :header-rows: 1
+
+   * - 
+     - Visual
+     - Auditory
+   * - ``model_type``
+     - Must be set to either **virtual** or **filter**
+     - Must be set to either **virtual** or **filter**
+   * - ``model_template`` 
+     - **lgnmodel:<MODEL_TYPE>**
+     - **audmodel:<MODEL_TYPE>**
+   * - ``x``
+     - Map to the row along the movie file
+     - NA
+   * - ``y``
+     - Maps to the column along the movie file
+     - Distance along cochlear ridge
+   * - **Dynamics Parameters**
+     - :doc:`SEE HERE <filternet_visual_models>`
+     - :doc:`SEE HERE <filternet_auditory_models>` 
+
 Inputs
-------
+======
 Currently, FilterNet allows for a number of different types of custom and pre-defined types of stimuli. Changing the
 type of stimuli requires updating the inputs section in the *simulation_config.json* file.
 
@@ -145,7 +272,7 @@ Creates a spreading black field originating from the center.
 
 
 Optimization Techniques
-------------------------
+=======================
 The time required to generate spikes will depend on the number of cells in the network, the stimulus type, complexity of the cell-models; among
 other factors. The full simulation time can take a few seconds to a few hours. The following options may sometimes be utilized in order to 
 significantly speed up the process.
