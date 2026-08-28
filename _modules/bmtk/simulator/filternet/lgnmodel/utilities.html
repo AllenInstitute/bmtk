@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -419,11 +419,11 @@
 <div class="viewcode-block" id="get_vanhateren">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_vanhateren">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_vanhateren</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">src_dir</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">arr</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">'H'</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
     <span class="n">arr</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1536</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'uint16'</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1536</span><span class="p">)</span></div>
 
 
 
@@ -440,7 +440,7 @@
 <div class="viewcode-block" id="get_rotation_matrix">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_rotation_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_rotation_matrix</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Angle in degrees&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Angle in degrees"""</span>
     <span class="n">shift_y</span><span class="p">,</span> <span class="n">shift_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
     <span class="n">tf_rotate</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">rotation</span><span class="p">))</span>
     <span class="n">tf_shift</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">translation</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">shift_x</span><span class="p">,</span> <span class="o">-</span><span class="n">shift_y</span><span class="p">])</span>

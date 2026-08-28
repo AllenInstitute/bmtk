@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -457,7 +457,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">n_thread</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># simulation time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>  <span class="c1"># time step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="s1">&#39;./output/&#39;</span>  <span class="c1"># directory where log and temporary output will be stored</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="s1">'./output/'</span>  <span class="c1"># directory where log and temporary output will be stored</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span> <span class="o">=</span> <span class="n">overwrite</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -483,12 +483,12 @@
 
         <span class="c1"># TODO: Make this a parameter in the config file</span>
         <span class="c1"># TODO: Allow different inputs to have different options</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sg_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;precise_times&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sg_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'precise_times'</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
         <span class="c1"># Reset the NEST kernel for a new simualtion</span>
-        <span class="c1"># TODO: move this into it&#39;s own function and make sure it is called before network is built</span>
+        <span class="c1"># TODO: move this into it's own function and make sure it is called before network is built</span>
         <span class="n">nest</span><span class="o">.</span><span class="n">ResetKernel</span><span class="p">()</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">SetKernelStatus</span><span class="p">({</span><span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="s2">&quot;overwrite_files&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span><span class="p">,</span> <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="n">print_time</span><span class="p">,</span> <span class="s2">&quot;local_num_threads&quot;</span><span class="p">:</span> <span class="n">n_thread</span><span class="p">})</span>
+        <span class="n">nest</span><span class="o">.</span><span class="n">SetKernelStatus</span><span class="p">({</span><span class="s2">"resolution"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="s2">"overwrite_files"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span><span class="p">,</span> <span class="s2">"print_time"</span><span class="p">:</span> <span class="n">print_time</span><span class="p">,</span> <span class="s2">"local_num_threads"</span><span class="p">:</span> <span class="n">n_thread</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_nest_modules</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -505,12 +505,12 @@
 
 <div class="viewcode-block" id="PointSimulator.simulation_time">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointsimulator.PointSimulator.simulation_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">simulation_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulation_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">'ms'</span><span class="p">):</span>
         <span class="n">units_lc</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">time_ms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span>
-        <span class="k">if</span> <span class="n">units_lc</span> <span class="o">==</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">units_lc</span> <span class="o">==</span> <span class="s1">'ms'</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time_ms</span>
-        <span class="k">elif</span> <span class="n">units_lc</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">units_lc</span> <span class="o">==</span> <span class="s1">'s'</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">time_ms</span><span class="o">/</span><span class="mf">1000.0</span></div>
 
 
@@ -543,10 +543,10 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_block_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compute necessary number of block trials, the length of block simulation and the simulation length of the last</span>
 <span class="sd">        block run, if necessary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span><span class="p">:</span>
             <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
             <span class="n">fn</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">/</span> <span class="n">data_res</span>
@@ -562,24 +562,24 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lib_path</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
             <span class="n">lib_path</span> <span class="o">=</span> <span class="n">lib_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
         <span class="n">system</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span>
-        <span class="n">env_var</span> <span class="o">=</span> <span class="s2">&quot;LD_LIBRARY_PATH&quot;</span> <span class="k">if</span> <span class="n">system</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Linux&#39;</span><span class="p">,</span> <span class="s1">&#39;Windows&#39;</span><span class="p">,</span> <span class="s1">&#39;Java&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;DYLD_LIBRARY_PATH&#39;</span>
-        <span class="n">env_val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_var</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">env_var</span> <span class="o">=</span> <span class="s2">"LD_LIBRARY_PATH"</span> <span class="k">if</span> <span class="n">system</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'Linux'</span><span class="p">,</span> <span class="s1">'Windows'</span><span class="p">,</span> <span class="s1">'Java'</span><span class="p">]</span> <span class="k">else</span> <span class="s1">'DYLD_LIBRARY_PATH'</span>
+        <span class="n">env_val</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_var</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">lib_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env_val</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">env_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pathsep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">lib_path</span><span class="p">,</span> <span class="n">env_val</span><span class="p">])</span>
             
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_nest_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># If there is a &quot;nest_modules&quot; entry in the configuration &quot;components&quot; then go through and add them to</span>
+        <span class="c1"># If there is a "nest_modules" entry in the configuration "components" then go through and add them to</span>
         <span class="c1"># the network _nest_modules list. They will be processed the same as calling network.add_nest_module().</span>
-        <span class="n">components_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nest_modules&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">components_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'nest_modules'</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">components_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">add_nest_module</span><span class="p">(</span><span class="n">components_path</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">components_path</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">cpath</span> <span class="ow">in</span> <span class="n">components_path</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">add_nest_module</span><span class="p">(</span><span class="n">cpath</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unable to load components/nest_modules value.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unable to load components/nest_modules value.'</span><span class="p">)</span>
 
         <span class="c1"># Go through all added nest modules and try to call nest.Install() for them. </span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">_nest_modules</span><span class="p">:</span>
@@ -587,8 +587,8 @@
                 <span class="c1"># If module is a directory then add path to LD_LIBRARY_PATH then try to load all the .so/.a library binaries in directory</span>
                 <span class="n">lib_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">module</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_library_path</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">)</span>
-                <span class="n">so_search</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;*.so&#39;</span>
-                <span class="n">a_search</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;*.a&#39;</span>
+                <span class="n">so_search</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">'*.so'</span>
+                <span class="n">a_search</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lib_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s1">'*.a'</span>
                 
                 <span class="k">for</span> <span class="n">lib_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">so_search</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span> <span class="o">+</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">a_search</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()):</span> <span class="c1"># lib_path.parent.resolve()</span>
                     <span class="n">module_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">lib_file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
@@ -603,15 +603,15 @@
                 <span class="n">nest</span><span class="o">.</span><span class="n">Install</span><span class="p">(</span><span class="n">lib_filename</span><span class="p">)</span>               
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># If user just tries nest.Install(&#39;mymodule&#39;)</span>
+                <span class="c1"># If user just tries nest.Install('mymodule')</span>
                 <span class="n">nest</span><span class="o">.</span><span class="n">Install</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
 
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''</span>
 <span class="sd">    def set_spikes_recordings(self):</span>
 <span class="sd">        # TODO: Pass in output-dir and file name to save to</span>
 <span class="sd">        # TODO: Allow for sorting - overwrite bionet module</span>
-<span class="sd">        self._spike_detector = nest.Create(&quot;spike_detector&quot;, 1, {&#39;label&#39;: os.path.join(self.output_dir, &#39;tmp_spike_times&#39;),</span>
-<span class="sd">                                             &#39;withtime&#39;: True, &#39;withgid&#39;: True, &#39;to_file&#39;: True})</span>
+<span class="sd">        self._spike_detector = nest.Create("spike_detector", 1, {'label': os.path.join(self.output_dir, 'tmp_spike_times'),</span>
+<span class="sd">                                             'withtime': True, 'withgid': True, 'to_file': True})</span>
 <span class="sd">        # print self._spike_detector</span>
 
 <span class="sd">        for pop_name, pop in self._graph._nestid2nodeid_map.items():</span>
@@ -619,7 +619,7 @@
 
 <span class="sd">            nest.Connect(pop.keys(), self._spike_detector)</span>
 <span class="sd">        # exit()</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    '''</span>
             
 <div class="viewcode-block" id="PointSimulator.run">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointsimulator.PointSimulator.run">[docs]</a>
@@ -637,7 +637,7 @@
 
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Simulation Started&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Simulation Started'</span><span class="p">)</span>
             <span class="n">n</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_trial</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -648,11 +648,11 @@
                 <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">tstop</span><span class="p">)</span>
 
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Simulation finished, finalizing results.&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Simulation finished, finalizing results.'</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
                 <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Done.'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PointSimulator.add_mod">
@@ -671,20 +671,20 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">configure</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not convert </span><span class="si">{}</span><span class="s1"> (type &quot;</span><span class="si">{}</span><span class="s1">&quot;) to json.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">configure</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Could not convert </span><span class="si">{}</span><span class="s1"> (type "</span><span class="si">{}</span><span class="s1">") to json.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">configure</span><span class="p">)))</span>
 
-        <span class="k">if</span> <span class="s1">&#39;run&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Json file is missing &quot;run&quot; entry. Unable to build PointNetwork.&#39;</span><span class="p">)</span>
-        <span class="n">run_dict</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'run'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Json file is missing "run" entry. Unable to build PointNetwork.'</span><span class="p">)</span>
+        <span class="n">run_dict</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'run'</span><span class="p">]</span>
         
         <span class="c1"># override the n_thread setting from the config file</span>
-        <span class="k">if</span> <span class="s1">&#39;n_thread&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">n_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_thread</span> <span class="o">!=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;n_thread&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s1">'n_thread'</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">n_thread</span> <span class="o">!=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'n_thread'</span><span class="p">]:</span>
                 <span class="c1"># give a warinig that the user is overriding the argument.</span>
                 <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Overriding n_thread setting in an argument (</span><span class="si">{</span><span class="n">n_thread</span><span class="si">}</span><span class="s1">) with the value in config file (</span><span class="si">{</span><span class="n">run_dict</span><span class="p">[</span><span class="s2">&quot;n_thread&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">).&#39;</span>
+                    <span class="sa">f</span><span class="s1">'Overriding n_thread setting in an argument (</span><span class="si">{</span><span class="n">n_thread</span><span class="si">}</span><span class="s1">) with the value in config file (</span><span class="si">{</span><span class="n">run_dict</span><span class="p">[</span><span class="s2">"n_thread"</span><span class="p">]</span><span class="si">}</span><span class="s1">).'</span>
                 <span class="p">)</span>
-            <span class="n">n_thread</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;n_thread&#39;</span><span class="p">]</span>
+            <span class="n">n_thread</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'n_thread'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">n_thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">n_thread</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># default to 1 thread if not set in config or argument</span>
@@ -692,43 +692,43 @@
 
         <span class="c1"># Get network parameters</span>
         <span class="c1"># step time (dt) is set in the kernel and should be passed</span>
-        <span class="n">overwrite</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;overwrite_output_dir&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;overwrite_output_dir&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="k">else</span> <span class="kc">True</span>
-        <span class="n">print_time</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;print_time&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;print_time&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="k">else</span> <span class="kc">False</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span>  <span class="c1"># TODO: make sure dt exists</span>
+        <span class="n">overwrite</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'overwrite_output_dir'</span><span class="p">]</span> <span class="k">if</span> <span class="s1">'overwrite_output_dir'</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="n">print_time</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'print_time'</span><span class="p">]</span> <span class="k">if</span> <span class="s1">'print_time'</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'dt'</span><span class="p">]</span>  <span class="c1"># TODO: make sure dt exists</span>
         <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">n_thread</span><span class="o">=</span><span class="n">n_thread</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;output_dir&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'output_dir'</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">'output'</span><span class="p">]:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'output'</span><span class="p">][</span><span class="s1">'output_dir'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;block_run&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="ow">and</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;block_run&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="s1">&#39;block_size&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;block_run&quot; is set to True but &quot;block_size&quot; not found.&#39;</span><span class="p">)</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;block_size&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'block_run'</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="ow">and</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'block_run'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s1">'block_size'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'"block_run" is set to True but "block_size" not found.'</span><span class="p">)</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'block_size'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;duration&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s1">&#39;tstop&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'duration'</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'duration'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="s1">'tstop'</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'tstop'</span><span class="p">]</span>
         
-        <span class="k">if</span> <span class="s1">&#39;n_runs&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">tstop</span><span class="p">]</span> <span class="o">*</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;n_runs&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'n_runs'</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="p">[</span><span class="n">network</span><span class="o">.</span><span class="n">tstop</span><span class="p">]</span> <span class="o">*</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">'n_runs'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;precise_times&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">precise_times</span><span class="o">=</span><span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;precise_times&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">'precise_times'</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">precise_times</span><span class="o">=</span><span class="n">run_dict</span><span class="p">[</span><span class="s1">'precise_times'</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">run_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;allow_offgrid_spikes&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">run_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'allow_offgrid_spikes'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">allow_offgrid_spikes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Create the output-directory, or delete existing files if it already exists</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Setting up output directory&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">])</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Setting up output directory'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">'output'</span><span class="p">][</span><span class="s1">'output_dir'</span><span class="p">]):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">'output'</span><span class="p">][</span><span class="s1">'output_dir'</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">gfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">gfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">'output'</span><span class="p">][</span><span class="s1">'output_dir'</span><span class="p">],</span> <span class="s1">'*.gdf'</span><span class="p">)):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gfile</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">sim_input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;spikes&#39;</span> <span class="ow">and</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nwb&#39;</span><span class="p">,</span> <span class="s1">&#39;csv&#39;</span><span class="p">,</span> <span class="s1">&#39;sonata&#39;</span><span class="p">,</span> <span class="s1">&#39;h5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="s1">&#39;function&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">'spikes'</span> <span class="ow">and</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'nwb'</span><span class="p">,</span> <span class="s1">'csv'</span><span class="p">,</span> <span class="s1">'sonata'</span><span class="p">,</span> <span class="s1">'h5'</span><span class="p">,</span> <span class="s1">'hdf5'</span><span class="p">,</span> <span class="s1">'function'</span><span class="p">]:</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">SpikesInputsMod</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">input_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">,</span>
@@ -737,22 +737,22 @@
                     <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span>
                 <span class="p">))</span>
 
-            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;IClamp&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">'IClamp'</span><span class="p">:</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">IClampMod</span><span class="p">(</span><span class="n">input_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
 
-            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;ecephys_probe&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">'ecephys_probe'</span><span class="p">:</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">PointECEphysUnitsModule</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
             
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unknown input type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">))</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">'Unknown input type </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">))</span>
 
         <span class="n">sim_reports</span> <span class="o">=</span> <span class="n">reports</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">sim_reports</span><span class="p">:</span>           
-            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;spikes_report&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">'spikes_report'</span><span class="p">:</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">SpikesMod</span><span class="p">(</span><span class="o">**</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">reports</span><span class="o">.</span><span class="n">MembraneReport</span><span class="p">):</span>
-                <span class="c1"># For convience and for compliance with SONATA format. &quot;membrane_report&quot; and &quot;multimeter_report is the</span>
+                <span class="c1"># For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the</span>
                 <span class="c1"># same in pointnet.</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">MultimeterMod</span><span class="p">(</span><span class="o">**</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
             
@@ -760,18 +760,18 @@
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">WeightRecorder</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">report_name</span><span class="p">,</span> <span class="o">**</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Unknown report type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">module</span><span class="p">))</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Unknown report type </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">module</span><span class="p">))</span>
 
             <span class="n">mod</span><span class="o">.</span><span class="n">preload</span><span class="p">(</span><span class="n">sim</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
             <span class="n">network</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
 
-        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building cells.&#39;</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Building cells.'</span><span class="p">)</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">build_nodes</span><span class="p">()</span>
 
-        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building recurrent connections&#39;</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Building recurrent connections'</span><span class="p">)</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">build_recurrent_edges</span><span class="p">()</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Network created.&#39;</span><span class="p">)</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Network created.'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">network</span></div>
 </div>
 

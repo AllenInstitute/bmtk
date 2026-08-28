@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -417,7 +417,7 @@
 <div class="viewcode-block" id="NMLTree">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.NMLTree">[docs]</a>
 <span></span><span class="k">class</span><span class="w"> </span><span class="nc">NMLTree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">nml_ns</span> <span class="o">=</span> <span class="s1">&#39;{http://www.neuroml.org/schema/neuroml2}&#39;</span>
+    <span class="n">nml_ns</span> <span class="o">=</span> <span class="s1">'{http://www.neuroml.org/schema/neuroml2}'</span>
     <span class="n">element_registry</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_path</span><span class="p">):</span>
@@ -425,8 +425,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_nml_path</span> <span class="o">=</span> <span class="n">nml_path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nml_root</span> <span class="o">=</span> <span class="n">ElementTree</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">nml_path</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
         <span class="c1">#self._relevant_elements = {</span>
-        <span class="c1">#    NMLTree.ns_name(&#39;channelDensity&#39;): ChannelDensity,</span>
-        <span class="c1">#    NMLTree.ns_name(&#39;resistivity&#39;): Resistivity</span>
+        <span class="c1">#    NMLTree.ns_name('channelDensity'): ChannelDensity,</span>
+        <span class="c1">#    NMLTree.ns_name('resistivity'): Resistivity</span>
         <span class="c1">#}</span>
 
         <span class="c1"># For each section store a list of all the NML elements include</span>
@@ -436,10 +436,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_apic_props</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># For lookup by segmentGroup attribute, include common synonyms for diff sections</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_section_maps</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;soma&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soma_props</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soma_props</span><span class="p">,</span>
-            <span class="s1">&#39;axon&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_props</span><span class="p">,</span> <span class="s1">&#39;axonal&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_props</span><span class="p">,</span>
-            <span class="s1">&#39;dend&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span> <span class="s1">&#39;dendritic&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span>
-            <span class="s1">&#39;apic&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apic_props</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apic_props</span>
+            <span class="s1">'soma'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soma_props</span><span class="p">,</span> <span class="s1">'somatic'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_soma_props</span><span class="p">,</span>
+            <span class="s1">'axon'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_props</span><span class="p">,</span> <span class="s1">'axonal'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_props</span><span class="p">,</span>
+            <span class="s1">'dend'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span> <span class="s1">'dendritic'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dend_props</span><span class="p">,</span>
+            <span class="s1">'apic'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apic_props</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apic_props</span>
         <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_root</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nml_root</span><span class="p">)</span>
@@ -448,15 +448,15 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.NMLTree.ns_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ns_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">nml_ns</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'</span><span class="si">{}{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">nml_ns</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NMLTree.common_name">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.NMLTree.common_name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">common_name</span><span class="p">(</span><span class="n">elem</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;}&#39;</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'}'</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'}'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">elem</span></div>
 
@@ -465,13 +465,13 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.NMLTree.parse_value">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_value</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-        <span class="n">val_list</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">val_list</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">val_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">val_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;NONE&#39;</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">'NONE'</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot parse value </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Cannot parse value </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="NMLTree.register_module">
@@ -491,16 +491,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_element</span><span class="p">):</span>
         <span class="n">seggroup_str</span> <span class="o">=</span> <span class="n">nml_element</span><span class="o">.</span><span class="n">section</span>
         <span class="k">if</span> <span class="n">seggroup_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Error: tag </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1"> is missing segmentGroup&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nml_element</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nml_path</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">seggroup_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="s1">&#39;axon&#39;</span><span class="p">,</span> <span class="s1">&#39;apic&#39;</span><span class="p">,</span> <span class="s1">&#39;dend&#39;</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Error: tag </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1"> is missing segmentGroup'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nml_element</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nml_path</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">seggroup_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'all'</span><span class="p">:</span>
+            <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'soma'</span><span class="p">,</span> <span class="s1">'axon'</span><span class="p">,</span> <span class="s1">'apic'</span><span class="p">,</span> <span class="s1">'dend'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">seggroup_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
 
         <span class="k">for</span> <span class="n">sec_name</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
             <span class="n">param_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_maps</span><span class="p">[</span><span class="n">sec_name</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">sec_name</span> <span class="ow">in</span> <span class="n">param_table</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Error: </span><span class="si">{}</span><span class="s1"> already has a </span><span class="si">{}</span><span class="s1"> element in </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nml_element</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sec_name</span><span class="p">,</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Error: </span><span class="si">{}</span><span class="s1"> already has a </span><span class="si">{}</span><span class="s1"> element in </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nml_element</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">sec_name</span><span class="p">,</span>
                                                                                    <span class="bp">self</span><span class="o">.</span><span class="n">_nml_path</span><span class="p">))</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_section_maps</span><span class="p">[</span><span class="n">sec_name</span><span class="p">][</span><span class="n">nml_element</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nml_element</span>
@@ -518,8 +518,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span> <span class="o">=</span> <span class="n">nml_element</span><span class="o">.</span><span class="n">attrib</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">common_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_elem</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;segmentGroup&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'segmentGroup'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NMLElement.element_tag">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.NMLElement.element_tag">[docs]</a>
@@ -536,17 +536,17 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ChannelDensity</span><span class="p">(</span><span class="n">NMLElement</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_element</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ChannelDensity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nml_element</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;ion&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ion_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;ionChannel&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'ion'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'ionChannel'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;erev&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">:</span>
-            <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">'erev'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">:</span>
+            <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">erev</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">erev_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">erev</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;condDensity&#39;</span><span class="p">])</span>
+        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'condDensity'</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cond_density</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cond_density_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -554,7 +554,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.ChannelDensity.element_tag">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_tag</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;channelDensity&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'channelDensity'</span></div>
 </div>
 
 
@@ -568,7 +568,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.ChannelDensityNernst.element_tag">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_tag</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;channelDensityNernst&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'channelDensityNernst'</span></div>
 </div>
 
 
@@ -579,7 +579,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Resistivity</span><span class="p">(</span><span class="n">NMLElement</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_element</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Resistivity</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nml_element</span><span class="p">)</span>
-        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'value'</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -587,7 +587,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.Resistivity.element_tag">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_tag</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;resistivity&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'resistivity'</span></div>
 </div>
 
 
@@ -598,7 +598,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SpecificCapacitance</span><span class="p">(</span><span class="n">NMLElement</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_element</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SpecificCapacitance</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nml_element</span><span class="p">)</span>
-        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'value'</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -606,7 +606,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.SpecificCapacitance.element_tag">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_tag</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;specificCapacitance&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'specificCapacitance'</span></div>
 </div>
 
 
@@ -617,12 +617,12 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">ConcentrationModel</span><span class="p">(</span><span class="n">NMLElement</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nml_element</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ConcentrationModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nml_element</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
-        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;decay&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span>
+        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'decay'</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decay</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decay_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">&#39;gamma&#39;</span><span class="p">])</span>
+        <span class="n">v_list</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="o">.</span><span class="n">parse_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attribs</span><span class="p">[</span><span class="s1">'gamma'</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamma_units</span> <span class="o">=</span> <span class="n">v_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
@@ -630,7 +630,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.nml_reader.ConcentrationModel.element_tag">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">element_tag</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;concentrationModel&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'concentrationModel'</span></div>
 </div>
 
 </pre></div>

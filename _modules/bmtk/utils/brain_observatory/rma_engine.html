@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -448,26 +448,26 @@
 <div class="viewcode-block" id="HttpEngine.stream">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_engine.HttpEngine.stream">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Makes an http request and returns an iterator over the response.</span>
+<span class="w">        </span><span class="sd">""" Makes an http request and returns an iterator over the response.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        route :</span>
-<span class="sd">            the http route (under this object&#39;s host) to request against.</span>
+<span class="sd">            the http route (under this object's host) to request against.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_url</span><span class="p">(</span><span class="n">route</span><span class="p">)</span>
         
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">response_b</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="s2">&quot;Content-length&quot;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
-            <span class="n">response_b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-length&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">"Content-length"</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+            <span class="n">response_b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">"Content-length"</span><span class="p">])</span>
 
-        <span class="n">size_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response_b</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">3.3f</span><span class="si">}</span><span class="s2">MiB&quot;</span> <span class="k">if</span> <span class="n">response_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;potentially large&quot;</span>
-        <span class="c1"># logging.warning(f&quot;downloading a {size_message} file from {url}&quot;)</span>
-        <span class="n">progress</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">response_b</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Downloading&quot;</span><span class="p">)</span>
+        <span class="n">size_message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">response_b</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="si">:</span><span class="s2">3.3f</span><span class="si">}</span><span class="s2">MiB"</span> <span class="k">if</span> <span class="n">response_b</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"potentially large"</span>
+        <span class="c1"># logging.warning(f"downloading a {size_message} file from {url}")</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s2">"B"</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">response_b</span><span class="p">,</span> <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="n">desc</span><span class="o">=</span><span class="s2">"Downloading"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunksize</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span> <span class="c1"># filter out keep-alive new chunks</span>
@@ -476,11 +476,11 @@
 
             <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
             <span class="k">if</span> <span class="n">elapsed</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Download took </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s2"> seconds, but timeout was set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+                <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">Timeout</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Download took </span><span class="si">{</span><span class="n">elapsed</span><span class="si">}</span><span class="s2"> seconds, but timeout was set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">route</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">route</span><span class="si">}</span><span class="s2">"</span></div>
 
 
 
@@ -492,8 +492,8 @@
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">scheme</span><span class="p">,</span> 
         <span class="n">host</span><span class="p">,</span> 
-        <span class="n">rma_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;api/v2/data&quot;</span><span class="p">,</span> 
-        <span class="n">rma_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span> 
+        <span class="n">rma_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"api/v2/data"</span><span class="p">,</span> 
+        <span class="n">rma_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"json"</span><span class="p">,</span> 
         <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span> 
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -504,29 +504,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">format_query_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;query.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_format</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"query.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_format</span><span class="si">}</span><span class="s2">"</span>
 
 <div class="viewcode-block" id="RmaEngine.add_page_params">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_engine.RmaEngine.add_page_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_page_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">,rma::options[start_row$eq</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">][num_rows$eq</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">][order$eq&#39;id&#39;]&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s2">,rma::options[start_row$eq</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">][num_rows$eq</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">][order$eq'id']"</span></div>
 
 
 
 <div class="viewcode-block" id="RmaEngine.get_rma">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_engine.RmaEngine.get_rma">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_rma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Makes a paging rma query</span>
+<span class="w">        </span><span class="sd">""" Makes a paging rma query</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        query : </span>
 <span class="sd">            The RMA query parameters</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_prefix</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">format_query_string</span><span class="si">}</span><span class="s2">?</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="sd">        """</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_prefix</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">format_query_string</span><span class="si">}</span><span class="s2">?</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">"</span>
         <span class="c1"># logging.debug(url)</span>
 
         <span class="n">start_row</span> <span class="o">=</span> <span class="mi">0</span>
@@ -536,15 +536,15 @@
         <span class="k">while</span> <span class="n">total_rows</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">start_row</span> <span class="o">&lt;</span> <span class="n">total_rows</span><span class="p">:</span>
             <span class="n">current_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_page_params</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">start_row</span><span class="p">)</span>
             <span class="n">response_json</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current_url</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;msg&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">"success"</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">])</span>
 
-            <span class="n">start_row</span> <span class="o">+=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;num_rows&quot;</span><span class="p">]</span>
+            <span class="n">start_row</span> <span class="o">+=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">"num_rows"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">total_rows</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">total_rows</span> <span class="o">=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;total_rows&quot;</span><span class="p">]</span>
+                <span class="n">total_rows</span> <span class="o">=</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">"total_rows"</span><span class="p">]</span>
 
-            <span class="c1"># logging.debug(f&quot;downloaded {start_row} of {total_rows} records ({time.time() - start_time:.3f} seconds)&quot;)</span>
-            <span class="k">yield</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;msg&quot;</span><span class="p">]</span></div>
+            <span class="c1"># logging.debug(f"downloaded {start_row} of {total_rows} records ({time.time() - start_time:.3f} seconds)")</span>
+            <span class="k">yield</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">"msg"</span><span class="p">]</span></div>
 
 
 

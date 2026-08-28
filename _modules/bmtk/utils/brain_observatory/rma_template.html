@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -426,10 +426,10 @@
 <div class="viewcode-block" id="Api">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Api</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="c1"># _log = logging.getLogger(&#39;allensdk.api.api&#39;)</span>
-    <span class="c1"># _file_download_log = logging.getLogger(&#39;allensdk.api.api.retrieve_file_over_http&#39;)</span>
-    <span class="n">default_api_url</span> <span class="o">=</span> <span class="s1">&#39;http://api.brain-map.org&#39;</span>
-    <span class="n">download_url</span> <span class="o">=</span> <span class="s1">&#39;http://download.alleninstitute.org&#39;</span>
+    <span class="c1"># _log = logging.getLogger('allensdk.api.api')</span>
+    <span class="c1"># _file_download_log = logging.getLogger('allensdk.api.api.retrieve_file_over_http')</span>
+    <span class="n">default_api_url</span> <span class="o">=</span> <span class="s1">'http://api.brain-map.org'</span>
+    <span class="n">download_url</span> <span class="o">=</span> <span class="s1">'http://download.alleninstitute.org'</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_base_url_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">api_base_url_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -441,79 +441,79 @@
 <div class="viewcode-block" id="Api.set_api_urls">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.set_api_urls">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_api_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_base_url_string</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Set the internal RMA and well known file download endpoint urls</span>
+<span class="w">        </span><span class="sd">'''Set the internal RMA and well known file download endpoint urls</span>
 <span class="sd">        based on a api server endpoint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        api_base_url_string : string</span>
 <span class="sd">            url of the api to point to</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_url</span> <span class="o">=</span> <span class="n">api_base_url_string</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Downloading+a+WellKnownFile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">well_known_file_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/well_known_file_download&#39;</span>
+            <span class="s1">'/api/v2/well_known_file_download'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Downloading+3-D+Expression+Grid+Data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">grid_data_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/grid_data&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_data_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/grid_data'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Downloading+and+Displaying+SVG</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">svg_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/svg&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">svg_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/svg_download&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svg_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/svg'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">svg_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/svg_download'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Downloading+an+Ontology%27s+Structure+Graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structure_graph_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/structure_graph_download&#39;</span>
+            <span class="s1">'/api/v2/structure_graph_download'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Searching+a+Specimen+or+Structure+Tree</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tree_search_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/tree_search&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tree_search_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/tree_search'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Searching+Annotated+SectionDataSets</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotated_section_data_sets_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/annotated_section_data_sets&#39;</span>
+            <span class="s1">'/api/v2/annotated_section_data_sets'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compound_annotated_section_data_sets_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/compound_annotated_section_data_sets&#39;</span>
+            <span class="s1">'/api/v2/compound_annotated_section_data_sets'</span>
 
         <span class="c1"># http://help.brain-map.org/display/api/Image-to-Image+Synchronization#Image-to-ImageSynchronization-ImagetoImage</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_atlas_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/image_to_atlas&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/image_to_image&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_image_2d_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/image_to_image_2d&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reference_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/reference_to_image&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_reference_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/image_to_reference&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">structure_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/structure_to_image&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_atlas_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/image_to_atlas'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/image_to_image'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_image_2d_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/image_to_image_2d'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/reference_to_image'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_to_reference_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/image_to_reference'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure_to_image_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/structure_to_image'</span>
 
         <span class="c1"># http://help.brain-map.org/display/mouseconnectivity/API</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">section_image_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/section_image_download&#39;</span>
+            <span class="s1">'/api/v2/section_image_download'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atlas_image_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/atlas_image_download&#39;</span>
+            <span class="s1">'/api/v2/atlas_image_download'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection_image_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/projection_image_download&#39;</span>
+            <span class="s1">'/api/v2/projection_image_download'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image_download_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> \
-            <span class="s1">&#39;/api/v2/image_download&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">informatics_archive_endpoint</span> <span class="o">=</span> <span class="n">Api</span><span class="o">.</span><span class="n">download_url</span> <span class="o">+</span> <span class="s1">&#39;/informatics-archive&#39;</span>
+            <span class="s1">'/api/v2/image_download'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">informatics_archive_endpoint</span> <span class="o">=</span> <span class="n">Api</span><span class="o">.</span><span class="n">download_url</span> <span class="o">+</span> <span class="s1">'/informatics-archive'</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">&#39;/api/v2/data&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span> <span class="o">=</span> <span class="n">api_base_url_string</span> <span class="o">+</span> <span class="s1">'/api/v2/data'</span></div>
 
 
 <div class="viewcode-block" id="Api.set_default_working_directory">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.set_default_working_directory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_default_working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Set the working directory where files will be saved.</span>
+<span class="w">        </span><span class="sd">'''Set the working directory where files will be saved.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        working_directory : string</span>
 <span class="sd">             the absolute path string of the working directory.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_working_directory</span> <span class="o">=</span> <span class="n">working_directory</span></div>
 
 
 <div class="viewcode-block" id="Api.read_data">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.read_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_json</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Return the message data from the parsed query.</span>
+<span class="w">        </span><span class="sd">'''Return the message data from the parsed query.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -524,34 +524,34 @@
 <span class="sd">        -----</span>
 <span class="sd">        See `API Response Formats - Response Envelope &lt;http://help.brain-map.org/display/api/API+Response+Formats#APIResponseFormats-ResponseEnvelope&gt;`_</span>
 <span class="sd">        for additional documentation.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">parsed_json</span><span class="p">[</span><span class="s1">&#39;msg&#39;</span><span class="p">]</span></div>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="n">parsed_json</span><span class="p">[</span><span class="s1">'msg'</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Api.json_msg_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.json_msg_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">json_msg_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">dataframe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39; Common case where the url is fully constructed</span>
-<span class="sd">            and the response data is stored in the &#39;msg&#39; field.</span>
+<span class="w">        </span><span class="sd">''' Common case where the url is fully constructed</span>
+<span class="sd">            and the response data is stored in the 'msg' field.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        url : string</span>
 <span class="sd">            Where to get the data in json form</span>
 <span class="sd">        dataframe : boolean</span>
-<span class="sd">            True converts to a pandas dataframe, False (default) doesn&#39;t</span>
+<span class="sd">            True converts to a pandas dataframe, False (default) doesn't</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict or DataFrame</span>
 <span class="sd">            returned data; type depends on dataframe option</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_query</span><span class="p">(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">k</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">dataframe</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;dataframe argument is deprecated&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"dataframe argument is deprecated"</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">data</span></div>
@@ -560,7 +560,7 @@
 <div class="viewcode-block" id="Api.do_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.do_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">do_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_builder_fn</span><span class="p">,</span> <span class="n">json_traversal_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Bundle an query url construction function</span>
+<span class="w">        </span><span class="sd">'''Bundle an query url construction function</span>
 <span class="sd">        with a corresponding response json traversal function.</span>
 
 <span class="sd">        Parameters</span>
@@ -585,10 +585,10 @@
 <span class="sd">        --------</span>
 <span class="sd">        `A simple Api subclass example</span>
 <span class="sd">        &lt;data_api_client.html#creating-new-api-query-classes&gt;`_.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">api_url</span> <span class="o">=</span> <span class="n">url_builder_fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="n">post</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'post'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
         <span class="n">json_parsed_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_parsed_json_over_http</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">post</span><span class="p">)</span>
 
@@ -598,7 +598,7 @@
 <div class="viewcode-block" id="Api.do_rma_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.do_rma_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">do_rma_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rma_builder_fn</span><span class="p">,</span> <span class="n">json_traversal_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Bundle an RMA query url construction function</span>
+<span class="w">        </span><span class="sd">'''Bundle an RMA query url construction function</span>
 <span class="sd">        with a corresponding response json traversal function.</span>
 
 <span class="sd">        ..note:: Deprecated in AllenSDK 0.9.2</span>
@@ -625,14 +625,14 @@
 <span class="sd">        --------</span>
 <span class="sd">        `A simple Api subclass example</span>
 <span class="sd">        &lt;data_api_client.html#creating-new-api-query-classes&gt;`_.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_query</span><span class="p">(</span><span class="n">rma_builder_fn</span><span class="p">,</span> <span class="n">json_traversal_fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Api.load_api_schema">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.load_api_schema">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_api_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Download the RMA schema from the current RMA endpoint</span>
+<span class="w">        </span><span class="sd">'''Download the RMA schema from the current RMA endpoint</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -647,8 +647,8 @@
 <span class="sd">        `Class Hierarchy &lt;http://api.brain-map.org/class_hierarchy&gt;`_</span>
 <span class="sd">        and `Class List &lt;http://api.brain-map.org/class_hierarchy&gt;`_.</span>
 
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">schema_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span> <span class="o">+</span> <span class="s1">&#39;/enumerate.json&#39;</span>
+<span class="sd">        '''</span>
+        <span class="n">schema_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span> <span class="o">+</span> <span class="s1">'/enumerate.json'</span>
         <span class="n">json_parsed_schema_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_parsed_json_over_http</span><span class="p">(</span>
             <span class="n">schema_url</span><span class="p">)</span>
 
@@ -658,7 +658,7 @@
 <div class="viewcode-block" id="Api.construct_well_known_file_download_url">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.construct_well_known_file_download_url">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">construct_well_known_file_download_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">well_known_file_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Join data api endpoint and id.</span>
+<span class="w">        </span><span class="sd">'''Join data api endpoint and id.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -673,29 +673,29 @@
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
 <span class="sd">        retrieve_file_over_http: Can be used to retrieve the file from the url.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_known_file_endpoint</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">well_known_file_id</span><span class="p">)</span></div>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_known_file_endpoint</span> <span class="o">+</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">well_known_file_id</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Api.cleanup_truncated_file">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.cleanup_truncated_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_truncated_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Helper for removing files.</span>
+<span class="w">        </span><span class="sd">'''Helper for removing files.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        file_path : string</span>
-<span class="sd">            Absolute path including the file name to remove.&#39;&#39;&#39;</span>
+<span class="sd">            Absolute path including the file name to remove.'''</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="n">warnings</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Api.retrieve_file_over_http">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.retrieve_file_over_http">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_file_over_http</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">zipped</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Get a file from the data api and save it.</span>
+<span class="w">        </span><span class="sd">'''Get a file from the data api and save it.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -715,9 +715,9 @@
 <span class="sd">        References</span>
 <span class="sd">        ----------</span>
 <span class="sd">        .. [1] Allen Brain Atlas Data Portal: `Downloading a WellKnownFile &lt;http://help.brain-map.org/display/api/Downloading+a+WellKnownFile&gt;`_.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
 
-        <span class="c1"># self._file_download_log.info(&quot;Downloading URL: %s&quot;, url)</span>
+        <span class="c1"># self._file_download_log.info("Downloading URL: %s", url)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">zipped</span><span class="p">:</span>
@@ -726,7 +726,7 @@
                 <span class="n">stream_file_over_http</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="c1"># self._file_download_log.error(&quot;Couldn&#39;t retrieve file %s from %s&quot; % (file_path, url))</span>
+            <span class="c1"># self._file_download_log.error("Couldn't retrieve file %s from %s" % (file_path, url))</span>
             <span class="c1"># self.cleanup_truncated_file(file_path)</span>
             <span class="k">raise</span> <span class="n">e</span></div>
 
@@ -735,7 +735,7 @@
 <div class="viewcode-block" id="Api.retrieve_parsed_json_over_http">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.retrieve_parsed_json_over_http">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_parsed_json_over_http</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Get the document and put it in a Python data structure</span>
+<span class="w">        </span><span class="sd">'''Get the document and put it in a Python data structure</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -748,13 +748,13 @@
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            Result document as parsed by the JSON library.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="c1"># self._log.info(&quot;Downloading URL: %s&quot;, url)</span>
+<span class="sd">        '''</span>
+        <span class="c1"># self._log.info("Downloading URL: %s", url)</span>
         
         <span class="k">if</span> <span class="n">post</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;;/?:@&amp;=+$,&#39;</span><span class="p">)</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s1">';/?:@&amp;=+$,'</span><span class="p">)</span>
             <span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-            <span class="n">json_string</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="n">json_string</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">json_utilities</span><span class="o">.</span><span class="n">read_url_post</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
@@ -765,7 +765,7 @@
 <div class="viewcode-block" id="Api.retrieve_xml_over_http">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.Api.retrieve_xml_over_http">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">retrieve_xml_over_http</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Get the document and put it in a Python data structure</span>
+<span class="w">        </span><span class="sd">'''Get the document and put it in a Python data structure</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -776,8 +776,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            Unparsed xml string.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Downloading URL: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+<span class="sd">        '''</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Downloading URL: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
                 
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
@@ -789,7 +789,7 @@
 <div class="viewcode-block" id="stream_zip_directory_over_http">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.stream_zip_directory_over_http">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stream_zip_directory_over_http</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">members</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="p">(</span><span class="mf">9.05</span><span class="p">,</span> <span class="mf">31.1</span><span class="p">)):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39; Supply an http get request and stream the response to a file.</span>
+<span class="w">    </span><span class="sd">''' Supply an http get request and stream the response to a file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -803,7 +803,7 @@
 <span class="sd">        Specify a timeout for the request. If a tuple, specify seperate connect </span>
 <span class="sd">        and read timeouts.</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    '''</span>
 
     <span class="n">buf</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
 
@@ -819,7 +819,7 @@
 <div class="viewcode-block" id="stream_file_over_http">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.stream_file_over_http">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stream_file_over_http</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="p">(</span><span class="mf">9.05</span><span class="p">,</span> <span class="mf">31.1</span><span class="p">)):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39; Supply an http get request and stream the response to a file.</span>
+<span class="w">    </span><span class="sd">''' Supply an http get request and stream the response to a file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -831,12 +831,12 @@
 <span class="sd">        Specify a timeout for the request. If a tuple, specify seperate connect </span>
 <span class="sd">        and read timeouts.</span>
 
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    '''</span>
     <span class="n">Path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">))</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
 
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="mi">8192</span><span class="p">):</span>  <span class="c1"># Adjust chunk_size as needed</span>
                 <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>  <span class="c1"># Filter out keep-alive new chunks</span>
                     <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span></div>
@@ -848,30 +848,30 @@
 <div class="viewcode-block" id="RmaApi">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RmaApi</span><span class="p">(</span><span class="n">Api</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''</span>
 <span class="sd">    See: `RESTful Model Access (RMA) &lt;http://help.brain-map.org/display/api/RESTful+Model+Access+%28RMA%29&gt;`_</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">&#39;model::&#39;</span>
-    <span class="n">PIPE</span> <span class="o">=</span> <span class="s1">&#39;pipe::&#39;</span>
-    <span class="n">SERVICE</span> <span class="o">=</span> <span class="s1">&#39;service::&#39;</span>
-    <span class="n">CRITERIA</span> <span class="o">=</span> <span class="s1">&#39;rma::criteria&#39;</span>
-    <span class="n">INCLUDE</span> <span class="o">=</span> <span class="s1">&#39;rma::include&#39;</span>
-    <span class="n">OPTIONS</span> <span class="o">=</span> <span class="s1">&#39;rma::options&#39;</span>
-    <span class="n">ORDER</span> <span class="o">=</span> <span class="s1">&#39;order&#39;</span>
-    <span class="n">NUM_ROWS</span> <span class="o">=</span> <span class="s1">&#39;num_rows&#39;</span>
-    <span class="n">ALL</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
-    <span class="n">START_ROW</span> <span class="o">=</span> <span class="s1">&#39;start_row&#39;</span>
-    <span class="n">COUNT</span> <span class="o">=</span> <span class="s1">&#39;count&#39;</span>
-    <span class="n">ONLY</span> <span class="o">=</span> <span class="s1">&#39;only&#39;</span>
-    <span class="n">EXCEPT</span> <span class="o">=</span> <span class="s1">&#39;except&#39;</span>
-    <span class="n">EXCPT</span> <span class="o">=</span> <span class="s1">&#39;excpt&#39;</span>
-    <span class="n">TABULAR</span> <span class="o">=</span> <span class="s1">&#39;tabular&#39;</span>
-    <span class="n">DEBUG</span> <span class="o">=</span> <span class="s1">&#39;debug&#39;</span>
-    <span class="n">PREVIEW</span> <span class="o">=</span> <span class="s1">&#39;preview&#39;</span>
-    <span class="n">TRUE</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span>
-    <span class="n">FALSE</span> <span class="o">=</span> <span class="s1">&#39;false&#39;</span>
-    <span class="n">IS</span> <span class="o">=</span> <span class="s1">&#39;$is&#39;</span>
-    <span class="n">EQ</span> <span class="o">=</span> <span class="s1">&#39;$eq&#39;</span>
+<span class="sd">    '''</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="s1">'model::'</span>
+    <span class="n">PIPE</span> <span class="o">=</span> <span class="s1">'pipe::'</span>
+    <span class="n">SERVICE</span> <span class="o">=</span> <span class="s1">'service::'</span>
+    <span class="n">CRITERIA</span> <span class="o">=</span> <span class="s1">'rma::criteria'</span>
+    <span class="n">INCLUDE</span> <span class="o">=</span> <span class="s1">'rma::include'</span>
+    <span class="n">OPTIONS</span> <span class="o">=</span> <span class="s1">'rma::options'</span>
+    <span class="n">ORDER</span> <span class="o">=</span> <span class="s1">'order'</span>
+    <span class="n">NUM_ROWS</span> <span class="o">=</span> <span class="s1">'num_rows'</span>
+    <span class="n">ALL</span> <span class="o">=</span> <span class="s1">'all'</span>
+    <span class="n">START_ROW</span> <span class="o">=</span> <span class="s1">'start_row'</span>
+    <span class="n">COUNT</span> <span class="o">=</span> <span class="s1">'count'</span>
+    <span class="n">ONLY</span> <span class="o">=</span> <span class="s1">'only'</span>
+    <span class="n">EXCEPT</span> <span class="o">=</span> <span class="s1">'except'</span>
+    <span class="n">EXCPT</span> <span class="o">=</span> <span class="s1">'excpt'</span>
+    <span class="n">TABULAR</span> <span class="o">=</span> <span class="s1">'tabular'</span>
+    <span class="n">DEBUG</span> <span class="o">=</span> <span class="s1">'debug'</span>
+    <span class="n">PREVIEW</span> <span class="o">=</span> <span class="s1">'preview'</span>
+    <span class="n">TRUE</span> <span class="o">=</span> <span class="s1">'true'</span>
+    <span class="n">FALSE</span> <span class="o">=</span> <span class="s1">'false'</span>
+    <span class="n">IS</span> <span class="o">=</span> <span class="s1">'$is'</span>
+    <span class="n">EQ</span> <span class="o">=</span> <span class="s1">'$eq'</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RmaApi</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_uri</span><span class="p">)</span>
@@ -880,8 +880,8 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.build_query_url">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">build_query_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">stage_clauses</span><span class="p">,</span>
-                        <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Combine one or more RMA query stages into a single RMA query.</span>
+                        <span class="n">fmt</span><span class="o">=</span><span class="s1">'json'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''Combine one or more RMA query stages into a single RMA query.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -894,16 +894,16 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            complete RMA url</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">stage_clauses</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
             <span class="n">stage_clauses</span> <span class="o">=</span> <span class="p">[</span><span class="n">stage_clauses</span><span class="p">]</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span><span class="p">,</span>
-            <span class="s1">&#39;/query.&#39;</span><span class="p">,</span>
+            <span class="s1">'/query.'</span><span class="p">,</span>
             <span class="n">fmt</span><span class="p">,</span>
-            <span class="s1">&#39;?q=&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stage_clauses</span><span class="p">)])</span>
+            <span class="s1">'?q='</span><span class="p">,</span>
+            <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stage_clauses</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="n">url</span></div>
 
@@ -913,7 +913,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">model_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                     <span class="n">model</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct a model stage of an RMA query string.</span>
+<span class="w">        </span><span class="sd">'''Construct a model stage of an RMA query string.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -934,7 +934,7 @@
 <span class="sd">        count : boolean, optional</span>
 <span class="sd">            False to skip the extra database count query.</span>
 <span class="sd">        debug : string, optional</span>
-<span class="sd">            &#39;true&#39;, &#39;false&#39; or &#39;preview&#39;</span>
+<span class="sd">            'true', 'false' or 'preview'</span>
 <span class="sd">        num_rows : int or string, optional</span>
 <span class="sd">            how many database rows are returned (may not correspond directly to JSON tree structure)</span>
 <span class="sd">        start_row : int or string, optional</span>
@@ -949,37 +949,37 @@
 <span class="sd">        used in much of the RMA documentation.</span>
 <span class="sd">        Using the &amp;debug=true option with an RMA URL will include debugging information in the</span>
 <span class="sd">        response, including the normalized query.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">clauses</span> <span class="o">=</span> <span class="p">[</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">MODEL</span> <span class="o">+</span> <span class="n">model</span><span class="p">]</span>
 
-        <span class="n">filters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filters&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'filters'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">(</span><span class="n">filters</span><span class="p">))</span>
 
-        <span class="n">criteria</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;criteria&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'criteria'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">criteria</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">CRITERIA</span><span class="p">)</span>
-            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">criteria</span><span class="p">)</span>
 
-        <span class="n">include</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">include</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'include'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">include</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">INCLUDE</span><span class="p">)</span>
-            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
 
         <span class="n">options_clause</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options_clause</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">options_clause</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">options_clause</span> <span class="o">!=</span> <span class="s1">''</span><span class="p">:</span>
+            <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">options_clause</span><span class="p">)</span>
 
-        <span class="n">stage</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">stage</span></div>
 
@@ -989,19 +989,19 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">pipe_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                    <span class="n">pipe_name</span><span class="p">,</span>
                    <span class="n">parameters</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Connect model and service stages via their JSON responses.</span>
+<span class="w">        </span><span class="sd">'''Connect model and service stages via their JSON responses.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 <span class="sd">        See: `Service Pipelines &lt;http://help.brain-map.org/display/api/Service+Pipelines&gt;`_</span>
 <span class="sd">        and</span>
 <span class="sd">        `Connected Services and Pipes &lt;http://help.brain-map.org/display/api/Connected+Services+and+Pipes&gt;`_</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">clauses</span> <span class="o">=</span> <span class="p">[</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">PIPE</span> <span class="o">+</span> <span class="n">pipe_name</span><span class="p">]</span>
 
         <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple_filters</span><span class="p">(</span><span class="n">parameters</span><span class="p">))</span>
 
-        <span class="n">stage</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">stage</span></div>
 
@@ -1011,7 +1011,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">service_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">service_name</span><span class="p">,</span>
                       <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct an RMA query fragment to send a request to a connected service.</span>
+<span class="w">        </span><span class="sd">'''Construct an RMA query fragment to send a request to a connected service.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1025,13 +1025,13 @@
 <span class="sd">        See: `Service Pipelines &lt;http://help.brain-map.org/display/api/Service+Pipelines&gt;`_</span>
 <span class="sd">        and</span>
 <span class="sd">        `Connected Services and Pipes &lt;http://help.brain-map.org/display/api/Connected+Services+and+Pipes&gt;`_</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">clauses</span> <span class="o">=</span> <span class="p">[</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">SERVICE</span> <span class="o">+</span> <span class="n">service_name</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">clauses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuple_filters</span><span class="p">(</span><span class="n">parameters</span><span class="p">))</span>
 
-        <span class="n">stage</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">clauses</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">stage</span></div>
 
@@ -1039,7 +1039,7 @@
 <div class="viewcode-block" id="RmaApi.model_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.model_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct and execute a model stage of an RMA query string.</span>
+<span class="w">        </span><span class="sd">'''Construct and execute a model stage of an RMA query string.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1062,7 +1062,7 @@
 <span class="sd">        count : boolean, optional</span>
 <span class="sd">            False to skip the extra database count query.</span>
 <span class="sd">        debug : string, optional</span>
-<span class="sd">            &#39;true&#39;, &#39;false&#39; or &#39;preview&#39;</span>
+<span class="sd">            'true', 'false' or 'preview'</span>
 <span class="sd">        num_rows : int or string, optional</span>
 <span class="sd">            how many database rows are returned (may not correspond directly to JSON tree structure)</span>
 <span class="sd">        start_row : int or string, optional</span>
@@ -1077,7 +1077,7 @@
 <span class="sd">        used in much of the RMA documentation.</span>
 <span class="sd">        Using the &amp;debug=true option with an RMA URL will include debugging information in the</span>
 <span class="sd">        response, including the normalized query.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_msg_query</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build_query_url</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model_stage</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)))</span></div>
@@ -1086,7 +1086,7 @@
 <div class="viewcode-block" id="RmaApi.service_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.service_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">service_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct and Execute a single-stage RMA query</span>
+<span class="w">        </span><span class="sd">'''Construct and Execute a single-stage RMA query</span>
 <span class="sd">        to send a request to a connected service.</span>
 
 <span class="sd">        Parameters</span>
@@ -1101,7 +1101,7 @@
 <span class="sd">        See: `Service Pipelines &lt;http://help.brain-map.org/display/api/Service+Pipelines&gt;`_</span>
 <span class="sd">        and</span>
 <span class="sd">        `Connected Services and Pipes &lt;http://help.brain-map.org/display/api/Connected+Services+and+Pipes&gt;`_</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_msg_query</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build_query_url</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">service_stage</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)))</span></div>
@@ -1110,7 +1110,7 @@
 <div class="viewcode-block" id="RmaApi.options_clause">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.options_clause">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">options_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;build rma:: options clause.</span>
+<span class="w">        </span><span class="sd">'''build rma:: options clause.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1119,11 +1119,11 @@
 <span class="sd">        tabular : list of string, optional</span>
 <span class="sd">        count : boolean, optional</span>
 <span class="sd">        debug : string, optional</span>
-<span class="sd">            &#39;true&#39;, &#39;false&#39; or &#39;preview&#39;</span>
+<span class="sd">            'true', 'false' or 'preview'</span>
 <span class="sd">        num_rows : int or string, optional</span>
 <span class="sd">        start_row : int or string, optional</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="sd">        '''</span>
+        <span class="n">clause</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="n">options_params</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="n">only</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">ONLY</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1133,12 +1133,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">only_except_tabular_clause</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">ONLY</span><span class="p">,</span>
                                                 <span class="n">only</span><span class="p">))</span>
 
-        <span class="c1"># handle alternate &#39;except&#39; spelling to avoid reserved word conflict</span>
+        <span class="c1"># handle alternate 'except' spelling to avoid reserved word conflict</span>
         <span class="n">excpt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">EXCEPT</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">excpt2</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">EXCPT</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">excpt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">excpt2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;excpt and except options should not be used together&#39;</span><span class="p">,</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'excpt and except options should not be used together'</span><span class="p">,</span>
                           <span class="ne">Warning</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">excpt2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">excpt</span> <span class="o">=</span> <span class="n">excpt2</span> 
@@ -1159,15 +1159,15 @@
 
         <span class="k">if</span> <span class="n">num_rows</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">num_rows</span> <span class="o">==</span> <span class="n">RmaApi</span><span class="o">.</span><span class="n">ALL</span><span class="p">:</span>
-                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eq&#39;all&#39;]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">NUM_ROWS</span><span class="p">))</span>
+                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eq'all']"</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">NUM_ROWS</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%d</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">NUM_ROWS</span><span class="p">,</span>
+                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%d</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">NUM_ROWS</span><span class="p">,</span>
                                                      <span class="n">num_rows</span><span class="p">))</span>
 
         <span class="n">start_row</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">START_ROW</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">start_row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%d</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">START_ROW</span><span class="p">,</span>
+            <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%d</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">START_ROW</span><span class="p">,</span>
                                                  <span class="n">start_row</span><span class="p">))</span>
 
         <span class="n">order</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">ORDER</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -1183,17 +1183,17 @@
         <span class="n">cnt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">COUNT</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
-                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">COUNT</span><span class="p">,</span>
+            <span class="k">if</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">==</span> <span class="s1">'true'</span><span class="p">:</span>
+                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">COUNT</span><span class="p">,</span>
                                                      <span class="n">RmaApi</span><span class="o">.</span><span class="n">TRUE</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
-                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">COUNT</span><span class="p">,</span>
+            <span class="k">elif</span> <span class="n">cnt</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">cnt</span> <span class="o">==</span> <span class="s1">'false'</span><span class="p">:</span>
+                <span class="n">options_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="n">RmaApi</span><span class="o">.</span><span class="n">COUNT</span><span class="p">,</span>
                                                      <span class="n">RmaApi</span><span class="o">.</span><span class="n">FALSE</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">options_params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="n">RmaApi</span><span class="o">.</span><span class="n">OPTIONS</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options_params</span><span class="p">)</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="n">RmaApi</span><span class="o">.</span><span class="n">OPTIONS</span> <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">options_params</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">clause</span></div>
 
@@ -1201,15 +1201,15 @@
 <div class="viewcode-block" id="RmaApi.only_except_tabular_clause">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.only_except_tabular_clause">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">only_except_tabular_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_type</span><span class="p">,</span> <span class="n">attribute_list</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct a clause to filter which attributes are returned</span>
+<span class="w">        </span><span class="sd">'''Construct a clause to filter which attributes are returned</span>
 <span class="sd">        for use in an rma::options clause.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filter_type : string</span>
-<span class="sd">            &#39;only&#39;, &#39;except&#39;, or &#39;tabular&#39;</span>
+<span class="sd">            'only', 'except', or 'tabular'</span>
 <span class="sd">        attribute_list : list of strings</span>
-<span class="sd">            for example [&#39;acronym&#39;, &#39;products.name&#39;, &#39;structure.id&#39;]</span>
+<span class="sd">            for example ['acronym', 'products.name', 'structure.id']</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1218,7 +1218,7 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        The title of tabular columns can be set by adding &#39;+as+&lt;title&gt;&#39;</span>
+<span class="sd">        The title of tabular columns can be set by adding '+as+&lt;title&gt;'</span>
 <span class="sd">        to the attribute.</span>
 <span class="sd">        The tabular filter type requests a response that is row-oriented</span>
 <span class="sd">        rather than a nested structure.</span>
@@ -1227,12 +1227,12 @@
 <span class="sd">        The tabular option does not mask the inner-join behavior of an rma::include</span>
 <span class="sd">        clause.</span>
 <span class="sd">        The tabular filter is required for .csv format RMA requests.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="sd">        '''</span>
+        <span class="n">clause</span> <span class="o">=</span> <span class="s1">''</span>
 
         <span class="k">if</span> <span class="n">attribute_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filter_type</span><span class="p">,</span>
-                                    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attribute_list</span><span class="p">))</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s1">'[</span><span class="si">%s</span><span class="s1">$eq</span><span class="si">%s</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="n">filter_type</span><span class="p">,</span>
+                                    <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attribute_list</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">clause</span></div>
 
@@ -1240,12 +1240,12 @@
 <div class="viewcode-block" id="RmaApi.order_clause">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.order_clause">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">order_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct a debug clause for use in an rma::options clause.</span>
+<span class="w">        </span><span class="sd">'''Construct a debug clause for use in an rma::options clause.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        order_list : list of strings</span>
-<span class="sd">            for example [&#39;acronym&#39;, &#39;products.name+asc&#39;, &#39;structure.id+desc&#39;]</span>
+<span class="sd">            for example ['acronym', 'products.name+asc', 'structure.id+desc']</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1254,13 +1254,13 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        Optionally adding &#39;+asc&#39; (default) or &#39;+desc&#39; after an attribute</span>
+<span class="sd">        Optionally adding '+asc' (default) or '+desc' after an attribute</span>
 <span class="sd">        will change the sort order.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="sd">        '''</span>
+        <span class="n">clause</span> <span class="o">=</span> <span class="s1">''</span>
 
         <span class="k">if</span> <span class="n">order_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;[order$eq</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">order_list</span><span class="p">))</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s1">'[order$eq</span><span class="si">%s</span><span class="s1">]'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">order_list</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">clause</span></div>
 
@@ -1268,11 +1268,11 @@
 <div class="viewcode-block" id="RmaApi.debug_clause">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.debug_clause">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">debug_clause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">debug_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct a debug clause for use in an rma::options clause.</span>
+<span class="w">        </span><span class="sd">'''Construct a debug clause for use in an rma::options clause.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        debug_value : string or boolean</span>
-<span class="sd">            True, False, None (default) or &#39;preview&#39;</span>
+<span class="sd">            True, False, None (default) or 'preview'</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1284,19 +1284,19 @@
 <span class="sd">        True will request debugging information in the response.</span>
 <span class="sd">        False will request no debugging information.</span>
 <span class="sd">        None will return an empty clause.</span>
-<span class="sd">        &#39;preview&#39; will request debugging information without the query being run.</span>
+<span class="sd">        'preview' will request debugging information without the query being run.</span>
 
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+<span class="sd">        '''</span>
+        <span class="n">clause</span> <span class="o">=</span> <span class="s1">''</span>
 
         <span class="k">if</span> <span class="n">debug_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">debug_value</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">&#39;true&#39;</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;[debug$eqtrue]&#39;</span>
-        <span class="k">elif</span> <span class="n">debug_value</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s1">&#39;[debug$eqfalse]&#39;</span>
-        <span class="k">elif</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">&#39;preview&#39;</span><span class="p">:</span>
-            <span class="n">clause</span> <span class="o">=</span> <span class="s2">&quot;[debug$eq&#39;preview&#39;]&quot;</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s1">''</span>
+        <span class="k">if</span> <span class="n">debug_value</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">'true'</span><span class="p">:</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s1">'[debug$eqtrue]'</span>
+        <span class="k">elif</span> <span class="n">debug_value</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">or</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">'false'</span><span class="p">:</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s1">'[debug$eqfalse]'</span>
+        <span class="k">elif</span> <span class="n">debug_value</span> <span class="o">==</span> <span class="s1">'preview'</span><span class="p">:</span>
+            <span class="n">clause</span> <span class="o">=</span> <span class="s2">"[debug$eq'preview']"</span>
 
         <span class="k">return</span> <span class="n">clause</span></div>
 
@@ -1305,7 +1305,7 @@
 <div class="viewcode-block" id="RmaApi.filters">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.filters">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;serialize RMA query filter clauses.</span>
+<span class="w">        </span><span class="sd">'''serialize RMA query filter clauses.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1316,26 +1316,26 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            filter clause for an RMA query string.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">filters_builder</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">filters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters_builder</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters_builder</span><span class="p">)</span></div>
 
 
     <span class="c1"># TODO: this needs to be more rigorous.</span>
 <div class="viewcode-block" id="RmaApi.tuple_filters">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.tuple_filters">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">tuple_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filters</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Construct an RMA filter clause.</span>
+<span class="w">        </span><span class="sd">'''Construct an RMA filter clause.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 
 <span class="sd">        See `RMA Path Syntax - Square Brackets for Filters &lt;http://help.brain-map.org/display/api/RMA+Path+Syntax#RMAPathSyntax-SquareBracketsforFilters&gt;`_ for additional documentation.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">filters_builder</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">filt</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">filters</span><span class="p">):</span>
@@ -1350,29 +1350,29 @@
                             <span class="n">val_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">val_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">val_array</span><span class="p">)</span>
-                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">))</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">val_array</span><span class="p">)</span>
+                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%s</span><span class="s2">]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
-                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%d</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">))</span>
+                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%d</span><span class="s2">]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
-                        <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eqtrue]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                        <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eqtrue]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eqfalse]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                        <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eqfalse]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
                 <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s</span><span class="s2">$eq</span><span class="si">%s</span><span class="s2">]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">%s%s%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">filters_builder</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[</span><span class="si">%s%s%s</span><span class="s2">]"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                                      <span class="n">filt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                                                      <span class="nb">str</span><span class="p">(</span><span class="n">filt</span><span class="p">[</span><span class="mi">2</span><span class="p">])))</span>
 
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters_builder</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filters_builder</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RmaApi.quote_string">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.quote_string">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">quote_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">the_string</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Wrap a clause in single quotes.</span>
+<span class="w">        </span><span class="sd">'''Wrap a clause in single quotes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1383,14 +1383,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            input wrapped in single quotes</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="n">the_string</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">])</span></div>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">"'"</span><span class="p">,</span> <span class="n">the_string</span><span class="p">,</span> <span class="s2">"'"</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="RmaApi.filter">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;serialize a single RMA query filter clause.</span>
+<span class="w">        </span><span class="sd">'''serialize a single RMA query filter clause.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1403,18 +1403,18 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            a single filter clause for an RMA query string.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;[&#39;</span><span class="p">,</span>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'['</span><span class="p">,</span>
                         <span class="n">key</span><span class="p">,</span>
                         <span class="n">RmaApi</span><span class="o">.</span><span class="n">EQ</span><span class="p">,</span>
                         <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
-                        <span class="s1">&#39;]&#39;</span><span class="p">])</span></div>
+                        <span class="s1">']'</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="RmaApi.build_schema_query">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.build_schema_query">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">build_schema_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clazz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;json&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Build the URL that will fetch the data schema.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_schema_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clazz</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'json'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''Build the URL that will fetch the data schema.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1432,15 +1432,15 @@
 <span class="sd">        -----</span>
 <span class="sd">        If a class is specified, only the schema information for that class</span>
 <span class="sd">        will be requested, otherwise the url requests the entire schema.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">if</span> <span class="n">clazz</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">class_clause</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">clazz</span>
+            <span class="n">class_clause</span> <span class="o">=</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">clazz</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">class_clause</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">class_clause</span> <span class="o">=</span> <span class="s1">''</span>
 
-        <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span><span class="p">,</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_endpoint</span><span class="p">,</span>
                        <span class="n">class_clause</span><span class="p">,</span>
-                       <span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                       <span class="s1">'.'</span><span class="p">,</span>
                        <span class="n">fmt</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">url</span></div>
@@ -1449,7 +1449,7 @@
 <div class="viewcode-block" id="RmaApi.get_schema">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaApi.get_schema">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clazz</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Retrieve schema information.&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">'''Retrieve schema information.'''</span>
         <span class="n">schema_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_query</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">build_schema_query</span><span class="p">,</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">,</span>
                                     <span class="n">clazz</span><span class="p">)</span>
@@ -1463,10 +1463,10 @@
 <div class="viewcode-block" id="RmaTemplate">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaTemplate">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RmaTemplate</span><span class="p">(</span><span class="n">RmaApi</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''</span>
 <span class="sd">    See: `Atlas Drawings and Ontologies</span>
 <span class="sd">    &lt;http://help.brain-map.org/display/api/Atlas+Drawings+and+Ontologies&gt;`_</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    '''</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query_manifest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RmaTemplate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_uri</span><span class="p">)</span>
@@ -1476,7 +1476,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaTemplate.to_filter_rhs">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_filter_rhs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhs</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rhs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rhs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rhs</span></div>
 
@@ -1485,77 +1485,77 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.rma_template.RmaTemplate.template_query">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">template_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">entry_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
-        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">cb</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">entry_name</span><span class="p">]</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">cb</span> <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">entry_name</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">template</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Entry </span><span class="si">%s</span><span class="s1"> not found.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entry_name</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Entry </span><span class="si">%s</span><span class="s1"> not found.'</span> <span class="o">%</span> <span class="p">(</span><span class="n">entry_name</span><span class="p">))</span>
 
-        <span class="n">query_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]}</span>
+        <span class="n">query_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'model'</span><span class="p">:</span> <span class="n">template</span><span class="p">[</span><span class="s1">'model'</span><span class="p">]}</span>
 
-        <span class="k">if</span> <span class="s1">&#39;criteria&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">criteria_template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">&#39;criteria&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">'criteria'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">criteria_template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">'criteria'</span><span class="p">])</span>
 
-            <span class="k">if</span> <span class="s1">&#39;criteria_params&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">'criteria_params'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
                 <span class="n">criteria_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_filter_rhs</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-                                   <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;criteria_params&#39;</span><span class="p">]</span>
+                                   <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">template</span><span class="p">[</span><span class="s1">'criteria_params'</span><span class="p">]</span>
                                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">criteria_params</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="n">criteria_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">criteria_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">criteria_params</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">criteria_str</span><span class="p">:</span>
-                <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;criteria&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">criteria_str</span>
+                <span class="n">query_args</span><span class="p">[</span><span class="s1">'criteria'</span><span class="p">]</span> <span class="o">=</span> <span class="n">criteria_str</span>
 
-        <span class="k">if</span> <span class="s1">&#39;include&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">include_template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">&#39;include&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">'include'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">include_template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">'include'</span><span class="p">])</span>
 
-            <span class="k">if</span> <span class="s1">&#39;include_params&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">'include_params'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
                 <span class="n">include_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_filter_rhs</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-                                  <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;include_params&#39;</span><span class="p">]</span>
+                                  <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">template</span><span class="p">[</span><span class="s1">'include_params'</span><span class="p">]</span>
                                   <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">include_params</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="n">include_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">include_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">include_params</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">include_str</span><span class="p">:</span>
-                <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;include&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">include_str</span>
+                <span class="n">query_args</span><span class="p">[</span><span class="s1">'include'</span><span class="p">]</span> <span class="o">=</span> <span class="n">include_str</span>
 
-        <span class="k">if</span> <span class="s1">&#39;only&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;only&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;only&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span>
-                    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;only&#39;</span><span class="p">)))]</span>
-        <span class="k">elif</span> <span class="s1">&#39;only&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;only&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">&#39;only&#39;</span><span class="p">]))]</span>
+        <span class="k">if</span> <span class="s1">'only'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'only'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">query_args</span><span class="p">[</span><span class="s1">'only'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span>
+                    <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'only'</span><span class="p">)))]</span>
+        <span class="k">elif</span> <span class="s1">'only'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'only'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span><span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="s1">'only'</span><span class="p">]))]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;except&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;except&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;except&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span>
-                    <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;except&#39;</span><span class="p">)))]</span>
-        <span class="k">elif</span> <span class="s1">&#39;except&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;except&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;except&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'except'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'except'</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">query_args</span><span class="p">[</span><span class="s1">'except'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">quote_string</span><span class="p">(</span>
+                    <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'except'</span><span class="p">)))]</span>
+        <span class="k">elif</span> <span class="s1">'except'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'except'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">'except'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;start_row&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;start_row&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_row&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;start_row&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;start_row&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;start_row&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'start_row'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'start_row'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'start_row'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'start_row'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'start_row'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">'start_row'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;num_rows&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;num_rows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;num_rows&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;num_rows&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;num_rows&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;num_rows&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'num_rows'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'num_rows'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'num_rows'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'num_rows'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'num_rows'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">'num_rows'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;count&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;count&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'count'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'count'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'count'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="s1">&#39;order&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;order&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
-            <span class="n">query_args</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;order&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'order'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'order'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'order'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'order'</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
+            <span class="n">query_args</span><span class="p">[</span><span class="s1">'order'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">'order'</span><span class="p">]</span>
 
         <span class="n">query_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 

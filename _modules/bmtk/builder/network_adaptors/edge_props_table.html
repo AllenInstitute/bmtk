@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -440,7 +440,7 @@
 <div class="viewcode-block" id="EdgeTypesTableMemory">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EdgeTypesTableMemory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class for creating and storing the actual connectivity matrix plus all the possible (hdf5 bound) properties</span>
+<span class="w">    </span><span class="sd">"""A class for creating and storing the actual connectivity matrix plus all the possible (hdf5 bound) properties</span>
 <span class="sd">    of an edge - unlike the ConnectionMap class which only stores the unevaluated rules each edge-types. There should</span>
 <span class="sd">    be one EdgeTypesTable for each call to Network.add_edges(...)</span>
 
@@ -448,7 +448,7 @@
 <span class="sd">    cells. If individual edge properties (syn_weight, syn_location, etc) and added then it must be stored in a SxTxN</span>
 <span class="sd">    table, N the avg. number of synapses between each source/target pair. The actually number of edges (ie rows)</span>
 <span class="sd">    saved in the SONATA file will vary.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_map</span><span class="p">,</span> <span class="n">network_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_map</span> <span class="o">=</span> <span class="n">connection_map</span>
@@ -456,7 +456,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">source_network</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">source_nodes</span><span class="o">.</span><span class="n">network_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_network</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">target_nodes</span><span class="o">.</span><span class="n">network_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_id</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_id</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_group_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>  <span class="c1"># This will be assigned later during save_edges</span>
 
         <span class="c1"># Create the nsyns table to store the num of synapses/edges between each possible source/target node pair</span>
@@ -475,7 +475,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_syns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of synapses.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Number of synapses."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nsyns_updated</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nsyns_updated</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_syns</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsyn_table</span><span class="p">))</span>
@@ -483,9 +483,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of unque edges/connections (eg rows in SONATA edges file). When multiple synapse can be safely</span>
+<span class="w">        </span><span class="sd">"""Number of unque edges/connections (eg rows in SONATA edges file). When multiple synapse can be safely</span>
 <span class="sd">        represented with just one edge it will have n_edges &lt; n_syns.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_vals</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_syns</span>
         <span class="k">else</span><span class="p">:</span>
@@ -493,7 +493,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">edge_type_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a table n_edges x 2, first column containing source_node_ids and second target_node_ids.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns a table n_edges x 2, first column containing source_node_ids and second target_node_ids."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_node_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nsyns_updated</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prop_vals</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># Get the source and target node ids from the rows/columns of nsyns table cells that are greater than 0</span>
@@ -531,15 +531,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hash_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a hash key for edge-types based on their (hdf5) properties, for grouping together properties of</span>
+<span class="w">        </span><span class="sd">"""Creates a hash key for edge-types based on their (hdf5) properties, for grouping together properties of</span>
 <span class="sd">        different edge-types. If two edge-types have the same (hdf5) properties they should have the same hash value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">prop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_metatadata</span><span class="p">()]</span>
+<span class="sd">        """</span>
+        <span class="n">prop_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'</span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">'dtype'</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_metatadata</span><span class="p">()]</span>
         <span class="n">prop_keys</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
-        <span class="c1"># WARNING: python&#39;s hash() function is randomized which is a problem when using MPI to process different edge</span>
+        <span class="c1"># WARNING: python's hash() function is randomized which is a problem when using MPI to process different edge</span>
         <span class="c1"># types across different ranks.</span>
-        <span class="n">prop_keys</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prop_keys</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">prop_keys</span> <span class="o">=</span> <span class="s1">':'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prop_keys</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">prop_keys</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">9</span><span class="p">]</span>
 
     <span class="nd">@property</span>
@@ -550,9 +550,9 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.get_property_metatadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_property_metatadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_vals</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;nsyns&#39;</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsyn_table</span><span class="o">.</span><span class="n">dtype</span><span class="p">}]</span>
+            <span class="k">return</span> <span class="p">[{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'nsyns'</span><span class="p">,</span> <span class="s1">'dtype'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsyn_table</span><span class="o">.</span><span class="n">dtype</span><span class="p">}]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">pname</span><span class="p">,</span> <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="n">pvals</span><span class="o">.</span><span class="n">dtype</span><span class="p">}</span> <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">pvals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_vals</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span></div>
+            <span class="k">return</span> <span class="p">[{</span><span class="s1">'name'</span><span class="p">:</span> <span class="n">pname</span><span class="p">,</span> <span class="s1">'dtype'</span><span class="p">:</span> <span class="n">pvals</span><span class="o">.</span><span class="n">dtype</span><span class="p">}</span> <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">pvals</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_vals</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span></div>
 
 
 <div class="viewcode-block" id="EdgeTypesTableMemory.set_nsyns">
@@ -597,7 +597,7 @@
 <div class="viewcode-block" id="EdgeTypesTableMemory.get_property_value">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMemory.get_property_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_property_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">prop_name</span> <span class="o">==</span> <span class="s1">&#39;nsyns&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">prop_name</span> <span class="o">==</span> <span class="s1">'nsyns'</span><span class="p">:</span>
             <span class="n">nsyns_table_flat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsyn_table</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
             <span class="n">nonzero_indxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">nsyns_table_flat</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
@@ -611,12 +611,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">src_trg_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_node_ids</span>
         <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-            <span class="s1">&#39;source_node_id&#39;</span><span class="p">:</span> <span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
-            <span class="s1">&#39;target_node_id&#39;</span><span class="p">:</span> <span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="c1"># &#39;edge_type_id&#39;: self.edge_type_id</span>
+            <span class="s1">'source_node_id'</span><span class="p">:</span> <span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">'target_node_id'</span><span class="p">:</span> <span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="c1"># 'edge_type_id': self.edge_type_id</span>
         <span class="p">})</span>
         <span class="k">for</span> <span class="n">edge_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_metatadata</span><span class="p">():</span>
-            <span class="n">pname</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">pname</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
             <span class="n">ret_df</span><span class="p">[</span><span class="n">pname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span><span class="n">prop_name</span><span class="o">=</span><span class="n">pname</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ret_df</span></div>
@@ -640,14 +640,14 @@
 <div class="viewcode-block" id="EdgeTypesTableMPI">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EdgeTypesTableMPI</span><span class="p">(</span><span class="n">EdgeTypesTableMemory</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules</span>
+<span class="w">    </span><span class="sd">"""Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules</span>
 <span class="sd">    are split across different ranks/processors.</span>
 
 <span class="sd">    The data tables are saved in temporary files on the disk, so that the rank which is responsible for writing to the</span>
 <span class="sd">    final hdf5 file. This could also be useful for very large networks built on one core.</span>
 
 <span class="sd">    TODO: Look into saving in memory, use MPI Gather/Send.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">_tmp_table_valid</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Singleton flag to ensure hdf5 temp file is created only once</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_map</span><span class="p">,</span> <span class="n">network_name</span><span class="p">):</span>
@@ -659,27 +659,27 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">builder_uuid</span> <span class="o">=</span> <span class="n">build_time_uuid</span><span class="p">()</span>
-        <span class="k">return</span> <span class="s1">&#39;.edge_types_table.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">builder_uuid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'.edge_types_table.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">builder_uuid</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_open_tmp_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_handle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_handle</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_tmp_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># There may/will be multiple EdgeTypeTables objects, but only one .edge_type_table*.h5 file per rank, but don&#39;t</span>
+        <span class="c1"># There may/will be multiple EdgeTypeTables objects, but only one .edge_type_table*.h5 file per rank, but don't</span>
         <span class="c1"># overwrite the file everytime save() is called. Use a singleton to ensure hdf5 tmp file is created only once.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_valid</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;unprocessed&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+                <span class="n">h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">'unprocessed'</span><span class="p">)</span>
                 <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">_tmp_table_valid</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="EdgeTypesTableMPI.save">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edge_props_table.EdgeTypesTableMPI.save">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_tmp_table</span><span class="p">()</span>
 
         <span class="n">src_trg_ids</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">edge_type_node_ids</span>
@@ -687,24 +687,24 @@
             <span class="c1"># ignore if no actual edges</span>
             <span class="k">return</span>
 
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmp_table_name</span><span class="p">,</span> <span class="s1">'r+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
             <span class="c1"># Create a new group</span>
             <span class="n">edge_type_id_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">edge_type_id_str</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">h5</span><span class="p">[</span><span class="n">edge_type_id_str</span><span class="p">]</span>
 
-            <span class="n">edge_type_grp</span> <span class="o">=</span> <span class="n">h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;/unprocessed/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">,</span> <span class="n">edge_type_id_str</span><span class="p">))</span>
+            <span class="n">edge_type_grp</span> <span class="o">=</span> <span class="n">h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">'/unprocessed/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">,</span> <span class="n">edge_type_id_str</span><span class="p">))</span>
 
-            <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-            <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+            <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'target_node_id'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">src_trg_ids</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
 
             <span class="k">for</span> <span class="n">prop_mdata</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_property_metatadata</span><span class="p">():</span>
-                <span class="n">pname</span> <span class="o">=</span> <span class="n">prop_mdata</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-                <span class="n">ptype</span> <span class="o">=</span> <span class="n">prop_mdata</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span>
+                <span class="n">pname</span> <span class="o">=</span> <span class="n">prop_mdata</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
+                <span class="n">ptype</span> <span class="o">=</span> <span class="n">prop_mdata</span><span class="p">[</span><span class="s1">'dtype'</span><span class="p">]</span>
                 <span class="n">pvals</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_property_value</span><span class="p">(</span><span class="n">pname</span><span class="p">)</span>
                 <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">pname</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">pvals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ptype</span><span class="p">)</span>
-                <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
-                <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;hash_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_key</span>
+                <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
+                <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'hash_key'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash_key</span>
 
             <span class="n">h5</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
@@ -715,7 +715,7 @@
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to delete temp edges file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Unable to delete temp edges file </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">))</span></div>
 
 
 

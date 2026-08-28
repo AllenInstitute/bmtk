@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -439,8 +439,8 @@
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.builder_utils.add_hdf5_attrs">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">add_hdf5_attrs</span><span class="p">(</span><span class="n">hdf5_handle</span><span class="p">):</span>
     <span class="c1"># TODO: move this as a utility function</span>
-    <span class="n">hdf5_handle</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;magic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mh">0x0A7A</span><span class="p">)</span>
-    <span class="n">hdf5_handle</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span></div>
+    <span class="n">hdf5_handle</span><span class="p">[</span><span class="s1">'/'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'magic'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mh">0x0A7A</span><span class="p">)</span>
+    <span class="n">hdf5_handle</span><span class="p">[</span><span class="s1">'/'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span></div>
 
 
 
@@ -449,23 +449,23 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">list_to_hash</span><span class="p">(</span><span class="n">str_list</span><span class="p">):</span>
     <span class="n">str_list</span> <span class="o">=</span> <span class="n">str_list</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">str_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-    <span class="n">combined_keys</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_list</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">combined_keys</span> <span class="o">=</span> <span class="s1">':'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">str_list</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">combined_keys</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
 
 
 <div class="viewcode-block" id="check_properties_across_ranks">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.builder_utils.check_properties_across_ranks">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_properties_across_ranks</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="s1">&#39;node&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks that a properties table is consistant across all MPI ranks. Mainly used by add_nodes() and add_edges()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_properties_across_ranks</span><span class="p">(</span><span class="n">properties</span><span class="p">,</span> <span class="n">graph_type</span><span class="o">=</span><span class="s1">'node'</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Checks that a properties table is consistant across all MPI ranks. Mainly used by add_nodes() and add_edges()</span>
 <span class="sd">    method due to bug where using random generator without rng_seed was causing issues building the network properties</span>
 <span class="sd">    consistantly using multiple cores.</span>
 
 <span class="sd">    Will throw an Exception or a warning message (if MPI_fail_params_nonuniform is false)</span>
 
 <span class="sd">    :param properties: A dictionary</span>
-<span class="sd">    :param graph_type: &#39;node&#39; or &#39;edge&#39;, used in error message. default &#39;node&#39;.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :param graph_type: 'node' or 'edge', used in error message. default 'node'.</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">mpi_size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span>
 
@@ -473,7 +473,7 @@
     <span class="n">n_args</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
     <span class="n">ranked_args</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">n_args</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ranked_args</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> properties are not the same across all ranks.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">)</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1"> properties are not the same across all ranks.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">MPI_fail_params_nonuniform</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -485,11 +485,11 @@
     <span class="c1"># create a string/id that will be uniform across all ranks, even if the dict on one rank returns keys out-of-order.</span>
     <span class="n">prop_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">prop_keys</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-    <span class="n">combined_keys</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prop_keys</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">combined_keys</span> <span class="o">=</span> <span class="s1">':'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prop_keys</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="n">hash_id</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">combined_keys</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
     <span class="n">ranked_keys</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">hash_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ranked_keys</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> properties are not the same across all ranks.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">)</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1"> properties are not the same across all ranks.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">MPI_fail_params_nonuniform</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -497,7 +497,7 @@
 
     <span class="c1"># For each item in model_properties dictionary try to check that values are the same</span>
     <span class="k">for</span> <span class="n">pkey</span> <span class="ow">in</span> <span class="n">prop_keys</span><span class="p">:</span>
-        <span class="c1"># Don&#39;t use Dict.items() method since it is possible the ret order is different across ranks.</span>
+        <span class="c1"># Don't use Dict.items() method since it is possible the ret order is different across ranks.</span>
         <span class="n">pval</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">pkey</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -505,15 +505,15 @@
                 <span class="n">phash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">pval</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">phash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">pval</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+                <span class="n">phash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">pval</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pval</span><span class="p">):</span>
-                    <span class="n">pval</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+                    <span class="n">pval</span> <span class="o">=</span> <span class="s1">'NONE'</span>
                 <span class="n">phash</span> <span class="o">=</span> <span class="n">pval</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-                <span class="n">joined_keys</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pval</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="n">joined_keys</span> <span class="o">=</span> <span class="s1">':'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pval</span><span class="p">])</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
                 <span class="n">phash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">joined_keys</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -528,8 +528,8 @@
 
         <span class="n">ranked_vals</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">phash</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">ranked_vals</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> property &quot;</span><span class="si">{}</span><span class="s1">&quot; varies across ranks, please make sure parameter value is uniform across all&#39;</span> \
-                      <span class="s1">&#39;ranks or set bmtk.builder.MPI_fail_params_nonuniform to False&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">,</span> <span class="n">pkey</span><span class="p">)</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1"> property "</span><span class="si">{}</span><span class="s1">" varies across ranks, please make sure parameter value is uniform across all'</span> \
+                      <span class="s1">'ranks or set bmtk.builder.MPI_fail_params_nonuniform to False'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">graph_type</span><span class="p">,</span> <span class="n">pkey</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">MPI_fail_params_nonuniform</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -543,8 +543,8 @@
 <div class="viewcode-block" id="build_time_uuid">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.builder_utils.build_time_uuid">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">build_time_uuid</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Produces a unique identifier that will be unique for each time a network building script is executed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Produces a unique identifier that will be unique for each time a network building script is executed.</span>
+<span class="sd">    """</span>
     <span class="k">global</span> <span class="n">__build_time_uuid</span>
     <span class="k">if</span> <span class="n">__build_time_uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">__build_time_uuid</span>
@@ -561,7 +561,7 @@
             <span class="n">bcast_data</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">bcast</span><span class="p">(</span><span class="n">bcast_data</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">__build_time_uuid</span> <span class="o">=</span> <span class="n">bcast_data</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">__build_time_uuid</span> <span class="o">=</span> <span class="s1">&#39;tmp&#39;</span>
+            <span class="n">__build_time_uuid</span> <span class="o">=</span> <span class="s1">'tmp'</span>
     
     <span class="k">else</span><span class="p">:</span>
         <span class="n">__build_time_uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">)</span>

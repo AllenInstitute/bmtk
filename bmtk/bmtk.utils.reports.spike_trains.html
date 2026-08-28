@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -541,9 +541,9 @@
 return the figure</p>
 <p>By default will display all nodes, if you want to only display a subset of nodes and/or group together different
 nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
-<span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>      <span class="c1"># first 70 nodes are blue pyr cells</span>
-             <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}])</span>   <span class="c1"># last 30 nodes are red inh cells</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="s1">'/path/to/my/spike.h5'</span><span class="p">,</span>
+<span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">'c'</span><span class="p">:</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span>      <span class="c1"># first 70 nodes are blue pyr cells</span>
+             <span class="p">{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">'c'</span><span class="p">:</span> <span class="s1">'r'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">}])</span>   <span class="c1"># last 30 nodes are red inh cells</span>
 </pre></div>
 </div>
 <p>The histogram will not be grouped.</p>
@@ -580,9 +580,9 @@ save plot.</p></li>
 times are not specified from the “times” parameter, will try to parse values from the timestamps data.</p>
 <p>If you want to only display a subset of nodes and/or group together different nodes (by node_id) by dot colors and
 labels then you can use the node_groups, which should be a list of dicts:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
-            <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>
-                         <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="s1">'/path/to/my/spike.h5'</span><span class="p">,</span>
+            <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">'c'</span><span class="p">:</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span>
+                         <span class="p">{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">'c'</span><span class="p">:</span> <span class="s1">'r'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">}])</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -620,9 +620,9 @@ and stop times are not specified from the “times” parameter, will try to par
 <p>By default will plot all nodes together. To only display a subset of the nodes and/or create groups of nodes use
 the node_groups options:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span>
-    <span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
-    <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>
-                 <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}]</span>
+    <span class="s1">'/path/to/my/spike.h5'</span><span class="p">,</span>
+    <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span>
+                 <span class="p">{</span><span class="s1">'node_ids'</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">'label'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">}]</span>
 <span class="p">)</span>
 </pre></div>
 </div>

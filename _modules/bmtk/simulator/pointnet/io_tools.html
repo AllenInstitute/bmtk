@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -433,16 +433,16 @@
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Functions for logging, writing and reading from file.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">nest</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.core.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">IOUtils</span>
 
 <span class="c1"># Want users to be able to use NEST whether or not it is compiled in parallel mode or not, which means checking if</span>
-<span class="c1"># the method nest.SyncPRocesses (aka MPI Barrier) exists. If it doesn&#39;t try getting barrier from mpi4py</span>
+<span class="c1"># the method nest.SyncPRocesses (aka MPI Barrier) exists. If it doesn't try getting barrier from mpi4py</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">rank</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Rank</span><span class="p">()</span>
     <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">NumProcesses</span><span class="p">()</span>
@@ -480,7 +480,7 @@
 <div class="viewcode-block" id="NestIOUtils.quiet_simulator">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.io_tools.NestIOUtils.quiet_simulator">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">quiet_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="s1">&#39;M_QUIET&#39;</span><span class="p">)</span></div>
+        <span class="n">nest</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="s1">'M_QUIET'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NestIOUtils.setup_output_dir">
@@ -488,7 +488,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">setup_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dir</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NestIOUtils</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setup_output_dir</span><span class="p">(</span><span class="n">config_dir</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_nodes</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Running NEST with MPI (</span><span class="si">{}</span><span class="s1"> cores)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">))</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Running NEST with MPI (</span><span class="si">{}</span><span class="s1"> cores)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">))</span></div>
 </div>
 
 

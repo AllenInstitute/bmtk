@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -487,11 +487,11 @@ calculate the current source density (CSD), thus capturing the slow-reacting, no
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
 
     <span class="c1"># Reserved SONATA keywords used during simulation</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;Scnn1a_485510712_params.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_485510712_morphology.swc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'Scnn1a_485510712_params.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Scnn1a_485510712_morphology.swc'</span><span class="p">,</span>
 
     <span class="c1"># The x, y, z locations and orientations (in Euler angles) of each cell</span>
     <span class="c1"># Here, rotation around the pia-to-white-matter axis is randomized</span>
@@ -503,27 +503,27 @@ calculate the current source density (CSD), thus capturing the slow-reacting, no
     <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="mf">3.646878266</span><span class="p">,</span>
 
     <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;L23&#39;</span><span class="p">,</span>
-    <span class="n">model_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span>
+    <span class="n">layer</span><span class="o">=</span><span class="s1">'L23'</span><span class="p">,</span>
+    <span class="n">model_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>In this particular example, we use a very simplified “cortical column” consisting of layers <code class="docutils literal notranslate"><span class="pre">L2/3</span></code>, <code class="docutils literal notranslate"><span class="pre">L4</span></code> (which receives most of the external inputs), and <code class="docutils literal notranslate"><span class="pre">L5</span></code> pyramidal cells surrounded by inhibitory interneurons. The cells are built in a column parallel to the <strong>y</strong> axis and centered at <strong>x=0</strong> and <strong>z=0</strong>.</p>
 <p>We can use VND to visualize our network to make sure the layering and rotation of our cells are correct:</p>
-<div><p><img alt="5e22f92afba5498e8465c0c567c40aaa" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
+<div><p><img alt="0c385068cfa54c489f478581e229aea5" class="no-scaled-link" src="../_images/lfp_cortcol_small.png" style="width: 500px;" /></p>
 </div><p>The full script for this example can be found in the file <em>build_network.lfp.py</em>. We encourage you to make changes and test out the effects that different cell types, synapses, and geometry have on LFP recordings. You can also try using a different network altogether.</p>
 </section>
 <section id="Step-2:-Adding-%22ecp%22-recordings-to-simulation-config.">
 <h3>Step 2: Adding “ecp” recordings to simulation config.<a class="headerlink" href="#Step-2:-Adding-%22ecp%22-recordings-to-simulation-config." title="Link to this heading">#</a></h3>
 <p>The next step is to open up our SONATA simulation configuration file (<em>config.lfp.json</em>) so that it contains the following in the “reports” section.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cortical_electrode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/electrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"cortical_electrode"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/electrodes/linear_electrode.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_channels"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -533,16 +533,16 @@ calculate the current source density (CSD), thus capturing the slow-reacting, no
 <li><p>The <strong>variable_name</strong> should be set to <code class="docutils literal notranslate"><span class="pre">v</span></code>, which is the voltage just outside of every compartment membrane.</p></li>
 <li><p>Setting <strong>cells</strong> to all tells BMTK to record the extracellular potential of all (biophysical) cells in the model. You can use the <code class="docutils literal notranslate"><span class="pre">node_set</span></code> to select only a portion of cells to record from. For example, if you wanted to filter by specific node-ids:</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortcol&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cortcol"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">300</span><span class="p">]</span>
 <span class="p">},</span>
 </pre></div>
 </div>
 <p>     or if you wanted to record from Layer 4 excitatory cells</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L4&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"layer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"L4"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e"</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -561,7 +561,7 @@ calculate the current source density (CSD), thus capturing the slow-reacting, no
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;components/electrodes/linear_electrode.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'components/electrodes/linear_electrode.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -701,7 +701,7 @@ Successfully created x86_64/special
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.lfp.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.lfp.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -748,7 +748,7 @@ Warning: no DISPLAY environment variable.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.ecp</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_ecp</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.lfp.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cortical_electrode&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.lfp.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'cortical_electrode'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -760,7 +760,7 @@ Warning: no DISPLAY environment variable.
 </div>
 </div>
 <p>But if you need to analyze the results yourself, they will be saved in the <em>output/cortical_electrode.h5</em> file, which is an HDF5 following SONATA format for <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">Extracellular reports</a>. The results are stored in the <code class="docutils literal notranslate"><span class="pre">/ecp/data</span></code> table that is <span class="math notranslate nohighlight">\(T \times N\)</span> (<span class="math notranslate nohighlight">\(timestamps \times channels\)</span>) in size.</p>
-<div><p><img alt="68a71e7f76fd4be5982e298614411d50" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 800px;" /></p>
+<div><p><img alt="18e479432566403db803a94dac26b001" class="no-scaled-link" src="../_images/hdf5_ecp_format.png" style="width: 800px;" /></p>
 </div><div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -771,13 +771,13 @@ Warning: no DISPLAY environment variable.
 
 <span class="n">channel_id</span> <span class="o">=</span> <span class="mi">5</span>
 
-<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;output_lfp/cortical_electrode.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">][()]</span> <span class="o">==</span> <span class="n">channel_id</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][:,</span> <span class="n">channel_idx</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Channel </span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">])</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">'output_lfp/cortical_electrode.h5'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/channel_id'</span><span class="p">][()]</span> <span class="o">==</span> <span class="n">channel_id</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][:,</span> <span class="n">channel_idx</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Channel </span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -793,14 +793,14 @@ Warning: no DISPLAY environment variable.
 <h3>(Optional) Finding individual contributions<a class="headerlink" href="#(Optional)-Finding-individual-contributions" title="Link to this heading">#</a></h3>
 <p>When each channel in the electrode calculates the ECP at each given time, it does so by taking the extracellular Vm of each cell, adjusting for distance and interstitial resistance, and summing the results over all recorded cells.</p>
 <p>Sometimes, for deeper analysis of a simulation, you may want to measure the individual contribution each cell has on the electrode. To do so in our simulation we just need to add the <strong>contributions_dir</strong> option to the simulation configuration:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cortical_electrode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/electrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cell_contributions&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"cortical_electrode"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/electrodes/linear_electrode.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_channels"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"contributions_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cell_contributions"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -819,7 +819,7 @@ various geometries.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;icsd_scripts/&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'icsd_scripts/'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -850,15 +850,15 @@ various geometries.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">definition</span><span class="p">,</span> <span class="n">u_symbol</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-    <span class="p">[</span><span class="s1">&#39;siemens&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;mS&#39;</span><span class="p">,</span> <span class="s1">&#39;uS&#39;</span><span class="p">,</span> <span class="s1">&#39;nS&#39;</span><span class="p">,</span> <span class="s1">&#39;pS&#39;</span><span class="p">],</span>
-    <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;milli&#39;</span><span class="p">,</span> <span class="s1">&#39;micro&#39;</span><span class="p">,</span> <span class="s1">&#39;nano&#39;</span><span class="p">,</span> <span class="s1">&#39;pico&#39;</span><span class="p">],</span>
-    <span class="p">[</span><span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;mS&#39;</span><span class="p">,</span> <span class="s1">&#39;uS&#39;</span><span class="p">,</span> <span class="s1">&#39;nS&#39;</span><span class="p">],</span>
-    <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;µS&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]):</span>
+    <span class="p">[</span><span class="s1">'siemens'</span><span class="p">,</span> <span class="s1">'S'</span><span class="p">,</span> <span class="s1">'mS'</span><span class="p">,</span> <span class="s1">'uS'</span><span class="p">,</span> <span class="s1">'nS'</span><span class="p">,</span> <span class="s1">'pS'</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="s1">'milli'</span><span class="p">,</span> <span class="s1">'micro'</span><span class="p">,</span> <span class="s1">'nano'</span><span class="p">,</span> <span class="s1">'pico'</span><span class="p">],</span>
+    <span class="p">[</span><span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">pq</span><span class="o">.</span><span class="n">A</span><span class="o">/</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="s1">'S'</span><span class="p">,</span> <span class="s1">'mS'</span><span class="p">,</span> <span class="s1">'uS'</span><span class="p">,</span> <span class="s1">'nS'</span><span class="p">],</span>
+    <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">u</span><span class="s1">'µS'</span><span class="p">,</span> <span class="kc">None</span><span class="p">]):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">definition</span> <span class="o">=</span> <span class="n">lastdefinition</span> <span class="o">/</span> <span class="mi">1000</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">pq</span><span class="p">,</span> <span class="n">symbol</span><span class="p">,</span> <span class="n">pq</span><span class="o">.</span><span class="n">UnitQuantity</span><span class="p">(</span>
-            <span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;siemens&#39;</span><span class="p">,</span>
+            <span class="n">prefix</span> <span class="o">+</span> <span class="s1">'siemens'</span><span class="p">,</span>
             <span class="n">definition</span><span class="p">,</span>
             <span class="n">symbol</span><span class="o">=</span><span class="n">symbol</span><span class="p">,</span>
             <span class="n">u_symbol</span><span class="o">=</span><span class="n">u_symbol</span><span class="p">))</span>
@@ -875,42 +875,42 @@ value for <code class="docutils literal notranslate"><span class="pre">sigma_top
 <p>Here, we will use the delta-iCSD method for calculating the CSD, using a Gaussian 3-point filter with a standard deviation equal to 1 (<code class="docutils literal notranslate"><span class="pre">sigma</span> <span class="pre">=</span> <span class="pre">1</span></code>). However, the py-iCSD toolbox also includes the step-iCSD, spline-iCSD, and std or standard CSD methods. More details on these methods can be found in <a class="reference external" href="https://doi.org/10.1016/j.jneumeth.2005.12.005">Pettersen et al. 2006</a>.</p>
 <p>These are examples of the input dictionaries for each method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">delta_input</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
-    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
-    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>          <span class="c1"># source diameter</span>
-    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>        <span class="c1"># extracellular conductivity</span>
-    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>    <span class="c1"># conductivity on top of cortex</span>
-    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
-    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
+    <span class="s1">'lfp'</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">'coord_electrode'</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">'diam'</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>          <span class="c1"># source diameter</span>
+    <span class="s1">'sigma'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>        <span class="c1"># extracellular conductivity</span>
+    <span class="s1">'sigma_top'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>    <span class="c1"># conductivity on top of cortex</span>
+    <span class="s1">'f_type'</span> <span class="p">:</span> <span class="s1">'gaussian'</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
+    <span class="s1">'f_order'</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
 <span class="p">}</span>
 <span class="n">step_input</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
-    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
-    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
-    <span class="s1">&#39;h&#39;</span> <span class="p">:</span> <span class="n">h</span><span class="p">,</span>                <span class="c1"># source thickness</span>
-    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-    <span class="s1">&#39;tol&#39;</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>          <span class="c1"># Tolerance in numerical integration</span>
-    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s1">'lfp'</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">'coord_electrode'</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">'diam'</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+    <span class="s1">'h'</span> <span class="p">:</span> <span class="n">h</span><span class="p">,</span>                <span class="c1"># source thickness</span>
+    <span class="s1">'sigma'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">'sigma_top'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">'tol'</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>          <span class="c1"># Tolerance in numerical integration</span>
+    <span class="s1">'f_type'</span> <span class="p">:</span> <span class="s1">'gaussian'</span><span class="p">,</span>
+    <span class="s1">'f_order'</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
 <span class="p">}</span>
 <span class="n">spline_input</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
-    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
-    <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
-    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-    <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-    <span class="s1">&#39;num_steps&#39;</span> <span class="p">:</span> <span class="mi">201</span><span class="p">,</span>      <span class="c1"># Spatial CSD upsampling to N steps</span>
-    <span class="s1">&#39;tol&#39;</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>
-    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="s1">'lfp'</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">'coord_electrode'</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">'diam'</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+    <span class="s1">'sigma'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">'sigma_top'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">'num_steps'</span> <span class="p">:</span> <span class="mi">201</span><span class="p">,</span>      <span class="c1"># Spatial CSD upsampling to N steps</span>
+    <span class="s1">'tol'</span> <span class="p">:</span> <span class="mf">1E-12</span><span class="p">,</span>
+    <span class="s1">'f_type'</span> <span class="p">:</span> <span class="s1">'gaussian'</span><span class="p">,</span>
+    <span class="s1">'f_order'</span> <span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
 <span class="p">}</span>
 <span class="n">std_input</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
-    <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
-    <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-    <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="s1">'lfp'</span> <span class="p">:</span> <span class="n">lfp_data</span><span class="p">,</span>
+    <span class="s1">'coord_electrode'</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+    <span class="s1">'sigma'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+    <span class="s1">'f_type'</span> <span class="p">:</span> <span class="s1">'gaussian'</span><span class="p">,</span>
+    <span class="s1">'f_order'</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -921,13 +921,13 @@ value for <code class="docutils literal notranslate"><span class="pre">sigma_top
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 
-<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;output_lfp/cortical_electrode.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">][()]</span>
-    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">lfp</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][()]</span>
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">'output_lfp/cortical_electrode.h5'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+    <span class="n">channel_idx</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/channel_id'</span><span class="p">][()]</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">lfp</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][()]</span>
 
 
-<span class="n">coord_ele</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;components/electrodes/linear_electrode.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">coord_ele</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'components/electrodes/linear_electrode.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -936,20 +936,20 @@ value for <code class="docutils literal notranslate"><span class="pre">sigma_top
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord_ele</span><span class="p">[</span><span class="s1">&#39;y_pos&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">1E-6</span><span class="p">)</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>      <span class="c1"># [um] --&gt; [m] linear probe - electrodes&#39; position in depth</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">z_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coord_ele</span><span class="p">[</span><span class="s1">'y_pos'</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mf">1E-6</span><span class="p">)</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>      <span class="c1"># [um] --&gt; [m] linear probe - electrodes' position in depth</span>
 <span class="n">diam</span> <span class="o">=</span> <span class="mf">800E-6</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                              <span class="c1"># [m] source diameter</span>
 <span class="n">h</span> <span class="o">=</span> <span class="mf">100E-6</span> <span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                                 <span class="c1"># [m] distance between channels</span>
 <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                          <span class="c1"># [S/m] or [1/(ohm*m)] extracellular conductivity</span>
 <span class="n">sigma_top</span> <span class="o">=</span> <span class="mf">0.3</span><span class="o">*</span> <span class="n">pq</span><span class="o">.</span><span class="n">S</span> <span class="o">/</span> <span class="n">pq</span><span class="o">.</span><span class="n">m</span>                      <span class="c1"># [S/m] or [1/(ohm*m)] conductivity on top of cortex</span>
 
 <span class="n">delta_input</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;lfp&#39;</span> <span class="p">:</span> <span class="n">lfp</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="mf">1E-3</span><span class="o">*</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="c1">#[um] --&gt; [V]</span>
-        <span class="s1">&#39;coord_electrode&#39;</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
-        <span class="s1">&#39;diam&#39;</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
-        <span class="s1">&#39;sigma&#39;</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
-        <span class="s1">&#39;sigma_top&#39;</span> <span class="p">:</span> <span class="n">sigma_top</span><span class="p">,</span>
-        <span class="s1">&#39;f_type&#39;</span> <span class="p">:</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
-        <span class="s1">&#39;f_order&#39;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
+        <span class="s1">'lfp'</span> <span class="p">:</span> <span class="n">lfp</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="mf">1E-3</span><span class="o">*</span><span class="n">pq</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="c1">#[um] --&gt; [V]</span>
+        <span class="s1">'coord_electrode'</span> <span class="p">:</span> <span class="n">z_data</span><span class="p">,</span>
+        <span class="s1">'diam'</span> <span class="p">:</span> <span class="n">diam</span><span class="p">,</span>
+        <span class="s1">'sigma'</span> <span class="p">:</span> <span class="n">sigma</span><span class="p">,</span>
+        <span class="s1">'sigma_top'</span> <span class="p">:</span> <span class="n">sigma_top</span><span class="p">,</span>
+        <span class="s1">'f_type'</span> <span class="p">:</span> <span class="s1">'gaussian'</span><span class="p">,</span>  <span class="c1"># gaussian filter</span>
+        <span class="s1">'f_order'</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>     <span class="c1"># 3-point filter, sigma = 1.</span>
     <span class="p">}</span>
 </pre></div>
 </div>
@@ -1004,36 +1004,36 @@ a = [ 2.213 ]
 
 <span class="c1">#plot LFP signal</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
-          <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">'upper'</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+          <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">lfp_data</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'bwr'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'tight'</span><span class="p">))</span>
 <span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;LFP (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">lfp_data</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">'LFP (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="n">lfp_data</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;LFP&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'LFP'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'ch #'</span><span class="p">)</span>
 
 <span class="c1">#plot raw csd estimate</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
-      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet_r&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">'upper'</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_raw</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'jet_r'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'tight'</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">csd_obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 <span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;CSD (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">csd_raw</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">'CSD (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="n">csd_raw</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'ch #'</span><span class="p">)</span>
 
 <span class="c1">#plot spatially filtered csd estimate</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
-      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet_r&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;tight&#39;</span><span class="p">))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">csd_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;, filtered&#39;</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="s1">'upper'</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> \
+      <span class="n">vmax</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">csd_smooth</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'jet_r'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'tight'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">csd_obj</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">', filtered'</span><span class="p">)</span>
 <span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
-<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">&#39;CSD (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">csd_smooth</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ch #&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;timestep&#39;</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s1">'CSD (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="n">csd_smooth</span><span class="o">.</span><span class="n">dimensionality</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'ch #'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'timestep'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

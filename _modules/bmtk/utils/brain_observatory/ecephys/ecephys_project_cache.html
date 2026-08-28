@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -433,14 +433,14 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">EcephysProjectWarehouseApi</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rma_engine</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">rma_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rma_engine</span> <span class="o">=</span> <span class="n">RmaEngine</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;api.brain-map.org&quot;</span><span class="p">)</span>
+            <span class="n">rma_engine</span> <span class="o">=</span> <span class="n">RmaEngine</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s2">"http"</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">"api.brain-map.org"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rma_engine</span> <span class="o">=</span> <span class="n">rma_engine</span>
 
 <div class="viewcode-block" id="EcephysProjectWarehouseApi.default">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.brain_observatory.ecephys.html#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.default">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">rma_kwargs</span><span class="p">):</span>
-        <span class="n">_rma_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scheme&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;api.brain-map.org&quot;</span><span class="p">}</span>
+        <span class="n">_rma_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"scheme"</span><span class="p">:</span> <span class="s2">"http"</span><span class="p">,</span> <span class="s2">"host"</span><span class="p">:</span> <span class="s2">"api.brain-map.org"</span><span class="p">}</span>
         <span class="n">_rma_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rma_kwargs</span><span class="p">)</span>
 
         <span class="n">engine_cls</span> <span class="o">=</span> <span class="n">AsyncRmaEngine</span> <span class="k">if</span> <span class="n">asynchronous</span> <span class="k">else</span> <span class="n">RmaEngine</span>
@@ -450,18 +450,18 @@
 <div class="viewcode-block" id="EcephysProjectWarehouseApi.get_session_data">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.brain_observatory.ecephys.html#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectWarehouseApi.get_session_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;criteria=model::WellKnownFile&quot;</span> \
-                <span class="s2">&quot;,rma::criteria,well_known_file_type[name$eq&#39;EcephysNwb&#39;]&quot;</span> \
-                <span class="s2">&quot;[attachable_type$eq&#39;EcephysSession&#39;]&quot;</span> \
-                <span class="sa">f</span><span class="s2">&quot;[attachable_id$eq</span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s2">"criteria=model::WellKnownFile"</span> \
+                <span class="s2">",rma::criteria,well_known_file_type[name$eq'EcephysNwb']"</span> \
+                <span class="s2">"[attachable_type$eq'EcephysSession']"</span> \
+                <span class="sa">f</span><span class="s2">"[attachable_id$eq</span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">]"</span>
         <span class="n">well_known_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rma_engine</span><span class="o">.</span><span class="n">get_rma_tabular</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">well_known_files</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;expected exactly 1 nwb file for session </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">, found: </span><span class="si">{</span><span class="n">well_known_files</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># noqa: E501</span>
+                <span class="sa">f</span><span class="s2">"expected exactly 1 nwb file for session </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s2">, found: </span><span class="si">{</span><span class="n">well_known_files</span><span class="si">}</span><span class="s2">"</span>  <span class="c1"># noqa: E501</span>
             <span class="p">)</span>
 
-        <span class="n">download_link</span> <span class="o">=</span> <span class="n">well_known_files</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;download_link&quot;</span><span class="p">]</span>
+        <span class="n">download_link</span> <span class="o">=</span> <span class="n">well_known_files</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"download_link"</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rma_engine</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">download_link</span><span class="p">)</span></div>
 
 
@@ -473,14 +473,14 @@
     <span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">build_and_execute</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="s2">&quot;{</span><span class="si">% i</span><span class="s2">mport &#39;rma_macros&#39; as rm %}&quot;</span>
-                <span class="s2">&quot;{</span><span class="si">% i</span><span class="s2">mport &#39;macros&#39; as m %}&quot;</span>
-                <span class="s2">&quot;criteria=model::EcephysSession&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;{{rm.optional_contains(&#39;id&#39;,session_ids)}}&quot;</span>
-                <span class="sa">r</span><span class="s2">&quot;{</span><span class="si">%i</span><span class="s2">f has_eye_tracking is not none%}[fail_eye_tracking$eq{{m.str(not has_eye_tracking).lower()}}]{</span><span class="si">%e</span><span class="s2">ndif%}&quot;</span>  <span class="c1"># noqa: E501</span>
-                <span class="sa">r</span><span class="s2">&quot;{{rm.optional_contains(&#39;stimulus_name&#39;,stimulus_names,True)}}&quot;</span>  <span class="c1"># noqa: E501</span>
-                <span class="s2">&quot;,rma::include,specimen(donor(age))&quot;</span>
-                <span class="s2">&quot;,well_known_files(well_known_file_type)&quot;</span>
+                <span class="s2">"{</span><span class="si">% i</span><span class="s2">mport 'rma_macros' as rm %}"</span>
+                <span class="s2">"{</span><span class="si">% i</span><span class="s2">mport 'macros' as m %}"</span>
+                <span class="s2">"criteria=model::EcephysSession"</span>
+                <span class="sa">r</span><span class="s2">"{{rm.optional_contains('id',session_ids)}}"</span>
+                <span class="sa">r</span><span class="s2">"{</span><span class="si">%i</span><span class="s2">f has_eye_tracking is not none%}[fail_eye_tracking$eq{{m.str(not has_eye_tracking).lower()}}]{</span><span class="si">%e</span><span class="s2">ndif%}"</span>  <span class="c1"># noqa: E501</span>
+                <span class="sa">r</span><span class="s2">"{{rm.optional_contains('stimulus_name',stimulus_names,True)}}"</span>  <span class="c1"># noqa: E501</span>
+                <span class="s2">",rma::include,specimen(donor(age))"</span>
+                <span class="s2">",well_known_files(well_known_file_type)"</span>
             <span class="p">),</span>
             <span class="n">base</span><span class="o">=</span><span class="n">rma_macros</span><span class="p">(),</span>
             <span class="n">engine</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rma_engine</span><span class="o">.</span><span class="n">get_rma_tabular</span><span class="p">,</span>
@@ -489,7 +489,7 @@
             <span class="n">stimulus_names</span><span class="o">=</span><span class="n">stimulus_names</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">response</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">age_in_days</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">sex</span> <span class="o">=</span> <span class="p">[]</span>
@@ -497,31 +497,31 @@
         <span class="n">has_nwb</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="n">age_in_days</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;specimen&quot;</span><span class="p">][</span><span class="s2">&quot;donor&quot;</span><span class="p">][</span><span class="s2">&quot;age&quot;</span><span class="p">][</span><span class="s2">&quot;days&quot;</span><span class="p">])</span>
-            <span class="n">sex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;specimen&quot;</span><span class="p">][</span><span class="s2">&quot;donor&quot;</span><span class="p">][</span><span class="s2">&quot;sex&quot;</span><span class="p">])</span>
+            <span class="n">age_in_days</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"specimen"</span><span class="p">][</span><span class="s2">"donor"</span><span class="p">][</span><span class="s2">"age"</span><span class="p">][</span><span class="s2">"days"</span><span class="p">])</span>
+            <span class="n">sex</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">"specimen"</span><span class="p">][</span><span class="s2">"donor"</span><span class="p">][</span><span class="s2">"sex"</span><span class="p">])</span>
 
-            <span class="n">gt</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;specimen&quot;</span><span class="p">][</span><span class="s2">&quot;donor&quot;</span><span class="p">][</span><span class="s2">&quot;full_genotype&quot;</span><span class="p">]</span>
+            <span class="n">gt</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"specimen"</span><span class="p">][</span><span class="s2">"donor"</span><span class="p">][</span><span class="s2">"full_genotype"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">gt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">gt</span> <span class="o">=</span> <span class="s2">&quot;wt&quot;</span>
+                <span class="n">gt</span> <span class="o">=</span> <span class="s2">"wt"</span>
             <span class="n">genotype</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span>
 
             <span class="n">current_has_nwb</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">for</span> <span class="n">wkf</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;well_known_files&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">wkf</span><span class="p">[</span><span class="s2">&quot;well_known_file_type&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;EcephysNwb&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">wkf</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="s2">"well_known_files"</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">wkf</span><span class="p">[</span><span class="s2">"well_known_file_type"</span><span class="p">][</span><span class="s2">"name"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"EcephysNwb"</span><span class="p">:</span>
                     <span class="n">current_has_nwb</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">has_nwb</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_has_nwb</span><span class="p">)</span>
 
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;age_in_days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_in_days</span>
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sex</span>
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;genotype&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">genotype</span>
-        <span class="n">response</span><span class="p">[</span><span class="s2">&quot;has_nwb&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_nwb</span>
+        <span class="n">response</span><span class="p">[</span><span class="s2">"age_in_days"</span><span class="p">]</span> <span class="o">=</span> <span class="n">age_in_days</span>
+        <span class="n">response</span><span class="p">[</span><span class="s2">"sex"</span><span class="p">]</span> <span class="o">=</span> <span class="n">sex</span>
+        <span class="n">response</span><span class="p">[</span><span class="s2">"genotype"</span><span class="p">]</span> <span class="o">=</span> <span class="n">genotype</span>
+        <span class="n">response</span><span class="p">[</span><span class="s2">"has_nwb"</span><span class="p">]</span> <span class="o">=</span> <span class="n">has_nwb</span>
 
         <span class="n">response</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span>
-            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;specimen&quot;</span><span class="p">,</span> <span class="s2">&quot;fail_eye_tracking&quot;</span><span class="p">,</span> <span class="s2">&quot;well_known_files&quot;</span><span class="p">],</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"specimen"</span><span class="p">,</span> <span class="s2">"fail_eye_tracking"</span><span class="p">,</span> <span class="s2">"well_known_files"</span><span class="p">],</span>
             <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">response</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
-            <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;stimulus_name&quot;</span><span class="p">:</span> <span class="s2">&quot;session_type&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"stimulus_name"</span><span class="p">:</span> <span class="s2">"session_type"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response</span></div>
@@ -576,30 +576,30 @@
 <div class="viewcode-block" id="EcephysProjectCache">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.brain_observatory.ecephys.html#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EcephysProjectCache</span><span class="p">(</span><span class="n">Cache</span><span class="p">):</span>
-    <span class="n">SESSIONS_KEY</span> <span class="o">=</span> <span class="s1">&#39;sessions&#39;</span>
-    <span class="n">PROBES_KEY</span> <span class="o">=</span> <span class="s1">&#39;probes&#39;</span>
-    <span class="n">CHANNELS_KEY</span> <span class="o">=</span> <span class="s1">&#39;channels&#39;</span>
-    <span class="n">UNITS_KEY</span> <span class="o">=</span> <span class="s1">&#39;units&#39;</span>
+    <span class="n">SESSIONS_KEY</span> <span class="o">=</span> <span class="s1">'sessions'</span>
+    <span class="n">PROBES_KEY</span> <span class="o">=</span> <span class="s1">'probes'</span>
+    <span class="n">CHANNELS_KEY</span> <span class="o">=</span> <span class="s1">'channels'</span>
+    <span class="n">UNITS_KEY</span> <span class="o">=</span> <span class="s1">'units'</span>
 
-    <span class="n">SESSION_DIR_KEY</span> <span class="o">=</span> <span class="s1">&#39;session_data&#39;</span>
-    <span class="n">SESSION_NWB_KEY</span> <span class="o">=</span> <span class="s1">&#39;session_nwb&#39;</span>
-    <span class="n">PROBE_LFP_NWB_KEY</span> <span class="o">=</span> <span class="s2">&quot;probe_lfp_nwb&quot;</span>
+    <span class="n">SESSION_DIR_KEY</span> <span class="o">=</span> <span class="s1">'session_data'</span>
+    <span class="n">SESSION_NWB_KEY</span> <span class="o">=</span> <span class="s1">'session_nwb'</span>
+    <span class="n">PROBE_LFP_NWB_KEY</span> <span class="o">=</span> <span class="s2">"probe_lfp_nwb"</span>
 
-    <span class="n">NATURAL_MOVIE_DIR_KEY</span> <span class="o">=</span> <span class="s2">&quot;movie_dir&quot;</span>
-    <span class="n">NATURAL_MOVIE_KEY</span> <span class="o">=</span> <span class="s2">&quot;natural_movie&quot;</span>
+    <span class="n">NATURAL_MOVIE_DIR_KEY</span> <span class="o">=</span> <span class="s2">"movie_dir"</span>
+    <span class="n">NATURAL_MOVIE_KEY</span> <span class="o">=</span> <span class="s2">"natural_movie"</span>
 
-    <span class="n">NATURAL_SCENE_DIR_KEY</span> <span class="o">=</span> <span class="s2">&quot;natural_scene_dir&quot;</span>
-    <span class="n">NATURAL_SCENE_KEY</span> <span class="o">=</span> <span class="s2">&quot;natural_scene&quot;</span>
+    <span class="n">NATURAL_SCENE_DIR_KEY</span> <span class="o">=</span> <span class="s2">"natural_scene_dir"</span>
+    <span class="n">NATURAL_SCENE_KEY</span> <span class="o">=</span> <span class="s2">"natural_scene"</span>
 
-    <span class="n">SESSION_ANALYSIS_METRICS_KEY</span> <span class="o">=</span> <span class="s2">&quot;session_analysis_metrics&quot;</span>
-    <span class="n">TYPEWISE_ANALYSIS_METRICS_KEY</span> <span class="o">=</span> <span class="s2">&quot;typewise_analysis_metrics&quot;</span>
+    <span class="n">SESSION_ANALYSIS_METRICS_KEY</span> <span class="o">=</span> <span class="s2">"session_analysis_metrics"</span>
+    <span class="n">TYPEWISE_ANALYSIS_METRICS_KEY</span> <span class="o">=</span> <span class="s2">"typewise_analysis_metrics"</span>
 
-    <span class="n">MANIFEST_VERSION</span> <span class="o">=</span> <span class="s1">&#39;0.3.0&#39;</span>
+    <span class="n">MANIFEST_VERSION</span> <span class="o">=</span> <span class="s1">'0.3.0'</span>
 
     <span class="n">SUPPRESS_FROM_PROBES</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;air_channel_index&quot;</span><span class="p">,</span> <span class="s2">&quot;surface_channel_index&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;date_of_acquisition&quot;</span><span class="p">,</span> <span class="s2">&quot;published_at&quot;</span><span class="p">,</span> <span class="s2">&quot;specimen_id&quot;</span><span class="p">,</span> <span class="s2">&quot;session_type&quot;</span><span class="p">,</span> <span class="s2">&quot;isi_experiment_id&quot;</span><span class="p">,</span> <span class="s2">&quot;age_in_days&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;genotype&quot;</span><span class="p">,</span> <span class="s2">&quot;has_nwb&quot;</span><span class="p">,</span> <span class="s2">&quot;lfp_temporal_subsampling_factor&quot;</span>
+        <span class="s2">"air_channel_index"</span><span class="p">,</span> <span class="s2">"surface_channel_index"</span><span class="p">,</span>
+        <span class="s2">"date_of_acquisition"</span><span class="p">,</span> <span class="s2">"published_at"</span><span class="p">,</span> <span class="s2">"specimen_id"</span><span class="p">,</span> <span class="s2">"session_type"</span><span class="p">,</span> <span class="s2">"isi_experiment_id"</span><span class="p">,</span> <span class="s2">"age_in_days"</span><span class="p">,</span>
+        <span class="s2">"sex"</span><span class="p">,</span> <span class="s2">"genotype"</span><span class="p">,</span> <span class="s2">"has_nwb"</span><span class="p">,</span> <span class="s2">"lfp_temporal_subsampling_factor"</span>
     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -611,7 +611,7 @@
             <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
-        <span class="n">manifest_</span> <span class="o">=</span> <span class="n">manifest</span> <span class="ow">or</span> <span class="s2">&quot;ecephys_project_manifest.json&quot;</span>
+        <span class="n">manifest_</span> <span class="o">=</span> <span class="n">manifest</span> <span class="ow">or</span> <span class="s2">"ecephys_project_manifest.json"</span>
         <span class="n">version_</span> <span class="o">=</span> <span class="n">version</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">MANIFEST_VERSION</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">EcephysProjectCache</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">manifest</span><span class="o">=</span><span class="n">manifest_</span><span class="p">,</span>
@@ -625,19 +625,19 @@
         <span class="k">if</span> <span class="n">stream_writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stream_writer</span> <span class="o">=</span> <span class="n">stream_writer</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="p">,</span> <span class="s2">&quot;rma_engine&quot;</span><span class="p">):</span>    <span class="c1"># EcephysProjectWarehouseApi    # noqa</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="p">,</span> <span class="s2">"rma_engine"</span><span class="p">):</span>    <span class="c1"># EcephysProjectWarehouseApi    # noqa</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stream_writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="o">.</span><span class="n">rma_engine</span><span class="o">.</span><span class="n">write_bytes</span>
             <span class="c1"># TODO: Make these names consistent in the different fetch apis</span>
-            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="p">,</span> <span class="s2">&quot;app_engine&quot;</span><span class="p">):</span>    <span class="c1"># EcephysProjectLimsApi    # noqa</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="p">,</span> <span class="s2">"app_engine"</span><span class="p">):</span>    <span class="c1"># EcephysProjectLimsApi    # noqa</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stream_writer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="o">.</span><span class="n">app_engine</span><span class="o">.</span><span class="n">write_bytes</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Must either set value for `stream_writer`, or use a &quot;</span>
-                    <span class="s2">&quot;`fetch_api` with an rma_engine or app_engine attribute &quot;</span>
-                    <span class="s2">&quot;that implements `write_bytes`. See `HttpEngine` and &quot;</span>
-                    <span class="s2">&quot;`AsyncHttpEngine` from &quot;</span>
-                    <span class="s2">&quot;allensdk.brain_observatory.ecephys.ecephys_project_api.&quot;</span>
-                    <span class="s2">&quot;http_engine for examples.&quot;</span><span class="p">)</span>
+                    <span class="s2">"Must either set value for `stream_writer`, or use a "</span>
+                    <span class="s2">"`fetch_api` with an rma_engine or app_engine attribute "</span>
+                    <span class="s2">"that implements `write_bytes`. See `HttpEngine` and "</span>
+                    <span class="s2">"`AsyncHttpEngine` from "</span>
+                    <span class="s2">"allensdk.brain_observatory.ecephys.ecephys_project_api."</span>
+                    <span class="s2">"http_engine for examples."</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="EcephysProjectCache.add_manifest_paths">
@@ -646,55 +646,55 @@
         <span class="n">manifest_builder</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">EcephysProjectCache</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_manifest_paths</span><span class="p">(</span><span class="n">manifest_builder</span><span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SESSIONS_KEY</span><span class="p">,</span> <span class="s1">&#39;sessions.csv&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SESSIONS_KEY</span><span class="p">,</span> <span class="s1">'sessions.csv'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PROBES_KEY</span><span class="p">,</span> <span class="s1">&#39;probes.csv&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PROBES_KEY</span><span class="p">,</span> <span class="s1">'probes.csv'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">CHANNELS_KEY</span><span class="p">,</span> <span class="s1">&#39;channels.csv&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CHANNELS_KEY</span><span class="p">,</span> <span class="s1">'channels.csv'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">UNITS_KEY</span><span class="p">,</span> <span class="s1">&#39;units.csv&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UNITS_KEY</span><span class="p">,</span> <span class="s1">'units.csv'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="s1">&#39;session_</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;dir&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="s1">'session_</span><span class="si">%d</span><span class="s1">'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'dir'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_NWB_KEY</span><span class="p">,</span> <span class="s1">&#39;session_</span><span class="si">%d</span><span class="s1">.nwb&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_NWB_KEY</span><span class="p">,</span> <span class="s1">'session_</span><span class="si">%d</span><span class="s1">.nwb'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_ANALYSIS_METRICS_KEY</span><span class="p">,</span> <span class="s1">&#39;session_</span><span class="si">%d</span><span class="s1">_analysis_metrics.csv&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_ANALYSIS_METRICS_KEY</span><span class="p">,</span> <span class="s1">'session_</span><span class="si">%d</span><span class="s1">_analysis_metrics.csv'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">PROBE_LFP_NWB_KEY</span><span class="p">,</span> <span class="s1">&#39;probe_</span><span class="si">%d</span><span class="s1">_lfp.nwb&#39;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;file&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PROBE_LFP_NWB_KEY</span><span class="p">,</span> <span class="s1">'probe_</span><span class="si">%d</span><span class="s1">_lfp.nwb'</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">SESSION_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s1">'file'</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_DIR_KEY</span><span class="p">,</span> <span class="s2">&quot;natural_movie_templates&quot;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s2">&quot;BASEDIR&quot;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">&quot;dir&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_DIR_KEY</span><span class="p">,</span> <span class="s2">"natural_movie_templates"</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s2">"BASEDIR"</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">"dir"</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">TYPEWISE_ANALYSIS_METRICS_KEY</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_analysis_metrics.csv&quot;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">&quot;file&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TYPEWISE_ANALYSIS_METRICS_KEY</span><span class="p">,</span> <span class="s2">"</span><span class="si">%s</span><span class="s2">_analysis_metrics.csv"</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">"file"</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_KEY</span><span class="p">,</span> <span class="s2">&quot;natural_movie_</span><span class="si">%d</span><span class="s2">.h5&quot;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">&quot;file&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_KEY</span><span class="p">,</span> <span class="s2">"natural_movie_</span><span class="si">%d</span><span class="s2">.h5"</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_MOVIE_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">"file"</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_DIR_KEY</span><span class="p">,</span> <span class="s2">&quot;natural_scene_templates&quot;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s2">&quot;BASEDIR&quot;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">&quot;dir&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_DIR_KEY</span><span class="p">,</span> <span class="s2">"natural_scene_templates"</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="s2">"BASEDIR"</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">"dir"</span>
         <span class="p">)</span>
 
         <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_KEY</span><span class="p">,</span> <span class="s2">&quot;natural_scene_</span><span class="si">%d</span><span class="s2">.tiff&quot;</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">&quot;file&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_KEY</span><span class="p">,</span> <span class="s2">"natural_scene_</span><span class="si">%d</span><span class="s2">.tiff"</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">NATURAL_SCENE_DIR_KEY</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s2">"file"</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">manifest_builder</span></div>
@@ -713,11 +713,11 @@
                        <span class="n">fetch_tries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                        <span class="n">timeout</span><span class="o">=</span><span class="mi">1200</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">scheme</span> <span class="ow">and</span> <span class="n">host</span><span class="p">:</span>
-            <span class="n">app_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scheme&quot;</span><span class="p">:</span> <span class="n">scheme</span><span class="p">,</span> <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="n">host</span><span class="p">,</span>
-                          <span class="s2">&quot;asynchronous&quot;</span><span class="p">:</span> <span class="n">asynchronous</span><span class="p">}</span>
+            <span class="n">app_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"scheme"</span><span class="p">:</span> <span class="n">scheme</span><span class="p">,</span> <span class="s2">"host"</span><span class="p">:</span> <span class="n">host</span><span class="p">,</span>
+                          <span class="s2">"asynchronous"</span><span class="p">:</span> <span class="n">asynchronous</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">app_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;asynchronous&quot;</span><span class="p">:</span> <span class="n">asynchronous</span><span class="p">}</span>
-        <span class="n">app_kwargs</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeout</span>
+            <span class="n">app_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"asynchronous"</span><span class="p">:</span> <span class="n">asynchronous</span><span class="p">}</span>
+        <span class="n">app_kwargs</span><span class="p">[</span><span class="s1">'timeout'</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_from_http_source_default</span><span class="p">(</span>
             <span class="n">EcephysProjectWarehouseApi</span><span class="p">,</span> <span class="n">app_kwargs</span><span class="p">,</span> <span class="n">manifest</span><span class="o">=</span><span class="n">manifest</span><span class="p">,</span>
             <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">fetch_tries</span><span class="o">=</span><span class="n">fetch_tries</span>
@@ -727,14 +727,14 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_from_http_source_default</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fetch_api_cls</span><span class="p">,</span> <span class="n">fetch_api_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">fetch_api_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;asynchronous&quot;</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="s2">"asynchronous"</span><span class="p">:</span> <span class="kc">True</span>
         <span class="p">}</span> <span class="k">if</span> <span class="n">fetch_api_kwargs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fetch_api_kwargs</span>
 
-        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stream_writer&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fetch_api_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;stream_writer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_bytes_from_coroutine</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stream_writer"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fetch_api_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"asynchronous"</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"stream_writer"</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_bytes_from_coroutine</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;stream_writer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_from_stream</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s2">"stream_writer"</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_from_stream</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">fetch_api</span><span class="o">=</span><span class="n">fetch_api_cls</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="o">**</span><span class="n">fetch_api_kwargs</span><span class="p">),</span>
@@ -744,8 +744,8 @@
 <div class="viewcode-block" id="EcephysProjectCache.get_session_data">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.brain_observatory.ecephys.html#bmtk.utils.brain_observatory.ecephys.ecephys_project_cache.EcephysProjectCache.get_session_data">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_session_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Obtain an EcephysSession object containing detailed data for a single session</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">""" Obtain an EcephysSession object containing detailed data for a single session</span>
+<span class="sd">        """</span>
 
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cache_path</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">SESSION_NWB_KEY</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">)</span>
         <span class="n">fetch</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fetch_api</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">,</span> <span class="n">session_id</span><span class="p">)</span>

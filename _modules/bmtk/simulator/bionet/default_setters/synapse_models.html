@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,7 +428,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -445,19 +445,19 @@
 <div class="viewcode-block" id="exp2syn">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.synapse_models.exp2syn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">exp2syn</span><span class="p">(</span><span class="n">syn_params</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of exp2syn synapses</span>
+<span class="w">    </span><span class="sd">"""Create a list of exp2syn synapses</span>
 
 <span class="sd">    :param syn_params: parameters of a synapse</span>
 <span class="sd">    :param xs: list of normalized distances along the section</span>
 <span class="sd">    :param secs: target sections</span>
 <span class="sd">    :return: list of NEURON synpase objects</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Exp2Syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;tau1&#39;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau2</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;tau2&#39;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'tau1'</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau2</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'tau2'</span><span class="p">]</span>
         <span class="n">syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">syns</span></div>
 
@@ -466,17 +466,17 @@
 <div class="viewcode-block" id="Exp2Syn">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">Exp2Syn</span><span class="p">(</span><span class="n">syn_params</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">sec_id</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of exp2syn synapses</span>
+<span class="w">    </span><span class="sd">"""Create a list of exp2syn synapses</span>
 
 <span class="sd">    :param syn_params: parameters of a synapse</span>
 <span class="sd">    :param sec_x: normalized distance along the section</span>
 <span class="sd">    :param sec_id: target section</span>
 <span class="sd">    :return: NEURON synapse object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Exp2Syn</span><span class="p">(</span><span class="n">sec_x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec_id</span><span class="p">)</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;tau1&#39;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau2</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;tau2&#39;</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'tau1'</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau2</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'tau2'</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">syn</span></div>
 
 
@@ -490,7 +490,7 @@
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp1syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
 
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.5</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_r</span> <span class="o">=</span> <span class="mi">200</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="mi">5</span>
@@ -505,11 +505,11 @@
 <span class="nd">@synapse_model</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">stp2syn</span><span class="p">(</span><span class="n">syn_params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp2syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;p0&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_r0&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_FDR&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"p0"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_r0"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_FDR"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">syn</span></div>
 
 
@@ -521,7 +521,7 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp3syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="c1"># temporary</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.6</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="mi">200</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="mi">2000</span>
@@ -540,7 +540,7 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp4syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">0.6</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_r</span> <span class="o">=</span> <span class="mi">200</span>
         <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="mi">5</span>
@@ -555,15 +555,15 @@
 <span class="nd">@synapse_model</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">stp5syn</span><span class="p">(</span><span class="n">syn_params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>  <span class="c1"># temporary</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp5syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_r0&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_FDR&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">a_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_FDR&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">a_D</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_D&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">a_i</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_i&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">a_f</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_f&quot;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">pbtilde</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;pbtilde&quot;</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_r0"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_FDR"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">a_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_FDR"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">a_D</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_D"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">a_i</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_i"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">a_f</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_f"</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">pbtilde</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"pbtilde"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">syn</span></div>
 
 
@@ -574,15 +574,15 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">stp5isyn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_r0&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_FDR&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">a_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_FDR&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">a_D</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_D&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">a_i</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_i&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">a_f</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;a_f&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">pbtilde</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;pbtilde&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_r0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_r0"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_FDR"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">a_FDR</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_FDR"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">a_D</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_D"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">a_i</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_i"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">a_f</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"a_f"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">pbtilde</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"pbtilde"</span><span class="p">]</span>
         <span class="n">syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">syns</span></div>
@@ -596,12 +596,12 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">tmgsyn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;erev&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_rec</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_rec&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau_facil</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_facil&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;U&quot;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">u0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;u0&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"erev"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_1</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_rec</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_rec"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau_facil</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_facil"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">U</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"U"</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">u0</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"u0"</span><span class="p">]</span>
         <span class="n">syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">syns</span></div>
@@ -612,16 +612,16 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.synapse_models.expsyn">[docs]</a>
 <span class="nd">@synapse_model</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">expsyn</span><span class="p">(</span><span class="n">syn_params</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of expsyn synapses</span>
+<span class="w">    </span><span class="sd">"""Create a list of expsyn synapses</span>
 
 <span class="sd">    :param syn_params: parameters of a synapse (dict)</span>
 <span class="sd">    :param x: normalized distance along the section (float)</span>
 <span class="sd">    :param sec: target section (hoc object)</span>
 <span class="sd">    :return: synapse objects</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ExpSyn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]</span>
-    <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau1&quot;</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]</span>
+    <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau1"</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">syn</span></div>
 
 
@@ -633,8 +633,8 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">exp1syn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
         <span class="n">syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">syns</span></div>
 
@@ -647,14 +647,14 @@
     <span class="n">syns</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">):</span>
         <span class="n">syn</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">exp1isyn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]</span>
-        <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">&quot;tau_1&quot;</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]</span>
+        <span class="n">syn</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s2">"tau_1"</span><span class="p">]</span>
         <span class="n">syns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">syns</span></div>
 
 
 
-<span class="n">add_synapse_model</span><span class="p">(</span><span class="n">Exp2Syn</span><span class="p">,</span> <span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_synapse_model</span><span class="p">(</span><span class="n">Exp2Syn</span><span class="p">,</span> <span class="s1">'exp2syn'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">add_synapse_model</span><span class="p">(</span><span class="n">Exp2Syn</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 

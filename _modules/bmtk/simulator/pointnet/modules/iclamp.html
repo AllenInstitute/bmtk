@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -423,10 +423,10 @@
 <div class="viewcode-block" id="IClampMod.initialize">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.iclamp.IClampMod.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a NEST current clamp (eg step-generator) and attaches it to the given cells.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Creates a NEST current clamp (eg step-generator) and attaches it to the given cells."""</span>
         
         <span class="c1"># Get a list of amplitude times and values, making sure values are valid for NEST and</span>
-        <span class="c1"># also turning off iclamp after &quot;duration&quot;</span>
+        <span class="c1"># also turning off iclamp after "duration"</span>
         <span class="c1"># TODO: May be faster if put the has_delays check first </span>
         <span class="n">amp_times</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">amp_vals</span> <span class="o">=</span> <span class="p">[]</span>
@@ -436,7 +436,7 @@
             <span class="k">if</span> <span class="n">start_time</span> <span class="o">&lt;=</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
                 <span class="c1"># NEST has issues with amplitude_values that occur before the dt.</span>
                 <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span>
-                    <span class="s1">&#39;IClamp Stimulus has onset (&quot;delay&quot;) skipping values that occur before &quot;dt&quot;&#39;</span><span class="p">,</span>
+                    <span class="s1">'IClamp Stimulus has onset ("delay") skipping values that occur before "dt"'</span><span class="p">,</span>
                     <span class="n">display_once</span><span class="o">=</span><span class="kc">True</span>
                 <span class="p">)</span>
                 <span class="k">continue</span>
@@ -457,10 +457,10 @@
 
         <span class="c1"># Create iclamp/current generator</span>
         <span class="n">scg</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
-            <span class="s2">&quot;step_current_generator&quot;</span><span class="p">,</span>
+            <span class="s2">"step_current_generator"</span><span class="p">,</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
-                <span class="s1">&#39;amplitude_times&#39;</span><span class="p">:</span> <span class="n">amp_times</span><span class="p">,</span> 
-                <span class="s1">&#39;amplitude_values&#39;</span><span class="p">:</span> <span class="n">amp_vals</span>
+                <span class="s1">'amplitude_times'</span><span class="p">:</span> <span class="n">amp_times</span><span class="p">,</span> 
+                <span class="s1">'amplitude_values'</span><span class="p">:</span> <span class="n">amp_vals</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -468,7 +468,7 @@
         <span class="c1"># TODO: Check it will work if multiple Node populations are selected!</span>
         <span class="n">node_set</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_set</span><span class="p">)</span>
         <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">node_set</span><span class="o">.</span><span class="n">gids</span><span class="p">()</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">scg</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">),</span> <span class="n">syn_spec</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">})</span></div>
+        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">scg</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">),</span> <span class="n">syn_spec</span><span class="o">=</span><span class="p">{</span><span class="s1">'delay'</span><span class="p">:</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">})</span></div>
 </div>
 
 </pre></div>

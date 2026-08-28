@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -441,7 +441,7 @@
 <div class="viewcode-block" id="kernel_dot_product">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.kernel_dot_product">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">kernel_dot_product</span><span class="p">(</span><span class="n">movie_data</span><span class="p">,</span> <span class="n">ti_offset</span><span class="p">,</span> <span class="n">kernel_t_inds</span><span class="p">,</span> <span class="n">kernel_row_inds</span><span class="p">,</span> <span class="n">kernel_col_inds</span><span class="p">,</span> <span class="n">kernel_kernel</span><span class="p">):</span>
-        <span class="n">t_inds</span> <span class="o">=</span> <span class="n">kernel_t_inds</span> <span class="o">+</span> <span class="n">ti_offset</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Offset by one nhc 14 Apr &#39;17</span>
+        <span class="n">t_inds</span> <span class="o">=</span> <span class="n">kernel_t_inds</span> <span class="o">+</span> <span class="n">ti_offset</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Offset by one nhc 14 Apr '17</span>
         <span class="n">min_ind</span><span class="p">,</span> <span class="n">max_ind</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">movie_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">allowed_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">min_ind</span> <span class="o">&lt;=</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">t_inds</span> <span class="o">&lt;</span> <span class="n">max_ind</span><span class="p">))</span>
         <span class="n">t_inds</span> <span class="o">=</span> <span class="n">t_inds</span><span class="p">[</span><span class="n">allowed_inds</span><span class="p">]</span>
@@ -458,8 +458,8 @@
 <div class="viewcode-block" id="KernelCursor">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">KernelCursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that takes care of the convolution of the (non-separable) spatial-temporal linear filter with the move.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A class that takes care of the convolution of the (non-separable) spatial-temporal linear filter with the move.</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">movie</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">movie</span> <span class="o">=</span> <span class="n">movie</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span>
@@ -553,7 +553,7 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.FilterCursor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FilterCursor</span><span class="p">(</span><span class="n">KernelCursor</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatiotemporal_filter</span><span class="p">,</span> <span class="n">movie</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="c1"># TODO: not sure why this needs to have it&#39;s own class and shouldn&#39;t be merged into parent?</span>
+        <span class="c1"># TODO: not sure why this needs to have it's own class and shouldn't be merged into parent?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatiotemporal_filter</span> <span class="o">=</span> <span class="n">spatiotemporal_filter</span>
         <span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatiotemporal_filter</span><span class="o">.</span><span class="n">get_spatiotemporal_kernel</span><span class="p">(</span><span class="n">movie</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">movie</span><span class="o">.</span><span class="n">col_range</span><span class="p">,</span>
                                                                       <span class="n">t_range</span><span class="o">=</span><span class="n">movie</span><span class="o">.</span><span class="n">t_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
@@ -566,13 +566,13 @@
 <div class="viewcode-block" id="LNUnitCursor">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.LNUnitCursor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LNUnitCursor</span><span class="p">(</span><span class="n">KernelCursor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class that takes care of applying a linear-nonlinear filter to a movie. Parent class is used to apply the</span>
+<span class="w">    </span><span class="sd">"""A class that takes care of applying a linear-nonlinear filter to a movie. Parent class is used to apply the</span>
 <span class="sd">    spatial-termporal filter convolution to the movie, when then the lnunit non-linear transfer function is applied.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lnunit</span><span class="p">,</span> <span class="n">movie</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lnunit</span> <span class="o">=</span> <span class="n">lnunit</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="s2">&quot;t_range_orig&quot;</span><span class="p">):</span>    <span class="c1"># Reset padded to original</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="s2">"t_range_orig"</span><span class="p">):</span>    <span class="c1"># Reset padded to original</span>
             <span class="n">movie</span><span class="o">.</span><span class="n">t_range</span> <span class="o">=</span> <span class="n">movie</span><span class="o">.</span><span class="n">t_range_orig</span>
             <span class="n">movie</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">movie</span><span class="o">.</span><span class="n">data_orig</span>
             <span class="n">movie</span><span class="o">.</span><span class="n">row_range</span> <span class="o">=</span> <span class="n">movie</span><span class="o">.</span><span class="n">row_range_orig</span>
@@ -582,7 +582,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lnunit</span><span class="o">.</span><span class="n">linear_filter</span><span class="p">,</span> <span class="n">SpectroTemporalFilter</span><span class="p">):</span>
             <span class="n">kernel</span> <span class="o">=</span> <span class="n">lnunit</span><span class="o">.</span><span class="n">get_spectrotemporal_kernel</span><span class="p">(</span><span class="n">movie</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">movie</span><span class="o">.</span><span class="n">t_range</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">movie</span><span class="o">.</span><span class="n">padding</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">movie</span><span class="o">.</span><span class="n">padding</span> <span class="o">==</span> <span class="s1">&#39;edge&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">movie</span><span class="o">.</span><span class="n">padding</span> <span class="o">==</span> <span class="s1">'edge'</span><span class="p">:</span>
                     <span class="n">pre_pad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">t_inds</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">movie</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                                   <span class="n">movie</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">])</span>
                     <span class="n">pre_pad</span> <span class="o">=</span> <span class="n">pre_pad</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
@@ -613,7 +613,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">LNUnitCursor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">movie</span><span class="p">)</span>
     
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="c1"># TODO: Don&#39;t use call operator, change to evaluate</span>
+        <span class="c1"># TODO: Don't use call operator, change to evaluate</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">lnunit</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">LNUnitCursor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
 
 
@@ -653,12 +653,12 @@
 <div class="viewcode-block" id="SeparableKernelCursor">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SeparableKernelCursor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class for applying a spatial-temporal convolution to a movie. Unlike the KernelCursor the spatial-temporal</span>
+<span class="w">    </span><span class="sd">"""A class for applying a spatial-temporal convolution to a movie. Unlike the KernelCursor the spatial-temporal</span>
 <span class="sd">    filter is broken up into its components, spatial filter is applied then followed by a temporal filter convolution.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_kernel</span><span class="p">,</span> <span class="n">temporal_kernel</span><span class="p">,</span> <span class="n">movie</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assumes temporal kernel is not reversed&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Assumes temporal kernel is not reversed"""</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">movie</span> <span class="o">=</span> <span class="n">movie</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_kernel</span> <span class="o">=</span> <span class="n">spatial_kernel</span>
@@ -678,7 +678,7 @@
         <span class="c1"># spatial kernel. This will not affect the results.</span>
         <span class="n">nonzero_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">full_spatial_kernel</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nonzero_inds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># If spatial kernel is all 0&#39;s then don&#39;t try to segment the receptive filed. Use full frame during convolve.</span>
+            <span class="c1"># If spatial kernel is all 0's then don't try to segment the receptive filed. Use full frame during convolve.</span>
             <span class="n">rm</span><span class="p">,</span> <span class="n">rM</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
             <span class="n">cm</span><span class="p">,</span> <span class="n">cM</span> <span class="o">=</span> <span class="n">full_spatial_kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">full_spatial_kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -691,7 +691,7 @@
         <span class="c1"># Convolve results of spatial convolution with the temporal filter</span>
         <span class="n">sig_tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">full_temporal_kernel</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">convolution_answer_sep_spatial</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">sig_tmp</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">full_temporal_kernel</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">convolution_answer_sep_spatial</span>
-        <span class="n">convolution_answer_sep</span> <span class="o">=</span> <span class="n">spsig</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">sig_tmp</span><span class="p">,</span> <span class="n">full_temporal_kernel</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">)</span>
+        <span class="n">convolution_answer_sep</span> <span class="o">=</span> <span class="n">spsig</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">sig_tmp</span><span class="p">,</span> <span class="n">full_temporal_kernel</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">)</span>
         <span class="c1"># normalize by the frame rate</span>
         <span class="n">convolution_answer_sep</span> <span class="o">=</span> <span class="n">convolution_answer_sep</span> <span class="o">*</span> <span class="mf">1000.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">movie</span><span class="o">.</span><span class="n">frame_rate</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">convolution_answer_sep</span><span class="p">))</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">movie</span><span class="o">.</span><span class="n">frame_rate</span>
@@ -745,7 +745,7 @@
 <div class="viewcode-block" id="SeparableMultiLNUnitCursor.evaluate">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor.evaluate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">assert</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;downsample&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'downsample'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">y_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">cursor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lnunit_cursor_list</span><span class="p">:</span>
             <span class="n">t</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>

@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -440,7 +440,7 @@
 <div class="viewcode-block" id="NodePool">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.node_pool.NodePool">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NodePool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores a collection of nodes based off some query of the network.</span>
+<span class="w">    </span><span class="sd">"""Stores a collection of nodes based off some query of the network.</span>
 
 <span class="sd">    Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and</span>
 <span class="sd">    saved by the network, this just stores the query information and provides iterator methods for accessing different</span>
@@ -452,7 +452,7 @@
 <span class="sd">        * Implement operators on properties</span>
 <span class="sd">            nodes = net.nodes(val) &gt; 100</span>
 <span class="sd">            nodes = 100 in net.nodes(val)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__network</span> <span class="o">=</span> <span class="n">network</span>
@@ -477,13 +477,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">filter_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__properties</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">=</span> <span class="s1">'*'</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">=</span> <span class="s1">''</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">conditional</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">==&#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">+=</span> <span class="n">conditional</span> <span class="o">+</span> <span class="s1">&#39;&amp;&#39;</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">):</span>
+                    <span class="n">conditional</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">=='</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">+=</span> <span class="n">conditional</span> <span class="o">+</span> <span class="s1">'&amp;'</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'&amp;'</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filter_str</span>
@@ -493,12 +493,12 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_filter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">filter_str</span><span class="p">):</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_str</span><span class="p">,</span> <span class="n">string_types</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_str</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">filter_str</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_str</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">filter_str</span> <span class="o">==</span> <span class="s1">'*'</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
         <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">condtional</span> <span class="ow">in</span> <span class="n">filter_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&amp;&#39;</span><span class="p">):</span>
-            <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">condtional</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">condtional</span> <span class="ow">in</span> <span class="n">filter_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'&amp;'</span><span class="p">):</span>
+            <span class="n">var</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">condtional</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'=='</span><span class="p">)</span>
             <span class="n">properties</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">)</span></div>
 
@@ -512,7 +512,7 @@
             <span class="k">if</span> <span class="n">ov</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">'__call__'</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">(</span><span class="n">ov</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -494,11 +494,11 @@ to instantiate a module from the metadata parameters (eg, name, module, input_ty
 <p>Use the build() method to parse the json/dictionary of a section of input, then <strong>params</strong> to get a dictionary
 of the values used to instantiate:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">input</span> <span class="o">=</span> <span class="n">SimInput</span><span class="o">.</span><span class="n">Build</span><span class="p">(</span>
-          <span class="s1">&#39;spikes_inputs&#39;</span><span class="p">,</span>
-          <span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="s1">&#39;input_type&#39;</span><span class="p">:</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">:</span> <span class="s1">&#39;my_spikes.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;time_scale&#39;</span><span class="p">:</span> <span class="s1">&#39;ms&#39;</span><span class="p">}</span>
+          <span class="s1">'spikes_inputs'</span><span class="p">,</span>
+          <span class="p">{</span><span class="s1">'module'</span><span class="p">:</span> <span class="s1">'spikes'</span><span class="p">,</span> <span class="s1">'input_type'</span><span class="p">:</span> <span class="s1">'hdf5'</span><span class="p">,</span> <span class="n">input_file</span><span class="p">:</span> <span class="s1">'my_spikes.h5'</span><span class="p">,</span> <span class="s1">'time_scale'</span><span class="p">:</span> <span class="s1">'ms'</span><span class="p">}</span>
 <span class="p">)</span>
 
-<span class="k">if</span> <span class="nb">input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;spike&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="nb">input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">'spike'</span><span class="p">:</span>
     <span class="n">SpikesInput</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
     <span class="o">...</span>
 </pre></div>
@@ -518,7 +518,7 @@ of the values used to instantiate:</p>
 parameters. In this case use the register module method:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyVClampInput</span><span class="p">(</span><span class="n">SimInput</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_module</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;vclamp&#39;</span><span class="p">,</span> <span class="s1">&#39;voltage_clamp&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">'vclamp'</span><span class="p">,</span> <span class="s1">'voltage_clamp'</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">():</span>
         <span class="o">....</span>
@@ -723,8 +723,8 @@ values.</p>
 <p>Use the build() method to convert a “reports” section dictionary to a SimReport object. The SimReport object has
 properties that can be used to instantiate a simualtion report, particular properties <strong>module</strong> and <strong>params</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">report</span> <span class="o">=</span> <span class="n">SimReport</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
-    <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;my_report&#39;</span><span class="p">,</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;my_mod&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
+    <span class="n">report_name</span><span class="o">=</span><span class="s1">'my_report'</span><span class="p">,</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'module'</span><span class="p">:</span> <span class="s1">'my_mod'</span><span class="p">,</span> <span class="o">...</span><span class="p">})</span>
 <span class="o">...</span>
 <span class="n">MyReport</span><span class="p">(</span><span class="o">**</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
 </pre></div>

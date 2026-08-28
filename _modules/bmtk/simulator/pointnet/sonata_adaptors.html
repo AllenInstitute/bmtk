@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -424,14 +424,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.pointnet.glif_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_aibs2nest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.pointnet.nest_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">nest_version</span>
 
-<span class="n">NEST_SYNAPSE_MODEL_PROP</span> <span class="o">=</span> <span class="s1">&#39;model&#39;</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39;synapse_model&#39;</span>
+<span class="n">NEST_SYNAPSE_MODEL_PROP</span> <span class="o">=</span> <span class="s1">'model'</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">'synapse_model'</span>
 
 
 
 <div class="viewcode-block" id="all_null">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.all_null">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_null</span><span class="p">(</span><span class="n">node_group</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to determine if a column has any non-NULL values&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Helper function to determine if a column has any non-NULL values"""</span>
     <span class="n">types_table</span> <span class="o">=</span> <span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">types_table</span>
     <span class="n">non_null_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">types_table</span><span class="p">[</span><span class="n">ntid</span><span class="p">][</span><span class="n">column_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">ntid</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">node_group</span><span class="o">.</span><span class="n">node_type_ids</span><span class="p">)</span>
                      <span class="k">if</span> <span class="n">types_table</span><span class="p">[</span><span class="n">ntid</span><span class="p">][</span><span class="n">column_name</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
@@ -471,27 +471,27 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nest_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">'model_template'</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="c1"># .split(&#39;:&#39;)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">'model_template'</span><span class="p">]</span> <span class="c1"># .split(':')</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nest_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">'dynamics_params'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">'model_type'</span><span class="p">]</span>
 
 <div class="viewcode-block" id="PointNodeBatched.build">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.build">[docs]</a>
@@ -513,16 +513,16 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_group</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="c1"># Since it&#39;s possible that this batch only contains a subset of the dataset for this</span>
+            <span class="c1"># Since it's possible that this batch only contains a subset of the dataset for this</span>
             <span class="c1"># group, we must filter-out and sort by the passed in indices.</span>
             <span class="n">grp_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_group</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">grp_vals</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_indices</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'node_id'</span><span class="p">,</span> <span class="s1">'node_ids'</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span>
-        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_type_ids&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'node_type_id'</span><span class="p">,</span> <span class="s1">'node_type_ids'</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Could not find property </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> in either nodes or node-types table for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_group</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Could not find property </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> in either nodes or node-types table for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_group</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
@@ -565,7 +565,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">nest_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nest_model</span>
         <span class="n">dynamics_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_params</span>
-        <span class="n">fnc_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="s1">&#39;model_processing&#39;</span><span class="p">]</span>
+        <span class="n">fnc_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="s1">'model_processing'</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">fnc_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">nest_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -635,16 +635,16 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">preprocess_node_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">node_population</span><span class="p">):</span>
         <span class="n">NodeAdaptor</span><span class="o">.</span><span class="n">preprocess_node_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">node_population</span><span class="p">)</span>
         <span class="n">node_types_table</span> <span class="o">=</span> <span class="n">node_population</span><span class="o">.</span><span class="n">types_table</span>
-        <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'model_template'</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">'dynamics_params'</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">node_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">node_population</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
                 <span class="n">node_type_attrs</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
-                <span class="n">mtemplate</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
-                <span class="n">dyn_params</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">mtemplate</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest:glif&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dyn_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;GLIF&#39;</span><span class="p">:</span>
+                <span class="n">mtemplate</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">]</span>
+                <span class="n">dyn_params</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">mtemplate</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'nest:glif'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dyn_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'type'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'GLIF'</span><span class="p">:</span>
                     <span class="n">model_template</span><span class="p">,</span> <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">convert_aibs2nest</span><span class="p">(</span><span class="n">mtemplate</span><span class="p">,</span> <span class="n">dyn_params</span><span class="p">)</span>
-                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span>
-                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dynamics_params</span></div>
+                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span>
+                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dynamics_params</span></div>
 
 
 <div class="viewcode-block" id="PointNodeAdaptor.patch_adaptor">
@@ -658,14 +658,14 @@
             <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># If there is a non-null value in the model_processing column then it potentially means that every cell is</span>
-        <span class="c1"># uniquly built (currently model_processing is applied to each individ. cell) and nodes can&#39;t be batched</span>
-        <span class="k">if</span> <span class="s1">&#39;model_processing&#39;</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="c1"># uniquly built (currently model_processing is applied to each individ. cell) and nodes can't be batched</span>
+        <span class="k">if</span> <span class="s1">'model_processing'</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">elif</span> <span class="s1">&#39;model_processing&#39;</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">all_null</span><span class="p">(</span><span class="n">node_group</span><span class="p">,</span> <span class="s1">&#39;model_processing&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="s1">'model_processing'</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">all_null</span><span class="p">(</span><span class="n">node_group</span><span class="p">,</span> <span class="s1">'model_processing'</span><span class="p">):</span>
             <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Batch processing nodes for </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_group</span><span class="o">.</span><span class="n">group_id</span><span class="p">))</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Batch processing nodes for </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_group</span><span class="o">.</span><span class="n">group_id</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">node_adaptor</span></div>
 </div>
@@ -692,7 +692,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">src_node</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">trg_node</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+            <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">(</span><span class="s1">'default'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">syn_model_fnc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">)</span></div>
 
@@ -739,7 +739,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.synaptic_params">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">synaptic_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
         <span class="c1"># TODO: THIS NEEDS to be replaced with call to synapse_models</span>
-        <span class="n">params_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">}</span>
+        <span class="n">params_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'weight'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">'delay'</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">}</span>
         <span class="n">params_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params_dict</span></div>
 
@@ -761,10 +761,10 @@
 
         <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">edge_type_ids</span><span class="p">:</span>
             <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                <span class="n">model_template</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">model_template</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest&#39;</span><span class="p">):</span>
-                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span></div>
+            <span class="k">if</span> <span class="s1">'model_template'</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">model_template</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">model_template</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'nest'</span><span class="p">):</span>
+                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span></div>
 
 
 <div class="viewcode-block" id="PointEdgeAdaptor.get_batches">
@@ -777,21 +777,21 @@
 
         <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">edge_type_ids</span>
         <span class="n">et_id_counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">edge_type_ids</span><span class="p">)</span>
-        <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;etid&#39;</span><span class="p">:</span> <span class="n">edge_type_ids</span><span class="p">,</span> <span class="s1">&#39;src_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">,</span>
-                               <span class="s1">&#39;trg_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">})</span>
+        <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'etid'</span><span class="p">:</span> <span class="n">edge_type_ids</span><span class="p">,</span> <span class="s1">'src_nids'</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">,</span>
+                               <span class="s1">'trg_nids'</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">})</span>
 
-        <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'nsyns'</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">'nsyns'</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'syn_weight'</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">'syn_weight'</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'delay'</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">'delay'</span><span class="p">)</span>
 
-        <span class="c1">#for et_id, grp_vals in tmp_df.groupby(&#39;etid&#39;):</span>
-        <span class="c1">#    src_ids[et_id] = np.array(grp_vals[&#39;src_nids&#39;])</span>
-        <span class="c1">#    trg_ids[et_id] = np.array(grp_vals[&#39;trg_nids&#39;])</span>
+        <span class="c1">#for et_id, grp_vals in tmp_df.groupby('etid'):</span>
+        <span class="c1">#    src_ids[et_id] = np.array(grp_vals['src_nids'])</span>
+        <span class="c1">#    trg_ids[et_id] = np.array(grp_vals['trg_nids'])</span>
 
         <span class="n">type_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">edge_id</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">et_id_counter</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
         <span class="n">src_pop</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">source_population</span>
@@ -800,64 +800,64 @@
         <span class="n">grp_df</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'etid'</span><span class="p">):</span>
             <span class="n">edge_props</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span>
             <span class="n">n_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">)</span>
 
             <span class="c1"># Get the model type</span>
-            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="n">NEST_SYNAPSE_MODEL_PROP</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="n">NEST_SYNAPSE_MODEL_PROP</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">]</span>
 
             <span class="c1"># Add dynamics params</span>
             <span class="c1"># TODO: Add to dataframe and if a part of hdf5 we can return any dynamics params as a list</span>
-            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">])</span>
+            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_props</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">])</span>
 
             <span class="c1"># get the delay parameter</span>
-            <span class="k">if</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
-                <span class="c1"># For NEST 2.* &#39;delay&#39; can be a single value, but for 3.* it requires a full array for each edge</span>
+            <span class="k">if</span> <span class="s1">'delay'</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">'delay'</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s1">'delay'</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
+                <span class="c1"># For NEST 2.* 'delay' can be a single value, but for 3.* it requires a full array for each edge</span>
                 <span class="n">delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">delay</span>
-                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delay</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">'delay'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delay</span>
 
-            <span class="n">weight_function</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight_function&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">weight_function</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'weight_function'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">weight_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">grp_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">grp_df</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
                     <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_nodes_df</span><span class="p">(</span><span class="n">src_pop</span><span class="p">)</span>
                     <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_nodes_df</span><span class="p">(</span><span class="n">trg_pop</span><span class="p">)</span>
-                <span class="n">edges</span> <span class="o">=</span> <span class="n">grp_df</span><span class="p">[</span><span class="n">grp_df</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">edge_id</span><span class="p">]</span>
-                <span class="n">target_nodes</span> <span class="o">=</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
-                <span class="n">source_nodes</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="n">grp_df</span><span class="p">[</span><span class="n">grp_df</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">edge_id</span><span class="p">]</span>
+                <span class="n">target_nodes</span> <span class="o">=</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+                <span class="n">source_nodes</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">has_synaptic_weight</span><span class="p">(</span><span class="n">weight_function</span><span class="p">):</span>
-                    <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;Unable to calculate synaptic weight for &quot;</span><span class="si">{}</span><span class="s1">&quot; edges, missing &quot;weight_function&quot; &#39;</span> \
-                              <span class="s1">&#39;attribute value </span><span class="si">{}</span><span class="s1"> function.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight_function</span><span class="p">)</span>
+                    <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">'Unable to calculate synaptic weight for "</span><span class="si">{}</span><span class="s1">" edges, missing "weight_function" '</span> \
+                              <span class="s1">'attribute value </span><span class="si">{}</span><span class="s1"> function.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight_function</span><span class="p">)</span>
                     <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
                 <span class="n">weight_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synaptic_weight</span><span class="p">(</span><span class="n">weight_function</span><span class="p">)</span>
-                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">)</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">'weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Get nsyns as either an array or a constant. If not explcitiy specified assume nsyns = 1</span>
-                <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">if</span> <span class="s1">'nsyns'</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'nsyns'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
                 <span class="c1"># get syn_weight as either an array or constant. If not explicity stated throw an error</span>
-                <span class="k">if</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-                <span class="k">elif</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s1">'syn_weight'</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">elif</span> <span class="s1">'syn_weight'</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># TODO: Make more explicity. Or default to syn_weight of 0</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find syn_weight value&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Could not find syn_weight value'</span><span class="p">)</span>
 
                 <span class="c1"># caluclate weight</span>
-                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nsyns</span> <span class="o">*</span> <span class="n">syn_weight</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">'weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">nsyns</span> <span class="o">*</span> <span class="n">syn_weight</span>
 
-            <span class="k">yield</span> <span class="n">PointEdgeBatched</span><span class="p">(</span><span class="n">source_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;src_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">target_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;trg_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="k">yield</span> <span class="n">PointEdgeBatched</span><span class="p">(</span><span class="n">source_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">'src_nids'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">target_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">'trg_nids'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                                    <span class="n">nest_params</span><span class="o">=</span><span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">])</span></div>
 
 
@@ -867,7 +867,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
         <span class="n">edge_adaptor</span> <span class="o">=</span> <span class="n">EdgeAdaptor</span><span class="o">.</span><span class="n">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;weight_function&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span> <span class="ow">and</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'weight_function'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span> <span class="ow">and</span> <span class="s1">'syn_weight'</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">syn_weight</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">point_syn_weight</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
 
         <span class="c1">#else:</span>
@@ -881,7 +881,7 @@
 <div class="viewcode-block" id="point_syn_weight">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.point_syn_weight">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">point_syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">edge</span><span class="o">.</span><span class="n">nsyns</span></div>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span><span class="o">*</span><span class="n">edge</span><span class="o">.</span><span class="n">nsyns</span></div>
 
 </pre></div>
 

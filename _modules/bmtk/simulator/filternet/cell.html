@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -450,11 +450,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">cell_loaders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">model_processing</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell_loaders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Cannot use more than one model_processing method per cell. Exiting.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Cannot use more than one model_processing method per cell. Exiting.'</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cell_loaders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">model_processing_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">cell_processor</span><span class="p">(</span><span class="n">cell_loaders</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">model_processing_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">cell_processor</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+            <span class="n">model_processing_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">cell_processor</span><span class="p">(</span><span class="s1">'default'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">predefined_jitter</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">jitter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_jitter</span>

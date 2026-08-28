@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,11 +425,11 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.to_edges_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_edges_dataframe</span><span class="p">(</span><span class="n">edges_pop_h5</span><span class="p">,</span> <span class="n">edge_types_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-        <span class="s1">&#39;source_node_id&#39;</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;target_node_id&#39;</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;edge_type_id&#39;</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;edge_group_id&#39;</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;edge_group_index&#39;</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">][()],</span>
+        <span class="s1">'source_node_id'</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">][()],</span>
+        <span class="s1">'target_node_id'</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">][()],</span>
+        <span class="s1">'edge_type_id'</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">][()],</span>
+        <span class="s1">'edge_group_id'</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">][()],</span>
+        <span class="s1">'edge_group_index'</span><span class="p">:</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'edge_group_index'</span><span class="p">][()],</span>
     <span class="p">})</span>
 
     <span class="k">if</span> <span class="n">with_properties</span><span class="p">:</span>
@@ -441,11 +441,11 @@
             <span class="n">include_prop</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">True</span>
             
         <span class="k">if</span> <span class="n">edge_types_path</span><span class="p">:</span>
-            <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edge_types_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">edge_types_df</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">edge_types_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;edge_type_id&#39;</span><span class="p">]]</span>
-            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">edge_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">)</span>
+            <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edge_types_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
+            <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">edge_types_df</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">edge_types_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">'edge_type_id'</span><span class="p">]]</span>
+            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">edge_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">'edge_type_id'</span><span class="p">)</span>
             
-        <span class="n">grp_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">][()])</span>
+        <span class="n">grp_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edges_pop_h5</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">][()])</span>
         <span class="n">edge_props_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">grp_id</span> <span class="ow">in</span> <span class="n">grp_ids</span><span class="p">:</span>
             <span class="n">edge_group</span> <span class="o">=</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)]</span>
@@ -457,7 +457,7 @@
             <span class="n">edges_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     
         <span class="n">ind_beg</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">egid</span><span class="p">,</span> <span class="n">egid_df</span> <span class="ow">in</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">egid</span><span class="p">,</span> <span class="n">egid_df</span> <span class="ow">in</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'edge_group_id'</span><span class="p">):</span>
             <span class="n">ind_end</span> <span class="o">=</span> <span class="n">ind_beg</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">egid_df</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">edges_pop_h5</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">egid</span><span class="p">)]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -466,7 +466,7 @@
             
             <span class="n">ind_beg</span> <span class="o">=</span> <span class="n">ind_end</span>
    
-    <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_group_index&#39;</span><span class="p">])</span>
+    <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">,</span> <span class="s1">'edge_group_index'</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">edges_df</span></div>
 
 
@@ -475,10 +475,10 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.to_nodes_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_nodes_dataframe</span><span class="p">(</span><span class="n">nodes_pop_h5</span><span class="p">,</span> <span class="n">node_types_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-        <span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;node_type_id&#39;</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;node_group_id&#39;</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">&#39;node_group_id&#39;</span><span class="p">][()],</span>
-        <span class="s1">&#39;node_group_index&#39;</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">&#39;node_group_index&#39;</span><span class="p">][()],</span>
+        <span class="s1">'node_id'</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">][()],</span>
+        <span class="s1">'node_type_id'</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">'node_type_id'</span><span class="p">][()],</span>
+        <span class="s1">'node_group_id'</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">'node_group_id'</span><span class="p">][()],</span>
+        <span class="s1">'node_group_index'</span><span class="p">:</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">'node_group_index'</span><span class="p">][()],</span>
     <span class="p">})</span>
 
     <span class="k">if</span> <span class="n">with_properties</span><span class="p">:</span>
@@ -490,11 +490,11 @@
             <span class="n">include_prop</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">True</span>
             
         <span class="k">if</span> <span class="n">node_types_path</span><span class="p">:</span>
-            <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">node_types_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">node_types_df</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node_types_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;node_type_id&#39;</span><span class="p">]]</span>
-            <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">)</span>
+            <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">node_types_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
+            <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">node_types_df</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">node_types_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">'node_type_id'</span><span class="p">]]</span>
+            <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">'node_type_id'</span><span class="p">)</span>
             
-        <span class="n">grp_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">&#39;node_group_id&#39;</span><span class="p">][()])</span>
+        <span class="n">grp_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">nodes_pop_h5</span><span class="p">[</span><span class="s1">'node_group_id'</span><span class="p">][()])</span>
         <span class="n">node_props_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">grp_id</span> <span class="ow">in</span> <span class="n">grp_ids</span><span class="p">:</span>
             <span class="n">edge_group</span> <span class="o">=</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)]</span>
@@ -506,7 +506,7 @@
             <span class="n">nodes_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     
         <span class="n">ind_beg</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">egid</span><span class="p">,</span> <span class="n">egid_df</span> <span class="ow">in</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;node_group_id&#39;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">egid</span><span class="p">,</span> <span class="n">egid_df</span> <span class="ow">in</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'node_group_id'</span><span class="p">):</span>
             <span class="n">ind_end</span> <span class="o">=</span> <span class="n">ind_beg</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">egid_df</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">nodes_pop_h5</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">egid</span><span class="p">)]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">include_prop</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -515,7 +515,7 @@
             
             <span class="n">ind_beg</span> <span class="o">=</span> <span class="n">ind_end</span>
    
-    <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;node_group_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_group_index&#39;</span><span class="p">])</span>
+    <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'node_group_id'</span><span class="p">,</span> <span class="s1">'node_group_index'</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">nodes_df</span></div>
 
 
@@ -528,17 +528,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">__read_sonata</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">csv_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an individual sonata file and returns path to each nodes/edges groups inside hdf5&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Open an individual sonata file and returns path to each nodes/edges groups inside hdf5"""</span>
     <span class="n">edge_populations</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">node_populations</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">&#39;edges&#39;</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">ename</span><span class="p">,</span> <span class="n">epop</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/edges&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'edges'</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ename</span><span class="p">,</span> <span class="n">epop</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">[</span><span class="s1">'/edges'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epop</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
                 <span class="n">edge_populations</span><span class="p">[</span><span class="n">ename</span><span class="p">]</span> <span class="o">=</span> <span class="n">_SonataFP</span><span class="p">(</span><span class="n">ename</span><span class="p">,</span> <span class="n">epop</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">)</span>
     
-    <span class="k">if</span> <span class="s1">&#39;nodes&#39;</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">ename</span><span class="p">,</span> <span class="n">epop</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s1">'nodes'</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ename</span><span class="p">,</span> <span class="n">epop</span> <span class="ow">in</span> <span class="n">h5</span><span class="p">[</span><span class="s1">'/nodes'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">epop</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
                 <span class="n">node_populations</span><span class="p">[</span><span class="n">ename</span><span class="p">]</span> <span class="o">=</span> <span class="n">_SonataFP</span><span class="p">(</span><span class="n">ename</span><span class="p">,</span> <span class="n">epop</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">)</span>
 
@@ -549,7 +549,7 @@
     <span class="n">edge_objs</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">edge_objs</span><span class="p">)</span>
 
     <span class="c1"># The list of edge objects can include sonata configs or raw edges files, in which case we want</span>
-    <span class="c1"># to convert them to a dict {&#39;edges_files&#39;: ..., &#39;edge_types_file&#39;: ...} where it can be easily </span>
+    <span class="c1"># to convert them to a dict {'edges_files': ..., 'edge_types_file': ...} where it can be easily </span>
     <span class="c1"># processed below.</span>
     <span class="n">edge_objs_update</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">eo</span> <span class="ow">in</span> <span class="n">edge_objs</span><span class="p">:</span>
@@ -559,7 +559,7 @@
                 <span class="k">for</span> <span class="n">net_dict</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">nodes</span> <span class="o">+</span> <span class="n">cfg</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
                     <span class="n">edge_objs_update</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">net_dict</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">edge_objs_update</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;edges_file&#39;</span><span class="p">:</span> <span class="n">eo</span><span class="p">})</span>
+                <span class="n">edge_objs_update</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'edges_file'</span><span class="p">:</span> <span class="n">eo</span><span class="p">})</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">edge_objs_update</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eo</span><span class="p">)</span>
@@ -568,15 +568,15 @@
     <span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">eo</span> <span class="ow">in</span> <span class="n">edge_objs_update</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eo</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">edges_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edges_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">edge_types_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">edges_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'edges_file'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">edge_types_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'edge_types_file'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">edges_file</span><span class="p">:</span>
                 <span class="n">sonata_nodes</span><span class="p">,</span> <span class="n">sonata_edges</span> <span class="o">=</span> <span class="n">__read_sonata</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">)</span>
                 <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sonata_nodes</span><span class="p">)</span>
                 <span class="n">edges</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sonata_edges</span><span class="p">)</span>
 
-            <span class="n">nodes_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nodes_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">node_types_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node_types_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">nodes_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'nodes_file'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">node_types_file</span> <span class="o">=</span> <span class="n">eo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'node_types_file'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">nodes_file</span><span class="p">:</span>
                 <span class="n">sonata_nodes</span><span class="p">,</span> <span class="n">sonata_edges</span> <span class="o">=</span> <span class="n">__read_sonata</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">)</span>
                 <span class="n">nodes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sonata_nodes</span><span class="p">)</span>
@@ -586,7 +586,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">__to_list</span><span class="p">(</span><span class="n">vals</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function for turning parameters into lists&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Helper function for turning parameters into lists"""</span>
     <span class="k">if</span> <span class="n">vals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
@@ -604,14 +604,14 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">edges_obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># Check to see if file can be open as a csv-file and return it.</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edges_obj</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edges_obj</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">pass</span>
 
     <span class="c1"># Otherwise assume edges_obj is a config file or sonata file in which case we </span>
     <span class="c1"># need to read the raw edges and return it as a pandas DataFrame.</span>
-    <span class="k">if</span> <span class="n">kwopts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edge_props&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;nconns&#39;</span><span class="p">,</span> <span class="s1">&#39;nconnections&#39;</span><span class="p">,</span> <span class="s1">&#39;n_connections&#39;</span><span class="p">]:</span>
-        <span class="c1"># The normal edge_props_distribtion doesn&#39;t accurately handle returning just</span>
+    <span class="k">if</span> <span class="n">kwopts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'edge_props'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'nconns'</span><span class="p">,</span> <span class="s1">'nconnections'</span><span class="p">,</span> <span class="s1">'n_connections'</span><span class="p">]:</span>
+        <span class="c1"># The normal edge_props_distribtion doesn't accurately handle returning just</span>
         <span class="c1"># the number of cell-to-cell connections, need to call different function</span>
         <span class="k">return</span> <span class="n">nconnections_distributions</span><span class="p">(</span><span class="n">edges_obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwopts</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -619,18 +619,18 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">__combine_data</span><span class="p">(</span><span class="n">edges_obj1</span><span class="p">,</span> <span class="n">edges_obj2</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">fill_val</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A helper function for doing a join of two edges DataFrames, for comparing the &quot;edge_prop&quot; values between the two edges.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A helper function for doing a join of two edges DataFrames, for comparing the "edge_prop" values between the two edges."""</span>
     <span class="c1"># convert two edges objects (config files, csv, or paths to sonata files, etc.) to dataframe</span>
     <span class="n">df1</span> <span class="o">=</span> <span class="n">__load_dist_as_df</span><span class="p">(</span><span class="n">edges_obj1</span><span class="p">,</span> <span class="n">edge_prop</span><span class="o">=</span><span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">df2</span> <span class="o">=</span> <span class="n">__load_dist_as_df</span><span class="p">(</span><span class="n">edges_obj2</span><span class="p">,</span> <span class="n">edge_prop</span><span class="o">=</span><span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="c1"># find columns to join on, don&#39;t include property being study and any other population columns</span>
-    <span class="n">orig_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df1</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;source_population&#39;</span><span class="p">,</span> <span class="s1">&#39;target_population&#39;</span><span class="p">]])</span>
-    <span class="n">new_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df2</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;source_population&#39;</span><span class="p">,</span> <span class="s1">&#39;target_population&#39;</span><span class="p">]])</span>
+    <span class="c1"># find columns to join on, don't include property being study and any other population columns</span>
+    <span class="n">orig_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df1</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'source_population'</span><span class="p">,</span> <span class="s1">'target_population'</span><span class="p">]])</span>
+    <span class="n">new_cols</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df2</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'source_population'</span><span class="p">,</span> <span class="s1">'target_population'</span><span class="p">]])</span>
     <span class="n">join_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">orig_cols</span> <span class="ow">and</span> <span class="n">new_cols</span><span class="p">)</span>
 
     <span class="c1"># join the two DataFrames and return</span>
-    <span class="n">comb_df</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df2</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">join_cols</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;_orig&#39;</span><span class="p">,</span> <span class="s1">&#39;_new&#39;</span><span class="p">))</span>
+    <span class="n">comb_df</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df2</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'inner'</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">join_cols</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">'_orig'</span><span class="p">,</span> <span class="s1">'_new'</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">fill_val</span><span class="p">:</span>
         <span class="n">comb_df</span> <span class="o">=</span> <span class="n">comb_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fill_val</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">comb_df</span>
@@ -640,12 +640,12 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.edge_props_distribution">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">edge_props_distribution</span><span class="p">(</span><span class="n">edge_files</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                             <span class="n">edge_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-                            <span class="n">fill_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span> <span class="n">population_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads in one or more SONATA edges files and return a DataFrame consisting of the distribution of a given edge property</span>
+                            <span class="n">fill_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">operation</span><span class="o">=</span><span class="s1">'sum'</span><span class="p">,</span> <span class="n">population_columns</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Reads in one or more SONATA edges files and return a DataFrame consisting of the distribution of a given edge property</span>
 <span class="sd">    across an arbitary grouping of cells. For example return the total number of synapses between each source/target node-type,</span>
 <span class="sd">    or the mean syn_weights for edge edge-type, or the variance of connecting in-degrees across morphologies.</span>
 
-<span class="sd">    By default will return a DataFrame of each &quot;source_node_id&quot;, &quot;target_node_id&quot;, and &quot;&lt;edge_prop&gt;&quot; row found in the edge file(s).</span>
+<span class="sd">    By default will return a DataFrame of each "source_node_id", "target_node_id", and "&lt;edge_prop&gt;" row found in the edge file(s).</span>
 <span class="sd">    But you can group the rows by any property/column found in the edges, source or target populations; and apply an arbitary</span>
 <span class="sd">    &lt;operation&gt; on the results.</span>
 
@@ -661,9 +661,9 @@
 <span class="sd">    :param source_props_grouping: str or list[str]. List of columns in source-node file(s) to group results by.</span>
 <span class="sd">    :param target_props_grouping: str or list[str]. List of columns in target-node file(s) to group results by.</span>
 <span class="sd">    :param fill_val: If &lt;edge_prop&gt; has missing/None/NaN values will fill in with given value. set to None to Turn off.</span>
-<span class="sd">    :param operation: Str or function: pandas or numpy function to apply to when doing the grouping, eg. &#39;sum&#39;, &#39;mean&#39;, np.std.</span>
+<span class="sd">    :param operation: Str or function: pandas or numpy function to apply to when doing the grouping, eg. 'sum', 'mean', np.std.</span>
 <span class="sd">    :param population_columns: If set to true will return extra column describing the edges/nodes populations for each row.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">edge_props_grouping</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">edge_props_grouping</span><span class="p">)</span>
     <span class="n">source_props_grouping</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">source_props_grouping</span><span class="p">)</span>
     <span class="n">target_props_grouping</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">target_props_grouping</span><span class="p">)</span>
@@ -681,23 +681,23 @@
         <span class="c1"># When grouping/filtering by properties in the source-nodes population</span>
         <span class="k">if</span> <span class="n">source_props_grouping</span><span class="p">:</span>
             <span class="c1"># Find the population-name of the source-nodes and get the nodes as a dataframe</span>
-            <span class="n">source_node_pop</span> <span class="o">=</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">],</span> <span class="s1">&#39;node_population&#39;</span><span class="p">)</span>
+            <span class="n">source_node_pop</span> <span class="o">=</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">],</span> <span class="s1">'node_population'</span><span class="p">)</span>
             <span class="n">nodes_fp</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">source_node_pop</span><span class="p">]</span>
-            <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="n">to_nodes_dataframe</span><span class="p">(</span><span class="n">nodes_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">nodes_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">source_props_grouping</span><span class="p">)</span>
-            <span class="c1"># prepend &quot;source_&quot; to all source-node columns so it can be distinguished from the target nodes column sets</span>
-            <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;source_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
-            <span class="n">source_props_grouping</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;source_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">source_props_grouping</span><span class="p">]</span>
+            <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="n">to_nodes_dataframe</span><span class="p">(</span><span class="n">nodes_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">nodes_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">+</span> <span class="n">source_props_grouping</span><span class="p">)</span>
+            <span class="c1"># prepend "source_" to all source-node columns so it can be distinguished from the target nodes column sets</span>
+            <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'source_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+            <span class="n">source_props_grouping</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'source_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">source_props_grouping</span><span class="p">]</span>
             <span class="c1"># merge source-nodes dataframe onto the edges</span>
-            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">src_nodes_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">)</span>
+            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">src_nodes_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">'source_node_id'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">target_props_grouping</span><span class="p">:</span>
             <span class="c1"># Same as with source-nodes but this time for the target/post-synaptic population of cells.</span>
-            <span class="n">target_node_pop</span> <span class="o">=</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">],</span> <span class="s1">&#39;node_population&#39;</span><span class="p">)</span>
+            <span class="n">target_node_pop</span> <span class="o">=</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">],</span> <span class="s1">'node_population'</span><span class="p">)</span>
             <span class="n">nodes_fp</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">target_node_pop</span><span class="p">]</span>
-            <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="n">to_nodes_dataframe</span><span class="p">(</span><span class="n">nodes_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">nodes_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">target_props_grouping</span><span class="p">)</span>
-            <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;target_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
-            <span class="n">target_props_grouping</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;target_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">target_props_grouping</span><span class="p">]</span>
-            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">trg_nodes_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">)</span>
+            <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="n">to_nodes_dataframe</span><span class="p">(</span><span class="n">nodes_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">nodes_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">+</span> <span class="n">target_props_grouping</span><span class="p">)</span>
+            <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'target_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+            <span class="n">target_props_grouping</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'target_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">target_props_grouping</span><span class="p">]</span>
+            <span class="n">edges_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edges_df</span><span class="p">,</span> <span class="n">trg_nodes_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">'target_node_id'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">fill_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
             <span class="n">edges_df</span><span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_val</span> <span class="k">if</span> <span class="n">edge_prop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="n">edges_df</span><span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span><span class="o">.</span><span class="n">infer_objects</span><span class="p">()</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">fill_val</span><span class="p">)</span>
@@ -708,8 +708,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dist_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[</span><span class="n">grouping_cols</span> <span class="o">+</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">grouping_cols</span><span class="p">)[</span><span class="n">edge_prop</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
         
-        <span class="k">if</span> <span class="n">population_columns</span> <span class="ow">and</span> <span class="s1">&#39;population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dist_df</span><span class="p">:</span>
-            <span class="n">dist_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_pop_name</span>
+        <span class="k">if</span> <span class="n">population_columns</span> <span class="ow">and</span> <span class="s1">'population'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dist_df</span><span class="p">:</span>
+            <span class="n">dist_df</span><span class="p">[</span><span class="s1">'population'</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_pop_name</span>
 
         <span class="c1"># TODO: Instead of concatenating together multiple DataFrames, we should return them as a list, tuple, or Dict?</span>
         <span class="n">ret_edges_df</span> <span class="o">=</span> <span class="n">dist_df</span> <span class="k">if</span> <span class="n">ret_edges_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">ret_edges_df</span><span class="p">,</span> <span class="n">dist_df</span><span class="p">])</span>
@@ -721,8 +721,8 @@
 <div class="viewcode-block" id="nsyns_distribution">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.nsyns_distribution">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nsyns_distribution</span><span class="p">(</span><span class="n">edge_files</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads in one or more SONATA edges files and return a DataFrame consisting of the total number of synapses given any arbitary </span>
-<span class="sd">    grouping of network properties. The property will be called &quot;nsyns&quot; in the returned table. Similar to edge_props_distribution().</span>
+<span class="w">    </span><span class="sd">"""Reads in one or more SONATA edges files and return a DataFrame consisting of the total number of synapses given any arbitary </span>
+<span class="sd">    grouping of network properties. The property will be called "nsyns" in the returned table. Similar to edge_props_distribution().</span>
 
 <span class="sd">    Note: Each cell-to-cell connection may have mutiliple synapses. Use nconnections_distributions() to get distribution of the </span>
 <span class="sd">    raw connectivity map.</span>
@@ -732,16 +732,16 @@
 <span class="sd">    :param populations: string or list of strings. If SONATA file(s) contains multiple edge populations you can specify .</span>
 <span class="sd">    :param source_props_grouping: str or list[str]. List of columns in source-node file(s) to group results by.</span>
 <span class="sd">    :param target_props_grouping: str or list[str]. List of columns in target-node file(s) to group results by.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">edge_props_distribution</span><span class="p">(</span>
         <span class="n">edge_files</span><span class="o">=</span><span class="n">edge_files</span><span class="p">,</span> 
-        <span class="n">edge_prop</span><span class="o">=</span><span class="s1">&#39;nsyns&#39;</span><span class="p">,</span> 
+        <span class="n">edge_prop</span><span class="o">=</span><span class="s1">'nsyns'</span><span class="p">,</span> 
         <span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span>
         <span class="n">edge_props_grouping</span><span class="o">=</span><span class="n">edge_props_grouping</span><span class="p">,</span> 
         <span class="n">source_props_grouping</span><span class="o">=</span><span class="n">source_props_grouping</span><span class="p">,</span> 
         <span class="n">target_props_grouping</span><span class="o">=</span><span class="n">target_props_grouping</span><span class="p">,</span> 
         <span class="n">fill_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-        <span class="n">operation</span><span class="o">=</span><span class="s1">&#39;sum&#39;</span>
+        <span class="n">operation</span><span class="o">=</span><span class="s1">'sum'</span>
     <span class="p">)</span></div>
 
 
@@ -749,8 +749,8 @@
 <div class="viewcode-block" id="nconnections_distributions">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.nconnections_distributions">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">nconnections_distributions</span><span class="p">(</span><span class="n">edge_files</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_props_grouping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwopts</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads in one or more SONATA edges files and return a DataFrame consisting of the total number of connection given any arbitary </span>
-<span class="sd">    grouping of network properties. The property will be called &quot;nconns&quot; in the returned table. Similar to edge_props_distribution().</span>
+<span class="w">    </span><span class="sd">"""Reads in one or more SONATA edges files and return a DataFrame consisting of the total number of connection given any arbitary </span>
+<span class="sd">    grouping of network properties. The property will be called "nconns" in the returned table. Similar to edge_props_distribution().</span>
 
 <span class="sd">    Note: A connection here just refers to whether-or-not two cells are connected (including autapses) and ignores the number of synapses between each cell. </span>
 <span class="sd">    Use nsyns_distribution() to get distribution of the number of synapses.</span>
@@ -760,34 +760,34 @@
 <span class="sd">    :param populations: string or list of strings. If SONATA file(s) contains multiple edge populations you can specify .</span>
 <span class="sd">    :param source_props_grouping: str or list[str]. List of columns in source-node file(s) to group results by.</span>
 <span class="sd">    :param target_props_grouping: str or list[str]. List of columns in target-node file(s) to group results by.</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="n">tmp_edge_props</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">edge_props_grouping</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span> 
+<span class="sd">    """</span>    
+    <span class="n">tmp_edge_props</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">edge_props_grouping</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="s1">'target_node_id'</span><span class="p">]</span> 
     
     <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edge_props_distribution</span><span class="p">(</span>
         <span class="n">edge_files</span><span class="o">=</span><span class="n">edge_files</span><span class="p">,</span> 
-        <span class="n">edge_prop</span><span class="o">=</span><span class="s1">&#39;_conns_&#39;</span><span class="p">,</span> 
+        <span class="n">edge_prop</span><span class="o">=</span><span class="s1">'_conns_'</span><span class="p">,</span> 
         <span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span>
         <span class="n">edge_props_grouping</span><span class="o">=</span><span class="n">tmp_edge_props</span><span class="p">,</span> 
         <span class="n">source_props_grouping</span><span class="o">=</span><span class="n">source_props_grouping</span><span class="p">,</span> 
         <span class="n">target_props_grouping</span><span class="o">=</span><span class="n">target_props_grouping</span><span class="p">,</span> 
         <span class="n">fill_val</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-        <span class="n">operation</span><span class="o">=</span><span class="s1">&#39;count&#39;</span>
+        <span class="n">operation</span><span class="o">=</span><span class="s1">'count'</span>
     <span class="p">)</span>
-    <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_conns_&#39;</span><span class="p">])</span>
+    <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'_conns_'</span><span class="p">])</span>
     <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="c1"># Drop the source_node_id and target_node_id, but only if some type of edge/node grouping is specified, otherwise just return</span>
         <span class="c1"># list of source_node_id and target_node_id</span>
-        <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_node_id&#39;</span><span class="p">])</span>
+        <span class="n">edges_df</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="s1">'target_node_id'</span><span class="p">])</span>
     
-    <span class="k">return</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;nconnections&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'nconnections'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="plot_distribution">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.plot_distribution">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_distribution</span><span class="p">(</span><span class="n">edges_data</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwopts</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plots the distribution of an edge property given an arbitary grouping of rows based on edge, target or source node</span>
+<span class="w">    </span><span class="sd">"""Plots the distribution of an edge property given an arbitary grouping of rows based on edge, target or source node</span>
 <span class="sd">    columns. </span>
 
 
@@ -800,7 +800,7 @@
 <span class="sd">    :param ax: If true will save distribution plot to pre-generated matplotlib axis, for merging into another figure. Default: None.</span>
 <span class="sd">    :param show: If true will plot distribution. Default: True.</span>
 <span class="sd">    :param kwargs: optional args that will be passed into edge_props_distribution() function.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">edges_data</span> <span class="o">=</span> <span class="n">__to_list</span><span class="p">(</span><span class="n">edges_data</span><span class="p">)</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">ed</span><span class="p">)</span> <span class="k">for</span> <span class="n">ed</span> <span class="ow">in</span> <span class="n">edges_data</span><span class="p">]</span> <span class="k">if</span> <span class="n">names</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">names</span>
 
@@ -816,10 +816,10 @@
         
         <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">hist</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">log_scale</span><span class="p">:</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">'log'</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dist_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;source_population&#39;</span><span class="p">,</span> <span class="s1">&#39;target_population&#39;</span><span class="p">]]))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;xx-small&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">dist_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'source_population'</span><span class="p">,</span> <span class="s1">'target_population'</span><span class="p">]]))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">'xx-small'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
         <span class="c1"># plt.legend()</span>
@@ -833,8 +833,8 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.plot_correlation">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_correlation</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">log_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">combined_df</span> <span class="o">=</span> <span class="n">__combine_data</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">)</span>
-    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_new&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_orig'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_new'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="k">if</span> <span class="n">log_scale</span><span class="p">:</span>
         <span class="n">data_org</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">data_org</span><span class="p">)</span>
         <span class="n">data_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">data_new</span><span class="p">)</span>
@@ -842,11 +842,11 @@
     <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_org</span><span class="p">,</span> <span class="n">data_new</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_org</span><span class="p">,</span> <span class="n">data_new</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">log_scale</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">'log'</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">'log'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
@@ -861,21 +861,21 @@
     <span class="n">_</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">__read_sonata_files</span><span class="p">(</span><span class="n">edges_data</span><span class="p">)</span>
     <span class="n">pop_stats</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">edge_pop_name</span><span class="p">,</span> <span class="n">edges_fp</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">edges_df</span> <span class="o">=</span> <span class="n">to_edges_dataframe</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">edges_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">])</span>
+        <span class="n">edges_df</span> <span class="o">=</span> <span class="n">to_edges_dataframe</span><span class="p">(</span><span class="n">edges_fp</span><span class="o">.</span><span class="n">h5_grp</span><span class="p">,</span> <span class="n">edges_fp</span><span class="o">.</span><span class="n">csv</span><span class="p">,</span> <span class="n">with_properties</span><span class="o">=</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">])</span>
         
-        <span class="n">n_src_nodes</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
-        <span class="n">n_trg_nodes</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
-        <span class="n">n_edge_types</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+        <span class="n">n_src_nodes</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+        <span class="n">n_trg_nodes</span> <span class="o">=</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+        <span class="n">n_edge_types</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'edge_type_id'</span><span class="p">)</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
         
-        <span class="n">edges_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">infer_objects</span><span class="p">()</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">conns_se</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_node_id&#39;</span><span class="p">])[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s1">&#39;sum&#39;</span><span class="p">)</span>
+        <span class="n">edges_df</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="s1">'nsyns'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">else</span> <span class="n">edges_df</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span><span class="o">.</span><span class="n">infer_objects</span><span class="p">()</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">conns_se</span> <span class="o">=</span> <span class="n">edges_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="s1">'target_node_id'</span><span class="p">])[</span><span class="s1">'nsyns'</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s1">'sum'</span><span class="p">)</span>
         <span class="n">n_conns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">conns_se</span><span class="p">)</span>
         <span class="n">n_syns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">conns_se</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
         
         <span class="n">pop_stats</span><span class="p">[</span><span class="n">edge_pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">n_src_nodes</span><span class="p">,</span> <span class="n">n_trg_nodes</span><span class="p">,</span> <span class="n">n_edge_types</span><span class="p">,</span> <span class="n">n_conns</span><span class="p">,</span> <span class="n">n_syns</span><span class="p">]</span>
         
     <span class="n">stats_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">pop_stats</span><span class="p">)</span>
-    <span class="n">stats_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n_sources&#39;</span><span class="p">,</span> <span class="s1">&#39;n_targets&#39;</span><span class="p">,</span> <span class="s1">&#39;n_edge_types&#39;</span><span class="p">,</span> <span class="s1">&#39;n_connections&#39;</span><span class="p">,</span> <span class="s1">&#39;n_synapses&#39;</span><span class="p">]</span>
+    <span class="n">stats_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'n_sources'</span><span class="p">,</span> <span class="s1">'n_targets'</span><span class="p">,</span> <span class="s1">'n_edge_types'</span><span class="p">,</span> <span class="s1">'n_connections'</span><span class="p">,</span> <span class="s1">'n_synapses'</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">stats_df</span></div>
 
 
@@ -884,8 +884,8 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.edge_stats.pearson_r">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">pearson_r</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">combined_df</span> <span class="o">=</span> <span class="n">__combine_data</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_new&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_orig'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_new'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">data_org</span><span class="p">,</span> <span class="n">data_new</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span></div>
 
 
@@ -896,8 +896,8 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">chisquare</span>
 
     <span class="n">combined_df</span> <span class="o">=</span> <span class="n">__combine_data</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_new&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_orig'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_new'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_counts</span><span class="p">:</span>
         <span class="n">data_org</span> <span class="o">=</span> <span class="n">data_org</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data_org</span><span class="p">)</span>
         <span class="n">data_new</span> <span class="o">=</span> <span class="n">data_new</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data_new</span><span class="p">)</span>
@@ -913,77 +913,77 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">ks_2samp</span>
 
     <span class="n">combined_df</span> <span class="o">=</span> <span class="n">__combine_data</span><span class="p">(</span><span class="n">edges_orig</span><span class="p">,</span> <span class="n">edges_new</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_orig&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">&#39;_new&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_org</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_orig'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">data_new</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">edge_prop</span> <span class="o">+</span> <span class="s1">'_new'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
     <span class="n">results</span> <span class="o">=</span> <span class="n">ks_2samp</span><span class="p">(</span><span class="n">data_org</span><span class="p">,</span> <span class="n">data_new</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">results</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">results</span><span class="o">.</span><span class="n">pvalue</span></div>
 
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># stat, pval = kolmogorov_smirnov(&#39;v1_edges.nsyns.orig.csv&#39;, &#39;v1_edges.nsyns.rebuilt.csv&#39;, &#39;nsyns&#39;)</span>
-    <span class="c1"># stat, pval = chisquare(&#39;v1_edges.nsyns.orig.csv&#39;, &#39;v1_edges.nsyns.rebuilt.csv&#39;, &#39;nsyns&#39;, raw_counts=True)</span>
-    <span class="c1"># r1 = pearson_r(&#39;v1_edges.nsyns.orig.csv&#39;, &#39;v1_edges.nsyns.rebuilt.csv&#39;, &#39;nsyns&#39;)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="c1"># stat, pval = kolmogorov_smirnov('v1_edges.nsyns.orig.csv', 'v1_edges.nsyns.rebuilt.csv', 'nsyns')</span>
+    <span class="c1"># stat, pval = chisquare('v1_edges.nsyns.orig.csv', 'v1_edges.nsyns.rebuilt.csv', 'nsyns', raw_counts=True)</span>
+    <span class="c1"># r1 = pearson_r('v1_edges.nsyns.orig.csv', 'v1_edges.nsyns.rebuilt.csv', 'nsyns')</span>
     <span class="c1"># print(pval)</span>
-    <span class="c1"># plot_correlation(&#39;v1_edges.nsyns.orig.csv&#39;, &#39;v1_edges.nsyns.rebuilt.csv&#39;, &#39;nsyns&#39;, log_scale=True)</span>
-    <span class="c1"># plot_correlation(&#39;v1_edges.nconns.orig.csv&#39;, &#39;v1_edges.nconns.rebuilt.csv&#39;, &#39;nconnections&#39;)</span>
-    <span class="c1"># plot_distribution([&#39;v1_edges.nsyns.orig.csv&#39;, &#39;v1_edges.nsyns.rebuilt.csv&#39;], edge_prop=&#39;nsyns&#39;, log_scale=True, show=False)</span>
-    <span class="c1"># plot_distribution([&#39;v1_edges.nconns.orig.csv&#39;, &#39;v1_edges.nconns.rebuilt.csv&#39;], edge_prop=&#39;nconnections&#39;, log_scale=True, show=False)</span>
-    <span class="c1"># plot_distribution(&#39;config.orig.json&#39;, &#39;nsyns&#39;)</span>
+    <span class="c1"># plot_correlation('v1_edges.nsyns.orig.csv', 'v1_edges.nsyns.rebuilt.csv', 'nsyns', log_scale=True)</span>
+    <span class="c1"># plot_correlation('v1_edges.nconns.orig.csv', 'v1_edges.nconns.rebuilt.csv', 'nconnections')</span>
+    <span class="c1"># plot_distribution(['v1_edges.nsyns.orig.csv', 'v1_edges.nsyns.rebuilt.csv'], edge_prop='nsyns', log_scale=True, show=False)</span>
+    <span class="c1"># plot_distribution(['v1_edges.nconns.orig.csv', 'v1_edges.nconns.rebuilt.csv'], edge_prop='nconnections', log_scale=True, show=False)</span>
+    <span class="c1"># plot_distribution('config.orig.json', 'nsyns')</span>
     <span class="c1"># nconn_edges_df = nconnections_distributions(</span>
-    <span class="c1">#     &#39;config.orig.json&#39;,                                        </span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;</span>
+    <span class="c1">#     'config.orig.json',                                        </span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name'</span>
     <span class="c1"># )</span>
     <span class="c1"># plot_distribution(</span>
-    <span class="c1">#     [&#39;config.orig.json&#39;, &#39;config.rebuilt.json&#39;],</span>
-    <span class="c1">#     edge_prop=&#39;nsyns&#39;,</span>
-    <span class="c1">#     populations=&#39;v1_to_v1&#39;,</span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;,</span>
+    <span class="c1">#     ['config.orig.json', 'config.rebuilt.json'],</span>
+    <span class="c1">#     edge_prop='nsyns',</span>
+    <span class="c1">#     populations='v1_to_v1',</span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name',</span>
     <span class="c1">#     log_scale=True</span>
     <span class="c1"># )</span>
     <span class="c1"># plot_distribution(</span>
-    <span class="c1">#     [&#39;config.orig.json&#39;, &#39;config.rebuilt.json&#39;],</span>
-    <span class="c1">#     edge_prop=&#39;nconns&#39;,</span>
-    <span class="c1">#     # operation=&#39;nconns&#39;,</span>
-    <span class="c1">#     populations=&#39;v1_to_v1&#39;,</span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;,</span>
+    <span class="c1">#     ['config.orig.json', 'config.rebuilt.json'],</span>
+    <span class="c1">#     edge_prop='nconns',</span>
+    <span class="c1">#     # operation='nconns',</span>
+    <span class="c1">#     populations='v1_to_v1',</span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name',</span>
     <span class="c1">#     log_scale=True</span>
     <span class="c1"># )</span>
 
     <span class="c1"># stat, pval = kolmogorov_smirnov(</span>
-    <span class="c1">#     &#39;config.orig.json&#39;, </span>
-    <span class="c1">#     &#39;config.rebuilt.json&#39;, </span>
-    <span class="c1">#     edge_prop=&#39;nsyns&#39;,</span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;,</span>
+    <span class="c1">#     'config.orig.json', </span>
+    <span class="c1">#     'config.rebuilt.json', </span>
+    <span class="c1">#     edge_prop='nsyns',</span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name',</span>
     <span class="c1"># )</span>
     <span class="c1"># print(stat, pval)</span>
     <span class="c1"># r2 = pearson_r(</span>
-    <span class="c1">#     &#39;config.orig.json&#39;, </span>
-    <span class="c1">#     &#39;config.rebuilt.json&#39;, </span>
-    <span class="c1">#     edge_prop=&#39;nsyns&#39;,</span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;,</span>
+    <span class="c1">#     'config.orig.json', </span>
+    <span class="c1">#     'config.rebuilt.json', </span>
+    <span class="c1">#     edge_prop='nsyns',</span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name',</span>
     <span class="c1"># )</span>
     <span class="c1"># print(r2)</span>
 
     <span class="c1"># stat, pval = chisquare(</span>
-    <span class="c1">#     &#39;config.orig.json&#39;, </span>
-    <span class="c1">#     &#39;config.rebuilt.json&#39;, </span>
-    <span class="c1">#     edge_prop=&#39;nsyns&#39;,</span>
-    <span class="c1">#     source_props_grouping=&#39;pop_name&#39;,</span>
-    <span class="c1">#     target_props_grouping=&#39;pop_name&#39;,</span>
+    <span class="c1">#     'config.orig.json', </span>
+    <span class="c1">#     'config.rebuilt.json', </span>
+    <span class="c1">#     edge_prop='nsyns',</span>
+    <span class="c1">#     source_props_grouping='pop_name',</span>
+    <span class="c1">#     target_props_grouping='pop_name',</span>
     <span class="c1"># )</span>
     <span class="c1"># print(stat, pval)</span>
 
     <span class="c1"># print(nconn_edges_df)</span>
     <span class="c1"># plt.show()</span>
-    <span class="n">edge_stats_table</span><span class="p">(</span><span class="s1">&#39;config.orig.json&#39;</span><span class="p">)</span>
-    <span class="c1"># edge_stats_table({&quot;edges_file&quot;: &quot;bio_450cells/internal_internal_edges.h5&quot;, &quot;edge_types_file&quot;: &quot;bio_450cells/internal_internal_edge_types.csv&quot;})</span>
+    <span class="n">edge_stats_table</span><span class="p">(</span><span class="s1">'config.orig.json'</span><span class="p">)</span>
+    <span class="c1"># edge_stats_table({"edges_file": "bio_450cells/internal_internal_edges.h5", "edge_types_file": "bio_450cells/internal_internal_edge_types.csv"})</span>
 </pre></div>
 
                 </article>

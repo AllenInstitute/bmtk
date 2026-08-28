@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,7 +428,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -491,9 +491,9 @@
 <div class="viewcode-block" id="BioCell">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BioCell</span><span class="p">(</span><span class="n">Cell</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implemntation of a morphologically and biophysically detailed type cell.</span>
+<span class="w">    </span><span class="sd">"""Implemntation of a morphologically and biophysically detailed type cell.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BioCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">bionetwork</span><span class="p">)</span>
 
@@ -545,12 +545,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">morphology_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Value that&#39;s stored in SONATA morphology column&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Value that's stored in SONATA morphology column"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">morphology_file</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">morphology</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The actual Morphology object instanstiation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The actual Morphology object instanstiation"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphology</span>
 
     <span class="nd">@property</span>
@@ -559,8 +559,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coordinates for segments/sections of the morphology, need to make public for ecp, xstim, and other</span>
-<span class="sd">        functionality that needs to compute the soma/dendritic coordinates of each cell&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Coordinates for segments/sections of the morphology, need to make public for ecp, xstim, and other</span>
+<span class="sd">        functionality that needs to compute the soma/dendritic coordinates of each cell"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Before returning the coordinates make sure to translate and rotate the cell</span>
             <span class="n">phi_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">rotation_angle_xaxis</span>
@@ -603,7 +603,7 @@
 <div class="viewcode-block" id="BioCell.set_sec_array">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.set_sec_array">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_sec_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Arrange sections in an array to be access by index&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Arrange sections in an array to be access by index"""</span>
         <span class="c1"># TODO: This should be accessabile in Morphology object</span>
         <span class="n">secs</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># build ref to sections</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span> <span class="o">=</span> <span class="p">[]</span>
@@ -622,7 +622,7 @@
 
         <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">is_gap_junction</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">gj_ids</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Gap junctions must have a gap junction id passed to set_syn_connection.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Gap junctions must have a gap junction id passed to set_syn_connection."</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
@@ -657,7 +657,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">gap_junc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Gap</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You need the gap.mod file to create gap junctions.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"You need the gap.mod file to create gap junctions."</span><span class="p">)</span>
 
         <span class="c1"># Attaches the source section to the gap junction.</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">target_var</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="o">.</span><span class="n">_ref_vgap</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -693,7 +693,7 @@
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">morphology</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">seg_ix</span><span class="p">]</span>  <span class="c1"># distance along the section where synapse connects, i.e., seg_x</span>
 
         <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made."</span><span class="p">)</span>
 
         <span class="c1"># Sets up the section to be connected to the gap junction.</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">source_var</span><span class="p">(</span><span class="n">sec</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">_ref_v</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
@@ -702,7 +702,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">gap_junc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Gap</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You need the gap.mod file to create gap junctions.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"You need the gap.mod file to create gap junctions."</span><span class="p">)</span>
 
         <span class="c1"># Attaches the source section to the gap junction.</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">target_var</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="o">.</span><span class="n">_ref_vgap</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -725,9 +725,9 @@
 
         <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
         <span class="c1"># section = self._secs[sec_id]</span>
-        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
-        <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">])</span>
-        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">],</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
+        <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">])</span>
+        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">],</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>  <span class="c1"># stim.hobj - source, syn - target</span>
@@ -757,7 +757,7 @@
         <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Could not find target synaptic location for edge-type </span><span class="si">{}</span><span class="s1">, Please check target_section and/or distance_range properties&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">'Could not find target synaptic location for edge-type </span><span class="si">{}</span><span class="s1">, Please check target_section and/or distance_range properties'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
             <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">display_once</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
 
@@ -768,10 +768,10 @@
         <span class="c1"># TODO: this should be done just once</span>
         <span class="n">synapses</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">load_synapses</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">)]</span>
 
-        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">synapses</span><span class="p">)</span>
 
-        <span class="c1"># TODO: Don&#39;t save this if not needed</span>
+        <span class="c1"># TODO: Don't save this if not needed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">synapses</span><span class="p">))</span>
 
         <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">synapses</span><span class="p">:</span>
@@ -825,7 +825,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">__set_extracell_mechanism</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__extracellular_mech</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;extracellular&#39;</span><span class="p">)</span>
+                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">'extracellular'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__extracellular_mech</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="BioCell.setup_ecp">
@@ -841,7 +841,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__set_extracell_mechanism</span><span class="p">()</span></div>
 
         <span class="c1"># for sec in self.hobj.all:</span>
-        <span class="c1">#     sec.insert(&#39;extracellular&#39;)</span>
+        <span class="c1">#     sec.insert('extracellular')</span>
 
 <div class="viewcode-block" id="BioCell.setup_xstim">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.setup_xstim">[docs]</a>
@@ -854,12 +854,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__set_extracell_mechanism</span><span class="p">()</span></div>
 
             <span class="c1"># for sec in self.hobj.all:</span>
-            <span class="c1">#     sec.insert(&#39;extracellular&#39;)</span>
+            <span class="c1">#     sec.insert('extracellular')</span>
 
 <div class="viewcode-block" id="BioCell.set_im_ptr">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.set_im_ptr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_im_ptr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set PtrVector to point to the _ref_i_membrane_ parameter&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set PtrVector to point to the _ref_i_membrane_ parameter"""</span>
         <span class="n">jseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>  
             <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
@@ -870,7 +870,7 @@
 <div class="viewcode-block" id="BioCell.get_im">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.get_im">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_im</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gather membrane currents from PtrVector into imVec (does not need a loop!)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Gather membrane currents from PtrVector into imVec (does not need a loop!)"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">im_ptr</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imVec</span><span class="p">)</span>
         <span class="c1"># Warning: as_numpy() seems to fail with in neuron 7.4 for python 3</span>
         <span class="c1"># return self.imVec.as_numpy()  # (nA)</span>
@@ -896,9 +896,9 @@
 <div class="viewcode-block" id="BioCell.print_synapses">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.print_synapses">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">print_synapses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rstr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">rstr</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_gid</span><span class="p">)):</span>
-            <span class="n">rstr</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&gt; &lt;-- </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">)</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_gid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">rstr</span> <span class="o">+=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">&gt; &lt;-- </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">)</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_gid</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                                            <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_seg_ix</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                                            <span class="bp">self</span><span class="o">.</span><span class="n">_syn_sec_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">rstr</span></div>
@@ -909,8 +909,8 @@
 <div class="viewcode-block" id="BioCellSpontSyn">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCellSpontSyn">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BioCellSpontSyn</span><span class="p">(</span><span class="n">BioCell</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BioCellSpontSyn</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="o">=</span><span class="n">bionetwork</span><span class="p">)</span>
 
@@ -926,10 +926,10 @@
         <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_matches_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check to see if the presynaptic cell matches the criteria specified&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Check to see if the presynaptic cell matches the criteria specified"""</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># Some key may not show up as node_variable</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;population&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_node</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">'population'</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">src_node</span><span class="p">:</span>
                 <span class="n">key_val</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">population_name</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">key_val</span> <span class="o">=</span> <span class="n">src_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -944,7 +944,7 @@
         <span class="n">trg_node</span> <span class="o">=</span> <span class="n">trg_node</span> <span class="ow">or</span> <span class="bp">self</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postcell_filter</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># Some key may not show up as node_variable</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;population&#39;</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trg_node</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">'population'</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">trg_node</span><span class="p">:</span>
                 <span class="n">key_val</span> <span class="o">=</span> <span class="n">trg_node</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">population_name</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">key_val</span> <span class="o">=</span> <span class="n">trg_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -975,7 +975,7 @@
 
         <span class="n">synapses</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">load_synapses</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">)]</span>
 
-        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">synapses</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">synapses</span><span class="p">:</span>
@@ -1002,9 +1002,9 @@
         <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_id</span>
         <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
         <span class="c1"># section = self._secs[sec_id]</span>
-        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
-        <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">])</span>
-        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">],</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">'delay'</span><span class="p">]</span>
+        <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">'model_template'</span><span class="p">])</span>
+        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">],</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>

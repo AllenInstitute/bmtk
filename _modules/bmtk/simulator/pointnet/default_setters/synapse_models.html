@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -418,9 +418,9 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.default_setters.html#bmtk.simulator.pointnet.default_setters.synapse_models.static_synapse">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">static_synapse</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">source_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;static_synapse&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span>
-        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">)</span>
+        <span class="s1">'model'</span><span class="p">:</span> <span class="s1">'static_synapse'</span><span class="p">,</span>
+        <span class="s1">'delay'</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span>
+        <span class="s1">'weight'</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">)</span>
     <span class="p">}</span>
 
     <span class="n">model_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">)</span>
@@ -428,7 +428,7 @@
 
 
 
-<span class="n">add_synapse_model</span><span class="p">(</span><span class="n">static_synapse</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_synapse_model</span><span class="p">(</span><span class="n">static_synapse</span><span class="p">,</span> <span class="s1">'default'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">add_synapse_model</span><span class="p">(</span><span class="n">static_synapse</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 

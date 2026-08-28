@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -447,10 +447,10 @@
 <p>All the parameters to setup and run a simulation is stored in the file <em>config.json</em>. More detail about the configuration file can be found in the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file">sonata documentation</a>, but we will provide a brief overview of the various sections:</p>
 <section id="The-mainfest">
 <h3>The mainfest<a class="headerlink" href="#The-mainfest" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;manifest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;$BASE_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${configdir}&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;$OUTPUT_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/output&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;$INPUT_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/../nwb_files&quot;</span><span class="p">,</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"manifest"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"$BASE_DIR"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${configdir}"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"$OUTPUT_DIR"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/output"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"$INPUT_DIR"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/../nwb_files"</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">// ...</span>
 <span class="p">},</span>
 </pre></div>
@@ -459,17 +459,17 @@
 </section>
 <section id="Run-time-and-conditions">
 <h3>Run-time and conditions<a class="headerlink" href="#Run-time-and-conditions" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;dL&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"run"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"tstop"</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dt"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"spike_threshold"</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"nsteps_block"</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dL"</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
 <span class="p">},</span>
 
-<span class="nt">&quot;conditions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;celsius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">34.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;v_init&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-80</span>
+<span class="nt">"conditions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"celsius"</span><span class="p">:</span><span class="w"> </span><span class="mf">34.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"v_init"</span><span class="p">:</span><span class="w"> </span><span class="mi">-80</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -477,12 +477,12 @@
 </section>
 <section id="Components">
 <h3>Components<a class="headerlink" href="#Components" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/morphologies&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/synaptic_models&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="s2">&quot;$COMPONENT_DIR/mechanisms&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;biophysical_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/biophysical_neuron_templates&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/point_neuron_templates&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"morphologies_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMPONENT_DIR/morphologies"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"synaptic_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMPONENT_DIR/synaptic_models"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"mechanisms_dir"</span><span class="p">:</span><span class="s2">"$COMPONENT_DIR/mechanisms"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"biophysical_neuron_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMPONENT_DIR/biophysical_neuron_templates"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"point_neuron_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMPONENT_DIR/point_neuron_templates"</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -490,20 +490,20 @@
 </section>
 <section id="Inputs">
 <h3>Inputs<a class="headerlink" href="#Inputs" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;spike_trains&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"spike_trains"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nwb"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$INPUT_DIR/lgn_spikes.nwb"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lgn"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">200.1178</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span>
+<span class="w">    </span><span class="nt">"current_clamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">200.1178</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">},</span>
 </pre></div>
@@ -512,28 +512,28 @@
 </section>
 <section id="Output-and-reports">
 <h3>Output and reports<a class="headerlink" href="#Output-and-reports" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;output&quot;</span><span class="p">:{</span>
-<span class="w">    </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;overwrite_output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"output"</span><span class="p">:{</span>
+<span class="w">    </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"log.txt"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$OUTPUT_DIR"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes.h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"overwrite_output_dir"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
 <span class="p">},</span>
-<span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;calcium_concentration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cai&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cell_vars.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"calcium_concentration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cai"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"membrane_report"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cell_vars.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMPONENT_DIR/recXelectrodes/linear_electrode.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;ecp_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp_contributions&quot;</span>
+<span class="w">    </span><span class="nt">"ecp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMPONENT_DIR/recXelectrodes/linear_electrode.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"ecp_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_channels"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"contributions_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp_contributions"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">},</span>
 </pre></div>
@@ -543,26 +543,26 @@
 </section>
 <section id="Networks">
 <h3>Networks<a class="headerlink" href="#Networks" title="Link to this heading">#</a></h3>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_node_types.csv"</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_node_types.csv"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
 
-<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_v1_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_v1_edge_types.csv"</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edge_types.csv"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="p">}</span>

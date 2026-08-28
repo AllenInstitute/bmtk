@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -442,13 +442,13 @@
 <div class="viewcode-block" id="CurrentWriterv01">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CurrentWriterv01</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to save current currents to the described hdf5 format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Used to save current currents to the described hdf5 format.</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="CurrentWriterv01.DataTable">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.DataTable">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">DataTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A small struct to keep track of different data (and buffer) tables&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A small struct to keep track of different data (and buffer) tables"""</span>
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="c1"># If buffering data, buffer_block will be an in-memory array and will write to data_block during when</span>
             <span class="c1"># filled. If not buffering buffer_block is an hdf5 dataset and data_block is ignored</span>
@@ -540,7 +540,7 @@
         <span class="n">fdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">fdir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span>
         <span class="n">add_hdf5_version</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span><span class="p">)</span>
         <span class="n">add_hdf5_magic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span><span class="p">)</span>
 
@@ -552,9 +552,9 @@
 
         <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">n_steps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A non-zero positive integer num-of-steps is required to initialize the current report.&#39;</span>
-                            <span class="s1">&#39;Please specify report length using the n_steps parameters (or using appropiate tstop,&#39;</span>
-                            <span class="s1">&#39;tstart, and dt).&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'A non-zero positive integer num-of-steps is required to initialize the current report.'</span>
+                            <span class="s1">'Please specify report length using the n_steps parameters (or using appropiate tstop,'</span>
+                            <span class="s1">'tstart, and dt).'</span><span class="p">)</span>
 
         <span class="c1">#self._calc_offset()</span>
         <span class="n">base_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span>
@@ -566,19 +566,19 @@
             <span class="c1"># Set up in-memory block to buffer recorded variables before writing to the dataset.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_currents</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_currents</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_currents</span><span class="p">),</span>
                                                                   <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Since we are not buffering data, we just write directly to the on-disk dataset.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
                                                                <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
@@ -586,11 +586,11 @@
 <div class="viewcode-block" id="CurrentWriterv01.record_clamps">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.record_clamps">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">record_clamps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record clamp currents.</span>
+<span class="w">        </span><span class="sd">"""Record clamp currents.</span>
 
 <span class="sd">        :param vals: list of currents for each clamp</span>
 <span class="sd">        :param tstep: time step</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="n">buffer_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span>
         <span class="n">update_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span><span class="p">)</span>
@@ -600,12 +600,12 @@
 <div class="viewcode-block" id="CurrentWriterv01.flush">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.reports.html#bmtk.utils.reports.current_writer.CurrentWriterv01.flush">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move data from memory to dataset&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Move data from memory to dataset"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
             <span class="n">blk_beg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span>
             <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span>
             <span class="k">if</span> <span class="n">blk_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span><span class="p">:</span>
-                <span class="c1"># Need to handle the case that simulation doesn&#39;t end on a block step</span>
+                <span class="c1"># Need to handle the case that simulation doesn't end on a block step</span>
                 <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">-</span> <span class="n">blk_beg</span>
 
             <span class="n">block_size</span> <span class="o">=</span> <span class="n">blk_end</span> <span class="o">-</span> <span class="n">blk_beg</span>

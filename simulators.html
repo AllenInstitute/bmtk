@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -45,6 +45,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'simulators';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -516,13 +518,13 @@ more details. Some simulation engines may allow for additional options that will
 <p>The “manifest” section is optional and allows modelers to define aliases within the config, which are signified by the
 dollar-sign like shell variables; eg <code class="docutils literal notranslate"><span class="pre">$VARNAME</span></code> or <code class="docutils literal notranslate"><span class="pre">${VARNAME}</span></code>. For example if the manifest contains the following:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;manifest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;$COMP_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;/home/ahodgkin/workspace/shared/bionet/components&quot;</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">"manifest"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"$COMP_DIR"</span><span class="p">:</span><span class="w"> </span><span class="nt">"/home/ahodgkin/workspace/shared/bionet/components"</span><span class="p">:</span>
 <span class="w">   </span><span class="p">},</span>
 
-<span class="w">   </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMP_DIR/morphologies&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMP_DIR/synaptic_models&quot;</span>
+<span class="w">   </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"morphologies_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMP_DIR/morphologies"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"synaptic_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$COMP_DIR/synaptic_models"</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -534,25 +536,25 @@ dollar-sign like shell variables; eg <code class="docutils literal notranslate">
 combined into one circuit. For example the following contains V1 network, with their recurrent connections
 (v1_v1_edges*) plus input from LGN nodes (lgn_v1_edges*)</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span>
+<span class="w">         </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_nodes.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_node_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_node_types.csv&quot;</span>
+<span class="w">         </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_nodes.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span>
+<span class="w">         </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_v1_edges.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/v1_v1_edge_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span>
+<span class="w">         </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edges.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">      </span><span class="p">]</span>
 <span class="w">   </span><span class="p">}</span>
@@ -562,9 +564,9 @@ combined into one circuit. For example the following contains V1 network, with t
 <p>Changing the network can be done by removing or adding nodes or edges. BMTK also has the “enabled” option (not a part
 of SONATA)</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">   </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edges.h5"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/lgn_v1_edge_types.csv"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"enabled"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -575,11 +577,11 @@ of SONATA)</p>
 see <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file">SONATA circuit config documentation</a>
 for a full description</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/morphologies&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/synaptic_models&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="s2">&quot;./components/mechanisms&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/point_neuron_models_dir&quot;</span>
+<span class="w">   </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"morphologies_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/morphologies"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"synaptic_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/synaptic_models"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"mechanisms_dir"</span><span class="p">:</span><span class="s2">"./components/mechanisms"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"point_neuron_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/point_neuron_models_dir"</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -594,10 +596,10 @@ for a full description</p>
 <li><p>overwrite_output_dir: overwrites any previous ran results</p></li>
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;overwrite_output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">   </span><span class="nt">"run"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"tstop"</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"dt"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"overwrite_output_dir"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -610,11 +612,11 @@ the output_dir will be automatically created (and will overwrite existing output
 well as the log_file. By default BMTK will always record and save the spikes of all the nodes of the simulation
 (see “reports” section for how to change this) into the “spikes_file”.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;output&quot;</span><span class="p">:{</span>
-<span class="w">      </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_sort_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;time&quot;</span>
+<span class="w">   </span><span class="nt">"output"</span><span class="p">:{</span>
+<span class="w">      </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./output"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"log.txt"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_sort_order"</span><span class="p">:</span><span class="w"> </span><span class="s2">"time"</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -626,20 +628,20 @@ well as the log_file. By default BMTK will always record and save the spikes of 
 spike trains injected into the network using external <strong>virtual</strong> nodes, or the use of current clamps. The following
 example does both:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;virtual_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">         </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/lgn_spikes.h5&quot;</span>
+<span class="w">   </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"virtual_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">         </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$INPUT_DIR/lgn_spikes.h5"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]},</span>
-<span class="w">         </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span>
+<span class="w">      </span><span class="nt">"current_clamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]},</span>
+<span class="w">         </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
@@ -654,13 +656,13 @@ only certain engines; like extracellular potentiation in BioNet or movies in Fil
 <p>Contains information about what variables will be recorded during the simulation. For example to record membrane
 potential in all the biophysically detailed cells in the V1 population:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
-<span class="w">         </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cell_vars.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">   </span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"membrane_potential"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span><span class="p">},</span>
+<span class="w">         </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"membrane_report"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cell_vars.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
@@ -677,29 +679,29 @@ are filters for specific nodes within the circuit, mainly used to determine whic
 “report”. For example say we want to split the spike-train output of V1’s pvalb and pyramidal cells into different
 reports</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;node_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;pvalb_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb&quot;</span>
+<span class="w">   </span><span class="nt">"node_sets"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"pvalb_cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"cell_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pvalb"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;pyr_cells&quot;</span><span class="p">::</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyramidal&quot;</span>
+<span class="w">      </span><span class="nt">"pyr_cells"</span><span class="p">::</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"cell_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pyramidal"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">   </span><span class="p">},</span>
 
-<span class="w">   </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;pvalb_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb_cells&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;sort_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node_id&quot;</span>
+<span class="w">   </span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"pvalb_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pvalb_cells"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes_report"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pvalb_spikes.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"sort_by"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node_id"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;pyr_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyr_cells&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyr_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">         </span><span class="nt">&quot;sort_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node_id&quot;</span>
+<span class="w">      </span><span class="nt">"pyr_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pyr_cells"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes_report"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pyr_spikes.h5"</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">"sort_by"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node_id"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>

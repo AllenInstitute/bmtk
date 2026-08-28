@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -432,7 +432,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_value</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">external_inputs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span> <span class="o">=</span> <span class="n">node_properties</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sonata_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sonata_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'node'</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">property</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span> <span class="ow">or</span> <span class="nb">property</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sonata_node</span>
@@ -442,12 +442,12 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">property</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sonata_node</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sonata_node</span><span class="p">[</span><span class="nb">property</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'node_id'</span><span class="p">,</span> <span class="s1">'node_ids'</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span>
-        <span class="k">elif</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;population_name&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="nb">property</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'population_name'</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> does not contain property &quot;</span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> does not contain property "</span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SSNNode.get">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popnode.SSNNode.get">[docs]</a>
@@ -459,7 +459,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gid</span><span class="si">}</span><span class="s1"> &gt; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gid</span><span class="si">}</span><span class="s1"> &gt; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1">)'</span></div>
 
 </pre></div>
 

@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -423,16 +423,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_preselected_gids</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_params</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">filter_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="n">filter_params</span><span class="p">}</span>
+            <span class="n">filter_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'node_id'</span><span class="p">:</span> <span class="n">filter_params</span><span class="p">}</span>
        
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filter_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span> <span class="o">=</span> <span class="n">filter_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_populations</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Unknown node set params type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">filter_params</span><span class="p">)))</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Unknown node set params type </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">filter_params</span><span class="p">)))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_find_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;populations&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'populations'</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span><span class="p">:</span>
                 <span class="n">node_pops</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
@@ -458,7 +458,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.node_sets.NodeSet.gids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">gids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preselected_gids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># print(&#39;HERE&#39;)</span>
+            <span class="c1"># print('HERE')</span>
             <span class="c1"># print(self.population_names())</span>
             <span class="c1"># exit()</span>
             <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preselected_gids</span><span class="p">:</span>

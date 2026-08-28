@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -471,11 +471,11 @@
 <div class="viewcode-block" id="NodeAdaptor">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NodeAdaptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">COL_MODEL_TYPE</span> <span class="o">=</span> <span class="s1">&#39;model_type&#39;</span>
-    <span class="n">COL_GID</span> <span class="o">=</span> <span class="s1">&#39;gid&#39;</span>
-    <span class="n">COL_DYNAMICS_PARAM</span> <span class="o">=</span> <span class="s1">&#39;dynamics_params&#39;</span>
-    <span class="n">COL_MODEL_TEMPLATE</span> <span class="o">=</span> <span class="s1">&#39;model_template&#39;</span>
-    <span class="n">COL_MODEL_PROCESSING</span> <span class="o">=</span> <span class="s1">&#39;model_processing&#39;</span>
+    <span class="n">COL_MODEL_TYPE</span> <span class="o">=</span> <span class="s1">'model_type'</span>
+    <span class="n">COL_GID</span> <span class="o">=</span> <span class="s1">'gid'</span>
+    <span class="n">COL_DYNAMICS_PARAM</span> <span class="o">=</span> <span class="s1">'dynamics_params'</span>
+    <span class="n">COL_MODEL_TEMPLATE</span> <span class="o">=</span> <span class="s1">'model_template'</span>
+    <span class="n">COL_MODEL_PROCESSING</span> <span class="o">=</span> <span class="s1">'model_processing'</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
@@ -512,7 +512,7 @@
         <span class="k">elif</span> <span class="n">model_template_str</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_template_cache</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_template_cache</span><span class="p">[</span><span class="n">model_template_str</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">template_parts</span> <span class="o">=</span> <span class="n">model_template_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="n">template_parts</span> <span class="o">=</span> <span class="n">model_template_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
             <span class="n">directive</span><span class="p">,</span> <span class="n">template</span> <span class="o">=</span> <span class="n">template_parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">template_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model_template_cache</span><span class="p">[</span><span class="n">model_template_str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">directive</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">directive</span><span class="p">,</span> <span class="n">template</span></div>
@@ -526,7 +526,7 @@
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># TODO: Split in the node_types_table when possible</span>
-            <span class="k">return</span> <span class="n">model_processing_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">model_processing_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NodeAdaptor.preprocess_node_types">
@@ -541,60 +541,60 @@
         <span class="n">node_types_table</span> <span class="o">=</span> <span class="n">node_population</span><span class="o">.</span><span class="n">types_table</span>
 
         <span class="c1"># TODO: Convert model_type to a enum</span>
-        <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">has_component</span><span class="p">(</span><span class="s1">&#39;morphologies_dir&#39;</span><span class="p">):</span>
-            <span class="n">morph_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;morphologies_dir&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">morph_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;morphology&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">has_component</span><span class="p">(</span><span class="s1">'morphologies_dir'</span><span class="p">):</span>
+            <span class="n">morph_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'morphologies_dir'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">morph_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'morphology'</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
                     <span class="n">node_type</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">continue</span>
 
                     <span class="c1"># TODO: See if absolute path is stored in csv</span>
-                    <span class="n">swc_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">morph_dir</span><span class="p">,</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">])</span>
+                    <span class="n">swc_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">morph_dir</span><span class="p">,</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">])</span>
 
                     <span class="c1"># According to Sonata format, the .swc extension is not needed. Thus we need to add it if req.</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">swc_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.swc&#39;</span><span class="p">):</span>
-                        <span class="n">swc_path</span> <span class="o">+=</span> <span class="s1">&#39;.swc&#39;</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">swc_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.swc'</span><span class="p">):</span>
+                        <span class="n">swc_path</span> <span class="o">+=</span> <span class="s1">'.swc'</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">):</span>
-                            <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find node morphology file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">swc_path</span><span class="p">))</span>
+                            <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Could not find node morphology file </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">swc_path</span><span class="p">))</span>
 
-                    <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">swc_path</span>
+                    <span class="n">node_type</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">]</span> <span class="o">=</span> <span class="n">swc_path</span>
 
-        <span class="k">if</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;model_type&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'dynamics_params'</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">'model_type'</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
                 <span class="n">node_type</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
-                <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+                <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">]</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dynamics_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="n">dynamics_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="n">model_type</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;biophysical_neuron_models_dir&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span> <span class="s1">&#39;point_neuron&#39;</span><span class="p">]:</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;rate_population&#39;</span><span class="p">]:</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;population_models_dir&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;lgnmodel&#39;</span> <span class="ow">or</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;filter_models_dir&#39;</span><span class="p">)</span>
+                <span class="n">model_type</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">'model_type'</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">'biophysical'</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'biophysical_neuron_models_dir'</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'point_process'</span><span class="p">,</span> <span class="s1">'point_neuron'</span><span class="p">]:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'point_neuron_models_dir'</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">'point_soma'</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'point_neuron_models_dir'</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'rate_population'</span><span class="p">]:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'population_models_dir'</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">'lgnmodel'</span> <span class="ow">or</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">'virtual'</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'filter_models_dir'</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Not sure what to do in this case, throw Exception?</span>
-                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;custom_neuron_models&#39;</span><span class="p">)</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'custom_neuron_models'</span><span class="p">)</span>
 
                 <span class="n">params_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params_dir</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
 
                 <span class="c1"># see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
                 <span class="c1"># cell_model loader function handle the extension.</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
-                    <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">))</span>
+                    <span class="n">node_type</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="c1"># TODO: Check dynamics_params before</span>
-                    <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find node dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span></div>
+                    <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Could not find node dynamics_params file </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span></div>
 
 
         <span class="c1"># TODO: Use adaptor to validate model_type and model_template values</span>
@@ -613,22 +613,22 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">patch_adaptor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">,</span> <span class="n">node_group</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="n">adaptor</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
 
-        <span class="c1"># Use node_id if the user hasn&#39;t specified a gid table</span>
+        <span class="c1"># Use node_id if the user hasn't specified a gid table</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">node_group</span><span class="o">.</span><span class="n">has_gids</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">gid</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">NodeAdaptor</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
 
         <span class="c1"># dynamics_params</span>
         <span class="k">if</span> <span class="n">node_group</span><span class="o">.</span><span class="n">has_dynamics_params</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">group_dynamics_params</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s1">'dynamics_params'</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">types_dynamics_params</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">none_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'model_template'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">model_template</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">none_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;model_processing&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'model_processing'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">model_processing</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">empty_list</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">adaptor</span></div>
@@ -659,7 +659,7 @@
 <div class="viewcode-block" id="types_dynamics_params">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.types_dynamics_params">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">types_dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">node</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">]</span></div>
 
 
 

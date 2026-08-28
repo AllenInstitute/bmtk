@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -434,32 +434,32 @@
         <span class="n">possible_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">sim_reports</span> <span class="o">=</span> <span class="n">simulation_reports</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">sim_reports</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;extracellular&#39;</span><span class="p">,</span> <span class="s1">&#39;ecp&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'extracellular'</span><span class="p">,</span> <span class="s1">'ecp'</span><span class="p">]:</span>
                 <span class="n">rname</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">report_name</span>
-                <span class="n">rfile</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-                <span class="n">rpath</span> <span class="o">=</span> <span class="n">rfile</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">],</span> <span class="n">rfile</span><span class="p">)</span>
+                <span class="n">rfile</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
+                <span class="n">rpath</span> <span class="o">=</span> <span class="n">rfile</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">rfile</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'tmp_dir'</span><span class="p">],</span> <span class="n">rfile</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">report_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">report_name</span> <span class="o">==</span> <span class="n">rname</span><span class="p">:</span>
                     <span class="n">possible_paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rname</span><span class="p">,</span> <span class="n">rpath</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="n">report_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">possible_paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rname</span><span class="p">,</span> <span class="n">rpath</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Could not find a ECP report &#39;</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">report_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;with report_name &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report_name</span><span class="p">)</span>
-            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39; from configuration file. . Use &quot;report_path&quot; parameter instead.&#39;</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">'Could not find a ECP report '</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">''</span> <span class="k">if</span> <span class="n">report_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">'with report_name "</span><span class="si">{}</span><span class="s1">"'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report_name</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="s1">' from configuration file. . Use "report_path" parameter instead.'</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">avail_reports</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Configuration file contained multiple &quot;extracelluar&quot;, use &quot;report_name&quot; or&#39;</span>
-                             <span class="s1">&#39;&quot;report_path&quot; to pick which one to plot. Option values: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avail_reports</span><span class="p">))</span>
+            <span class="n">avail_reports</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">possible_paths</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Configuration file contained multiple "extracelluar", use "report_name" or'</span>
+                             <span class="s1">'"report_path" to pick which one to plot. Option values: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avail_reports</span><span class="p">))</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">possible_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Could not find a compartment report SONATA file. Please user &quot;config_file&quot; or &#39;</span>
-                             <span class="s1">&#39;&quot;report_path&quot; options.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">'Could not find a compartment report SONATA file. Please user "config_file" or '</span>
+                             <span class="s1">'"report_path" options.'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="plot_ecp">
@@ -468,50 +468,50 @@
     <span class="n">sonata_config</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">config_file</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="n">_</span><span class="p">,</span> <span class="n">ecp_path</span> <span class="o">=</span> <span class="n">_get_ecp_path</span><span class="p">(</span><span class="n">ecp_path</span><span class="o">=</span><span class="n">ecp_path</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">sonata_config</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="n">report_name</span><span class="p">)</span>
-    <span class="n">ecp_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ecp_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ecp_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ecp_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
 
-    <span class="n">time_traces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">time_traces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">step</span><span class="o">=</span><span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
 
-    <span class="n">channels</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">][()]</span>
+    <span class="n">channels</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/channel_id'</span><span class="p">][()]</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;channel id&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
-    <span class="n">v_min</span><span class="p">,</span> <span class="n">v_max</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][()]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][()]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">'channel id'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">'center'</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">'vertical'</span><span class="p">)</span>
+    <span class="n">v_min</span><span class="p">,</span> <span class="n">v_max</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][()]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][()]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
     <span class="c1"># print(v_max - v_min)</span>
     <span class="c1"># exit()</span>
     
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">channel</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][:,</span> <span class="n">idx</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ecp_h5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][:,</span> <span class="n">idx</span><span class="p">]</span>
         <span class="c1"># print(channel, np.min(data), np.max(data))</span>
         <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_traces</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">"top"</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">"right"</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([])</span>
         <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
         <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">v_min</span><span class="p">,</span> <span class="n">v_max</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">idx</span><span class="o">+</span><span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;bottom&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">"bottom"</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;timestamps (ms)&#39;</span><span class="p">)</span>
+            <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'timestamps (ms)'</span><span class="p">)</span>
         
         
         <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">scale_bar_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">v_max</span><span class="o">-</span><span class="n">v_min</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
-            <span class="n">scale_bar_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">scale_bar_size</span><span class="si">:</span><span class="s1">.2E</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">scale_bar_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">scale_bar_size</span><span class="si">:</span><span class="s1">.2E</span><span class="si">}</span><span class="s1">'</span>
             <span class="c1"># print(scale_bar_label)</span>
             <span class="c1"># exit()</span>
-            <span class="n">fontprops</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="s1">&#39;x-small&#39;</span><span class="p">)</span>
+            <span class="n">fontprops</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">FontProperties</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="s1">'x-small'</span><span class="p">)</span>
 
             <span class="n">scalebar</span> <span class="o">=</span> <span class="n">AnchoredSizeBar</span><span class="p">(</span>
                 <span class="n">axes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
                 <span class="n">size</span><span class="o">=</span><span class="n">scale_bar_size</span><span class="p">,</span> 
                 <span class="n">label</span><span class="o">=</span><span class="n">scale_bar_label</span><span class="p">,</span> 
-                <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span>
+                <span class="n">loc</span><span class="o">=</span><span class="s1">'upper right'</span><span class="p">,</span>
                 <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
                 <span class="n">borderpad</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                 <span class="n">sep</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                <span class="c1"># color=&#39;b&#39;,</span>
+                <span class="c1"># color='b',</span>
                 <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">size_vertical</span><span class="o">=</span><span class="n">scale_bar_size</span><span class="p">,</span>
                 <span class="c1"># size_vertical=1.001,</span>
@@ -521,8 +521,8 @@
 
             <span class="c1"># label = scalebar.txt_label</span>
             <span class="c1"># label.set_rotation(270.0)</span>
-            <span class="c1"># label.set_verticalalignment(&#39;bottom&#39;)</span>
-            <span class="c1"># label.set_horizontalalignment(&#39;left&#39;) </span>
+            <span class="c1"># label.set_verticalalignment('bottom')</span>
+            <span class="c1"># label.set_horizontalalignment('left') </span>
 
     <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>

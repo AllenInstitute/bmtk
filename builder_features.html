@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -383,7 +383,11 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </details></li>
@@ -464,23 +468,23 @@ be created by each call to <code class="docutils literal notranslate"><span clas
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'my_model'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
     <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
     <span class="n">coord</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">node_dict</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">node_dict</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">],</span> <span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">node_dict</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">node_dict</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">],</span> <span class="s1">':'</span><span class="p">,</span> <span class="n">node_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The above will show each 10 nodes/cells created by the <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> call:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">0</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span>-74.13859238611045,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">0</span><span class="o">}</span>
-<span class="m">1</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span>-22.88965188502479,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">1</span><span class="o">}</span>
-<span class="m">2</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">&#39;model_type&#39;</span>:<span class="w"> </span><span class="s1">&#39;biophysical&#39;</span>,<span class="w"> </span><span class="s1">&#39;node_type_id&#39;</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">&#39;cell_order&#39;</span>:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="s1">&#39;coord&#39;</span>:<span class="w"> </span><span class="m">54</span>.31170697608857,<span class="w"> </span><span class="s1">&#39;node_id&#39;</span>:<span class="w"> </span><span class="m">2</span><span class="o">}</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">0</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">'model_type'</span>:<span class="w"> </span><span class="s1">'biophysical'</span>,<span class="w"> </span><span class="s1">'node_type_id'</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">'cell_order'</span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s1">'coord'</span>:<span class="w"> </span>-74.13859238611045,<span class="w"> </span><span class="s1">'node_id'</span>:<span class="w"> </span><span class="m">0</span><span class="o">}</span>
+<span class="m">1</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">'model_type'</span>:<span class="w"> </span><span class="s1">'biophysical'</span>,<span class="w"> </span><span class="s1">'node_type_id'</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">'cell_order'</span>:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="s1">'coord'</span>:<span class="w"> </span>-22.88965188502479,<span class="w"> </span><span class="s1">'node_id'</span>:<span class="w"> </span><span class="m">1</span><span class="o">}</span>
+<span class="m">2</span><span class="w"> </span>:<span class="w">  </span><span class="o">{</span><span class="s1">'model_type'</span>:<span class="w"> </span><span class="s1">'biophysical'</span>,<span class="w"> </span><span class="s1">'node_type_id'</span>:<span class="w"> </span><span class="m">100</span>,<span class="w"> </span><span class="s1">'cell_order'</span>:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="s1">'coord'</span>:<span class="w"> </span><span class="m">54</span>.31170697608857,<span class="w"> </span><span class="s1">'node_id'</span>:<span class="w"> </span><span class="m">2</span><span class="o">}</span>
 ...
 </pre></div>
 </div>
@@ -488,40 +492,40 @@ be created by each call to <code class="docutils literal notranslate"><span clas
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'my_model'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
     <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">,</span>
     <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
-<span class="p">)</span>
-
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
-    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
     <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
 <span class="p">)</span>
 
-<span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)))</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">,</span>
+    <span class="n">cell_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">)))</span>
 </pre></div>
 </div>
 <p>The above will return only the 10 nodes from the two calls with <code class="docutils literal notranslate"><span class="pre">ei=='exc'</span></code>. If you want to filter by multiple
 properties in the format <code class="docutils literal notranslate"><span class="pre">prop1==A</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop2==B</span> <span class="pre">&amp;&amp;</span> <span class="pre">prop3==C</span></code> you can just pass in multiple key-value pairs into the
 <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> parameters. For example if we want to find only those cells that are <strong>excitatory point</strong> neurons from
 the example above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">)))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pprint</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">)))</span>
 </pre></div>
 </div>
 </section>
@@ -532,44 +536,44 @@ allows you to iterate and filter all the edges/synapses generated by each call t
 with no parameters it will return a list of all edges/synapses in a dictionary like format.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'my_model'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span>
 <span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">),</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-    <span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;inh2exc&#39;</span><span class="p">,</span>
+    <span class="n">syn_function</span><span class="o">=</span><span class="s1">'inh2exc'</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">20.0</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">),</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span>
+    <span class="n">syn_function</span><span class="o">=</span><span class="s1">'point_exc'</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span>
 <span class="p">)</span>
 
 <span class="n">edge0</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;syn_function&#39;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">'syn_function'</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edge0</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">])</span>
 
 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
@@ -581,9 +585,9 @@ may be different</strong>)</p>
 <span class="mi">1</span>
 <span class="n">inh2exc</span>
 <span class="o">-</span><span class="mf">20.0</span>
-<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">1</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
-<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">2</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
-<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">4</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">1</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'inh'</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">2</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'inh'</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+<span class="mi">5</span> <span class="o">--&gt;</span> <span class="mi">4</span> <span class="p">{</span><span class="n">syn_function</span><span class="p">:</span> <span class="n">inh2exc</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">:</span> <span class="o">-</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="n">source_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'inh'</span><span class="p">,</span> <span class="n">target_query</span><span class="p">:</span> <span class="n">ei</span><span class="o">==</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">source_node_id</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">target_node_id</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">:</span> <span class="mi">7</span><span class="p">}</span>
 </pre></div>
 </div>
 <div class="admonition important">
@@ -597,15 +601,15 @@ and memory. Also note that you will need to rebuild the network if you call <cod
 <p>The easiest way to filter only certain edges by query is, like with the <code class="docutils literal notranslate"><span class="pre">nodes()</span></code> method, add key-value parameters to
 the method. If more than one parameter is called then it will be treated as a logical “and”.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We should expect 5x(5+5) = 50 edges in total</span>
-<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">'point_exc'</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
     <span class="c1"># print(edge)</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
-<span class="c1"># Due to the &quot;syn_weight&quot; conditional we expect to find no (0) edges.</span>
-<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">&#39;point_exc&#39;</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">)</span>
+<span class="c1"># Due to the "syn_weight" conditional we expect to find no (0) edges.</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">syn_function</span><span class="o">=</span><span class="s1">'point_exc'</span><span class="p">,</span> <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">20.0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -615,18 +619,18 @@ the method. If more than one parameter is called then it will be treated as a lo
 still exists).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># We should expect &lt;= 50 inh -&gt; exc edges.</span>
 <span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
-    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
-    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">),</span>
+    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">)</span>
 
 <span class="p">)</span>
 <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_function&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;inh2exc&#39;</span><span class="p">)</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">'syn_function'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'inh2exc'</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">edge</span><span class="p">[</span><span class="s1">'syn_weight'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">)</span>
 
 <span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span>
-    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">),</span>
-    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+    <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">),</span>
+    <span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">)</span>
 
 <span class="p">)</span>
 </pre></div>
@@ -638,14 +642,14 @@ still exists).</p>
 <code class="docutils literal notranslate"><span class="pre">import_nodes()</span></code> method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;my_model&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'my_model'</span><span class="p">)</span>
 
 <span class="c1"># expect 0 nodes</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">()))</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">import_nodes</span><span class="p">(</span>
-    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;network/v1_nodes.h5&#39;</span><span class="p">,</span>
-    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">&#39;network/v1_node_types.csv&#39;</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">'network/v1_nodes.h5'</span><span class="p">,</span>
+    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">'network/v1_node_types.csv'</span>
 <span class="p">)</span>
 
 <span class="c1"># Should have more than 0 nodes</span>
@@ -674,11 +678,11 @@ start and end distance (both inclusive) in arc-length a segment has to be away f
 microns away from the soma. (If you want connections at the end of the dendrite you can use a large number like
 <code class="docutils literal notranslate"><span class="pre">[50.0,</span> <span class="pre">1.0e20]</span></code>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyramidal.swc&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">'pyramidal.swc'</span><span class="p">),</span>
     <span class="o">...</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -701,21 +705,21 @@ called it will choose appropriate synapse location and store them in the SONATA 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">rand_syn_locations</span>
 
 <span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyramidal.swc&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span> <span class="n">morphology</span><span class="o">=</span><span class="s1">'pyramidal.swc'</span><span class="p">),</span>
     <span class="o">...</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="o">...</span>
 <span class="p">)</span>
 
 <span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span>
-    <span class="p">[</span><span class="s1">&#39;afferent_section_id&#39;</span><span class="p">,</span> <span class="s1">&#39;afferent_section_pos&#39;</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">'afferent_section_id'</span><span class="p">,</span> <span class="s1">'afferent_section_pos'</span><span class="p">],</span>
     <span class="n">rule</span><span class="o">=</span><span class="n">rand_syn_locations</span><span class="p">,</span>
     <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;section_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;distance_range&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
-        <span class="s1">&#39;morphology_dir&#39;</span><span class="p">:</span> <span class="s1">&#39;./components/morphologies&#39;</span>
+        <span class="s1">'section_names'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'somatic'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">],</span>
+        <span class="s1">'distance_range'</span><span class="p">:</span> <span class="p">[</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">],</span>
+        <span class="s1">'morphology_dir'</span><span class="p">:</span> <span class="s1">'./components/morphologies'</span>
     <span class="p">},</span>
     <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span>
@@ -727,7 +731,7 @@ you can use the <code class="docutils literal notranslate"><span class="pre">SWC
 and segments (including x, y, z coordinates):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.bionet.swc_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SWCReader</span>
 
-<span class="n">morph</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="s1">&#39;./components/morphologies/pyramidal.swc&#39;</span><span class="p">)</span>
+<span class="n">morph</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="s1">'./components/morphologies/pyramidal.swc'</span><span class="p">)</span>
 <span class="n">morph</span><span class="o">.</span><span class="n">set_segment_dl</span><span class="p">(</span><span class="n">dL</span><span class="p">)</span>
 <span class="n">morph</span><span class="o">.</span><span class="n">move_and_rotate</span><span class="p">(</span>
     <span class="n">soma_coords</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span>
@@ -758,13 +762,13 @@ choose at random if two cells share a connection or not.</p>
 to file names <em>NETSRC_to_NETTRG_edges.h5</em> and <em>NETSRC_to_NETTRG_edge_types.csv</em>.</p>
 <p>To change the file names, use the <strong>node[_type]s_file_name</strong> and <strong>edge[_types]_file_name</strong> parameters. You can use
 absolute file paths, and when using relative file paths, it will place it under the <strong>output_dir</strong> option:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will save the network nodes and edges files into &quot;network/custom-*&quot; file-name.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># will save the network nodes and edges files into "network/custom-*" file-name.</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
-    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;custom-nodes.h5&#39;</span>
-    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">&#39;custom-node-types.csv&#39;</span><span class="p">,</span>
-    <span class="n">edges_file_name</span><span class="o">=</span><span class="s1">&#39;custom-edges.h5&#39;</span><span class="p">,</span>
-    <span class="n">edge_types_file_name</span><span class="o">=</span><span class="s1">&#39;custom-edge-types.csv&#39;</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./network/'</span><span class="p">,</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">'custom-nodes.h5'</span>
+    <span class="n">node_types_file_name</span><span class="o">=</span><span class="s1">'custom-node-types.csv'</span><span class="p">,</span>
+    <span class="n">edges_file_name</span><span class="o">=</span><span class="s1">'custom-edges.h5'</span><span class="p">,</span>
+    <span class="n">edge_types_file_name</span><span class="o">=</span><span class="s1">'custom-edge-types.csv'</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -777,9 +781,9 @@ you to save multiple nodes and edges populations in the same files - although ea
 With BMTK you must set the <strong>mode</strong> parameter to <code class="docutils literal notranslate"><span class="pre">a</span></code> or <code class="docutils literal notranslate"><span class="pre">append</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assumes network/shared-nodes.h5 already exists and user wants to append another node population into it.</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
-    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">&#39;shared-nodes.h5&#39;</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./network/'</span><span class="p">,</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s1">'a'</span><span class="p">,</span>
+    <span class="n">nodes_file_name</span><span class="o">=</span><span class="s1">'shared-nodes.h5'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -795,8 +799,8 @@ method allows you to choose between sorting by:</p>
 <li><p>“edge_type_id” - Will group edges that share the same <strong>edge-type</strong> properties and id.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./network/&#39;</span><span class="p">,</span>
-    <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./network/'</span><span class="p">,</span>
+    <span class="n">sort_by</span><span class="o">=</span><span class="s1">'source_node_id'</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -815,14 +819,14 @@ both target_node_id and source_node_id. This can be changed using the <strong>in
 </div>
 <p>To build an edges file with only <strong>target_node_id indices</strong>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">)</span>
+    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">'target_node_id'</span><span class="p">)</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>Or to build an edges file with <strong>all indexing options</strong>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_type_id&#39;</span><span class="p">)</span>
+    <span class="n">index_by</span><span class="o">=</span><span class="p">(</span><span class="s1">'target_node_id'</span><span class="p">,</span> <span class="s1">'source_node_id'</span><span class="p">,</span> <span class="s1">'edge_type_id'</span><span class="p">)</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -835,7 +839,7 @@ To save an hdf5 file with compression, use the <strong>compression</strong> opti
 vary depending on machine or hdf5/h5py libraries installed).</p>
 <p>To save with GZIP compression:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
-    <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span>
+    <span class="n">compression</span><span class="o">=</span><span class="s1">'gzip'</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>

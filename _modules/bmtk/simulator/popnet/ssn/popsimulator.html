@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -436,9 +436,9 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popsimulator.step">[docs]</a>
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="n">activation_function</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">exponents</span><span class="p">,</span> <span class="n">decay_constants</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A function to compute one step of the network.</span>
+<span class="w">    </span><span class="sd">""" A function to compute one step of the network.</span>
 <span class="sd">    This function needs to be here so that run_njit can be compiled.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nb">input</span> <span class="o">=</span> <span class="n">activation_function</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="n">scales</span><span class="p">)</span> <span class="o">**</span> <span class="n">exponents</span>
     <span class="n">n_neu_recurrent</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -451,10 +451,10 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.ssn.html#bmtk.simulator.popnet.ssn.popsimulator.run_ssn">[docs]</a>
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_ssn</span><span class="p">(</span><span class="n">activation_function</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">connectivity_mat</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">exponents</span><span class="p">,</span> <span class="n">decay_constants</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">nsteps</span><span class="p">,</span> <span class="n">n_neu_recurrent</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A function to run the whole simulation.</span>
 <span class="sd">    The results will be modified in place.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsteps</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">n_neu_recurrent</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span><span class="p">(</span>
             <span class="n">activation_function</span><span class="p">,</span>
@@ -479,7 +479,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fr_results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation_function</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">activation_function</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation_function</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">activation_function</span><span class="p">(</span><span class="s1">'default'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nsteps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -512,7 +512,7 @@
         
         <span class="n">activation_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation_function</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_output</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Running Simulation.&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Running Simulation.'</span><span class="p">)</span>
 
         <span class="c1"># self.results will be modified in place</span>
         <span class="n">run_ssn</span><span class="p">(</span>
@@ -529,7 +529,7 @@
 
         <span class="k">if</span> <span class="n">return_output</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Simulation Finished.&#39;</span><span class="p">)</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Simulation Finished.'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">:</span>
             <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -551,75 +551,75 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">configure</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not convert </span><span class="si">{}</span><span class="s1"> (type &quot;</span><span class="si">{}</span><span class="s1">&quot;) to json.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">configure</span><span class="p">)))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Could not convert </span><span class="si">{}</span><span class="s1"> (type "</span><span class="si">{}</span><span class="s1">") to json.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">configure</span><span class="p">)))</span>
 
         <span class="n">sim</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">)</span>
         
-        <span class="n">act_fnc_sig</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activation_function&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">act_fnc_sig</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">run</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'activation_function'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">act_fnc_sig</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">act_fnc_sig</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">activation_functions</span><span class="p">:</span>
-                <span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find activation fucntion with signature </span><span class="si">{</span><span class="n">act_fnc_sig</span><span class="si">}</span><span class="s1"> registered to PopNet&#39;</span><span class="p">)</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Could not find activation fucntion with signature </span><span class="si">{</span><span class="n">act_fnc_sig</span><span class="si">}</span><span class="s1"> registered to PopNet'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Setting simulation activation function to </span><span class="si">{</span><span class="n">act_fnc_sig</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Setting simulation activation function to </span><span class="si">{</span><span class="n">act_fnc_sig</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="n">sim</span><span class="o">.</span><span class="n">set_activation_function</span><span class="p">(</span><span class="n">py_modules</span><span class="o">.</span><span class="n">activation_function</span><span class="p">(</span><span class="n">act_fnc_sig</span><span class="p">))</span>
 
 
-        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building nodes.&#39;</span><span class="p">)</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Building nodes.'</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">build_nodes</span><span class="p">()</span>
 
-        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building connections.&#39;</span><span class="p">)</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Building connections.'</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">build_edges</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">sim_input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;init_states&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">'init_states'</span><span class="p">:</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">InitStatesMod</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">input_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">,</span>
                     <span class="n">module</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span>
                 <span class="p">)</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add input module &quot;</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Add input module "</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
                 <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
     
-            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;external_rates&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">'external_rates'</span><span class="p">:</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">ExternalRatesMod</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">input_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">,</span>
                     <span class="n">module</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span>
                 <span class="p">)</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Add input module &quot;</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Add input module "</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"'</span><span class="p">)</span>
                 <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
             
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown input module &quot;</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; (module=</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown input module "</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" (module=</span><span class="si">{</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="s1">&#39;rates_file&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'rates_file'</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">RatesRecorderMod</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;RecordRatesH5&#39;</span><span class="p">,</span> 
-                <span class="n">module</span><span class="o">=</span><span class="s1">&#39;rates&#39;</span><span class="p">,</span>
-                <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;csv&#39;</span><span class="p">,</span>
-                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;rates_file&#39;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">'RecordRatesH5'</span><span class="p">,</span> 
+                <span class="n">module</span><span class="o">=</span><span class="s1">'rates'</span><span class="p">,</span>
+                <span class="n">output_type</span><span class="o">=</span><span class="s1">'csv'</span><span class="p">,</span>
+                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">'rates_file'</span><span class="p">],</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">output</span>
             <span class="p">)</span>
             <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;rates_file_csv&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'rates_file_csv'</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">RatesRecorderMod</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;RecordRatesH5&#39;</span><span class="p">,</span> 
-                <span class="n">module</span><span class="o">=</span><span class="s1">&#39;rates&#39;</span><span class="p">,</span>
-                <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;csv&#39;</span><span class="p">,</span>
-                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;rates_file_csv&#39;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">'RecordRatesH5'</span><span class="p">,</span> 
+                <span class="n">module</span><span class="o">=</span><span class="s1">'rates'</span><span class="p">,</span>
+                <span class="n">output_type</span><span class="o">=</span><span class="s1">'csv'</span><span class="p">,</span>
+                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">'rates_file_csv'</span><span class="p">],</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">output</span>
             <span class="p">)</span>
             <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;rates_file_h5&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'rates_file_h5'</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
             <span class="n">mod</span> <span class="o">=</span> <span class="n">RatesRecorderMod</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;RecordRatesH5&#39;</span><span class="p">,</span> 
-                <span class="n">module</span><span class="o">=</span><span class="s1">&#39;rates&#39;</span><span class="p">,</span>
-                <span class="n">output_type</span><span class="o">=</span><span class="s1">&#39;h5&#39;</span><span class="p">,</span>
-                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;rates_file_h5&#39;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">'RecordRatesH5'</span><span class="p">,</span> 
+                <span class="n">module</span><span class="o">=</span><span class="s1">'rates'</span><span class="p">,</span>
+                <span class="n">output_type</span><span class="o">=</span><span class="s1">'h5'</span><span class="p">,</span>
+                <span class="n">file_name</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">'rates_file_h5'</span><span class="p">],</span>
                 <span class="o">**</span><span class="n">config</span><span class="o">.</span><span class="n">output</span>
             <span class="p">)</span>
             <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>

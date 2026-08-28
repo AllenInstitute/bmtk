@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -436,7 +436,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">static_param_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     
-    <span class="n">number_of_cells</span> <span class="o">=</span> <span class="n">static_param_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">number_of_cells</span> <span class="o">=</span> <span class="n">static_param_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'number_of_cells'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">range_key_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="n">number_of_cells</span>
@@ -447,7 +447,7 @@
     <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">curr_value_instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value_instance_list</span><span class="p">):</span>
         <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">loop_keys</span><span class="p">,</span> <span class="n">curr_value_instance</span><span class="p">))</span>
         <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">static_param_dict</span><span class="p">)</span>
-        <span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">param_dict</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">for</span> <span class="n">range_key</span> <span class="ow">in</span> <span class="n">range_key_dict</span><span class="p">:</span>
             <span class="n">param_dict</span><span class="p">[</span><span class="n">range_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_key_dict</span><span class="p">[</span><span class="n">range_key</span><span class="p">][</span><span class="n">ii</span><span class="p">]</span>
         
@@ -470,7 +470,7 @@
                                <span class="n">amplitude</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                               <span class="n">transfer_function_str</span><span class="o">=</span><span class="s1">&#39;Heaviside(s)*s&#39;</span><span class="p">):</span>
+                               <span class="n">transfer_function_str</span><span class="o">=</span><span class="s1">'Heaviside(s)*s'</span><span class="p">):</span>
 
     <span class="n">cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_cells</span><span class="p">):</span>
@@ -512,7 +512,7 @@
                           <span class="n">ang</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                           <span class="n">dominant_subunit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                           <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                          <span class="n">transfer_function_str</span><span class="o">=</span><span class="s1">&#39;Heaviside(x)*x + Heaviside(y)*y&#39;</span><span class="p">):</span>
+                          <span class="n">transfer_function_str</span><span class="o">=</span><span class="s1">'Heaviside(x)*x + Heaviside(y)*y'</span><span class="p">):</span>
 
     <span class="n">cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_cells</span><span class="p">):</span>
@@ -522,11 +522,11 @@
         
         <span class="n">dominant_subfield_location</span> <span class="o">=</span> <span class="p">(</span><span class="n">lattice_unit_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">dxi</span><span class="p">,</span> <span class="n">lattice_unit_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">dyi</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">dominant_subunit</span> <span class="o">==</span> <span class="s1">&#39;on&#39;</span><span class="p">:</span>            
+        <span class="k">if</span> <span class="n">dominant_subunit</span> <span class="o">==</span> <span class="s1">'on'</span><span class="p">:</span>            
             <span class="n">on_translate</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>  <span class="c1"># (0,0)</span>
             <span class="n">off_translate</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>  <span class="c1"># nondominant_subfield_translation</span>
             
-        <span class="k">elif</span> <span class="n">dominant_subunit</span> <span class="o">==</span> <span class="s1">&#39;off&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">dominant_subunit</span> <span class="o">==</span> <span class="s1">'off'</span><span class="p">:</span>
             
             <span class="n">off_translate</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>  <span class="c1"># (0,0)</span>
             <span class="n">on_translate</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>  <span class="c1"># nondominant_subfield_translation</span>

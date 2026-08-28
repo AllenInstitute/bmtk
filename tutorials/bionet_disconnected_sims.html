@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -469,7 +469,7 @@
 <p>When simulating a bio-realistic network, cells will receive synaptic stimulation from both locally recurrent connections as well as feedforward connections from external inputs. Often when analyzing the results of full network activity we would like to know the contribution of only a subset of the synaptic activity. For example, how much the feedforward synapses, or only recurrent synapses between specific population of cells, contribute to the simulation results. Certain techniques, like
 running with only a subset of the full network, or using optogenetics/current-clamp to turn on-off subpopulations, can provide useful insights but do not tell the full story of a network simulation.</p>
 <p>Instead we can use the BMTK “replay” input module to disentangle subsections of simulation activity from the full network in BioNet/biophysically realistic simulations. The BMTK “replay” module let’s the user take a previous simulation, and replay a simulation using only activity from a subset of the synapses. This can be helpful in parameter tuning and optimization, and for very large networks can provide an efficient manner to replay small subsets of a full network.</p>
-<div><p><img alt="a717870f93914c5292b538a6b60d8a80" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
+<div><p><img alt="144adabd79d147259d4d9aa9c07192be" class="no-scaled-link" src="../_images/disconnected_sim_figure.png" style="width: 700px;" /></p>
 </div><div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -487,7 +487,7 @@ running with only a subset of the full network, or using optogenetics/current-cl
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -519,7 +519,7 @@ running with only a subset of the full network, or using optogenetics/current-cl
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -536,21 +536,21 @@ running with only a subset of the full network, or using optogenetics/current-cl
 <p>One useful method for analyzing a full network is to run a simulation with only feedforward virtual networks without any recurrent connections. The network will still be driven by virtual (pre-defined) spike inputs into the synapses of our primary contingent of cells, but the local cell-to-cell connectivity will be removed. This way we can see how much of our network is driven purely by the outside stimulation.</p>
 <p>To run a simulation with virtual stimulation only we only need to edit the “networks” section of our simulation configuration to exclude the recurrent connectivity. Here we make a copy of <em>config.simulation.json</em> which we’ll name “<em>config.simulation_feedforward.json</em>” and update the “networks” sections to remove the recurrent (<em>internal_internal_edges</em> files) connections:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_node_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -559,10 +559,10 @@ running with only a subset of the full network, or using optogenetics/current-cl
 </div>
 <p>Also just so we don’t overwrite our previous output we can update the “output” folder where spikes are stored:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/output_feedforward&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span>
+<span class="w">  </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/output_feedforward"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"log.txt"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes.h5"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -574,7 +574,7 @@ running with only a subset of the full network, or using optogenetics/current-cl
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_feedforward.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation_feedforward.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -607,7 +607,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_feedforward.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation_feedforward.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -626,11 +626,11 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <p>The first step is to make a copy of the <em>config.simulation.json</em> file, which we’ll rename to <em>config.simulation_recurrent.json</em>, then update the “networks”, “output”, and “inptus” sections as below.</p>
 <p>Since we don’t want feedforward virtual stimuli we can remove the <em>external</em> nodes and edges files from the “<strong>networks</strong>” section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -639,24 +639,24 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <p>For good measure we also want to update the “<strong>output</strong>” section so that we save the new recurrent-only simulation in a different folder:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;output&quot;</span><span class="p">:{</span>
-<span class="w">    </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/output_recurrent&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span>
+<span class="w">  </span><span class="nt">"output"</span><span class="p">:{</span>
+<span class="w">    </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/output_recurrent"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"log.txt"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes.h5"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>And most importantly, we modify the “<strong>inputs</strong>” to tell BioNet to use the <code class="docutils literal notranslate"><span class="pre">replay</span></code> module:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/previous_results/spikes.baseline.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/previous_results/spikes.baseline.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -676,7 +676,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_recurrent.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation_recurrent.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -709,7 +709,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_recurrent.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation_recurrent.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -724,22 +724,22 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <h3>Recreating the Whole Simulation (Validation of Synaptic Activity Summation)<a class="headerlink" href="#Recreating-the-Whole-Simulation-(Validation-of-Synaptic-Activity-Summation)" title="Link to this heading">#</a></h3>
 <p>Now that we can show the contribution of feedforward only synaptic activity and recurrent only synapstic activity, we might expect the two to sum up to the full simulation activity. Indeed we can combine the feedforward inputs with the recurrent replay inputs, which we will do in a new configuration file, <em>config.simulation_recreated.json</em>:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/previous_results/spikes.baseline.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/previous_results/spikes.baseline.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;external_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/external_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;external&quot;</span>
+<span class="w">    </span><span class="nt">"external_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sonata"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$INPUT_DIR/external_spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"external"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -752,7 +752,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_recreated.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation_recreated.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -786,7 +786,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_recreated.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation_recreated.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -806,22 +806,22 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <p>By default the <code class="docutils literal notranslate"><span class="pre">replay_spikes</span></code> input module will resimulate all the possible synapses in the <code class="docutils literal notranslate"><span class="pre">edges</span></code> files. However sometimes we may only want to replay subsets of recurrent synapses. To do so we can use the optional arguments <code class="docutils literal notranslate"><span class="pre">source_node_set</span></code> and/or <code class="docutils literal notranslate"><span class="pre">target_node_set</span></code> to filter out a smaller subset of synapses.</p>
 <p>For example, we may want to see the synaptic contribution that the internal excitatory neurons had on the population of “Scnn1a” cells. We can modify the “<strong>inputs</strong>” section of the config file:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/previous_results/spikes.baseline.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;source_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/previous_results/spikes.baseline.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"source_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;target_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scnn1a&quot;</span>
+<span class="w">      </span><span class="nt">"target_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Scnn1a"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -838,7 +838,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_exc2scnn1a.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation_exc2scnn1a.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -871,7 +871,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_exc2scnn1a.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation_exc2scnn1a.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -884,18 +884,18 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <p>We may also want to filter only by the pre-synaptic source cell (or post-synaptic target). For example if we want to select only recurrent synapses that target either one of our PV cells, no matter the source-cell, we can use the following option:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/previous_results/spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;target_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;PV1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;PV2&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/previous_results/spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"target_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"PV1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"PV2"</span><span class="p">]</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -908,7 +908,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_pvalb.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'bio_disconnected_sims/config.simulation_pvalb.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -941,7 +941,7 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;bio_disconnected_sims/config.simulation_pvalb.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'bio_disconnected_sims/config.simulation_pvalb.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -957,22 +957,22 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <h3>Selecting Cells by their node-id<a class="headerlink" href="#Selecting-Cells-by-their-node-id" title="Link to this heading">#</a></h3>
 <p>If you have a list of specific cells identified by their node_ids you can pass in a list:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$PREV_RESULTS_DIR/spikes.baseline.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;source_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$PREV_RESULTS_DIR/spikes.baseline.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"source_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">]</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;target_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">]</span>
+<span class="w">      </span><span class="nt">"target_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">]</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -984,15 +984,15 @@ Mechanisms already loaded from path: /local1/workspace/bmtk/docs/tutorial/bio_di
 <h3>Using multiple edges/subnets<a class="headerlink" href="#Using-multiple-edges/subnets" title="Link to this heading">#</a></h3>
 <p>If you have a simulation that incorporates multiple networks and/or needs to run multiple subpopulations of synapses you can use the module more than once in the same configuration json:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;replay_edges_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"replay_edges_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
 <span class="w">      </span><span class="c1">// ...</span>
 <span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="nt">&quot;replay_edges_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"replay_edges_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
 <span class="w">      </span><span class="c1">// ...</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>

@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -509,13 +509,13 @@
 </div>
 <p>First, we will create a two neuron network. The presynaptic neuron is a simple integrate-and-fire neuron. If we open the dynamics_params file <code class="docutils literal notranslate"><span class="pre">472363762_point_with_cc.json</span></code> within <em>/components/point_neuron_models</em>, we see that the parameter <strong>I_e</strong> has been set to 190.0, which injects a constant background current, triggering regular firing in the presynaptic neuron.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;I_e&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">190.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;tau_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">44.9</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;C_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">239.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;t_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;E_L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-78.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;V_th&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.0</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;V_reset&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-55.0</span>
+<span class="w">  </span><span class="nt">"I_e"</span><span class="p">:</span><span class="w"> </span><span class="mf">190.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"tau_m"</span><span class="p">:</span><span class="w"> </span><span class="mf">44.9</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"C_m"</span><span class="p">:</span><span class="w"> </span><span class="mf">239.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"t_ref"</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"E_L"</span><span class="p">:</span><span class="w"> </span><span class="mf">-78.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"V_th"</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"V_reset"</span><span class="p">:</span><span class="w"> </span><span class="mf">-55.0</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -523,26 +523,26 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;two_cell&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'two_cell'</span><span class="p">)</span>
 
 <span class="c1"># Build Nodes</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point_with_cc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_point_with_cc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:glif_lif_asc_psc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;Scnn1a_515806250_glif_lif_asc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:glif_lif_asc_psc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'Scnn1a_515806250_glif_lif_asc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -555,17 +555,17 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build edge</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span><span class="p">),</span>
     <span class="n">connection_rule</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;static_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'static_ExcToExc.json'</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=-</span><span class="mi">100</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_dyn_syn/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -576,15 +576,15 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.create_environment</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_environment</span>
 
 <span class="n">create_environment</span><span class="p">(</span>
-    <span class="s1">&#39;pointnet&#39;</span><span class="p">,</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn&#39;</span><span class="p">,</span>
-    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.pointnet.json&#39;</span><span class="p">,</span>
-    <span class="n">components_dir</span><span class="o">=</span><span class="s1">&#39;../sources/pointnet_files/dynamic_synapses&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output_pointnet&#39;</span><span class="p">,</span>
+    <span class="s1">'pointnet'</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_dyn_syn'</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.pointnet.json'</span><span class="p">,</span>
+    <span class="n">components_dir</span><span class="o">=</span><span class="s1">'../sources/pointnet_files/dynamic_synapses'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'output_pointnet'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;V_m&#39;</span><span class="p">],</span>
-    <span class="n">run_script</span><span class="o">=</span><span class="s1">&#39;run_pointnet.py&#39;</span><span class="p">,</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">'V_m'</span><span class="p">],</span>
+    <span class="n">run_script</span><span class="o">=</span><span class="s1">'run_pointnet.py'</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <br/></pre></div>
@@ -594,7 +594,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -752,7 +752,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Presynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -769,7 +769,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Postsynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -790,7 +790,7 @@ INFO:NestIOUtils:Done.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clear the network folder</span>
 
-<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;sim_dyn_syn/network/*&#39;</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'sim_dyn_syn/network/*'</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">fnfe</span><span class="p">:</span>
@@ -802,26 +802,26 @@ INFO:NestIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net2</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;two_cell_fac&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net2</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'two_cell_fac'</span><span class="p">)</span>
 
 <span class="c1"># Build Nodes</span>
 
 <span class="n">net2</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point_with_cc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_point_with_cc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span>
 <span class="p">)</span>
 
 <span class="n">net2</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:glif_lif_asc_psc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;Scnn1a_515806250_glif_lif_asc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:glif_lif_asc_psc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'Scnn1a_515806250_glif_lif_asc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -831,28 +831,28 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net2</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net2</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span><span class="p">),</span>
     <span class="n">connection_rule</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;tsodyks2_synapse&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;TsodyksFac_glif.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'tsodyks2_synapse'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'TsodyksFac_glif.json'</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=-</span><span class="mi">100</span>
 <span class="p">)</span>
 
 <span class="n">net2</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net2</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/network&#39;</span><span class="p">)</span>
+<span class="n">net2</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_dyn_syn/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>We have created a new dynamics_params file <code class="docutils literal notranslate"><span class="pre">tsodyksFac_glif.json</span></code> based on the dynamic_params file for the static synapse and have added to it the following params for the tsodyks2 synapse:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;U&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;u&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"U"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"u"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"x"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"tau_rec"</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"tau_fac"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -861,15 +861,15 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">create_environment</span><span class="p">(</span>
-    <span class="s1">&#39;pointnet&#39;</span><span class="p">,</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn&#39;</span><span class="p">,</span>
-    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.pointnet.json&#39;</span><span class="p">,</span>
-    <span class="n">components_dir</span><span class="o">=</span><span class="s1">&#39;../sources/pointnet_files/dynamic_synapses&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output_pointnet&#39;</span><span class="p">,</span>
+    <span class="s1">'pointnet'</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_dyn_syn'</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.pointnet.json'</span><span class="p">,</span>
+    <span class="n">components_dir</span><span class="o">=</span><span class="s1">'../sources/pointnet_files/dynamic_synapses'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'output_pointnet'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;V_m&#39;</span><span class="p">],</span>
-    <span class="n">run_script</span><span class="o">=</span><span class="s1">&#39;run_pointnet.py&#39;</span><span class="p">,</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">'V_m'</span><span class="p">],</span>
+    <span class="n">run_script</span><span class="o">=</span><span class="s1">'run_pointnet.py'</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -879,7 +879,7 @@ INFO:NestIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -1037,7 +1037,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Presynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1053,7 +1053,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Postsynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1066,12 +1066,12 @@ INFO:NestIOUtils:Done.
 </div>
 <p>This time, the IPSP’s get incrementally larger as they occur closely in succession, simulating synaptic facilitation. We can use the same model, just changing the parameters, to create a depressing synapse. We will add these parameter values to the dynamic_params:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;U&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;u&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">450.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span>
+<span class="w">        </span><span class="nt">"U"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"u"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"x"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"tau_rec"</span><span class="p">:</span><span class="w"> </span><span class="mf">450.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"tau_fac"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"weight"</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1081,7 +1081,7 @@ INFO:NestIOUtils:Done.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clear the network folder</span>
 
-<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;sim_dyn_syn/network/*&#39;</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'sim_dyn_syn/network/*'</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">fnfe</span><span class="p">:</span>
@@ -1093,26 +1093,26 @@ INFO:NestIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;two_cell_dep&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'two_cell_dep'</span><span class="p">)</span>
 
 <span class="c1"># Build Nodes</span>
 
 <span class="n">net3</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point_with_cc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_point_with_cc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span>
 <span class="p">)</span>
 
 <span class="n">net3</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span> <span class="s1">&#39;nest:glif_lif_asc_psc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;Scnn1a_515806250_glif_lif_asc.json&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span> <span class="s1">'nest:glif_lif_asc_psc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'Scnn1a_515806250_glif_lif_asc.json'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1122,17 +1122,17 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net3</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;presyn&#39;</span><span class="p">),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;postsyn&#39;</span><span class="p">),</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'presyn'</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net3</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'postsyn'</span><span class="p">),</span>
     <span class="n">connection_rule</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;tsodyks2_synapse&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;TsodyksDep_glif.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'tsodyks2_synapse'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'TsodyksDep_glif.json'</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=-</span><span class="mi">100</span>
 <span class="p">)</span>
 
 <span class="n">net3</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net3</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net3</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1141,15 +1141,15 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">create_environment</span><span class="p">(</span>
-    <span class="s1">&#39;pointnet&#39;</span><span class="p">,</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn&#39;</span><span class="p">,</span>
-    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.pointnet.json&#39;</span><span class="p">,</span>
-    <span class="n">components_dir</span><span class="o">=</span><span class="s1">&#39;../sources/pointnet_files/dynamic_synapses&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">,</span>
-    <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output_pointnet&#39;</span><span class="p">,</span>
+    <span class="s1">'pointnet'</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_dyn_syn'</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.pointnet.json'</span><span class="p">,</span>
+    <span class="n">components_dir</span><span class="o">=</span><span class="s1">'../sources/pointnet_files/dynamic_synapses'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'output_pointnet'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;V_m&#39;</span><span class="p">],</span>
-    <span class="n">run_script</span><span class="o">=</span><span class="s1">&#39;run_pointnet.py&#39;</span><span class="p">,</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">'V_m'</span><span class="p">],</span>
+    <span class="n">run_script</span><span class="o">=</span><span class="s1">'run_pointnet.py'</span><span class="p">,</span>
     <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -1159,7 +1159,7 @@ INFO:NestIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -1317,7 +1317,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Presynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1333,7 +1333,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Postsynaptic cell</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_dyn_syn/config.pointnet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;V_m_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_dyn_syn/config.pointnet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'V_m_report'</span><span class="p">,</span> <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

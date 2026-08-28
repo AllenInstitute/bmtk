@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -440,21 +440,21 @@
     <span class="n">tON_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">single_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">ncells</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">amp_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
     <span class="n">kpeaks_dist</span> <span class="o">=</span>  <span class="n">sps</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">35.</span><span class="p">],</span> <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.</span><span class="p">,</span><span class="o">-</span><span class="mf">2.5</span><span class="p">)</span>
     <span class="n">delays</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'weights'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'delays'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
     <span class="k">for</span> <span class="n">num_cells</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ncells</span><span class="p">,</span><span class="n">sz</span><span class="p">):</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">tON_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_single_unit_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">single_unit_cell_config</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">tON_cell_list</span></div>
@@ -466,8 +466,8 @@
     <span class="n">tOFF_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">single_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">ncells</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
     <span class="n">amp_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span><span class="o">-</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
@@ -476,13 +476,13 @@
     <span class="n">kpeaks_dist</span> <span class="o">=</span>  <span class="n">sps</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">35.</span><span class="p">],</span> <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.</span><span class="p">,</span><span class="o">-</span><span class="mf">2.5</span><span class="p">)</span>
     <span class="n">delays</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'weights'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'delays'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
     <span class="k">for</span> <span class="n">num_cells</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ncells</span><span class="p">,</span><span class="n">sz</span><span class="p">):</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">tOFF_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_single_unit_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">single_unit_cell_config</span><span class="p">)</span> 
     
     <span class="c1">#print len(tOFF_cell_list)        </span>
@@ -495,21 +495,21 @@
     <span class="n">sON_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">single_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">ncells</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">amp_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.5</span><span class="p">]))</span>
     <span class="n">kpeaks_dist</span> <span class="o">=</span>  <span class="n">sps</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">80.</span><span class="p">,</span> <span class="mf">120.</span><span class="p">],</span> <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.</span><span class="p">,</span><span class="o">-</span><span class="mf">.85</span><span class="p">)</span>
     <span class="n">delays</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'weights'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'delays'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
     <span class="k">for</span> <span class="n">num_cells</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ncells</span><span class="p">,</span><span class="n">sz</span><span class="p">):</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">sON_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_single_unit_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">single_unit_cell_config</span><span class="p">)</span> 
     
     <span class="k">return</span> <span class="n">sON_cell_list</span></div>
@@ -522,21 +522,21 @@
     <span class="n">sOFF_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">single_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">5.</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span>
     <span class="n">ncells</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
     <span class="n">amp_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span><span class="o">-</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
     <span class="n">kpeaks_dist</span> <span class="o">=</span>  <span class="n">sps</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">80.</span><span class="p">,</span> <span class="mf">120.</span><span class="p">],</span> <span class="n">cov</span><span class="o">=</span><span class="p">[[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.</span><span class="p">,</span><span class="o">-</span><span class="mf">.85</span><span class="p">)</span>
     <span class="n">delays</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
-    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeaks_dist</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'weights'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span>
+    <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'delays'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays</span>
     <span class="k">for</span> <span class="n">num_cells</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ncells</span><span class="p">,</span><span class="n">sz</span><span class="p">):</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
-        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_cells</span>
+        <span class="n">single_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sig</span><span class="p">,</span><span class="n">sig</span><span class="p">)</span>
         <span class="n">sOFF_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_single_unit_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">single_unit_cell_config</span><span class="p">)</span> 
     
     <span class="k">return</span> <span class="n">sOFF_cell_list</span></div>
@@ -549,8 +549,8 @@
     <span class="n">overlap_onoff_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">two_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">5.</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span><span class="o">=</span><span class="mf">5.</span>
     
     <span class="n">ncells</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="mi">9</span>
@@ -563,20 +563,20 @@
     <span class="n">delays_on</span> <span class="o">=</span> <span class="n">delays_off</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>
     <span class="n">subfield_sep</span> <span class="o">=</span> <span class="mf">2.</span>
     
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncells</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_on_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_off_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_on_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_off_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_on</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_off</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;subfield_separation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subfield_sep</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;dominant_subunit&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;on&#39;</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_on&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">delays_on</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_off&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">delays_off</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncells</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'ang'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_on_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_off_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_on_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_off_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_on</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_off</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma_on'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma_off'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'subfield_separation'</span><span class="p">]</span> <span class="o">=</span> <span class="n">subfield_sep</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'dominant_subunit'</span><span class="p">]</span><span class="o">=</span><span class="s1">'on'</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_on'</span><span class="p">]</span><span class="o">=</span><span class="n">delays_on</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_off'</span><span class="p">]</span><span class="o">=</span><span class="n">delays_off</span>
     
     <span class="n">overlap_onoff_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_on_off_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">two_unit_cell_config</span><span class="p">)</span>
     
@@ -590,8 +590,8 @@
     <span class="n">separate_onoff_cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">two_unit_cell_config</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">5.</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'lattice_unit_center'</span><span class="p">]</span><span class="o">=</span><span class="n">lattice_unit_center</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'width'</span><span class="p">]</span><span class="o">=</span><span class="mf">5.</span>
     
     <span class="n">ncells</span> <span class="o">=</span> <span class="mi">8</span>
     <span class="n">sz</span> <span class="o">=</span> <span class="mi">6</span>
@@ -604,49 +604,49 @@
     <span class="n">wts_nondom</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="o">-</span><span class="mf">.85</span><span class="p">)</span>
     <span class="n">delays_dom</span> <span class="o">=</span> <span class="n">delays_nondom</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">)</span>    
     
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;number_of_cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncells</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;ang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang_dist</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;sigma_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
-    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;subfield_separation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subfield_sep</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'number_of_cells'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncells</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'ang'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang_dist</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma_on'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'sigma_off'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">sz</span><span class="p">,</span><span class="n">sz</span><span class="p">)</span>
+    <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'subfield_separation'</span><span class="p">]</span> <span class="o">=</span> <span class="n">subfield_sep</span>
     
     <span class="c1">#On-dominant</span>
-    <span class="n">dom_subunit</span> <span class="o">=</span> <span class="s1">&#39;on&#39;</span>
-    <span class="k">if</span> <span class="n">dom_subunit</span><span class="o">==</span><span class="s1">&#39;on&#39;</span><span class="p">:</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;dominant_subunit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dom_subunit</span>
+    <span class="n">dom_subunit</span> <span class="o">=</span> <span class="s1">'on'</span>
+    <span class="k">if</span> <span class="n">dom_subunit</span><span class="o">==</span><span class="s1">'on'</span><span class="p">:</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'dominant_subunit'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dom_subunit</span>
         <span class="n">amp_dom_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
         <span class="n">amp_nondom_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="o">-</span><span class="mi">15</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_nondom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_dom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_nondom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_dom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_nondom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_dom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_nondom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_nondom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_dom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_nondom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_dom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_nondom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_dom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_nondom</span>
         <span class="n">separate_onoff_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_on_off_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">two_unit_cell_config</span><span class="p">)</span>
         
     <span class="c1">#Off-dominant</span>
-    <span class="n">dom_subunit</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
-    <span class="k">if</span> <span class="n">dom_subunit</span><span class="o">==</span><span class="s1">&#39;off&#39;</span><span class="p">:</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;dominant_subunit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dom_subunit</span>
+    <span class="n">dom_subunit</span> <span class="o">=</span> <span class="s1">'off'</span>
+    <span class="k">if</span> <span class="n">dom_subunit</span><span class="o">==</span><span class="s1">'off'</span><span class="p">:</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'dominant_subunit'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dom_subunit</span>
         <span class="n">amp_dom_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span><span class="o">-</span><span class="mi">25</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
         <span class="n">amp_nondom_dist</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">rv_discrete</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span> <span class="p">[</span><span class="mf">.5</span><span class="p">,</span><span class="mf">.5</span><span class="p">]))</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;amplitude_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_nondom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_dom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;kpeaks_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_nondom_dist</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_dom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;weights_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_nondom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_dom</span>
-        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">&#39;delays_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_nondom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_dom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'amplitude_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_nondom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_dom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'kpeaks_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpeak_nondom_dist</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_dom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'weights_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts_nondom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_off'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_dom</span>
+        <span class="n">two_unit_cell_config</span><span class="p">[</span><span class="s1">'delays_on'</span><span class="p">]</span> <span class="o">=</span> <span class="n">delays_nondom</span>
         <span class="n">separate_onoff_cell_list</span> <span class="o">+=</span> <span class="n">multi_cell_random_generator</span><span class="p">(</span><span class="n">make_on_off_cell_list</span><span class="p">,</span> <span class="o">**</span><span class="n">two_unit_cell_config</span><span class="p">)</span>
     
     <span class="c1">#print len(separate_onoff_cell_list)    </span>
     <span class="k">return</span> <span class="n">separate_onoff_cell_list</span></div>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">lattice_unit_center</span> <span class="o">=</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="mi">30</span><span class="p">)</span>
     <span class="n">lattice_cell_list</span> <span class="o">=</span> <span class="n">make_lattice_unit</span><span class="p">(</span><span class="n">lattice_unit_center</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lattice_cell_list</span><span class="p">))</span>

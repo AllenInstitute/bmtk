@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -455,7 +455,7 @@
             <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Couldn&#39;t find iterator for (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">).&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">itr_name</span><span class="p">,</span> <span class="n">itr_type</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"Couldn't find iterator for (</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">)."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">itr_name</span><span class="p">,</span> <span class="n">itr_type</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="IteratorCache.register">
@@ -486,7 +486,7 @@
 <div class="viewcode-block" id="one_to_all_iterator">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.iterator.one_to_all_iterator">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">one_to_all_iterator</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calls the connector function with (1 source, all targets), iterated for each source&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Calls the connector function with (1 source, all targets), iterated for each source"""</span>
     <span class="n">target_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">target_nodes</span><span class="p">)</span>  <span class="c1"># list of all targets</span>
     <span class="n">target_node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">target_list</span><span class="p">]</span>  <span class="c1"># slight improvement than calling node_id S*T times</span>
     <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">source_nodes</span><span class="p">:</span>
@@ -500,7 +500,7 @@
 <div class="viewcode-block" id="all_to_one_iterator">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.iterator.all_to_one_iterator">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_to_one_iterator</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterate through all the target nodes and return target node + list of all sources&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Iterate through all the target nodes and return target node + list of all sources"""</span>
     <span class="n">source_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">target_nodes</span><span class="p">:</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">connector</span><span class="p">(</span><span class="n">source_list</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
@@ -512,7 +512,7 @@
 <div class="viewcode-block" id="one_to_one_iterator">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.iterator.one_to_one_iterator">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">one_to_one_iterator</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">connector</span><span class="p">):</span>
-    <span class="c1"># TODO: may be faster to pull out the node_ids, don&#39;t user itertools</span>
+    <span class="c1"># TODO: may be faster to pull out the node_ids, don't user itertools</span>
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">):</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">yield</span> <span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
@@ -561,16 +561,16 @@
 
 
 <span class="n">ITERATOR_CACHE</span> <span class="o">=</span> <span class="n">IteratorCache</span><span class="p">()</span>
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">one_to_one_iterator</span><span class="p">)</span>
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">all_to_one_iterator</span><span class="p">)</span>
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;one_to_all&#39;</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">one_to_all_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'one_to_one'</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">one_to_one_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'all_to_one'</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">all_to_one_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'one_to_all'</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">,</span> <span class="n">one_to_all_iterator</span><span class="p">)</span>
 
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">one_to_one_list_iterator</span><span class="p">)</span>
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;one_to_all&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">one_to_all_list_iterator</span><span class="p">)</span>
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">all_to_one_list_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'one_to_one'</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">one_to_one_list_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'one_to_all'</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">one_to_all_list_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'all_to_one'</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">all_to_one_list_iterator</span><span class="p">)</span>
 
 
-<span class="n">register</span><span class="p">(</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">lambda_iterator</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="s1">'one_to_one'</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">lambda_iterator</span><span class="p">)</span>
 </pre></div>
 
                 </article>

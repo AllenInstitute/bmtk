@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,11 +425,11 @@
 <div class="viewcode-block" id="BaseWaveform">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseWaveform</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstraction of waveform class to ensure calculate method is implemented&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Abstraction of waveform class to ensure calculate method is implemented"""</span>
 <div class="viewcode-block" id="BaseWaveform.calculate">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform.calculate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation_time</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Implement specific waveform calculation&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"Implement specific waveform calculation"</span><span class="p">)</span></div>
 </div>
 
 
@@ -437,11 +437,11 @@
 <div class="viewcode-block" id="BaseWaveformType">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseWaveformType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specific waveform type&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Specific waveform type"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_config</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">])</span> <span class="c1"># units? mA?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">&quot;del&quot;</span><span class="p">])</span> <span class="c1"># ms</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">&quot;dur&quot;</span><span class="p">])</span> <span class="c1"># ms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">"amp"</span><span class="p">])</span> <span class="c1"># units? mA?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">"del"</span><span class="p">])</span> <span class="c1"># ms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">"dur"</span><span class="p">])</span> <span class="c1"># ms</span>
 
 <div class="viewcode-block" id="BaseWaveformType.is_active">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType.is_active">[docs]</a>
@@ -455,7 +455,7 @@
 <div class="viewcode-block" id="WaveformTypeDC">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeDC">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveformTypeDC</span><span class="p">(</span><span class="n">BaseWaveformType</span><span class="p">,</span> <span class="n">BaseWaveform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;DC (step) waveform&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""DC (step) waveform"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WaveformTypeDC</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">)</span>
 
@@ -473,12 +473,12 @@
 <div class="viewcode-block" id="WaveformTypeSin">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeSin">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveformTypeSin</span><span class="p">(</span><span class="n">BaseWaveformType</span><span class="p">,</span> <span class="n">BaseWaveform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sinusoidal waveform&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Sinusoidal waveform"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_config</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WaveformTypeSin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">])</span>  <span class="c1"># Hz</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phase_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># radians, optional</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># units? mA? optional</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">freq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="p">[</span><span class="s2">"freq"</span><span class="p">])</span>  <span class="c1"># Hz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"phase"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># radians, optional</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">waveform_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"offset"</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># units? mA? optional</span>
 
 <div class="viewcode-block" id="WaveformTypeSin.calculate">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeSin.calculate">[docs]</a>
@@ -496,14 +496,14 @@
 <div class="viewcode-block" id="WaveformCustom">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformCustom">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveformCustom</span><span class="p">(</span><span class="n">BaseWaveform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom waveform defined by csv file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Custom waveform defined by csv file"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waveform_file</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">waveform_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">definition</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">waveform_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WaveformCustom.calculate">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformCustom.calculate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">[</span><span class="s2">&quot;amplitude&quot;</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">[</span><span class="s2">"time"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">definition</span><span class="p">[</span><span class="s2">"amplitude"</span><span class="p">])</span></div>
 </div>
 
 
@@ -511,7 +511,7 @@
 <div class="viewcode-block" id="ComplexWaveform">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.ComplexWaveform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ComplexWaveform</span><span class="p">(</span><span class="n">BaseWaveform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Superposition of simple waveforms&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Superposition of simple waveforms"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el_collection</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">electrodes</span> <span class="o">=</span> <span class="n">el_collection</span>
 
@@ -527,38 +527,38 @@
 
 
 
-<span class="c1"># mapping from &#39;shape&#39; code to subclass, always lowercase</span>
+<span class="c1"># mapping from 'shape' code to subclass, always lowercase</span>
 <span class="n">shape_classes</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;dc&#39;</span><span class="p">:</span> <span class="n">WaveformTypeDC</span><span class="p">,</span>
-    <span class="s1">&#39;sin&#39;</span><span class="p">:</span> <span class="n">WaveformTypeSin</span><span class="p">,</span>
+    <span class="s1">'dc'</span><span class="p">:</span> <span class="n">WaveformTypeDC</span><span class="p">,</span>
+    <span class="s1">'sin'</span><span class="p">:</span> <span class="n">WaveformTypeSin</span><span class="p">,</span>
 <span class="p">}</span>
 
 
 <div class="viewcode-block" id="stimx_waveform_factory">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.stimx_waveform_factory">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stimx_waveform_factory</span><span class="p">(</span><span class="n">waveform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Factory to create correct waveform class based on conf.</span>
 <span class="sd">    Supports json config in conf as well as string pointer to a file.</span>
 <span class="sd">    :rtype: BaseWaveformType</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
         <span class="c1"># if waveform_conf is str or unicode assume to be name of file in stim_dir</span>
         <span class="c1"># waveform_conf = str(waveform_conf)   # make consistent</span>
         <span class="n">file_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">file_ext</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.csv&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_ext</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'.csv'</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">WaveformCustom</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">file_ext</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.json&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">file_ext</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'.json'</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">waveform</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">waveform</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unknown filetype for waveform&#39;</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">'Unknown filetype for waveform'</span><span class="p">)</span>
 
-    <span class="n">shape_key</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">shape_key</span> <span class="o">=</span> <span class="n">waveform</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">shape_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shape_classes</span><span class="p">:</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">&quot;Waveform shape not known&quot;</span><span class="p">)</span>  <span class="c1"># throw error?</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">"Waveform shape not known"</span><span class="p">)</span>  <span class="c1"># throw error?</span>
 
     <span class="n">Constructor</span> <span class="o">=</span> <span class="n">shape_classes</span><span class="p">[</span><span class="n">shape_key</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Constructor</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span></div>
@@ -568,17 +568,17 @@
 <div class="viewcode-block" id="iclamp_waveform_factory">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim_waveforms.iclamp_waveform_factory">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iclamp_waveform_factory</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Factory to create correct waveform class based on conf.</span>
 <span class="sd">    Supports json config in conf as well as string pointer to a file.</span>
 <span class="sd">    :rtype: BaseWaveformType</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">iclamp_waveform_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;iclamp&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">iclamp_waveform_conf</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">"iclamp"</span><span class="p">]</span>
 
-    <span class="n">shape_key</span> <span class="o">=</span> <span class="n">iclamp_waveform_conf</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">shape_key</span> <span class="o">=</span> <span class="n">iclamp_waveform_conf</span><span class="p">[</span><span class="s2">"shape"</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">shape_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shape_classes</span><span class="p">:</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;iclamp waveform shape not known&#39;</span><span class="p">)</span>  <span class="c1"># throw error?</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">'iclamp waveform shape not known'</span><span class="p">)</span>  <span class="c1"># throw error?</span>
 
     <span class="n">Constructor</span> <span class="o">=</span> <span class="n">shape_classes</span><span class="p">[</span><span class="n">shape_key</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Constructor</span><span class="p">(</span><span class="n">iclamp_waveform_conf</span><span class="p">)</span></div>

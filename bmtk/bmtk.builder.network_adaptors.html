@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -985,27 +985,27 @@ be generalized to build any time of network for any time of simulation.</p>
 <dt>Building the network:</dt><dd><p>For the general use-case building a network consists of 4 steps, each with a corresponding method.</p>
 <ol class="arabic">
 <li><p>Initialize the network:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">&quot;network_name&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">"network_name"</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
 <li><p>Create nodes (ie cells) using the <strong>add_nodes()</strong> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;IntFire&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'Biophysical'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'IntFire'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">)</span>
 <span class="o">...</span>
 </pre></div>
 </div>
 </li>
 <li><p>Create Connection rules between different subsets of nodes using <strong>add_edges()</strong> method:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>
-              <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_func</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;e2i&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_func</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">'e2i'</span><span class="p">)</span>
 <span class="o">...</span>
 </pre></div>
 </div>
 </li>
 <li><p>Finally <strong>build</strong> the network and <strong>save</strong> the files:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_path&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network_path'</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -1016,21 +1016,21 @@ be generalized to build any time of network for any time of simulation.</p>
 <p>Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to
 fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by
 passing in property/values pairs:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">):</span>
-    <span class="k">assert</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;ei&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">'Biophysical'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">):</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">'ei'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'exc'</span><span class="p">)</span>
     <span class="o">...</span>
 </pre></div>
 </div>
 <p><strong>edges()</strong></p>
 <p>Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge
 property:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;exp2&#39;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">synaptic_model</span><span class="o">=</span><span class="s1">'exp2'</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
 <p>One can also pass in a list of source (or target) to filter out only those edges which belong to a specific
 subset of cells:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">)):</span>
 <span class="o">...</span>
 </pre></div>
 </div>
@@ -1052,15 +1052,15 @@ created until the build() method is called, using the ‘connection_rule.</p>
 filter the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
 fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all
 neurons will be used):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;etype&#39;</span><span class="p">:</span> <span class="s1">&#39;fast-spiking&#39;</span><span class="p">},</span>
-              <span class="n">dynamic_params</span><span class="o">=</span><span class="s1">&#39;i2e.json&#39;</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'etype'</span><span class="p">:</span> <span class="s1">'fast-spiking'</span><span class="p">},</span>
+              <span class="n">dynamic_params</span><span class="o">=</span><span class="s1">'i2e.json'</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">'alpha'</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the above code there is one connection between each source/target pair of nodes, but to create a
 multi-graph with N connections between each pair use ‘connection_rule’ parameter with an integer value:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>
-    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;etype&#39;</span><span class="p">:</span> <span class="s1">&#39;fast-spiking&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'etype'</span><span class="p">:</span> <span class="s1">'fast-spiking'</span><span class="p">},</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">)</span>
@@ -1071,19 +1071,19 @@ multi-graph with N connections between each pair use ‘connection_rule’ param
 target-node object (which can be treated like dictionaries, and returns the number of connections (ie
 synapses, 0 or None if no synapses should exists) between the source and target cell:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_conn_fnc</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">):</span>
-    <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source_node</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
-    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target_node</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+    <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source_node</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
+    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target_node</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">N_syns</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_edge_attrs</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_edge_attrs</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the connection_rule function requires addition arguments use the ‘connection_params’ option:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_conn_fnc</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">min_edges</span><span class="p">,</span> <span class="n">max_edges</span><span class="p">)</span>
     <span class="o">...</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_edges&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max_edges&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'min_edges'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'max_edges'</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Sometimes it may be more efficient or even a requirement that multiple connections are created at the same
@@ -1097,7 +1097,7 @@ return a list of size N:</p>
         <span class="o">....</span>
     <span class="k">return</span> <span class="n">syn_list</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">bulk_conn_fnc</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">bulk_conn_fnc</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">'all_to_one'</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>There is also a ‘all_to_one’ iterator option that will pair each source node with a list of all available
@@ -1106,14 +1106,14 @@ target nodes.</p>
 <dt>Edge Properties:</dt><dd><p>Normally the properties used when creating a given type of edge will be shared by all the indvidual
 connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-    <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+    <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
     <span class="o">....</span>
     <span class="k">return</span> <span class="n">syn_weight</span>
 
-<span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
                 <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
-<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">)</span>
-<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">))</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">'syn_weight'</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">)</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">'delay'</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>In this case the ‘model_template’ property has a value for all connections of this given type of edge. The
@@ -1168,7 +1168,7 @@ unique ‘node_id’ to identify each node in the network and a ‘node_type_id�
 is a list of length N then each property will be uniquely assigned to each node. In the below example a group
 of 100 nodes is created, all share the same ‘model_type’ parameter but the pos_x values will be different for
 each node:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pos_x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;intfire1&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pos_x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'intfire1'</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can use a tuple to store property values (in which the SONATA hdf5 will save it as a dataset with multiple
@@ -1213,11 +1213,11 @@ called before then forcing a rebuild may change gids of each node.</p>
 </pre></div>
 </div>
 <p>To specify the target and/or source node-set:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">),</span> <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">),</span> <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'i'</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>To only get edges with a given edge_property:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">syn_type</span><span class="o">=</span><span class="s1">&#39;AMPA_Exc2Exc&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">syn_type</span><span class="o">=</span><span class="s1">'AMPA_Exc2Exc'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

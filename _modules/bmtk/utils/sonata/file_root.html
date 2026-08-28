@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -448,14 +448,14 @@
 <div class="viewcode-block" id="FileRoot">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileRoot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for both /nodes and /edges root group in h5 file&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base class for both /nodes and /edges root group in h5 file"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_name</span><span class="p">,</span> <span class="n">h5_files</span><span class="p">,</span> <span class="n">h5_mode</span><span class="p">,</span> <span class="n">csv_files</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :param root_name: should either be &#39;nodes&#39; or &#39;edges&#39;</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        :param root_name: should either be 'nodes' or 'edges'</span>
 <span class="sd">        :param h5_files: file (or list of files) containing nodes/edges</span>
-<span class="sd">        :param h5_mode: currently only supporting &#39;r&#39; mode in h5py</span>
+<span class="sd">        :param h5_mode: currently only supporting 'r' mode in h5py</span>
 <span class="sd">        :param csv_files: file (or list of files) containing node/edge types</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span> <span class="o">=</span> <span class="n">root_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handles</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">load_h5</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">h5_mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">listify</span><span class="p">(</span><span class="n">h5_files</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_csv_handles</span> <span class="o">=</span> <span class="p">[(</span><span class="n">f</span><span class="p">,</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_csv</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">utils</span><span class="o">.</span><span class="n">listify</span><span class="p">(</span><span class="n">csv_files</span><span class="p">)]</span>
@@ -464,11 +464,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_types_table</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_types_table</span><span class="p">()</span>
 
-        <span class="c1"># population_name-&gt;h5py.Group table (won&#39;t instantiate the population)</span>
+        <span class="c1"># population_name-&gt;h5py.Group table (won't instantiate the population)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_populations_groups</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_store_groups</span><span class="p">()</span>
 
-        <span class="c1"># A map between population_name -&gt; Population object. Population objects aren&#39;t created until called, in the</span>
+        <span class="c1"># A map between population_name -&gt; Population object. Population objects aren't created until called, in the</span>
         <span class="c1"># case user wants to split populations among MPI nodes (instantiation will create node/edge indicies and other</span>
         <span class="c1"># overhead).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_populations_cache</span> <span class="o">=</span> <span class="p">{}</span>
@@ -499,12 +499,12 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_store_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a map between group population to their h5py.Group handle&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create a map between group population to their h5py.Group handle"""</span>
         <span class="k">for</span> <span class="n">h5handle</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handles</span><span class="p">:</span>
             <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span> <span class="ow">in</span> <span class="n">h5handle</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">pop_group</span> <span class="ow">in</span> <span class="n">h5handle</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populations_groups</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Multiple </span><span class="si">{}</span><span class="s1"> populations with name </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Multiple </span><span class="si">{}</span><span class="s1"> populations with name </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_name</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_populations_groups</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_group</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">pop_group</span><span class="p">):</span>
@@ -513,7 +513,7 @@
 <div class="viewcode-block" id="FileRoot.get_population">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.get_population">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a population group object based on population&#39;s name&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return a population group object based on population's name"""</span>
         <span class="k">if</span> <span class="n">population_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">population_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -525,10 +525,10 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.FileRoot.check_format">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_handles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No </span><span class="si">{}</span><span class="s1"> hdf5 files specified.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'No </span><span class="si">{}</span><span class="s1"> hdf5 files specified.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_handles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;No </span><span class="si">{}</span><span class="s1"> types csv files specified.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'No </span><span class="si">{}</span><span class="s1"> types csv files specified.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">))</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_name</span><span class="p">):</span>
@@ -537,7 +537,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">population_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> does not contain a population with name </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">,</span> <span class="n">population_name</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1"> does not contain a population with name </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_name</span><span class="p">,</span> <span class="n">population_name</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">population_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populations_cache</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populations_cache</span><span class="p">[</span><span class="n">population_name</span><span class="p">]</span>
@@ -552,14 +552,14 @@
 <div class="viewcode-block" id="NodesRoot">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NodesRoot</span><span class="p">(</span><span class="n">FileRoot</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">node_types</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">gid_table</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">NodesRoot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="n">h5_files</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">h5_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">csv_files</span><span class="o">=</span><span class="n">node_types</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">node_types</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span> <span class="n">gid_table</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NodesRoot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">'nodes'</span><span class="p">,</span> <span class="n">h5_files</span><span class="o">=</span><span class="n">nodes</span><span class="p">,</span> <span class="n">h5_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">csv_files</span><span class="o">=</span><span class="n">node_types</span><span class="p">)</span>
 
         <span class="c1"># load the gid &lt;--&gt; (node_id, population) map if specified.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span> <span class="o">=</span> <span class="n">gid_table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table_groupby</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_gids</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="c1"># TODO: Should we allow gid-table to be built into &#39;/nodes&#39; h5 groups, or must it always be a separat file?</span>
+        <span class="c1"># TODO: Should we allow gid-table to be built into '/nodes' h5 groups, or must it always be a separat file?</span>
         <span class="k">if</span> <span class="n">gid_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_gid_table</span><span class="p">(</span><span class="n">gid_table</span><span class="p">)</span>
 
@@ -574,23 +574,23 @@
 <div class="viewcode-block" id="NodesRoot.set_gid_table">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.set_gid_table">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_gid_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid_table</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a map from a gids &lt;--&gt; (node_id, population) based on specification.</span>
+<span class="w">        </span><span class="sd">"""Adds a map from a gids &lt;--&gt; (node_id, population) based on specification.</span>
 
 <span class="sd">        :param gid_table: An h5 file/group containing map specifications</span>
 <span class="sd">        :param force: Set to true to have it overwrite any exsiting gid table (default False)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span><span class="p">(</span><span class="n">gid_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_gids</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;gid table already exists (use force=True to overwrite)&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'gid table already exists (use force=True to overwrite)'</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_h5</span><span class="p">(</span><span class="n">gid_table</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_h5</span><span class="p">(</span><span class="n">gid_table</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
         <span class="c1"># TODO: validate that the correct columns/dtypes exists.</span>
         <span class="n">gid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="n">gid_df</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">gid_df</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">gid_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">])</span>
-        <span class="n">population_names_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">&#39;population_names&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">pop_id</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">gid_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">):</span>
+        <span class="n">gid_df</span><span class="p">[</span><span class="s1">'gid'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'gid'</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'gid'</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">gid_df</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">gid_df</span><span class="p">[</span><span class="s1">'population'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'population'</span><span class="p">])</span>
+        <span class="n">population_names_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table</span><span class="p">[</span><span class="s1">'population_names'</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">pop_id</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">gid_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'population'</span><span class="p">):</span>
             <span class="n">pop_name</span> <span class="o">=</span> <span class="n">population_names_ds</span><span class="p">[</span><span class="n">pop_id</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_gid_table_groupby</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_gids</span> <span class="o">=</span> <span class="kc">True</span></div>
@@ -599,30 +599,30 @@
 <div class="viewcode-block" id="NodesRoot.generate_gids">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.NodesRoot.generate_gids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a gid &lt;--&gt; (node_id, population) table based on sonnet specifications.</span>
+<span class="w">        </span><span class="sd">"""Creates a gid &lt;--&gt; (node_id, population) table based on sonnet specifications.</span>
 
 <span class="sd">         Generating gids will take some time and so not recommend to call this during the simulation. Instead save</span>
-<span class="sd">         the file to the disk and pass in h5 file during the simulation (using gid_table parameter). In fact if you&#39;re</span>
-<span class="sd">         worried about efficeny don&#39;t use this method.</span>
+<span class="sd">         the file to the disk and pass in h5 file during the simulation (using gid_table parameter). In fact if you're</span>
+<span class="sd">         worried about efficeny don't use this method.</span>
 
 <span class="sd">        :param file_name: Name of h5 file to save gid map to.</span>
 <span class="sd">        :param gids: rule/list of gids to use</span>
 <span class="sd">        :param force: set to true to overwrite existing gid map (default False).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># TODO: This is very inefficent, fix (although not a priority as this function should be called sparingly)</span>
         <span class="c1"># TODO: Allow users to pass in a list/function to determine gids</span>
         <span class="c1"># TODO: We should use an enumerated lookup table for population ds instead of storing strings</span>
         <span class="c1"># TODO: Move this to a utils function rather than a File</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_gids</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Nodes already have a gid table. Use force=True to overwrite existing gids.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Nodes already have a gid table. Use force=True to overwrite existing gids.'</span><span class="p">)</span>
 
         <span class="n">dir_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_name</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dir_name</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dir_name</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-            <span class="c1"># TODO: should we use mode &#39;x&#39;, or give an option to overwrite existing files</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+            <span class="c1"># TODO: should we use mode 'x', or give an option to overwrite existing files</span>
             <span class="n">n_nodes</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">ascii_len</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># store max population name for h5 fixed length strings</span>
             <span class="c1"># Find population names and the total size of every population</span>
@@ -632,10 +632,10 @@
                 <span class="n">ascii_len</span> <span class="o">=</span> <span class="n">ascii_len</span> <span class="k">if</span> <span class="n">ascii_len</span> <span class="o">&gt;=</span> <span class="n">name_nchars</span> <span class="k">else</span> <span class="n">name_nchars</span>
 
             <span class="c1"># node_id and gid datasets should just be unsigned integers</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'gid'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'node_id'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
             <span class="c1"># TODO: determine population precisions from num of populations</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'population'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
 
             <span class="c1"># Create a lookup table for pop-name</span>
             <span class="n">pop_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">pname</span> <span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_names</span><span class="p">]</span>
@@ -643,22 +643,22 @@
                 <span class="n">dt</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">special_dtype</span><span class="p">(</span><span class="n">vlen</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>  <span class="c1"># python 3</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dt</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">special_dtype</span><span class="p">(</span><span class="n">vlen</span><span class="o">=</span><span class="n">unicode</span><span class="p">)</span>  <span class="c1"># python 2</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;population_names&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pop_name_list</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-            <span class="c1"># No clue why but just passing in the data during create_dataset doesn&#39;t work h5py</span>
+            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'population_names'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pop_name_list</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+            <span class="c1"># No clue why but just passing in the data during create_dataset doesn't work h5py</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pop_name_list</span><span class="p">):</span>
-                <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;population_names&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="n">h5</span><span class="p">[</span><span class="s1">'population_names'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
 
             <span class="c1"># write each (gid, node_id, population)</span>
             <span class="n">indx</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-                <span class="c1"># TODO: Block write if special gid generator isn&#39;t being used</span>
+                <span class="c1"># TODO: Block write if special gid generator isn't being used</span>
                 <span class="c1"># TODO: Block write populations at least</span>
-                <span class="n">pop_name</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span> <span class="c1"># encode(&#39;ascii&#39;, &#39;ignore&#39;)</span>
+                <span class="n">pop_name</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span> <span class="c1"># encode('ascii', 'ignore')</span>
                 <span class="n">pop_id</span> <span class="o">=</span> <span class="n">pop_name_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pop_name</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="p">:</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_id</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">indx</span>
+                    <span class="n">h5</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
+                    <span class="n">h5</span><span class="p">[</span><span class="s1">'population'</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_id</span>
+                    <span class="n">h5</span><span class="p">[</span><span class="s1">'gid'</span><span class="p">][</span><span class="n">indx</span><span class="p">]</span> <span class="o">=</span> <span class="n">indx</span>
                     <span class="n">indx</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="c1"># pass gid table to current nodes</span>
@@ -686,8 +686,8 @@
 <div class="viewcode-block" id="EdgesRoot">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.EdgesRoot">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EdgesRoot</span><span class="p">(</span><span class="n">FileRoot</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">EdgesRoot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root_name</span><span class="o">=</span><span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="n">h5_files</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span> <span class="n">h5_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">csv_files</span><span class="o">=</span><span class="n">edge_types</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">edge_types</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EdgesRoot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root_name</span><span class="o">=</span><span class="s1">'edges'</span><span class="p">,</span> <span class="n">h5_files</span><span class="o">=</span><span class="n">edges</span><span class="p">,</span> <span class="n">h5_mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">csv_files</span><span class="o">=</span><span class="n">edge_types</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
@@ -697,7 +697,7 @@
 <div class="viewcode-block" id="EdgesRoot.get_populations">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.file_root.EdgesRoot.get_populations">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find all populations with matching criteria, either using the population name (which will return a list</span>
+<span class="w">        </span><span class="sd">"""Find all populations with matching criteria, either using the population name (which will return a list</span>
 <span class="sd">        of size 0 or 1) or based on the source/target population.</span>
 
 <span class="sd">        To return a list of all populations just use populations() method</span>
@@ -706,13 +706,13 @@
 <span class="sd">        :param source: (str or NodePopulation) returns edges with nodes coming from matching source-population</span>
 <span class="sd">        :param target: (str or NodePopulation) returns edges with nodes coming from matching target-population</span>
 <span class="sd">        :return: A (potential empty) list of EdgePopulation objects filter by criteria.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">assert</span><span class="p">((</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">name</span><span class="p">]]</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># TODO: make sure groups aren&#39;t built unless they are a part of the results</span>
+            <span class="c1"># TODO: make sure groups aren't built unless they are a part of the results</span>
             <span class="n">selected_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population_names</span>
             <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># filter out only edges with given source population</span>

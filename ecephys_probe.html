@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -442,17 +442,17 @@ add or modify the <cite>ecephys_probe</cite> modules.</p>
 and we want to use spike trains from Visual Coding Session_715093703.nwb file (See <a class="reference external" href="INSERT_LINK">below</a> on
 tricks for downloading nwb files), then we can add the following section to our json file:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./session_715093703.nwb"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGd"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">      </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -473,46 +473,46 @@ trains using NWB ECEPhys Probe data. This value cannot be changed</p></li>
 </dl>
 <p>The module also allows you to use multiple NWB files at a time, where the sampling of units in the use of our simulation will be done across all NWB input_file’s</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./session_715093703.nwb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"./session_733123887.nwb"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGd"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">        </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Or if you have multiple populations that you want to use to drive input into our model, you can just use the module multiple times:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./session_715093703.nwb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"./session_733123887.nwb"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGd"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">        </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;hippocampus_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_733123887.nwb&quot;</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;CA1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CA3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Po&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"hippocampus_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./session_715093703.nwb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"./session_733123887.nwb"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"CA1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CA3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Po"</span><span class="p">]</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">135000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">137000.0</span><span class="p">]</span>
+<span class="w">        </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">135000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">137000.0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -545,10 +545,10 @@ as sample without replacement, which may cause issues if there are fewer units t
 It must be a dictionary of conditionals that will preform a intersection (eg AND operation). For example to get only units with a “good” value in
 the “quality” column and comes from channel_ids in 850261194-850261196:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;quality&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;good&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;channel_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">850261194</span><span class="p">,</span><span class="w"> </span><span class="mi">850261195</span><span class="p">,</span><span class="w"> </span><span class="mi">850261196</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"quality"</span><span class="p">:</span><span class="w"> </span><span class="s2">"good"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"channel_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">850261194</span><span class="p">,</span><span class="w"> </span><span class="mi">850261195</span><span class="p">,</span><span class="w"> </span><span class="mi">850261196</span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -556,11 +556,11 @@ the “quality” column and comes from channel_ids in 850261194-850261196:</p>
 <p>If you need more advanced comparisions you can specify the column query in the format <cite>“query”: {“column”: &lt;col&gt;, “operation”: &lt;operator&gt;, “value”: &lt;value&gt;}</cite>.
 For example to get only VISp units that having “firing_rate” between 5.0 and 10.0 Hz:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;fr_gt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;firing_rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&gt;=&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;fr_lt&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;firing_rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;=&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">}</span>
+<span class="w">  </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"fr_gt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"column"</span><span class="p">:</span><span class="w"> </span><span class="s2">"firing_rate"</span><span class="p">,</span><span class="w"> </span><span class="nt">"operation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&gt;="</span><span class="p">,</span><span class="w"> </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"fr_lt"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"column"</span><span class="p">:</span><span class="w"> </span><span class="s2">"firing_rate"</span><span class="p">,</span><span class="w"> </span><span class="nt">"operation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;="</span><span class="p">,</span><span class="w"> </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -571,8 +571,8 @@ For example to get only VISp units that having “firing_rate” between 5.0 and
 <h4>units_map<a class="headerlink" href="#units-map" title="Link to this heading">#</a></h4>
 <p>If you know how each unit should be mapped to each node and stored in a csv file, then you can use the “units_map” value in the <cite>mapping</cite> option.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;units_map&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/units2nodes_map.csv&quot;</span>
+<span class="w">  </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"units_map"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/units2nodes_map.csv"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -628,13 +628,13 @@ to adjust where spikes starts in the simulation.</p>
 <h4>intervals ranges<a class="headerlink" href="#intervals-ranges" title="Link to this heading">#</a></h4>
 <p>The easies way to to specify a time-window is to specify a range [<em>start_time</em>, <em>stop_time</em>] in milliseconds. For example if you know the period of
 interest you are interested occurs in the probe data between minutes 30 to 32</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1800000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1920000.0</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">1800000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1920000.0</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>If you have multiple NWB files, each one with a unique period of interest, you can also pass in a list of ranges</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;./session_71509.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_73312.nwb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;./session_89923.nwb&quot;</span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="mi">10000</span><span class="p">,</span><span class="w"> </span><span class="mi">12000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">15000</span><span class="p">,</span><span class="w"> </span><span class="mi">17000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">24000</span><span class="p">,</span><span class="w"> </span><span class="mi">26000</span><span class="p">]]</span>
+<span class="w">  </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"./session_71509.nwb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"./session_73312.nwb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"./session_89923.nwb"</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="mi">10000</span><span class="p">,</span><span class="w"> </span><span class="mi">12000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">15000</span><span class="p">,</span><span class="w"> </span><span class="mi">17000</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">24000</span><span class="p">,</span><span class="w"> </span><span class="mi">26000</span><span class="p">]]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -646,10 +646,10 @@ to the subject. If instead of passing an a time range to <cite>interval</cite>, 
 to create a time-window filter using the columns from the intervals table.</p>
 <p>For example, if you want to get spikes that only occurred when a drifting gratings was presented to subject with a specific a 90 degrees orientation
 and &lt; 5 Hz frequency:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;stimulus_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;column&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;temporal_frequency&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;operation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"stimulus_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"drifting_gratings"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"temporal_frequency"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"column"</span><span class="p">:</span><span class="w"> </span><span class="s2">"temporal_frequency"</span><span class="p">,</span><span class="w"> </span><span class="nt">"operation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;"</span><span class="p">,</span><span class="w"> </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"orientation"</span><span class="p">:</span><span class="w"> </span><span class="mf">90.0</span>
 <span class="w">  </span><span class="p">},</span>
 </pre></div>
 </div>
@@ -659,9 +659,9 @@ from each interval to interval.</p>
 <p>One important issue to note is that often a query on the stimulus table will return multiple intervals. For instance drifting gratings with orientation
 90deg and freq &lt; 5 Hz may be presented to subject multiple times over the full session. By default the module will select the first one, but you
 can use special option “interval_index” to get a specific one. For example to get the fifth time a drifting grating is presented:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;interval_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"interval_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"drifting_gratings"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"interval_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
 <span class="w">  </span><span class="p">}</span>
 </pre></div>
 </div>

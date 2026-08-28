@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -383,7 +383,11 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </details></li>
@@ -480,11 +484,11 @@ may use either a <a class="reference external" href="https://github.com/AllenIns
 an NWB file, or a space-separated CSV file with columns <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. The following
 shows some examples of how to generate <a class="reference external" href="./analyzer.html#creating-spike-trains">spike-train files using bmtk</a>.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/lgn_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sonata"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./inputs/lgn_spikes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lgn"</span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -505,17 +509,17 @@ and converting them to virtual cells for network input into your model.</p>
 <p>For example, using a session NWB file downloaded using the AllenSDK, the below example will randomly map “LGd” cells from the session onto our
 “LGN” population, and filter out only spikes that occur between 10.0 and 12.0 seconds</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./session_715093703.nwb&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample_with_replacement&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGd&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./session_715093703.nwb"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span><span class="p">},</span>
+<span class="w">      </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample_with_replacement"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGd"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
+<span class="w">      </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">12000.0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -528,13 +532,13 @@ and converting them to virtual cells for network input into your model.</p>
 <p>Users may apply one-step current clamp on multiple nodes, or have one node receive multiple current injections. Currently,
 BMTK only support injections at the soma.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophys_cells&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span>
+<span class="w">    </span><span class="nt">"current_clamp_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophys_cells"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -553,18 +557,18 @@ BMTK only support injections at the soma.</p>
 </div>
 <p>And in the configuration file</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;extra_stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;positions_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/xstim_electrode.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;waveform&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;shape&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sin&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;del&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.100</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;freq&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">8.0</span>
+<span class="w">    </span><span class="nt">"extra_stim"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lfp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xstim"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"positions_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./inputs/xstim_electrode.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"resistance"</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"waveform"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"shape"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sin"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"del"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.100</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"dur"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"freq"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.0</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -597,19 +601,19 @@ cells the report can record from any segment that contains mechanics for the des
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-output---reports">SONATA docs</a>
 for more information about how multi-segment recordings are represented.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;calcium_concentration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cai&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cai_traces.h5&quot;</span>
+<span class="w">    </span><span class="nt">"calcium_concentration"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"membrane_report"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cai"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cai_traces.h5"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">]},</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v_traces.h5&quot;</span>
+<span class="w">    </span><span class="nt">"membrane_potential"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"membrane_report"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">]},</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v_traces.h5"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -642,13 +646,13 @@ Requires a space-separated CSV file to specify the location of each recording ch
 </div>
 <p>And in the config</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;components/xelectrode/linear_probe.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp_contributions&quot;</span>
+<span class="w">    </span><span class="nt">"ecp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"components/xelectrode/linear_probe.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"contributions_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp_contributions"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -664,13 +668,13 @@ cell’s ECP.</p></li>
 <p><strong>Saving ECP to NWB (Neurodata without Borders) format</strong></p>
 <p>You can save the recorded extraceullar field to NWB format by specifying the “file_name_nwb” option.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;components/xelectrode/linear_probe.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file_name_nwb&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;session_data.nwb&quot;</span>
+<span class="w">    </span><span class="nt">"ecp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"components/xelectrode/linear_probe.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file_name_nwb"</span><span class="p">:</span><span class="w"> </span><span class="s2">"session_data.nwb"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -687,12 +691,12 @@ variables from a synapse. The output is similar to a
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">SONATA membrane report</a>,
 but instead of each column being a segment of a neuron, each column represents a different synapse.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;syn_report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tau1&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;netcon_report&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;syn_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Exp2Syn&quot;</span>
+<span class="w">    </span><span class="nt">"syn_report"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tau1"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"netcon_report"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"syn_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Exp2Syn"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -713,7 +717,7 @@ to a neuronal area (somatic, axon, apical, basal), and “distance_range” is t
 (in um) from the soma to place the synapse. For example to specify synapses be created either at the soma or nearby
 basal dendrites:</p>
 <div class="highlight-text notranslate" id="edge-type-csv"><div class="highlight"><pre><span></span>edge_type_id distance_range target_sections ...
-100 &quot;[0.0, 100.0]&quot; &quot;[&#39;somatic&#39;, &#39;basal&#39;]&quot; ...
+100 "[0.0, 100.0]" "['somatic', 'basal']" ...
 </pre></div>
 </div>
 <p>Using parameters “distance_range” and “target_sections” will speed up the instantiation by a bit. And has the benefit
@@ -731,25 +735,25 @@ Being able to separate the contributions of the two type of drivers is often imp
 configuration file. For example, a network called “internal” might have both internal-to-internal recurrent connections
 and external-to-internal connections as represented in the “networks” section of the config</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_nodes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_node_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -759,21 +763,21 @@ and external-to-internal connections as represented in the “networks” sectio
 <p>To run the simulation without the recurrent internal-to-internal connections we just need to remove the relevant
 SONATA network files:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_node_types.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/external_internal_edge_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/external_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -790,14 +794,14 @@ of the recurrent inputs in the simulation that has been just run?
 To do so, we can use a special <strong>“replay”</strong> input module. In the
 “inputs” section of the config we add the following:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;recurrent_replay&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$PREV_RESULTS_DIR/spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"recurrent_replay"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$PREV_RESULTS_DIR/spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -815,11 +819,11 @@ To do so, we can use a special <strong>“replay”</strong> input module. In th
 </dl>
 <p>Then we update the “networks” section since we don’t want to have any external-to-internal type connections:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_node_types.csv&quot;</span>
+<span class="w">        </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_nodes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_node_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
 <span class="w">  </span><span class="p">}</span>
@@ -834,23 +838,23 @@ connections, but only on edges where the source (pre-synaptic) and target (post-
 For example, we only want to run simulation on edges where the target cells are “biophysically-detailed Scnn1a” cells
 and the source cells are either “Scnn1a”, “Rorb”, or “Nr5a1” cell-types.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;recurrent_replay&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;replay&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$PREV_RESULTS_DIR/spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;source_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Scnn1a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Rorb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Nr5a1&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"recurrent_replay"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay_spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"replay"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$PREV_RESULTS_DIR/spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"source_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Scnn1a"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Rorb"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Nr5a1"</span><span class="p">]</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;target_node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;internal&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scnn1a&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<span class="w">      </span><span class="nt">"target_node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"internal"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Scnn1a"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/internal_internal_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edges.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/internal_internal_edge_types.csv"</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -861,15 +865,15 @@ and the source cells are either “Scnn1a”, “Rorb”, or “Nr5a1” cell-ty
 <p>You can combine “replay” inputs with virtual inputs, current and voltage clamps. And you can have multiple
 “replay” inputs in the same simulation by adding multiple subsections in the “inputs” sections of the config:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">&quot;replay_1&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+  <span class="s2">"inputs"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"replay_1"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"input_type"</span><span class="p">:</span> <span class="s2">"replay_spikes"</span><span class="p">,</span>
+      <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"replay"</span><span class="p">,</span>
       <span class="o">...</span>
     <span class="p">},</span>
-    <span class="s2">&quot;replay_1&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;replay_spikes&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+    <span class="s2">"replay_1"</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"input_type"</span><span class="p">:</span> <span class="s2">"replay_spikes"</span><span class="p">,</span>
+      <span class="s2">"module"</span><span class="p">:</span> <span class="s2">"replay"</span><span class="p">,</span>
       <span class="o">...</span>
     <span class="p">}</span>
   <span class="p">}</span>

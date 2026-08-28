@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -485,15 +485,15 @@ variable below to build the same network using different model types</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nest_model</span> <span class="o">=</span> <span class="s1">&#39;nest:izhikevich&#39;</span>
-<span class="c1"># nest_model = &#39;nest:iaf_psc_delta&#39;</span>
-<span class="c1"># nest_model = &#39;nest:aeif_cond_alpha&#39;</span>
-<span class="c1"># nest_model = &#39;nest:glif_psc&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nest_model</span> <span class="o">=</span> <span class="s1">'nest:izhikevich'</span>
+<span class="c1"># nest_model = 'nest:iaf_psc_delta'</span>
+<span class="c1"># nest_model = 'nest:aeif_cond_alpha'</span>
+<span class="c1"># nest_model = 'nest:glif_psc'</span>
 
-<span class="n">dynamics_params</span> <span class="o">=</span> <span class="s1">&#39;custom_model_params.default.json&#39;</span>
-<span class="c1"># dynamics_params = &#39;custom_model_params.izhikevich.json&#39;</span>
-<span class="c1"># dynamics_params = &#39;custom_model_params.aeif_cond_alpha.json&#39;</span>
-<span class="c1"># dynamics_params = &#39;custom_model_params.glif_psc.json&#39;</span>
+<span class="n">dynamics_params</span> <span class="o">=</span> <span class="s1">'custom_model_params.default.json'</span>
+<span class="c1"># dynamics_params = 'custom_model_params.izhikevich.json'</span>
+<span class="c1"># dynamics_params = 'custom_model_params.aeif_cond_alpha.json'</span>
+<span class="c1"># dynamics_params = 'custom_model_params.glif_psc.json'</span>
 </pre></div>
 </div>
 </div>
@@ -505,10 +505,10 @@ variable below to build the same network using different model types</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;net&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'net'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span>
     <span class="n">model_template</span><span class="o">=</span><span class="n">nest_model</span><span class="p">,</span>
     <span class="n">dynamics_params</span><span class="o">=</span><span class="n">dynamics_params</span>
 <span class="p">)</span>
@@ -518,18 +518,18 @@ variable below to build the same network using different model types</p>
     <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToInh.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_built_in&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network_built_in'</span><span class="p">)</span>
 
 
-<span class="n">virt_exc</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;virt_exc&#39;</span><span class="p">)</span>
+<span class="n">virt_exc</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'virt_exc'</span><span class="p">)</span>
 <span class="n">virt_exc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span>
 <span class="p">)</span>
 
 <span class="n">virt_exc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
@@ -537,12 +537,12 @@ variable below to build the same network using different model types</p>
     <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToInh.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span>
 <span class="p">)</span>
 
 <span class="n">virt_exc</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">virt_exc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_built_in&#39;</span><span class="p">)</span>
+<span class="n">virt_exc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network_built_in'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -553,7 +553,7 @@ variable below to build the same network using different model types</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;network_built_in/net_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'network_built_in/net_node_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -609,7 +609,7 @@ variable below to build the same network using different model types</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.built_in.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.built_in.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -672,7 +672,7 @@ models</a> which you can expand upon for your purposes. For simplicity we’ll g
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nestml_izh_model</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nestml_izh_model</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">model custom_izh_neuron:</span>
 
 <span class="s2">    state:</span>
@@ -680,8 +680,8 @@ models</a> which you can expand upon for your purposes. For simplicity we’ll g
 <span class="s2">        u real = 0    # Membrane potential recovery variable</span>
 
 <span class="s2">    equations:</span>
-<span class="s2">        v&#39; = (.04 * v * v / mV + 5 * v + (140 - u) * mV + (I_e * GOhm)) / ms</span>
-<span class="s2">        u&#39; = a * (b * v - u * mV) / (mV * ms)</span>
+<span class="s2">        v' = (.04 * v * v / mV + 5 * v + (140 - u) * mV + (I_e * GOhm)) / ms</span>
+<span class="s2">        u' = a * (b * v - u * mV) / (mV * ms)</span>
 
 <span class="s2">    parameters:</span>
 <span class="s2">        a real = .02    # describes time scale of recovery variable</span>
@@ -708,7 +708,7 @@ models</a> which you can expand upon for your purposes. For simplicity we’ll g
 <span class="s2">        v = c</span>
 <span class="s2">        u += d</span>
 <span class="s2">        emit_spike()</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 </pre></div>
 </div>
 </div>
@@ -722,8 +722,8 @@ models</a> which you can expand upon for your purposes. For simplicity we’ll g
 
 <span class="n">module_name</span><span class="p">,</span> <span class="n">neuron_model_name</span> <span class="o">=</span> <span class="n">NESTCodeGeneratorUtils</span><span class="o">.</span><span class="n">generate_code_for</span><span class="p">(</span>
     <span class="n">nestml_izh_model</span><span class="p">,</span>
-    <span class="n">module_name</span><span class="o">=</span><span class="s1">&#39;nestml_izh_module&#39;</span><span class="p">,</span>
-    <span class="n">target_path</span><span class="o">=</span><span class="s1">&#39;components/nestml&#39;</span>
+    <span class="n">module_name</span><span class="o">=</span><span class="s1">'nestml_izh_module'</span><span class="p">,</span>
+    <span class="n">target_path</span><span class="o">=</span><span class="s1">'components/nestml'</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">neuron_model_name</span><span class="p">)</span>
@@ -833,9 +833,9 @@ nestml_izh_module custom_izh_neuron_nestml
 <p>If successful, you should see it call <code class="docutils literal notranslate"><span class="pre">cmake</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span></code> commands to compile the model in nest and create a library *.so (along with source code) in the <strong>components/nestml/</strong> directory.</p>
 <p><strong>Note</strong> that although in this case we passed in the model as a string into the <code class="docutils literal notranslate"><span class="pre">generate_code_for</span></code> function, you also have an option of saving the model to a *.nestml textfile and passing it in. In said case it would just be the following</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">module_name</span><span class="p">,</span> <span class="n">neuron_model_name</span> <span class="o">=</span> <span class="n">NESTCodeGeneratorUtils</span><span class="o">.</span><span class="n">generate_code_for</span><span class="p">(</span>
-    <span class="s1">&#39;nestml_izh_model.nestml&#39;</span><span class="p">,</span>
-    <span class="n">module_name</span><span class="o">=</span><span class="s1">&#39;nestml_izh_module&#39;</span><span class="p">,</span>
-    <span class="n">target_path</span><span class="o">=</span><span class="s1">&#39;components/nestml&#39;</span>
+    <span class="s1">'nestml_izh_model.nestml'</span><span class="p">,</span>
+    <span class="n">module_name</span><span class="o">=</span><span class="s1">'nestml_izh_module'</span><span class="p">,</span>
+    <span class="n">target_path</span><span class="o">=</span><span class="s1">'components/nestml'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -850,7 +850,7 @@ nestml_izh_module custom_izh_neuron_nestml
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;network_nestml/izh_network_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'network_nestml/izh_network_node_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -909,19 +909,19 @@ nestml_izh_module custom_izh_neuron_nestml
 </div></div>
 </div>
 <p>We must also let PointNet know where the corresponding *.so file is containing the compiled model. In our SONATA configuration file we add the a “nest_modules” entry to the <strong>“components”</strong></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$MODELS_DIR/cell_models&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$MODELS_DIR/synaptic_models&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;nest_modules&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$MODELS_DIR/nestml/nestml_izh_module.so&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"point_neuron_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$MODELS_DIR/cell_models"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"synaptic_models_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$MODELS_DIR/synaptic_models"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"nest_modules"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$MODELS_DIR/nestml/nestml_izh_module.so"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>If you have multiple NEST and/or NESTML modules you can either specify “nest_modules” as a directory</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;nest_modules&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/modules/dir/&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"nest_modules"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/modules/dir/"</span>
 </pre></div>
 </div>
 <p>and BMTK will try to find and load all library files in the folder, or alternatively you can pass in a list of library binaries:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;nest_modules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/first/path/to/module1.so&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/second/path/to/module2.so&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"nest_modules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"/first/path/to/module1.so"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/second/path/to/module2.so"</span><span class="p">,</span><span class="w"> </span><span class="s2">"..."</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>and run the simulation as normal</p>
@@ -931,7 +931,7 @@ nestml_izh_module custom_izh_neuron_nestml
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.nestml.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.nestml.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -1130,7 +1130,7 @@ INFO:Done.
 <p>If you need to override this function, BMTK provides a special <a class="reference external" href="https://peps.python.org/pep-0318/">python decorator</a> called <code class="docutils literal notranslate"><span class="pre">&#64;cell_model</span></code>. To use the decorator you can add the following to your <em>run_pointnet.py</em> (or in a separate python file imported before you run the simulation) as such</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.pointnet</span><span class="w"> </span><span class="kn">import</span> <span class="n">cell_model</span>
 
-<span class="nd">@cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;nest&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">)</span>
+<span class="nd">@cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">'nest'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">loadNESTModel</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
     <span class="n">nest_nodes</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># create and initialize cells</span>
     <span class="k">return</span> <span class="n">nest_nodes</span>
@@ -1168,15 +1168,15 @@ INFO:Done.
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.pointnet.io_tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">io</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">nest</span>
 
-<span class="nd">@cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;nest:izhikevich&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">)</span>
+<span class="nd">@cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">'nest:izhikevich'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">loadIzhikevich</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
 
-    <span class="n">d_orig</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">GetStatus</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">)</span>
-    <span class="n">jitter</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;jitter&#39;</span><span class="p">]</span>
+    <span class="n">d_orig</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">GetStatus</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="s1">'d'</span><span class="p">)</span>
+    <span class="n">jitter</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">'jitter'</span><span class="p">]</span>
     <span class="n">d_noisy</span> <span class="o">=</span> <span class="n">d_orig</span><span class="o">*</span><span class="n">jitter</span>
-    <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;d&#39;</span><span class="p">:</span> <span class="n">d_noisy</span><span class="p">})</span>
-    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Modifying the parameters of </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1"> neurons.&#39;</span><span class="p">)</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="p">{</span><span class="s1">'d'</span><span class="p">:</span> <span class="n">d_noisy</span><span class="p">})</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Modifying the parameters of </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1"> neurons.'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nodes</span>
 </pre></div>
 </div>
@@ -1193,7 +1193,7 @@ INFO:Done.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.iz_updated.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.iz_updated.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
@@ -1403,8 +1403,8 @@ INFO:Done.
 plasticity</a> we would modify the build network <code class="docutils literal notranslate"><span class="pre">add_edges</span></code> call to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="o">...</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;tsodysk2_synapse&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;tsodysk2.syn_exc.json&#39;</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'tsodysk2_synapse'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'tsodysk2.syn_exc.json'</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -1420,7 +1420,7 @@ plasticity</a> we would modify the build network <code class="docutils literal n
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;network_stp_syns/net_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'network_stp_syns/net_node_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

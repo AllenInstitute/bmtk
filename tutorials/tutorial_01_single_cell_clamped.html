@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -483,15 +483,15 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'mcortex'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
-    <span class="n">cell_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048&#39;</span><span class="p">,</span>
-    <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span>
+    <span class="n">cell_name</span><span class="o">=</span><span class="s1">'Scnn1a_473845048'</span><span class="p">,</span>
+    <span class="n">potential</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Scnn1a_473845048_m.swc'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -521,7 +521,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch01/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch01/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -565,15 +565,15 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch01&#39;</span><span class="p">,</span>       <span class="c1"># Where to save the scripts and config files</span>
-    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="c1"># Where main config will be saved.</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">,</span>     <span class="c1"># Location of directory containing network files</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_ch01'</span><span class="p">,</span>       <span class="c1"># Where to save the scripts and config files</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="c1"># Where main config will be saved.</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">,</span>     <span class="c1"># Location of directory containing network files</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>      <span class="c1"># Run a simulation for 2000 ms at 0.1 ms intervals</span>
-    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>  <span class="c1"># Tells simulator we want to record membrane potential and calcium traces</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">'v'</span><span class="p">,</span> <span class="s1">'cai'</span><span class="p">],</span>  <span class="c1"># Tells simulator we want to record membrane potential and calcium traces</span>
     <span class="n">current_clamp</span><span class="o">=</span><span class="p">{</span>            <span class="c1"># Creates a step current from 500.0 ms to 1500.0 ms</span>
-        <span class="s1">&#39;amp&#39;</span><span class="p">:</span> <span class="mf">0.120</span><span class="p">,</span>
-        <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
-        <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">1000.0</span>
+        <span class="s1">'amp'</span><span class="p">:</span> <span class="mf">0.120</span><span class="p">,</span>
+        <span class="s1">'delay'</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+        <span class="s1">'duration'</span><span class="p">:</span> <span class="mf">1000.0</span>
     <span class="p">},</span>
     <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files for tutorial examples</span>
     <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
@@ -611,7 +611,7 @@ $<span class="w"> </span>python<span class="w"> </span>run_bionet.py<span class=
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch01/config.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_ch01/config.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">conf</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -809,7 +809,7 @@ nrnivmodl modfiles
 </div>
 </div>
 <p>A quick breakdown of the script:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.json'</span><span class="p">)</span>
 <span class="n">io</span><span class="o">.</span><span class="n">setup_output_dir</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">nrn</span><span class="o">.</span><span class="n">load_neuron_modules</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 </pre></div>
@@ -835,7 +835,7 @@ nrnivmodl modfiles
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_dataframe</span>
 
-<span class="n">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/config.json&#39;</span><span class="p">)</span>
+<span class="n">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch01/config.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -987,8 +987,8 @@ nrnivmodl modfiles
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch01/config.json'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'v_report'</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch01/config.json'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'cai_report'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1014,12 +1014,12 @@ nrnivmodl modfiles
 <p>By making changes to the config file, we can change the conditions and simulation parameters without having to rebuild the network, modify parameter files or change our run_bionet script. In fact we can iteratively run multiple simulations without any extra coding, only a text editor to change the JSON file.</p>
 <p>The run section of the <strong>config.json</strong> file contains most of the parameters unique to the simulation:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;dL&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span>
+<span class="w">  </span><span class="nt">"run"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dL"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"nsteps_block"</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"spike_threshold"</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"tstop"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dt"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1032,23 +1032,23 @@ nrnivmodl modfiles
 </ul>
 <p>Through the conditions section we can adjust the simulation temperature (in degrees Celsius) and the initial membrane potential of the cells (in mV):</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;conditions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;celsius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">34.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;v_init&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-80</span>
+<span class="w">  </span><span class="nt">"conditions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"celsius"</span><span class="p">:</span><span class="w"> </span><span class="mf">34.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"v_init"</span><span class="p">:</span><span class="w"> </span><span class="mi">-80</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>And lastly, the input section lets us control stimulus onto the network. There are a number of different options which will be explained in the following tutorials. But even with a simple current injection we can adjust the amplitude, delay and stimulation duration and measure the effect on the cell.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.120</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1056,32 +1056,32 @@ nrnivmodl modfiles
 </div>
 <p>We can even add multiple injections:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cclamp1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.150</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"cclamp1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.150</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
 <span class="w">    </span><span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;cclamp2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.300</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
+<span class="w">    </span><span class="nt">"cclamp2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.300</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
 <span class="w">    </span><span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;cclamp3&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.450</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
+<span class="w">    </span><span class="nt">"cclamp3"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.450</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1096,7 +1096,7 @@ nrnivmodl modfiles
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sim_ch01/network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'sim_ch01/network/mcortex_node_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

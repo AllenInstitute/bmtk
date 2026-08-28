@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -422,35 +422,35 @@
 
 <div class="viewcode-block" id="download_model">
 <a class="viewcode-back" href="../../../bmtk/bmtk.utils.cell_types_db.html#bmtk.utils.cell_types_db.download_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">download_model</span><span class="p">(</span><span class="n">specimen_id</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical - all active&#39;</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;models&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uses the Allen REST API to find and download the model files for a given cell. All relevant files (parameters json and morphology swc)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_model</span><span class="p">(</span><span class="n">specimen_id</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'Biophysical - all active'</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="s1">'models'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Uses the Allen REST API to find and download the model files for a given cell. All relevant files (parameters json and morphology swc)</span>
 <span class="sd">    will be saved in a separate folder, the path to which will be returned.</span>
 
-<span class="sd">    Notes: Using the REST API because at the moment I don&#39;t think the AllenSDK is capable of downloading parameters_fit.json files, see </span>
+<span class="sd">    Notes: Using the REST API because at the moment I don't think the AllenSDK is capable of downloading parameters_fit.json files, see </span>
 <span class="sd">    https://community.brain-map.org/t/cell-types-database-api/3016 for more info on how to use the API.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Set a request to get fetch model data available for a given speciment_id. It will return a xml string that needs to be parsed so</span>
     <span class="c1"># that we can find the correct model_id.</span>
-    <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;http://api.brain-map.org/api/v2/data/query.xml?criteria=model::NeuronalModel,rma::critera,[specimen_id$eq</span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"http://api.brain-map.org/api/v2/data/query.xml?criteria=model::NeuronalModel,rma::critera,[specimen_id$eq</span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s2">]"</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">)</span>
     <span class="n">xml_root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
     <span class="n">model_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="s1">&#39;Biophysical - all active&#39;</span> <span class="ow">in</span> <span class="n">model_name</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">'name'</span><span class="p">),</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">'id'</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="s1">'Biophysical - all active'</span> <span class="ow">in</span> <span class="n">model_name</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
             <span class="n">model_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">model_id</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
             <span class="k">break</span>
 
     <span class="k">if</span> <span class="n">model_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find a &quot;</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s1">&quot; model for cell </span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Could not find a "</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s1">" model for cell </span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     
     <span class="c1"># Now that we have the model_id for the given cell we can download and unzip the files into the correct directory. To prevent downloading</span>
-    <span class="c1"># the zip everytime we&#39;ll check to see if the directory already exists.</span>
-    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/neuronal_model_</span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># the zip everytime we'll check to see if the directory already exists.</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">/neuronal_model_</span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">model_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&gt; </span><span class="si">{</span><span class="n">model_dir</span><span class="si">}</span><span class="s1"> already exits, skipping donwloadng data&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&gt; </span><span class="si">{</span><span class="n">model_dir</span><span class="si">}</span><span class="s1"> already exits, skipping donwloadng data'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">model_dir</span>
 
-    <span class="n">zip_uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;http://api.brain-map.org/neuronal_model/download/</span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">zip_uri</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://api.brain-map.org/neuronal_model/download/</span><span class="si">{</span><span class="n">model_id</span><span class="si">}</span><span class="s1">'</span>
     <span class="n">zip_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">zip_uri</span><span class="p">)</span>
     <span class="n">zip_file</span> <span class="o">=</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">zip_response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
     <span class="n">zip_file</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">model_dir</span><span class="p">)</span>
@@ -460,33 +460,33 @@
 
 <div class="viewcode-block" id="download_ephys_data">
 <a class="viewcode-back" href="../../../bmtk/bmtk.utils.cell_types_db.html#bmtk.utils.cell_types_db.download_ephys_data">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">download_ephys_data</span><span class="p">(</span><span class="n">specimen_id</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s1">&#39;ephys_inputs&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download nwb file containing sweeps.&quot;&quot;&quot;</span>
-    <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;http://api.brain-map.org/api/v2/data/query.xml?criteria=model::Specimen,rma::criteria,[id$eq</span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s1">],rma::include,ephys_result(well_known_files(well_known_file_type[name$eqNWBDownload]))&#39;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_ephys_data</span><span class="p">(</span><span class="n">specimen_id</span><span class="p">,</span> <span class="n">download_dir</span><span class="o">=</span><span class="s1">'ephys_inputs'</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Download nwb file containing sweeps."""</span>
+    <span class="n">api_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://api.brain-map.org/api/v2/data/query.xml?criteria=model::Specimen,rma::criteria,[id$eq</span><span class="si">{</span><span class="n">specimen_id</span><span class="si">}</span><span class="s1">],rma::include,ephys_result(well_known_files(well_known_file_type[name$eqNWBDownload]))'</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">)</span>
     <span class="c1"># print(response.content)</span>
     <span class="n">download_uri</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">xml_root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">dl_link</span> <span class="ow">in</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">&#39;download-link&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dl_link</span> <span class="ow">in</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">'download-link'</span><span class="p">):</span>
         <span class="n">download_uri</span> <span class="o">=</span> <span class="n">dl_link</span><span class="o">.</span><span class="n">text</span>
         <span class="k">break</span>
 
     <span class="n">ephys_id</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">for</span> <span class="n">erid</span> <span class="ow">in</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">&#39;ephys-result-id&#39;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">erid</span> <span class="ow">in</span> <span class="n">xml_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s1">'ephys-result-id'</span><span class="p">):</span>
         <span class="n">ephys_id</span> <span class="o">=</span> <span class="n">erid</span><span class="o">.</span><span class="n">text</span>
         <span class="k">break</span>
 
-    <span class="n">nwb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">download_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ephys_id</span><span class="si">}</span><span class="s1">_ephys.nwb&#39;</span><span class="p">)</span>
+    <span class="n">nwb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">download_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ephys_id</span><span class="si">}</span><span class="s1">_ephys.nwb'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">nwb_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&gt; </span><span class="si">{</span><span class="n">nwb_path</span><span class="si">}</span><span class="s1"> already exits, skipping donwload.&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&gt; </span><span class="si">{</span><span class="n">nwb_path</span><span class="si">}</span><span class="s1"> already exits, skipping donwload.'</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">download_dir</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">download_dir</span><span class="p">)</span>
 
-    <span class="n">url_req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;https://celltypes.brain-map.org/</span><span class="si">{</span><span class="n">download_uri</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">url_req</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'https://celltypes.brain-map.org/</span><span class="si">{</span><span class="n">download_uri</span><span class="si">}</span><span class="s1">'</span>
     <span class="n">nwb_req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_req</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">nwb_req</span><span class="o">.</span><span class="n">iter_content</span><span class="p">():</span>
             <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span></div>
 
@@ -494,7 +494,7 @@
 <div class="viewcode-block" id="test_fn">
 <a class="viewcode-back" href="../../../bmtk/bmtk.utils.cell_types_db.html#bmtk.utils.cell_types_db.test_fn">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_fn</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HERE&quot;</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"HERE"</span><span class="p">)</span></div>
 
 </pre></div>
 

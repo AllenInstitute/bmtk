@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -442,7 +442,7 @@
 <div class="viewcode-block" id="ConnectionMap">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConnectionMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for keeping track of connection rules. Used for saving unique edge properties in a network</span>
+<span class="w">    </span><span class="sd">"""Class for keeping track of connection rules. Used for saving unique edge properties in a network</span>
 
 <span class="sd">    For every connection from source --&gt; target this keeps track of rules (functions, literals, lists) for</span>
 <span class="sd">      1. the number of synapses between source and target</span>
@@ -452,29 +452,29 @@
 <span class="sd">    as ParamsRules.</span>
 
 <span class="sd">    Usage:</span>
-<span class="sd">        Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder&#39;s</span>
+<span class="sd">        Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder's</span>
 <span class="sd">        add_edges() method is called.</span>
 
 <span class="sd">        For example, The following will create a set of edges where there is between 1 to 16 synapatic connections</span>
-<span class="sd">        between each source and target node. Properties &#39;dynamics_params&#39; and &#39;model_template&#39; will be global</span>
+<span class="sd">        between each source and target node. Properties 'dynamics_params' and 'model_template' will be global</span>
 <span class="sd">        properties::</span>
 
-<span class="sd">            cm = net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;},</span>
+<span class="sd">            cm = net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'},</span>
 <span class="sd">                               connection_rule=lambda *_: np.random.randn(1, 16),</span>
-<span class="sd">                               dynamics_params=&#39;ExcToInh.json&#39;,</span>
-<span class="sd">                               model_template=&#39;Exp2Syn&#39;,</span>
+<span class="sd">                               dynamics_params='ExcToInh.json',</span>
+<span class="sd">                               model_template='Exp2Syn',</span>
 <span class="sd">                               ...)</span>
 
-<span class="sd">        If we want all edges to have a unique &#39;syn_weight&#39; value calculated from source/target locations, we create a</span>
+<span class="sd">        If we want all edges to have a unique 'syn_weight' value calculated from source/target locations, we create a</span>
 <span class="sd">        function that takes in source and target (Node object) and returns the syn weight. This function will be called</span>
 <span class="sd">        for every individual connection::</span>
 
 <span class="sd">            def syn_weight_by_loc(source, target):</span>
-<span class="sd">                src_loc, trg_loc = source[&#39;loc&#39;], target[&#39;loc&#39;]</span>
+<span class="sd">                src_loc, trg_loc = source['loc'], target['loc']</span>
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight</span>
 
-<span class="sd">            cm.add_properties(&#39;syn_weight&#39;, rule=syn_weight_by_loc, dtypes=np.float)</span>
+<span class="sd">            cm.add_properties('syn_weight', rule=syn_weight_by_loc, dtypes=np.float)</span>
 
 <span class="sd">        We can also add multiple properties at the same time::</span>
 
@@ -482,17 +482,17 @@
 <span class="sd">                ...</span>
 <span class="sd">                return trg_loc, trg_dist</span>
 
-<span class="sd">            cm.add_properties([&#39;syn_location&#39;, &#39;syn_distance&#39;],</span>
+<span class="sd">            cm.add_properties(['syn_location', 'syn_distance'],</span>
 <span class="sd">                          rule=get_target_loc_and_dist,</span>
 <span class="sd">                          dtypes=[string, np.float])</span>
 
-<span class="sd">        Once NetworkBuilder.build() is called the &#39;connection_rule&#39; will be called.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        Once NetworkBuilder.build() is called the 'connection_rule' will be called.</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="ConnectionMap.ParamsRules">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.ParamsRules">[docs]</a>
     <span class="k">class</span><span class="w"> </span><span class="nc">ParamsRules</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A subclass to store indvidiual synpatic parameter rules&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A subclass to store indvidiual synpatic parameter rules"""</span>
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_names</span> <span class="o">=</span> <span class="n">names</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rule</span> <span class="o">=</span> <span class="n">rule</span>
@@ -525,7 +525,7 @@
 </div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connector_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connector</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connector_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">'one_to_one'</span><span class="p">,</span>
                  <span class="n">edge_type_properties</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span> <span class="o">=</span> <span class="n">sources</span>  <span class="c1"># source nodes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span> <span class="o">=</span> <span class="n">targets</span>  <span class="c1"># target nodes</span>
@@ -576,12 +576,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: properly implement edge_type</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">property_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">'nsyns'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span>
 
@@ -601,7 +601,7 @@
 <div class="viewcode-block" id="ConnectionMap.add_properties">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rule_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a synaptic property for an individual edge.</span>
+<span class="w">        </span><span class="sd">"""Add a synaptic property for an individual edge.</span>
 
 <span class="sd">        Typically this requires a custom rule that will be used for every source/target pair of nodes and returns</span>
 <span class="sd">        a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build()::</span>
@@ -610,7 +610,7 @@
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight</span>
 
-<span class="sd">            cm.add_properties(&#39;syn_weight&#39;, rule=syn_weight_by_loc, dtypes=np.float)</span>
+<span class="sd">            cm.add_properties('syn_weight', rule=syn_weight_by_loc, dtypes=np.float)</span>
 
 <span class="sd">        If the connection_rule function requires additional parameters use the rule_params option::</span>
 
@@ -618,9 +618,9 @@
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight</span>
 
-<span class="sd">            cm.add_properties(&#39;syn_weight&#39;,</span>
+<span class="sd">            cm.add_properties('syn_weight',</span>
 <span class="sd">                              rule=syn_weight_by_loc,</span>
-<span class="sd">                              rule_params={&#39;min_weigth&#39;:1.0e-7, &#39;max_weight&#39;: 5.0e-6},</span>
+<span class="sd">                              rule_params={'min_weigth':1.0e-7, 'max_weight': 5.0e-6},</span>
 <span class="sd">                              dtypes=np.float)</span>
 
 <span class="sd">        You may also have the rule define multiple connection parameters at one time::</span>
@@ -629,9 +629,9 @@
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight, syn_location, delay</span>
 
-<span class="sd">            cm.add_properties([&#39;syn_weight&#39;, &#39;syn_loc&#39;, &#39;delay&#39;],</span>
+<span class="sd">            cm.add_properties(['syn_weight', 'syn_loc', 'delay'],</span>
 <span class="sd">                              rule=syn_weight_by_loc,</span>
-<span class="sd">                              rule_params={&#39;min_weigth&#39;:1.0e-7, &#39;max_weight&#39;: 5.0e-6},</span>
+<span class="sd">                              rule_params={'min_weigth':1.0e-7, 'max_weight': 5.0e-6},</span>
 <span class="sd">                              dtypes=[np.float, str, np.float])</span>
 
 <span class="sd">        :param names: list, or single string, of the property</span>
@@ -639,9 +639,9 @@
 <span class="sd">        :param values: A list of values to use for property</span>
 <span class="sd">        :param rule_params: when rule is a function, rule_params will be passed into function when called.</span>
 <span class="sd">        :param dtypes: expected property type</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">rule</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Please specify either the &quot;rule&quot; or &quot;values&quot; parameters&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Please specify either the "rule" or "values" parameters'</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">rule</span> <span class="o">=</span> <span class="n">values</span>
@@ -657,9 +657,9 @@
 <div class="viewcode-block" id="ConnectionMap.connection_itr">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.connection_itr">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">connection_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,</span>
+<span class="w">        </span><span class="sd">"""Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,</span>
 <span class="sd">        and create a connection rule based on the connector.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">conr</span> <span class="o">=</span> <span class="n">connector</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connector</span><span class="p">,</span> <span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connector_params</span> <span class="ow">or</span> <span class="p">{}))</span>
         <span class="n">itr</span> <span class="o">=</span> <span class="n">iterator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">conr</span><span class="p">,</span> <span class="o">**</span><span class="p">({}))</span>
         <span class="k">return</span> <span class="n">itr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">conr</span><span class="p">)</span></div>

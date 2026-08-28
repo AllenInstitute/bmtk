@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -383,7 +383,11 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">DPointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </details></li>
@@ -471,6 +475,26 @@ with gpu run the following in your environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install tensorflow
 </pre></div>
 </div>
+<section id="optional-fused-cuda-operator">
+<h3>Optional fused CUDA operator<a class="headerlink" href="#optional-fused-cuda-operator" title="Link to this heading">#</a></h3>
+<p>DPointNet can use a fused CUDA operator for recurrent and input synaptic currents. This optional operator
+requires an NVIDIA CUDA toolkit with <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>, a C++17 compiler, and a GPU-enabled TensorFlow installation.
+Build it from the same environment in which BMTK and TensorFlow are installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.simulator.dpointnet.custom_ops.build
+</pre></div>
+</div>
+<p>This module form ensures that the build uses the active Python environment and does not require a console script on
+<code class="docutils literal notranslate"><span class="pre">PATH</span></code>. Installing this version of BMTK also creates <code class="docutils literal notranslate"><span class="pre">bmtk-build-dpointnet-cuda</span></code> in the environment’s executable
+directory; the shortcut is available when that environment is activated.</p>
+<p>The build targets compute capabilities 7.0, 7.5, 8.0, 8.6, 8.9, and 9.0 by default, with PTX for the
+highest target. To build for a different set of architectures, provide space-separated architecture numbers:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ DPOINTNET_CUDA_ARCHS="80 86 90" python -m bmtk.simulator.dpointnet.custom_ops.build
+</pre></div>
+</div>
+<p>The operator requires exactly one visible GPU. Set <code class="docutils literal notranslate"><span class="pre">use_fused_cuda</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> in <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code> to
+require the operator, or to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> to use it when available and otherwise fall back to TensorFlow. The
+default is <code class="docutils literal notranslate"><span class="pre">false</span></code>. Rebuild the operator after changing TensorFlow or CUDA installations.</p>
+</section>
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
@@ -505,16 +529,16 @@ required to build and run the model. Some of these parameters may be changed lat
 <label class="sd-tab-label" for="sd-tab-item-2">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;target_simulator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DPointNet&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"target_simulator"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DPointNet"</span><span class="p">,</span>
 
-<span class="w">  </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;seq_len&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;default_seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;batch_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;train_recurrent_weights&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;dtype&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;float32&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;single_gpu_strategy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;one_device&quot;</span>
+<span class="w">  </span><span class="nt">"run"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"seq_len"</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dt"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"default_seed"</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"batch_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"train_recurrent_weights"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dtype"</span><span class="p">:</span><span class="w"> </span><span class="s2">"float32"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"single_gpu_strategy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"one_device"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -530,9 +554,9 @@ Python</label><div class="sd-tab-content docutils">
     <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">default_seed</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="s2">"float32"</span><span class="p">,</span>
     <span class="n">train_recurrent_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">single_gpu_strategy</span><span class="o">=</span><span class="s2">&quot;one_device&quot;</span><span class="p">,</span>
+    <span class="n">single_gpu_strategy</span><span class="o">=</span><span class="s2">"one_device"</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -582,11 +606,11 @@ the <a class="reference external" href="https://brain-map.org/our-research/compu
 <label class="sd-tab-label" for="sd-tab-item-4">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;rnn_cell_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;cell_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;GLIF3Cell&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;&lt;parameter_1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;&lt;parameter_2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;&lt;parameter_3&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">3</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"rnn_cell_params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"cell_model"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GLIF3Cell"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"&lt;parameter_1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"&lt;parameter_2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"&lt;parameter_3&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">3</span><span class="err">&gt;</span><span class="p">,</span>
 <span class="w">    </span><span class="err">...</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -672,6 +696,10 @@ GLIF3Cell</label><div class="sd-tab-content docutils">
 <td></td>
 <td><p class="sd-card-text">&lt;None&gt;</p></td>
 </tr>
+<tr class="row-even"><td><p class="sd-card-text">use_fused_cuda</p></td>
+<td><p class="sd-card-text">Use the optional fused CUDA synaptic-current operator. <code class="docutils literal notranslate"><span class="pre">True</span></code> requires it; <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> falls back to TensorFlow when unavailable.</p></td>
+<td><p class="sd-card-text">False</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -690,25 +718,25 @@ or from other labs.</p>
 <input checked="checked" id="sd-tab-item-7" name="sd-tab-set-4" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-7">
 SONATA</label><div class="sd-tab-content docutils">
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/glifs_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/glifs_node_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/glifs_nodes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/glifs_node_types.csv"</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/virts_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/virts_node_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/virts_nodes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/virts_node_types.csv"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/glifs_glifs_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/glifs_glifs_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/glifs_glifs_edges.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/glifs_glifs_edge_types.csv"</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/virts_glifs_edges.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/virts_glifs_edge_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"edges_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/virts_glifs_edges.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"edge_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/virts_glifs_edge_types.csv"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
@@ -751,21 +779,21 @@ Python</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" for="sd-tab-item-9">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;&lt;INPUT_NAME1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;INPUT_MOD1&gt;&quot;</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;virtual_pop_1&gt;&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;&lt;module_params_1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;&lt;module_params_2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"&lt;INPUT_NAME1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="nt">"&lt;INPUT_MOD1&gt;"</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;virtual_pop_1&gt;"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"&lt;module_params_1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"&lt;module_params_2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
 <span class="w">      </span><span class="err">...</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;&lt;INPUT_NAME2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;&lt;INPUT_MOD1&gt;&quot;</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;virtual_pop_1&gt;&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;&lt;module_params_1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;&lt;module_params_2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"&lt;INPUT_NAME2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="nt">"&lt;INPUT_MOD1&gt;"</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;virtual_pop_1&gt;"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"&lt;module_params_1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"&lt;module_params_2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
 <span class="w">      </span><span class="err">...</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -776,9 +804,7 @@ SONATA</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
 <label class="sd-tab-label" for="sd-tab-item-10">
 Python</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
+<p>TBA</p>
 </div>
 </div>
 <section id="spike-inputs-modules-and-options">
@@ -830,19 +856,19 @@ Python</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" for="sd-tab-item-11">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;initial_states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;&lt;NAME1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;INIT_MOD1&gt;&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;run_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;&lt;module_params_1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;&lt;module_params_2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"initial_states"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"&lt;NAME1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;INIT_MOD1&gt;"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"run_on"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"&lt;module_params_1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"&lt;module_params_2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
 <span class="w">            </span><span class="err">...</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;&lt;NAME2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;INIT_MOD2&gt;&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;run_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;&lt;module_params_1&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;&lt;module_params_2&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"&lt;NAME2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&lt;INIT_MOD2&gt;"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"run_on"</span><span class="p">:</span><span class="w"> </span><span class="s2">"epoch"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"&lt;module_params_1&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">1</span><span class="err">&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"&lt;module_params_2&gt;"</span><span class="p">:</span><span class="w"> </span><span class="err">&lt;value_</span><span class="mi">2</span><span class="err">&gt;</span><span class="p">,</span>
 <span class="w">            </span><span class="err">...</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">   </span><span class="p">}</span>
@@ -901,16 +927,16 @@ Python</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" for="sd-tab-item-13">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;callbacks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Callbacks&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;starting_epoch&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;callbacks_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;training_callbacks_intro_l4_overall_distribution&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;verbose&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;on_step&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;epoch_store_weights&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;latest&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;epoch_cache_weights&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;sonata_output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;network.trained_weights.best&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;losses_table_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;losses.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;performance_table_csv&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;performance.csv&quot;</span>
+<span class="w">  </span><span class="nt">"callbacks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Callbacks"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"starting_epoch"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"callbacks_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"training_callbacks_intro_l4_overall_distribution"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"verbose"</span><span class="p">:</span><span class="w"> </span><span class="s2">"on_step"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"epoch_store_weights"</span><span class="p">:</span><span class="w"> </span><span class="s2">"latest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"epoch_cache_weights"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"sonata_output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"network.trained_weights.best"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"losses_table_csv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"losses.csv"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"performance_table_csv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"performance.csv"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1044,12 +1070,12 @@ Python</label><div class="sd-tab-content docutils">
 <label class="sd-tab-label" for="sd-tab-item-15">
 SONATA</label><div class="sd-tab-content docutils">
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$OUTPUT_DIR/log.txt&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;log_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$OUTPUT_DIR/spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;overwrite_results&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$OUTPUT_DIR"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$OUTPUT_DIR/log.txt"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"INFO"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$OUTPUT_DIR/spikes.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"overwrite_results"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1090,7 +1116,10 @@ Python</label><div class="sd-tab-content docutils">
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-fused-cuda-operator">Optional fused CUDA operator</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dpointnet-initialization">DPointNet Initialization</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-a-simulation-environment-workspace">Setting up a simulation environment/workspace</a></li>

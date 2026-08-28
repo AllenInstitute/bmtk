@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -446,42 +446,42 @@
 <div class="viewcode-block" id="SpikeTrainsAPI.add_spike">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a single spike</span>
+<span class="w">        </span><span class="sd">"""Add a single spike</span>
 
 <span class="sd">        :param node_id: integer, id of node/cell that spike belongs too.</span>
 <span class="sd">        :param timestamp: double, time that spike occurred.</span>
 <span class="sd">        :param population: string, name of population belong to spike. If none will try to use the default population.</span>
 <span class="sd">        :param kwargs: optional arguments.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.add_spikes">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spikes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a sequence of spikes.</span>
+<span class="w">        </span><span class="sd">"""Add a sequence of spikes.</span>
 
 <span class="sd">        :param node_ids: list of ints or int. If a list is used, it should be the same lenght as the corresponding</span>
 <span class="sd">            timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</span>
 <span class="sd">        :param timestamps: A list of doubles</span>
 <span class="sd">        :param population: The population to which the node(s) belong too</span>
 <span class="sd">        :param kwargs: optional arguments.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.import_spikes">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.import_spikes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">import_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Import spikes from another spike-trains or other object. Highly dependent on stragey&quot;&quot;&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;method import_spikes has not been implemented for this type of strategy.&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""Import spikes from another spike-trains or other object. Highly dependent on stragey"""</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'method import_spikes has not been implemented for this type of strategy.'</span><span class="p">)</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.flush">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.flush">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Used by some underlying strategies to finish saving spikes.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Used by some underlying strategies to finish saving spikes."""</span>
         <span class="k">pass</span></div>
 
 
@@ -493,29 +493,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get all available spike population names</span>
+<span class="w">        </span><span class="sd">"""Get all available spike population names</span>
 
 <span class="sd">        :return: A list of strings</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SpikeTrainsAPI.units">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.units">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the units used in the timestamps.</span>
+<span class="w">        </span><span class="sd">"""Returns the units used in the timestamps.</span>
 
 <span class="sd">        :return: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># for backwards comptability assume everything is in milliseconds unless overwritten</span>
         <span class="c1"># TODO: Use an enum/struct to pre-define the avilable units.</span>
-        <span class="k">return</span> <span class="s1">&#39;ms&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'ms'</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.set_units">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.set_units">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the units associated with a population timestamps (ms, seconds)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Set the units associated with a population timestamps (ms, seconds)"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
@@ -528,29 +528,29 @@
 <div class="viewcode-block" id="SpikeTrainsAPI.node_ids">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.node_ids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; Returns a list of (node-ids, population_name).</span>
+<span class="w">        </span><span class="sd">""" Returns a list of (node-ids, population_name).</span>
 
 <span class="sd">        :param population: Name of population, if not set uses the default_population</span>
 <span class="sd">        :return: A list of node-ids (integers).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.n_spikes">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.n_spikes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of spikes for the given population.</span>
+<span class="w">        </span><span class="sd">"""Get the number of spikes for the given population.</span>
 
 <span class="sd">        :param population: population name. If none None will use the default population (when possible).</span>
 <span class="sd">        :return: unsigned integer, number of spikes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.get_times">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.get_times">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of spike-times for a given node.</span>
+<span class="w">        </span><span class="sd">"""Returns a list of spike-times for a given node.</span>
 
 <span class="sd">        :param node_id: The id of the node</span>
 <span class="sd">        :param population: Name of the node-population which the node belongs to. By default will try to use the</span>
@@ -558,31 +558,31 @@
 <span class="sd">        :param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</span>
 <span class="sd">        :param kwargs: optional arguments.</span>
 <span class="sd">        :return: list of spike times [float]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.to_dataframe">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</span>
+<span class="w">        </span><span class="sd">"""Returns a pandas dataframe of the node_ids, populations, and timestamps of the given spikes</span>
 
 <span class="sd">        :param populations: string or list of strings, used to only return the dataframes associated with a given</span>
 <span class="sd">            node population. By default (populations=None) all populations are included</span>
-<span class="sd">        :param sort_order: &#39;by_time&#39;, &#39;by_id&#39;, &#39;none&#39; or None. Returns the dataframe sorted within their population.</span>
+<span class="sd">        :param sort_order: 'by_time', 'by_id', 'none' or None. Returns the dataframe sorted within their population.</span>
 <span class="sd">            By default will not sort and return spikes as they are saved</span>
-<span class="sd">        :param with_population_col: bool, set to False to not return the &#39;population&#39; column (useful for really large</span>
+<span class="sd">        :param with_population_col: bool, set to False to not return the 'population' column (useful for really large</span>
 <span class="sd">            dataframs with only one population). True by default</span>
 <span class="sd">        :param kwargs:</span>
-<span class="sd">        :return: A pandas dataframe, unindex, with columns &#39;node_ids&#39;, &#39;timestamps&#39;, and &#39;population&#39; (optional)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        :return: A pandas dataframe, unindex, with columns 'node_ids', 'timestamps', and 'population' (optional)</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.spikes">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling</span>
+<span class="w">        </span><span class="sd">"""Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling</span>
 <span class="sd">        to_dataframe(), but not require as much memory. To use the generator::</span>
 
 <span class="sd">            for node_id, population, timestamp in spike_trains.spikes():</span>
@@ -594,60 +594,60 @@
 <span class="sd">        :param sort_order:</span>
 <span class="sd">        :param kwargs:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.to_sonata">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_sonata">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write current spike-trains to a sonata hdf5 file</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">'gzip'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Write current spike-trains to a sonata hdf5 file</span>
 
 <span class="sd">        :param path:</span>
 <span class="sd">        :param mode:</span>
 <span class="sd">        :param sort_order:</span>
-<span class="sd">        :param compression: Compression algorithm for h5py&#39;s dataset_create. &#39;gzip&#39; is default</span>
+<span class="sd">        :param compression: Compression algorithm for h5py's dataset_create. 'gzip' is default</span>
 <span class="sd">                            Only applied to h5 spike data.</span>
 <span class="sd">        :param kwargs:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">write_sonata</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">spiketrain_reader</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.to_csv">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_csv">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write spikes to csv file</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Write spikes to csv file</span>
 
 <span class="sd">        :param path:</span>
 <span class="sd">        :param mode:</span>
 <span class="sd">        :param sort_order:</span>
 <span class="sd">        :param kwargs:</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">write_csv</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">spiketrain_reader</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">sort_orders</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.to_nwb">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_nwb">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">write_nwb</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">spiketrain_reader</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.merge">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.merge">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Import Another SpikesTrain object into current file, always in-place.</span>
+<span class="w">        </span><span class="sd">"""Import Another SpikesTrain object into current file, always in-place.</span>
 
 <span class="sd">        :param other: Another SpikeTrainsAPI object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SpikeTrainsAPI.is_equal">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.is_equal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compares two SpikeTrains instances to see if they have the same spikes (exlcuding order or their method of</span>
+<span class="w">        </span><span class="sd">"""Compares two SpikeTrains instances to see if they have the same spikes (exlcuding order or their method of</span>
 <span class="sd">        storage). Use this method instead of == when one of the spike-train instances has extra populations or</span>
 <span class="sd">        timestamps are stored at a different precision.</span>
 
@@ -657,14 +657,14 @@
 <span class="sd">        :param err: precision on which two timestamps are compared.</span>
 <span class="sd">        :param time_window:</span>
 <span class="sd">        :return: True if the two spike-trains have the same node-ids/timestamps (given the conditions).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Both must contain the same populations</span>
             <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span>
             <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Comparing only a subset of the node populations, make sure both files contains them (or both files don&#39;t</span>
+            <span class="c1"># Comparing only a subset of the node populations, make sure both files contains them (or both files don't</span>
             <span class="c1"># contain the populations</span>
             <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span> <span class="k">else</span> <span class="n">populations</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
@@ -673,8 +673,8 @@
 
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># check that each SpikeTrains contain the same number and ids of nodes so we don&#39;t have to iterate</span>
-                <span class="c1"># through each spike. This won&#39;t always work if the user limits the time-window.</span>
+                <span class="c1"># check that each SpikeTrains contain the same number and ids of nodes so we don't have to iterate</span>
+                <span class="c1"># through each spike. This won't always work if the user limits the time-window.</span>
                 <span class="n">self_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="p">)])</span>
                 <span class="n">other_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="p">)])</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">self_nodes</span> <span class="o">==</span> <span class="n">other_nodes</span><span class="p">):</span>
@@ -684,7 +684,7 @@
                 <span class="n">self_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">p</span><span class="p">)])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">p</span><span class="p">)])</span>
 
             <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">self_nodes</span><span class="p">:</span>
-                <span class="c1"># Make sure it&#39;s sorted as get_times doesn&#39;t guarentee order</span>
+                <span class="c1"># Make sure it's sorted as get_times doesn't guarentee order</span>
                 <span class="n">self_ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">))</span>
                 <span class="n">other_ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">self_ts</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other_ts</span><span class="p">):</span>
@@ -699,11 +699,11 @@
 <div class="viewcode-block" id="SpikeTrainsAPI.is_subset">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.is_subset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">err</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks to see if this given set of spike-trains is a subset of another, which means that every</span>
+<span class="w">        </span><span class="sd">"""Checks to see if this given set of spike-trains is a subset of another, which means that every</span>
 <span class="sd">        (population, node_id, timestamp) that exists in self also exists in other.</span>
 
 <span class="sd">        WARNING: It may be possible, possible due to precision, that a node has two spikes at the same time. Right</span>
-<span class="sd">        now this isn&#39;t accounted for, and if self&#39;s node 0 has two spikes at 100.00 ms it except other.node[0] has</span>
+<span class="sd">        now this isn't accounted for, and if self's node 0 has two spikes at 100.00 ms it except other.node[0] has</span>
 <span class="sd">        two spikes at 100.00 ms as well.</span>
 <span class="sd">        # TODO: Account for non-uniqueness in on the timestamps</span>
 
@@ -711,7 +711,7 @@
 <span class="sd">        :param err: precision for comparing two timestamps</span>
 <span class="sd">        :param strict: bool, if True makes sure that self is a strict subset of other. default False</span>
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">is_equals</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">self_n_spikes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">pop</span><span class="p">)</span>
@@ -737,7 +737,7 @@
             <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">s_node_ids</span><span class="p">:</span>
                 <span class="n">other_ts_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop</span><span class="p">))</span>
                 <span class="n">self_ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop</span><span class="p">)</span>
-                <span class="n">indxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">other_ts_sorted</span><span class="p">,</span> <span class="n">self_ts</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+                <span class="n">indxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">other_ts_sorted</span><span class="p">,</span> <span class="n">self_ts</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">'left'</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">indxs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">False</span>
@@ -780,7 +780,7 @@
 <div class="viewcode-block" id="SpikeTrainsReadOnlyAPI">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpikeTrainsReadOnlyAPI</span><span class="p">(</span><span class="n">SpikeTrainsAPI</span><span class="p">):</span>
-    <span class="n">warning_msg</span> <span class="o">=</span> <span class="s1">&#39;read-only SpikeTrains, trying to add or import spikes will be ignored.&#39;</span>
+    <span class="n">warning_msg</span> <span class="o">=</span> <span class="s1">'read-only SpikeTrains, trying to add or import spikes will be ignored.'</span>
 
 <div class="viewcode-block" id="SpikeTrainsReadOnlyAPI.add_spike">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsReadOnlyAPI.add_spike">[docs]</a>

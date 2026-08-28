@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -514,11 +514,11 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 </section>
 <section id="Building-the-Network">
 <h2>Building the Network<a class="headerlink" href="#Building-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="f42dd17437854561a849124bdd18e4e3" src="../_images/bmtk_workflow_builder.png" /></p>
+<p><img alt="ad30ec945ab8413188b60c40dd7f05ef" src="../_images/bmtk_workflow_builder.png" /></p>
 <p>Before we can start simulation we must first build (or receive from a third party) the network model files. To create our toy network of 300 cells in BMTK we will use the <em>builder</em> component, which allows us to build heterogeneous, multi-graph networks and save them in the SONATA format.</p>
 <section id="Building-the-cells">
 <h3>Building the cells<a class="headerlink" href="#Building-the-cells" title="Link to this heading">#</a></h3>
-<p><img alt="9739e064b7d04b669d35697676605016" src="../_images/builder_add_nodes.png" /></p>
+<p><img alt="6323b2de6b0f4a46b790ea7935f26bab" src="../_images/builder_add_nodes.png" /></p>
 <p>The first step is figuring out different cell types and parameters we want to use in our network. When we know that we can begin building our network model first by initializing the network using <em>bmtk.builder.networks.NetworkBuilder</em> plus calls to <em>add_nodes()</em> method</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -528,19 +528,19 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="c1"># intialize a new population of cells called &quot;V1&quot;</span>
-<span class="n">v1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="c1"># intialize a new population of cells called "V1"</span>
+<span class="n">v1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'V1'</span><span class="p">)</span>
 
-<span class="c1"># Add a population of 80 &quot;Scnn1a&quot; type nodes</span>
+<span class="c1"># Add a population of 80 "Scnn1a" type nodes</span>
 <span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
 
     <span class="c1"># Reserved SONATA keywords used during simulation</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Scnn1a_473845048_m.swc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
 
     <span class="c1"># The x, y, z locations of each cell in a column</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
@@ -554,9 +554,9 @@ $<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </spa
 
     <span class="c1"># Optional parameters</span>
     <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
-    <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span>
-    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -574,12 +574,12 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="c1"># Rorb excitatory cells</span>
-    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Rorb&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;473863510_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Rorb_325404214_m.swc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Rorb'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'473863510_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Rorb_325404214_m.swc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
     <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
@@ -592,12 +592,12 @@ rotation.</p>
 
 <span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="c1"># Nr5a1 excitatory cells</span>
-    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Nr5a1&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;473863035_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Nr5a1_471087815_m.swc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Nr5a1'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'473863035_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Nr5a1_471087815_m.swc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
     <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">),</span>
@@ -608,13 +608,13 @@ rotation.</p>
 <span class="p">)</span>
 
 <span class="n">v1</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
-    <span class="c1"># Parvalbuim inhibitory cells, note these don&#39;t have a tuning angle and ei=i</span>
-    <span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV1&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472912177_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Pvalb_470522102_m.swc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="c1"># Parvalbuim inhibitory cells, note these don't have a tuning angle and ei=i</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'PV1'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'i'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472912177_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Pvalb_470522102_m.swc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">400.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
     <span class="n">z</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span>
@@ -628,7 +628,7 @@ rotation.</p>
 </section>
 <section id="Creating-the-connections">
 <h3>Creating the connections<a class="headerlink" href="#Creating-the-connections" title="Link to this heading">#</a></h3>
-<p><img alt="d987d3e952bf40f7b64e3fba6315c729" src="../_images/builder_add_edges.png" /></p>
+<p><img alt="1c2eb27b01e149b1829ec3ad2cb1cee9" src="../_images/builder_add_edges.png" /></p>
 <p>Now that we have our cells/nodes, we can go ahead and create the synapse/connectivity matrix using the <strong>add_edges</strong> method. We will want to call this method multiple times to add different connection types with different properties and rules. For each connection type we must select what subpopulation of cells to use for the source (pre-synaptic) and target (post-synaptic) cells. We can select our cells using any combination of attributes</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -636,35 +636,35 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="c1">## Exc --&gt; Inh type connections.</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
-    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span>
 
-    <span class="c1"># Each source (ei=&#39;e&#39;) cell will connect once to every target (e) cell</span>
+    <span class="c1"># Each source (ei='e') cell will connect once to every target (e) cell</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 
     <span class="c1"># SONATA keywords</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0006</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToInh.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
 
     <span class="c1"># Special BMTK attributes specifying where to set target synape location</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'somatic'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e+20</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="c1">## Inh --&gt; Exc type connections.</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
-    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span>
 
     <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'InhToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'somatic'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">]</span>
 <span class="p">)</span>
 </pre></div>
@@ -692,23 +692,23 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ignore_autapses</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="c1"># No synapses if source == target, otherwise randomize</span>
-    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]:</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
 <span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="c1">## Inh --&gt; Inh type connections.</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
-    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span>
 
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">ignore_autapses</span><span class="p">,</span>
 
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.00015</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToInh.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'InhToInh.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'somatic'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e+20</span><span class="p">]</span>
 <span class="p">)</span>
 <br/></pre></div>
@@ -730,32 +730,32 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tuning_angle</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">max_syns</span><span class="p">):</span>
     <span class="c1"># ignore autoapses</span>
-    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]:</span>
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="c1"># num of synapses is higher the closer the tuning_angles</span>
-    <span class="n">src_tuning</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
-    <span class="n">trg_tuning</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
+    <span class="n">src_tuning</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'tuning_angle'</span><span class="p">]</span>
+    <span class="n">trg_tuning</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'tuning_angle'</span><span class="p">]</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">src_tuning</span> <span class="o">-</span> <span class="n">trg_tuning</span> <span class="o">+</span> <span class="mi">180</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span> <span class="o">-</span> <span class="mi">180</span><span class="p">)</span>
     <span class="n">p_dist</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">dist</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">))</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">max_syns</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p_dist</span><span class="p">)</span>
 
 <span class="n">v1</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
-    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span>
+    <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span>
 
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">tuning_angle</span><span class="p">,</span>
-    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_syns&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="c1"># pass in options to tuning_angle function</span>
+    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'max_syns'</span><span class="p">:</span> <span class="mi">5</span><span class="p">},</span> <span class="c1"># pass in options to tuning_angle function</span>
 
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">3.0e-05</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
 
     <span class="c1"># Will allow us to use our own custom functions to set syn_weight during simulation</span>
-    <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;set_syn_weight&#39;</span>
+    <span class="n">weight_function</span><span class="o">=</span><span class="s1">'set_syn_weight'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -773,14 +773,14 @@ rotation.</p>
 </section>
 <section id="Building-the-network">
 <h3>Building the network<a class="headerlink" href="#Building-the-network" title="Link to this heading">#</a></h3>
-<p><img alt="8f1b16a861344ae4acb78de7f25febe9" src="../_images/builder_complete_network.png" /></p>
+<p><img alt="9555700f200c4956a2488298a2bec4c3" src="../_images/builder_complete_network.png" /></p>
 <p>Finally we want to build our network and save the network files in SONATA format into the <em>network/</em> directory. BMTK will intuit the names of the files.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -792,13 +792,13 @@ rotation.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;lgn&#39;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'LGN'</span><span class="p">)</span>  <span class="c1"># Initialize network called 'lgn'</span>
 
 <span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:sOFF_TF8&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;sOFF_TF8.json&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:sOFF_TF8'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'sOFF_TF8.json'</span><span class="p">,</span>
 
     <span class="c1"># Special keyword used to determine the location and size of unit in</span>
     <span class="c1"># the receptive field</span>
@@ -809,9 +809,9 @@ rotation.</p>
 
 <span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:sON_TF8&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;sON_TF8.json&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:sON_TF8'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'sON_TF8.json'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
     <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span>
@@ -819,32 +819,32 @@ rotation.</p>
 
 <span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="c1"># Select all LGN cells as the sources</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
 
     <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0003</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;LGN_ExcToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'LGN_ExcToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">,</span> <span class="s1">'somatic'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="c1"># Select all LGN cells as the sources</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'i'</span><span class="p">),</span> <span class="c1"># select V1 exc cells are the target</span>
 
     <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;LGN_ExcToInh.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">,</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'LGN_ExcToInh.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1e+20</span><span class="p">]</span>
 <span class="p">)</span>
 
 <span class="n">lgn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">lgn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -855,7 +855,7 @@ rotation.</p>
 </section>
 <section id="Simulating-the-Network">
 <h2>Simulating the Network<a class="headerlink" href="#Simulating-the-Network" title="Link to this heading">#</a></h2>
-<p><img alt="c2f9977ca8ec499cb473fefb750a3c6d" src="../_images/bmtk_workflow_simulator.png" /></p>
+<p><img alt="760513177d1249a39e5e1e0868591b55" src="../_images/bmtk_workflow_simulator.png" /></p>
 <p>Now that we have built the SONATA network models files (or recieved the files from another source), we can go ahead and setup a simulation to run. To simulate the multi-compartment cell models we will use the BioNet component of the BMTK - which uses the <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON</a> simulator libraries for simulating our network.</p>
 <p>Before we can do that there are still a few things that need to be taken care of, including setting up run-time parameters, choosing the stimulus, and deciding what to record.</p>
 <section id="Simulation-Directory-Structure">
@@ -893,14 +893,14 @@ rotation.</p>
 <h4>“reports”<a class="headerlink" href="#%22reports%22" title="Link to this heading">#</a></h4>
 <p>By default BMTK will record the V1 cell spikes into a file specified under <strong>outputs/spikes_file</strong>. For these types of models we can also record other parameters like membrane potential, calcium concentration, or extracellular electrical fields by adding to the “reports” section of the configuration file.</p>
 <p>For example the following can be used to record the soma membrane potential traces for our Scnn1a cells and save them in <em>output/membrane_potential.h5</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;pop_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Scnn1a&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"membrane_potential"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"pop_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Scnn1a"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">  </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"membrane_report"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -916,24 +916,24 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
-<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">'LGN'</span><span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
     <span class="n">firing_rate</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>    <span class="c1"># We can also pass in a nonhomoegenous function/array</span>
     <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>    <span class="c1"># Firing starts at 0 s up to 2 seconds</span>
 <span class="p">)</span>
 
-<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;inputs/lgn_spikes.poisson.h5&#39;</span><span class="p">)</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/lgn_spikes.poisson.csv&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">'inputs/lgn_spikes.poisson.h5'</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'inputs/lgn_spikes.poisson.csv'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>and update the “inputs” section</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/lgn_spikes.poisson.h5&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./inputs/lgn_spikes.poisson.h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -956,7 +956,7 @@ rotation.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.bionet.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -992,7 +992,7 @@ rotation.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
 <span class="c1"># Plot the spike trains raster</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1010,7 +1010,7 @@ rotation.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
 <span class="c1"># Plot the membrane potential trace, the blue represents the mean trace of all cells (in grey)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1024,18 +1024,18 @@ rotation.</p>
 <section id="Cell-perturbations">
 <h4>Cell perturbations<a class="headerlink" href="#Cell-perturbations" title="Link to this heading">#</a></h4>
 <p>A usefull tool in network neuroscience is the ability to stimulate or supress a one or more neurons in a network, either using optogenetic tools or current clamps. To simulate this effect in BMTK we can use a current clamp on multiple neurons by adding the following to the “inputs” section of the configuration file:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;pop_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Nr5a1&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L4&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"inh_perturbation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"pop_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Nr5a1"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"L4"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1054,7 +1054,7 @@ rotation.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.bionet.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -1086,7 +1086,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1102,23 +1102,23 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <h4>Recording extracellular potential (ECP)<a class="headerlink" href="#Recording-extracellular-potential-(ECP)" title="Link to this heading">#</a></h4>
 <p>The configuration has been set-up to record spike-trains and the membrane potentials of a subset of cells. BioNet also includes the ability to record the extracelluar potential using a simulated electrode, which will allow us to find the ECP and even the local field potential.</p>
 <p>First we must add the following to the “inputs” section</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;ecp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"ecp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extracellular"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"v"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/devices/linear_electrode.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;electrode_channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span>
+<span class="w">    </span><span class="nt">"electrode_positions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./components/devices/linear_electrode.csv"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"file_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecp.h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"electrode_channels"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>The <em>devices/linear_electrode.csv</em> file is what we use to specify the electrode and all the recording channels. for this simulation the electrode will be placed through the center of the V1 column with recording channels at every 100 microns (the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> coordinates of the electrode should be in the same space as the cells).</p>
-<p><img alt="26b505bfe79547b68a3347640a9a5ac7" src="../_images/v1_neuropixel_probe.png" /></p>
+<p><img alt="27db320acefc4143a6bc6b6d535c3d2e" src="../_images/v1_neuropixel_probe.png" /></p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>channel</p></th>
@@ -1196,7 +1196,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.bionet.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -1229,7 +1229,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.ecp</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_ecp</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;ecp&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_ecp</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'ecp'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1266,11 +1266,11 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="c1"># fetch base-line syn_weight value stored in edge_types properties</span>
-    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s2">&quot;syn_weight&quot;</span><span class="p">]</span>
+    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s2">"syn_weight"</span><span class="p">]</span>
 
     <span class="c1"># get the coords for the pre/post-synaptic cell and calculate distance</span>
-    <span class="n">src_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]])</span>
-    <span class="n">trg_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">target</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]])</span>
+    <span class="n">src_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">source</span><span class="p">[</span><span class="s1">'x'</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">'y'</span><span class="p">],</span> <span class="n">source</span><span class="p">[</span><span class="s1">'z'</span><span class="p">]])</span>
+    <span class="n">trg_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">target</span><span class="p">[</span><span class="s1">'x'</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">'y'</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">'z'</span><span class="p">]])</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">src_coords</span> <span class="o">-</span> <span class="n">trg_coords</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dist</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
@@ -1282,7 +1282,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <span class="c1"># This will register our function so BMTK can find it</span>
 <span class="n">bionet</span><span class="o">.</span><span class="n">add_weight_function</span><span class="p">(</span><span class="n">set_syn_weight</span><span class="p">)</span>
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.bionet.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -1317,7 +1317,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1351,11 +1351,11 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="id2">
 <h4>“networks”<a class="headerlink" href="#id2" title="Link to this heading">#</a></h4>
 <p>We only want to run FilterNet against the LGN nodes (and FilterNet currently doesn’t support recurrent networks), which is reflected by the “network” sections in the configuration:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/LGN_nodes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/LGN_node_types.csv&quot;</span>
+<span class="w">      </span><span class="nt">"nodes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/LGN_nodes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_types_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$NETWORK_DIR/LGN_node_types.csv"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">}</span>
@@ -1365,10 +1365,10 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="id3">
 <h4>“output”<a class="headerlink" href="#id3" title="Link to this heading">#</a></h4>
 <p>Like in BioNet, FilterNet will produce a SONATA formated spike-trains file, but for our “LGN” nodes only. The location of the output is controlled by the “output” section of the configuration file:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;output&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn_spikes.flash.h5&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"log_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"log.txt"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./inputs"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lgn_spikes.flash.h5"</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -1377,16 +1377,16 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <h4>“inputs”<a class="headerlink" href="#id4" title="Link to this heading">#</a></h4>
 <p>The “inputs” section of the configuration file determines which type of stimulus we want to project onto LGN cells. Although we can use any user-created movie (described below), FilterNet also comes with options for easily creating special stimulus types that are common in experiments testing the visual system.</p>
 <p>One of the simplest types of stimuli is a full-field flash, a temporary bright (or dark) flash on the receptive field, which can be used to test simple ON/OFF cells found in the LGN. The following will create a bright flash between 500 and 1500 ms seconds</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"full_field_flash"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"full_field_flash"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"row_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"col_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"t_on"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"t_off"</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"max_intensity"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1410,7 +1410,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">filternet</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.filternet.json&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.filternet.json'</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
@@ -1437,7 +1437,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.filternet.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.filternet.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_template'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1451,12 +1451,12 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <section id="Using-the-results-for-the-V1-model">
 <h4>Using the results for the V1 model<a class="headerlink" href="#Using-the-results-for-the-V1-model" title="Link to this heading">#</a></h4>
 <p>To use the results to test our V1 model with more realistic stimulus, we just need to open <em>config.bionet.json</em> and edit the “inputs” section so the <strong>input_file</strong> is changed from <em>./inputs/lgn_spikes.h5</em> to <em>./lgn_results/lgn_spikes.flash.h5</em></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/spikes.flash.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./inputs/spikes.flash.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1468,7 +1468,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.bionet.flash.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.bionet.flash.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1485,12 +1485,12 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <h3>More Stimulus Types<a class="headerlink" href="#More-Stimulus-Types" title="Link to this heading">#</a></h3>
 <p>Besides Full-Field Flashes, FilterNet also can generate other types of pre-set visual stimuli. However for more advanced stimuli one will have to create their own movies.</p>
 <p>To do so first you will need to create a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.save.html">numpy npy or npz file</a> - eg a 3-dimensional array consisting of the frames x rows x columns of each pixel. FilterNet will gray-scale the images automatically. Once the movie has been saved, open up the FilerNet json configuration file and modify the “inputs” section accordingly (make sure frame_rate is correct).</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"full_field_flash"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"data_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/my/movie.npy"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>

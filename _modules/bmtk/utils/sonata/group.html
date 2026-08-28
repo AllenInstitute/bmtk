@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -444,11 +444,11 @@
 <div class="viewcode-block" id="Group">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Group</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container containig a node/edge population groups.</span>
+<span class="w">    </span><span class="sd">"""A container containig a node/edge population groups.</span>
 
 <span class="sd">    A node or edge population will have one or more groups, each having a unique identifier. Each group shared the same</span>
 <span class="sd">    columns and datatypes, thus each group is essentially a different model.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">h5_group</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">group_id</span><span class="p">)</span>
@@ -458,7 +458,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_types_index_col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_types_table</span><span class="o">.</span><span class="n">index_column_name</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span> <span class="o">=</span> <span class="n">ColumnProperty</span><span class="o">.</span><span class="n">from_h5</span><span class="p">(</span><span class="n">h5_group</span><span class="p">)</span>
-        <span class="c1"># TODO: combine group_columns, group_column_names and group_columns_map, doesn&#39;t need to be 3 structures</span>
+        <span class="c1"># TODO: combine group_columns, group_column_names and group_columns_map, doesn't need to be 3 structures</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_column_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_column_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_table</span> <span class="o">=</span> <span class="p">{</span><span class="n">prop</span><span class="p">:</span> <span class="n">h5_group</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span><span class="p">}</span>
@@ -470,7 +470,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of group members</span>
 
         <span class="c1"># For storing dynamics_params subgroup (if it exists)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_has_dynamics_params</span> <span class="o">=</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_dynamics_params</span> <span class="o">=</span> <span class="s1">'dynamics_params'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="s1">'dynamics_params'</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params_columns</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># An index of all the rows in parent population that map onto a member of this group</span>
@@ -531,7 +531,7 @@
         <span class="n">col_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">nrows</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_columns</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params_columns</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">col_counts</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># TODO: Would be nice to warn user which dataset have different size</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;properties in </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> have different ranks&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_id</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'properties in </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> have different ranks'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_id</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">col_counts</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nrows</span> <span class="o">=</span> <span class="n">col_counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
@@ -551,17 +551,17 @@
 <div class="viewcode-block" id="Group.get_values">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.group.Group.get_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">all_rows</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all values for a group property.</span>
+<span class="w">        </span><span class="sd">"""Returns all values for a group property.</span>
 
 <span class="sd">        Note that a row within a group may not have a corresponding node/edge, or they may have a different order or</span>
 <span class="sd">        multiple node/edges may share the same group row. Setting all_rows=False will return all the values as you</span>
-<span class="sd">        see if you iterated through all the population&#39;s items. Setting all_rows=True just returns the data as a</span>
+<span class="sd">        see if you iterated through all the population's items. Setting all_rows=True just returns the data as a</span>
 <span class="sd">        list as they appear in the dataset (will be faster).</span>
 
 <span class="sd">        :param property_name: Name of dataset property/column to fetch.</span>
 <span class="sd">        :param all_rows: Set false to return order in which they appear in population, false to return entire dataset</span>
 <span class="sd">        :return: A list of values for the given column name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -575,11 +575,11 @@
         <span class="k">return</span> <span class="n">group_props</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search that a column name exists in this group&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Search that a column name exists in this group"""</span>
         <span class="k">return</span> <span class="n">prop_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_column_names</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rep</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&lt;SONATA population subgroup: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="si">}</span><span class="s1">&gt;&#39;</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'&lt;SONATA population subgroup: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="si">}</span><span class="s1">&gt;'</span>
         <span class="k">return</span> <span class="n">rep</span></div>
 
 
@@ -589,7 +589,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NodeGroup</span><span class="p">(</span><span class="n">Group</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">h5_group</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">NodeGroup</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">group_id</span><span class="p">,</span> <span class="n">h5_group</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
-        <span class="c1"># Note: Don&#39;t call build_indicies right away so uses can call __getitem__ without having to load all the</span>
+        <span class="c1"># Note: Don't call build_indicies right away so uses can call __getitem__ without having to load all the</span>
         <span class="c1"># node_ids</span>
 
     <span class="nd">@property</span>
@@ -615,8 +615,8 @@
             <span class="k">return</span>
 
         <span class="c1"># TODO: Check for the special case where there is only one group</span>
-        <span class="c1"># TODO: If memory becomes an issue on very larget nodes (10&#39;s of millions) consider using a generator</span>
-        <span class="c1"># I&#39;ve pushed the actual building of the population-&gt;group indicies onto the parent population</span>
+        <span class="c1"># TODO: If memory becomes an issue on very larget nodes (10's of millions) consider using a generator</span>
+        <span class="c1"># I've pushed the actual building of the population-&gt;group indicies onto the parent population</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">group_indicies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span> <span class="n">build_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies_built</span> <span class="o">=</span> <span class="kc">True</span></div>
 
@@ -664,22 +664,22 @@
             <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">dimension</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">dimension</span><span class="p">):</span>
                     <span class="c1"># TODO: see if column name exists in the attributes</span>
-                    <span class="n">col_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="n">col_name</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
                     <span class="n">properties_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">][:,</span> <span class="n">i</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">properties_df</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
 
         <span class="c1"># Build a dataframe of parent node (node_id, gid, node_types, etc)</span>
         <span class="n">root_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type_ids</span><span class="p">)</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;node_group_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">igroup_indicies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies</span><span class="p">))</span>  <span class="c1"># used as pivot</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'node_type_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_type_ids</span><span class="p">)</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'node_group_index'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">igroup_indicies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies</span><span class="p">))</span>  <span class="c1"># used as pivot</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">has_gids</span><span class="p">:</span>
-            <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span>
+            <span class="n">root_df</span><span class="p">[</span><span class="s1">'gid'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span>
 
         <span class="c1"># merge group props df with parent df</span>
-        <span class="n">results_df</span> <span class="o">=</span> <span class="n">root_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">properties_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;node_group_index&#39;</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;node_group_index&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">results_df</span> <span class="o">=</span> <span class="n">root_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">properties_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">'node_group_index'</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">'node_group_index'</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Build node_types dataframe and merge</span>
         <span class="n">node_types_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">node_types_table</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
@@ -688,30 +688,30 @@
         <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">node_types_df</span><span class="p">[</span><span class="n">node_types_cols</span><span class="p">]</span>
 
         <span class="c1"># TODO: consider caching these results</span>
-        <span class="k">return</span> <span class="n">results_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">results_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">'node_type_id'</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NodeGroup.filter">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.group.NodeGroup.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">filter_props</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter all nodes in the group by key=value pairs.</span>
+<span class="w">        </span><span class="sd">"""Filter all nodes in the group by key=value pairs.</span>
 
 <span class="sd">        The filter specifications may apply to either node_type or group column properties. Currently at the moment</span>
 <span class="sd">        it only supports equivlency. An intersection (and operator) is done for every different filter pair. This will</span>
 <span class="sd">        produce a generator of all nodes matching the the filters.</span>
 
-<span class="sd">        for node in filter(pop_name=&#39;VIp&#39;, depth=10.0):</span>
-<span class="sd">           assert(node[&#39;pop_name&#39;] == &#39;VIp&#39; and node[&#39;depth&#39;] == 10.0)</span>
+<span class="sd">        for node in filter(pop_name='VIp', depth=10.0):</span>
+<span class="sd">           assert(node['pop_name'] == 'VIp' and node['depth'] == 10.0)</span>
 
 <span class="sd">        :param filter_props: keys and their values to filter nodes on.</span>
 <span class="sd">        :return: A generator that produces all valid nodes within the group with matching key==value pairs.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># TODO: Integrate this with NodeSet.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_indicies</span><span class="p">()</span>
         <span class="n">node_types_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">node_types_table</span>
         <span class="n">node_type_filter</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_types_table</span><span class="o">.</span><span class="n">node_type_ids</span><span class="p">)</span>  <span class="c1"># list of valid node_type_ids</span>
         <span class="n">type_filter</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">group_prop_filter</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># list of &#39;prop_name&#39;==prov_val for group datasets</span>
+        <span class="n">group_prop_filter</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># list of 'prop_name'==prov_val for group datasets</span>
         <span class="n">group_filter</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">node_id_filter</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -728,17 +728,17 @@
                 <span class="n">node_type_filter</span> <span class="o">&amp;=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_types_table</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="n">filter_val</span><span class="p">))</span>
                 <span class="n">type_filter</span> <span class="o">=</span> <span class="kc">True</span>
 
-            <span class="k">elif</span> <span class="n">filter_key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">]:</span>
+            <span class="k">elif</span> <span class="n">filter_key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'node_id'</span><span class="p">,</span> <span class="s1">'node_ids'</span><span class="p">]:</span>
                 <span class="n">node_id_filter</span> <span class="o">+=</span> <span class="n">filter_val</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># TODO: should we raise an exception?</span>
                 <span class="c1"># TODO: User logger</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could not find property </span><span class="si">{}</span><span class="s1"> in either group or types table. Ignoring.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filter_key</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">'Could not find property </span><span class="si">{}</span><span class="s1"> in either group or types table. Ignoring.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filter_key</span><span class="p">))</span>
 
-        <span class="c1"># iterate through all nodes, skipping ones that don&#39;t have matching key==value pairs</span>
+        <span class="c1"># iterate through all nodes, skipping ones that don't have matching key==value pairs</span>
         <span class="k">for</span> <span class="n">indx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies</span><span class="p">:</span>
-            <span class="c1"># TODO: Don&#39;t build the node until you filter out node_type_id</span>
+            <span class="c1"># TODO: Don't build the node until you filter out node_type_id</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="n">indx</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">type_filter</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">node_type_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_type_filter</span><span class="p">:</span>
                 <span class="c1"># confirm node_type_id is a correct one</span>
@@ -806,21 +806,21 @@
             <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">dimension</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">dimension</span><span class="p">):</span>
                     <span class="c1"># TODO: see if column name exists in the attributes</span>
-                    <span class="n">col_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                    <span class="n">col_name</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
                     <span class="n">properties_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">][:,</span> <span class="n">i</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">properties_df</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_group</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
 
         <span class="c1"># Build a dataframe of parent node</span>
         <span class="n">root_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type_ids</span><span class="p">)</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">)</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">)</span>
-        <span class="n">root_df</span><span class="p">[</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">group_indicies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span> <span class="n">as_list</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>  <span class="c1"># pivot col</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_type_ids</span><span class="p">)</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">)</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">)</span>
+        <span class="n">root_df</span><span class="p">[</span><span class="s1">'edge_group_index'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">group_indicies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span> <span class="n">as_list</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>  <span class="c1"># pivot col</span>
 
         <span class="c1"># merge group props df with parent df</span>
-        <span class="n">results_df</span> <span class="o">=</span> <span class="n">root_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">properties_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">results_df</span> <span class="o">=</span> <span class="n">root_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">properties_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">'edge_group_index'</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">results_df</span> <span class="o">=</span> <span class="n">results_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">'edge_group_index'</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Build node_types dataframe and merge</span>
         <span class="n">edge_types_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">edge_types_table</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
@@ -829,7 +829,7 @@
         <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">edge_types_df</span><span class="p">[</span><span class="n">edge_types_cols</span><span class="p">]</span>
 
         <span class="c1"># TODO: consider caching these results</span>
-        <span class="k">return</span> <span class="n">results_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edge_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">results_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">edge_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">'edge_type_id'</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_parent_ds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_ds</span><span class="p">):</span>
@@ -881,7 +881,7 @@
 <div class="viewcode-block" id="EdgeGroup.filter">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.group.EdgeGroup.filter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">filter_props</span><span class="p">):</span>
-        <span class="c1"># TODO: I&#39;m not sure If I want to do this? Need to check on a larger dataset than I currently have.</span>
+        <span class="c1"># TODO: I'm not sure If I want to do this? Need to check on a larger dataset than I currently have.</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
@@ -893,7 +893,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__itr_range</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__itr_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Stop at the largest range end (I&#39;m not sure if the indicies are ordered, if we can make it ordered then</span>
+            <span class="c1"># Stop at the largest range end (I'm not sure if the indicies are ordered, if we can make it ordered then</span>
             <span class="c1"># in the future just use self_parent_indicies[-1][1]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__itr_range_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parent_indicies</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__itr_range_idx</span> <span class="o">=</span> <span class="mi">0</span>

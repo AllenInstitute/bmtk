@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -434,7 +434,7 @@
 <div class="viewcode-block" id="TemporalFilter.to_dict">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'class'</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)}</span></div>
 
 
 <div class="viewcode-block" id="TemporalFilter.get_default_t_grid">
@@ -489,13 +489,13 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TemporalFilterCosineBump</span><span class="p">(</span><span class="n">TemporalFilter</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">kpeaks</span><span class="p">,</span> <span class="n">delays</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a time-based filter function by combining two cosine-based peaks into a function for convoluting</span>
+<span class="w">        </span><span class="sd">"""Creates a time-based filter function by combining two cosine-based peaks into a function for convoluting</span>
 <span class="sd">        the input with.</span>
 
 <span class="sd">        :param weights: (float, float)the magntiude of both peaks, first weight must be positive</span>
 <span class="sd">        :param kpeaks: (float, float) the spread of each peak, first peak (0) must be sharper</span>
 <span class="sd">        :param delays: (float, float) the delay of both peaks, peak 0 must be positive occur first.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">assert</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">kpeaks</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -518,11 +518,11 @@
         <span class="c1"># Create two peak arrays (arr0 and arr1) using makeBasisStimKernel. Then merge them using dot product</span>
         <span class="c1"># w0*arr0 + w1*arr1.</span>
         <span class="n">kbasprs</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;neye&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">neye</span><span class="p">,</span>
-            <span class="s1">&#39;ncos&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncos</span><span class="p">,</span>
-            <span class="s1">&#39;kpeaks&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">,</span>
-            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span>
-            <span class="s1">&#39;delays&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">delays</span>
+            <span class="s1">'neye'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">neye</span><span class="p">,</span>
+            <span class="s1">'ncos'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncos</span><span class="p">,</span>
+            <span class="s1">'kpeaks'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">,</span>
+            <span class="s1">'b'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span>
+            <span class="s1">'delays'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">delays</span>
         <span class="p">}</span>
         <span class="n">nkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fitfuns</span><span class="o">.</span><span class="n">makeBasis_StimKernel</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span> <span class="n">nkt</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -544,7 +544,7 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TemporalFilterCosineBump</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;kpeaks&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">})</span>
+        <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'weights'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">'kpeaks'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">param_dict</span></div>
 </div>
 

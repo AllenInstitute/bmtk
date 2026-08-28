@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -421,21 +421,21 @@
 <div class="viewcode-block" id="IOUtils">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">IOUtils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    For logging/mkdir commands we sometimes need to use different MPI classes depending on the simulator being used</span>
-<span class="sd">    (NEST and NEURON have their own barrier functions that don&#39;t work well with mpi). We also need to be able to</span>
+<span class="sd">    (NEST and NEURON have their own barrier functions that don't work well with mpi). We also need to be able to</span>
 <span class="sd">    adjust the logging levels/format at run-time depending on the simulator/configuration options.</span>
 
 <span class="sd">    Thus the bulk of the io and logging functions are put into their own class and can be overwritten by specific</span>
 <span class="sd">    simulator modules</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">_logger</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> [</span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">"</span><span class="si">%(asctime)s</span><span class="s2"> [</span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_to_console</span> <span class="o">=</span> <span class="kc">True</span>
         
@@ -486,20 +486,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">loglevel</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Error: cannot set logging levels to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loglevel</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Error: cannot set logging levels to </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loglevel</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="IOUtils.barrier">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.barrier">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;MPI Barrier call&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""MPI Barrier call"""</span>
         <span class="k">pass</span>  <span class="c1"># By default this does nothing, if a simulator is to implement mpi support it should overwrite.</span></div>
 
 
 <div class="viewcode-block" id="IOUtils.quiet_simulator">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.quiet_simulator">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">quiet_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Turns off logging/messages of the native simulator&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Turns off logging/messages of the native simulator"""</span>
         <span class="k">pass</span>  <span class="c1"># Simulators should implement their own versions</span></div>
 
 
@@ -513,7 +513,7 @@
                     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Directory </span><span class="si">{}</span><span class="s1"> already exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">'Directory </span><span class="si">{}</span><span class="s1"> already exists.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># other ranks wait for output directory to be created.</span>
@@ -526,10 +526,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
                     <span class="n">handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-            <span class="n">file_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">file_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">)</span>
             <span class="n">file_logger</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_logger</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Created log file&#39;</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># write first message only on rank 0</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">'Created log file'</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># write first message only on rank 0</span></div>
 
 
 <div class="viewcode-block" id="IOUtils.log_info">
@@ -548,8 +548,8 @@
             <span class="k">return</span>
 
         <span class="c1"># Prevent the spaming of the same warning message multiple times, keep track of previous messages and if</span>
-        <span class="c1"># display_once is true don&#39;t log.</span>
-        <span class="c1"># TODO: Won&#39;t work across multiple ranks in MPI, is it possible?</span>
+        <span class="c1"># display_once is true don't log.</span>
+        <span class="c1"># TODO: Won't work across multiple ranks in MPI, is it possible?</span>
         <span class="n">msg_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">display_once</span> <span class="ow">and</span> <span class="n">msg_hash</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warn_messages</span><span class="p">:</span>
             <span class="k">return</span>

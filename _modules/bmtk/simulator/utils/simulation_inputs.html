@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -415,18 +415,18 @@
 <div class="viewcode-block" id="SimInput">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A helper class for parsing the &quot;inputs&quot; section of a SONATA config file. Separate the actual parameters needed</span>
+<span class="w">    </span><span class="sd">"""A helper class for parsing the "inputs" section of a SONATA config file. Separate the actual parameters needed</span>
 <span class="sd">    to instantiate a module from the metadata parameters (eg, name, module, input_type)</span>
 
 <span class="sd">    Use the build() method to parse the json/dictionary of a section of input, then **params** to get a dictionary</span>
 <span class="sd">    of the values used to instantiate::</span>
 
 <span class="sd">        input = SimInput.Build(</span>
-<span class="sd">                  &#39;spikes_inputs&#39;,</span>
-<span class="sd">                  {&#39;module&#39;: &#39;spikes&#39;, &#39;input_type&#39;: &#39;hdf5&#39;, input_file: &#39;my_spikes.h5&#39;, &#39;time_scale&#39;: &#39;ms&#39;}</span>
+<span class="sd">                  'spikes_inputs',</span>
+<span class="sd">                  {'module': 'spikes', 'input_type': 'hdf5', input_file: 'my_spikes.h5', 'time_scale': 'ms'}</span>
 <span class="sd">        )</span>
 
-<span class="sd">        if input.module == &#39;spike&#39;:</span>
+<span class="sd">        if input.module == 'spike':</span>
 <span class="sd">            SpikesInput(**params)</span>
 <span class="sd">            ...</span>
 
@@ -444,16 +444,16 @@
 
 <span class="sd">            class MyVClampInput(SimInput):</span>
 <span class="sd">                def avail_module():</span>
-<span class="sd">                    return [&#39;vclamp&#39;, &#39;voltage_clamp&#39;]</span>
+<span class="sd">                    return ['vclamp', 'voltage_clamp']</span>
 
 <span class="sd">                def build():</span>
 <span class="sd">                    ....</span>
 
 <span class="sd">            SimInput.registerModule(MyVClampInput)</span>
 
-<span class="sd">        Then when SimInput.build() is called and the &#39;module_name&#39;==&#39;vclamp&#39; (or &#39;voltage_clamp&#39;) it will pass the parsing</span>
+<span class="sd">        Then when SimInput.build() is called and the 'module_name'=='vclamp' (or 'voltage_clamp') it will pass the parsing</span>
 <span class="sd">        to the MyVClampInput class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">registry</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># For factory function</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
@@ -462,15 +462,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-        <span class="c1"># Remove the &#39;module&#39; and &#39;input_type&#39; from the params since user should access it through the variable</span>
-        <span class="k">for</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="s1">&#39;input_type&#39;</span><span class="p">]:</span>
+        <span class="c1"># Remove the 'module' and 'input_type' from the params since user should access it through the variable</span>
+        <span class="k">for</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'module'</span><span class="p">,</span> <span class="s1">'input_type'</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">param_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">param_key</span><span class="p">]</span>
 
         <span class="c1"># Special variable, not a part of standard but still want for ease of testing</span>
-        <span class="k">if</span> <span class="s1">&#39;enabled&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'enabled'</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'enabled'</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'enabled'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -483,7 +483,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">node_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node_set&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'node_set'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -492,21 +492,21 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput.build">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a SimInput object with parsed out parameters</span>
+<span class="w">        </span><span class="sd">"""Creates a SimInput object with parsed out parameters</span>
 
 <span class="sd">        :param input_name: name of specific input</span>
 <span class="sd">        :param params: dictionary of input parameters</span>
-<span class="sd">        :return: SimInput object, or subclass that matches the specified &#39;module&#39; value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        :return: SimInput object, or subclass that matches the specified 'module' value</span>
+<span class="sd">        """</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;inputs setting </span><span class="si">{}</span><span class="s1"> does not specify the &quot;module&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">'module'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'inputs setting </span><span class="si">{}</span><span class="s1"> does not specify the "module".'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_name</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="s1">&#39;input_type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;inputs setting </span><span class="si">{}</span><span class="s1"> does not specify the &quot;input_type&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">'input_type'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'inputs setting </span><span class="si">{}</span><span class="s1"> does not specify the "input_type".'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_name</span><span class="p">))</span>
 
-        <span class="n">module_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
-        <span class="n">input_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;input_type&#39;</span><span class="p">]</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'module'</span><span class="p">]</span>
+        <span class="n">input_type</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'input_type'</span><span class="p">]</span>
         <span class="n">module_cls</span> <span class="o">=</span> <span class="n">SimInput</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">SimInput</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">module_cls</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
@@ -516,10 +516,10 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput.register_module">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">register_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subclass</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        :param subclass:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># For factory, register subclass based on the module name(s)</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
         <span class="n">mod_registry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">registry</span>
@@ -527,7 +527,7 @@
         <span class="n">modules</span> <span class="o">=</span> <span class="n">mod_list</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">mod_list</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">mod_name</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">mod_name</span> <span class="ow">in</span> <span class="n">mod_registry</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Multiple modules named </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_name</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Multiple modules named </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_name</span><span class="p">))</span>
             <span class="n">mod_registry</span><span class="p">[</span><span class="n">mod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subclass</span>
 
         <span class="k">return</span> <span class="n">subclass</span></div>
@@ -538,12 +538,12 @@
 <div class="viewcode-block" id="from_config">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.from_config">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Takes in a bmtk.utils.Config instance and will automatically parse each &quot;input&quot; in the config sections,</span>
-<span class="sd">    returning a list of SimInput objects. If an input has &quot;enabled&quot; = False then it will automatically be excluded.</span>
+<span class="w">    </span><span class="sd">"""Takes in a bmtk.utils.Config instance and will automatically parse each "input" in the config sections,</span>
+<span class="sd">    returning a list of SimInput objects. If an input has "enabled" = False then it will automatically be excluded.</span>
 
 <span class="sd">    :param cfg: A SONATAConfig object</span>
 <span class="sd">    :return: A list of SimInput modules corresponding to the parsed inputs of a config.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">inputs_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">input_params</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">input_setting</span> <span class="o">=</span> <span class="n">SimInput</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">input_params</span><span class="p">)</span>

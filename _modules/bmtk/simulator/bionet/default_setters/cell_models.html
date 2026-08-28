@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,7 +428,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -450,38 +450,38 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet.nml_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">NMLTree</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Functions for loading NEURON cell objects.</span>
 
 <span class="sd">Functions will be loaded by bionetwork and called when a new cell object is created. These are for standard models</span>
 <span class="sd">loaded with Cell-Types json files or their NeuroML equivelent, but may be overridden by the users.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <div class="viewcode-block" id="loadHOC">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.loadHOC">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">loadHOC</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Generic function for creating a cell object from a NEURON HOC Template (eg. a \*.hoc file with </span>
+<span class="w">    </span><span class="sd">"""A Generic function for creating a cell object from a NEURON HOC Template (eg. a \*.hoc file with </span>
 <span class="sd">    `begintemplate template_name` in header). It essentially tries to guess the correct parameters that need to be</span>
 <span class="sd">    called so may not work the majority of the times and require to be overloaded.</span>
 
 <span class="sd">    :param cell: A SONATA node object, can be used as a dict to get individual properties of current cell.</span>
-<span class="sd">    :param template_name: name of HOCTemplate as stored in &quot;model_template&quot; attribute (hoc:&lt;template_name&gt;).</span>
-<span class="sd">    :param dynamics_params: Dictionary containing contents of cell[&#39;dynamics_params&#39;] as loaded from a json file or hdf5. </span>
-<span class="sd">        If cell does not have &quot;dynamics_params&quot; attributes then will be set to None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    :param template_name: name of HOCTemplate as stored in "model_template" attribute (hoc:&lt;template_name&gt;).</span>
+<span class="sd">    :param dynamics_params: Dictionary containing contents of cell['dynamics_params'] as loaded from a json file or hdf5. </span>
+<span class="sd">        If cell does not have "dynamics_params" attributes then will be set to None.</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Get template to instantiate</span>
         <span class="n">template_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ae</span><span class="p">:</span>
         <span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;loadHOC was unable to load in Neuron HOC Template &quot;</span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">, &#39;</span> 
-            <span class="s1">&#39;Make sure appropiate .hoc file is stored in templates_dir.&#39;</span>
+            <span class="sa">f</span><span class="s1">'loadHOC was unable to load in Neuron HOC Template "</span><span class="si">{</span><span class="n">template_name</span><span class="si">}</span><span class="s1">, '</span> 
+            <span class="s1">'Make sure appropiate .hoc file is stored in templates_dir.'</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">ae</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dynamics_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;params&#39;</span> <span class="ow">in</span> <span class="n">dynamics_params</span><span class="p">:</span>
-            <span class="n">template_params</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dynamics_params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'params'</span> <span class="ow">in</span> <span class="n">dynamics_params</span><span class="p">:</span>
+            <span class="n">template_params</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">'params'</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">template_params</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="c1"># pass in a list of parameters</span>
                 <span class="n">hobj</span> <span class="o">=</span> <span class="n">template_call</span><span class="p">(</span><span class="o">*</span><span class="n">template_params</span><span class="p">)</span>
@@ -495,13 +495,13 @@
             <span class="n">hobj</span> <span class="o">=</span> <span class="n">template_call</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">rte</span><span class="p">:</span>
         <span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;bmtk.simualtor.bionet.default_setters.cell_models.loadHOC function failed to load HOC template &quot;</span><span class="si">{</span><span class="n">template_call</span><span class="si">}</span><span class="s1">&quot;. &#39;</span>
-            <span class="s1">&#39;If Hoc Templates requires special call to be initialized consider using `bmtk.simulator.bionet.add_cell_model()` &#39;</span>
-            <span class="s1">&#39;to overwrite this function.&#39;</span>
+            <span class="sa">f</span><span class="s1">'bmtk.simualtor.bionet.default_setters.cell_models.loadHOC function failed to load HOC template "</span><span class="si">{</span><span class="n">template_call</span><span class="si">}</span><span class="s1">". '</span>
+            <span class="s1">'If Hoc Templates requires special call to be initialized consider using `bmtk.simulator.bionet.add_cell_model()` '</span>
+            <span class="s1">'to overwrite this function.'</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">rte</span>
 
-    <span class="c1"># TODO: All &quot;all&quot; section if it doesn&#39;t exist</span>
+    <span class="c1"># TODO: All "all" section if it doesn't exist</span>
     <span class="c1"># hobj.all = h.SectionList()</span>
     <span class="c1"># hobj.all.wholetree(sec=hobj.soma[0])</span>
     <span class="k">return</span> <span class="n">hobj</span></div>
@@ -511,10 +511,10 @@
 <div class="viewcode-block" id="IntFire1">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.IntFire1">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">IntFire1</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads a point integrate and fire neuron&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Loads a point integrate and fire neuron"""</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">IntFire1</span><span class="p">()</span>
-    <span class="n">hobj</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;tau&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
-    <span class="n">hobj</span><span class="o">.</span><span class="n">refrac</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;refrac&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
+    <span class="n">hobj</span><span class="o">.</span><span class="n">tau</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">'tau'</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
+    <span class="n">hobj</span><span class="o">.</span><span class="n">refrac</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">'refrac'</span><span class="p">]</span><span class="o">*</span><span class="mf">1000.0</span>  <span class="c1"># Convert from seconds to ms.</span>
     <span class="k">return</span> <span class="n">hobj</span></div>
 
 
@@ -522,7 +522,7 @@
 <div class="viewcode-block" id="Biophys1">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.Biophys1">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">Biophys1</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamic_params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads a biophysical NEURON hoc object using Cell-Types database objects.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Loads a biophysical NEURON hoc object using Cell-Types database objects."""</span>
     <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology_file</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Biophys1</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">))</span>
     <span class="c1">#fix_axon(hobj)</span>
@@ -542,10 +542,10 @@
 <div class="viewcode-block" id="Biophys1_dict">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">Biophys1_dict</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the</span>
+<span class="w">    </span><span class="sd">""" Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the</span>
 <span class="sd">    axon with the stub</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">]</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Biophys1</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">hobj</span></div>
 
@@ -565,14 +565,14 @@
 <div class="viewcode-block" id="fix_axon_peri">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_axon_peri</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
+<span class="w">    </span><span class="sd">"""Replace reconstructed axon with a stub</span>
 
 <span class="sd">    :param hobj: hoc object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
         <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
 
-    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'create axon[2]'</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
         <span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">30</span>
@@ -590,41 +590,41 @@
 <div class="viewcode-block" id="set_params_peri">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.set_params_peri">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_params_peri</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">biophys_params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set biophysical parameters for the cell</span>
+<span class="w">    </span><span class="sd">"""Set biophysical parameters for the cell</span>
 
-<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
-<span class="sd">    :param biophys_params: name of json file with biophys params for cell&#39;s model which determine spiking behavior</span>
+<span class="sd">    :param hobj: NEURON's cell object</span>
+<span class="sd">    :param biophys_params: name of json file with biophys params for cell's model which determine spiking behavior</span>
 <span class="sd">    :return:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">'passive'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">'conditions'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">'genome'</span><span class="p">]</span>
 
     <span class="c1"># Set passive properties</span>
-    <span class="n">cm_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">]])</span>
+    <span class="n">cm_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">[</span><span class="s1">'section'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'cm'</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">'cm'</span><span class="p">]])</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]]</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">'ra'</span><span class="p">]</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]]</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">'pas'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
-            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s2">&quot;e_pas&quot;</span><span class="p">]</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s2">"e_pas"</span><span class="p">]</span>
 
     <span class="c1"># Insert channels and set parameters</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
-        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="p">[</span><span class="s2">"section"</span><span class="p">]]</span>
 
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">])</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">"mechanism"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">:</span>
+                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"mechanism"</span><span class="p">])</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s2">"name"</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">"value"</span><span class="p">])</span>
 
     <span class="c1"># Set reversal potentials</span>
-    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
-        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]:</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">erev</span><span class="p">[</span><span class="s2">"section"</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
-            <span class="n">sec</span><span class="o">.</span><span class="n">ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ena&quot;</span><span class="p">]</span>
-            <span class="n">sec</span><span class="o">.</span><span class="n">ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ek&quot;</span><span class="p">]</span></div>
+            <span class="n">sec</span><span class="o">.</span><span class="n">ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">"ena"</span><span class="p">]</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">"ek"</span><span class="p">]</span></div>
 
 
 
@@ -640,25 +640,25 @@
 <div class="viewcode-block" id="fix_axon_allactive">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_axon_allactive</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
+<span class="w">    </span><span class="sd">"""Replace reconstructed axon with a stub</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    hobj: instance of a Biophysical template</span>
-<span class="sd">        NEURON&#39;s cell object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        NEURON's cell object</span>
+<span class="sd">    """</span>
     <span class="c1"># find the start and end diameter of the original axon, this is different from the perisomatic cell model</span>
     <span class="c1"># where diameter == 1.</span>
     <span class="n">axon_diams</span> <span class="o">=</span> <span class="p">[</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">,</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;axon&#39;</span><span class="p">:</span>
+        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">'axon'</span><span class="p">:</span>
             <span class="n">axon_diams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">diam</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
         <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
 
-    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'create axon[2]'</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">):</span>
         <span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">30</span>
         <span class="n">sec</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="n">axon_diams</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  <span class="c1"># 1</span>
@@ -676,68 +676,68 @@
 <div class="viewcode-block" id="set_params_allactive">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_params_allactive</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">params_dict</span><span class="p">):</span>
-    <span class="c1"># params_dict = json.load(open(params_file_name, &#39;r&#39;))</span>
-    <span class="n">passive</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">genome</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
-    <span class="n">conditions</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># params_dict = json.load(open(params_file_name, 'r'))</span>
+    <span class="n">passive</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">'passive'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">genome</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">'genome'</span><span class="p">]</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">params_dict</span><span class="p">[</span><span class="s1">'conditions'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">section_map</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="n">section_map</span><span class="p">:</span>
             <span class="n">section_map</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">section_map</span><span class="p">[</span><span class="n">section_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">sec</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
-        <span class="c1"># sec.insert(&#39;extracellular&#39;)</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">'pas'</span><span class="p">)</span>
+        <span class="c1"># sec.insert('extracellular')</span>
 
-    <span class="k">if</span> <span class="s1">&#39;e_pas&#39;</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
-        <span class="n">e_pas_val</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;e_pas&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">'e_pas'</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
+        <span class="n">e_pas_val</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">'e_pas'</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
                 <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">e_pas_val</span>
 
-    <span class="k">if</span> <span class="s1">&#39;ra&#39;</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
-        <span class="n">ra_val</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">'ra'</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
+        <span class="n">ra_val</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">'ra'</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">ra_val</span>
 
-    <span class="k">if</span> <span class="s1">&#39;cm&#39;</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
-        <span class="c1"># print(&#39;Setting cm&#39;)</span>
-        <span class="k">for</span> <span class="n">cm_dict</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">]:</span>
-            <span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cm_dict</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="p">[]):</span>
+    <span class="k">if</span> <span class="s1">'cm'</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">:</span>
+        <span class="c1"># print('Setting cm')</span>
+        <span class="k">for</span> <span class="n">cm_dict</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">'cm'</span><span class="p">]:</span>
+            <span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="s1">'cm'</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cm_dict</span><span class="p">[</span><span class="s1">'section'</span><span class="p">],</span> <span class="p">[]):</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span>
 
     <span class="k">for</span> <span class="n">genome_dict</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
-        <span class="n">g_section</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;glob&#39;</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">&quot;There is a section called glob, probably old json file&quot;</span><span class="p">)</span>
+        <span class="n">g_section</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">'section'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">'section'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'glob'</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">"There is a section called glob, probably old json file"</span><span class="p">)</span>
             <span class="k">continue</span>
 
-        <span class="n">g_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">genome_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
-        <span class="n">g_name</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-        <span class="n">g_mechanism</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mechanism&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">g_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">genome_dict</span><span class="p">[</span><span class="s1">'value'</span><span class="p">])</span>
+        <span class="n">g_name</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
+        <span class="n">g_mechanism</span> <span class="o">=</span> <span class="n">genome_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mechanism"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">g_section</span><span class="p">,</span> <span class="p">[]):</span>
-            <span class="k">if</span> <span class="n">g_mechanism</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">g_mechanism</span> <span class="o">!=</span> <span class="s2">""</span><span class="p">:</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">g_mechanism</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">g_name</span><span class="p">,</span> <span class="n">g_value</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
-        <span class="n">erev_section</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">]</span>
-        <span class="n">erev_ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">&#39;ena&#39;</span><span class="p">]</span>
-        <span class="n">erev_ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">&#39;ek&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">'erev'</span><span class="p">]:</span>
+        <span class="n">erev_section</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">'section'</span><span class="p">]</span>
+        <span class="n">erev_ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">'ena'</span><span class="p">]</span>
+        <span class="n">erev_ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s1">'ek'</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">erev_section</span> <span class="ow">in</span> <span class="n">section_map</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">section_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">erev_section</span><span class="p">,</span> <span class="p">[]):</span>
-                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s1">&#39;k_ion&#39;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;ek&#39;</span><span class="p">,</span> <span class="n">erev_ek</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s1">&#39;na_ion&#39;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;ena&#39;</span><span class="p">,</span> <span class="n">erev_ena</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s1">'k_ion'</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">'ek'</span><span class="p">,</span> <span class="n">erev_ek</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s1">'na_ion'</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">'ena'</span><span class="p">,</span> <span class="n">erev_ena</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">&quot;Can&#39;t set erev for </span><span class="si">{}</span><span class="s2">, section array doesn&#39;t exist&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">erev_section</span><span class="p">))</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s2">"Can't set erev for </span><span class="si">{}</span><span class="s2">, section array doesn't exist"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">erev_section</span><span class="p">))</span></div>
 
 
 
@@ -762,19 +762,19 @@
 <div class="viewcode-block" id="fix_axon_perisomatic_directed">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_axon_perisomatic_directed</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="c1"># io.log_info(&#39;Fixing Axon like perisomatic&#39;)</span>
+    <span class="c1"># io.log_info('Fixing Axon like perisomatic')</span>
     <span class="n">all_sec_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">all_sec_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">all_sec_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="s1">&#39;axon&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_sec_names</span><span class="p">:</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;There is no axonal recostruction in swc file.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'axon'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_sec_names</span><span class="p">:</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'There is no axonal recostruction in swc file.'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">beg1</span><span class="p">,</span> <span class="n">end1</span><span class="p">,</span> <span class="n">beg2</span><span class="p">,</span> <span class="n">end2</span> <span class="o">=</span> <span class="n">get_axon_direction</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
         <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'create axon[2]'</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
 
     <span class="n">h</span><span class="o">.</span><span class="n">pt3dadd</span><span class="p">(</span><span class="n">beg1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">beg1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">beg1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">h</span><span class="o">.</span><span class="n">pt3dadd</span><span class="p">(</span><span class="n">end1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">end1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">end1</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -792,9 +792,9 @@
     <span class="n">h</span><span class="o">.</span><span class="n">define_shape</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
-        <span class="c1"># print &quot;sec.L:&quot;, sec.L</span>
+        <span class="c1"># print "sec.L:", sec.L</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">30</span><span class="o">-</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0001</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Axon stub L is less than 30&#39;</span><span class="p">)</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Axon stub L is less than 30'</span><span class="p">)</span></div>
 
 
 
@@ -803,22 +803,22 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_axon_allactive_directed</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
     <span class="n">all_sec_names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">all_sec_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+        <span class="n">all_sec_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="s1">&#39;axon&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_sec_names</span><span class="p">:</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;There is no axonal recostruction in swc file.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'axon'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_sec_names</span><span class="p">:</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'There is no axonal recostruction in swc file.'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">beg1</span><span class="p">,</span> <span class="n">end1</span><span class="p">,</span> <span class="n">beg2</span><span class="p">,</span> <span class="n">end2</span> <span class="o">=</span> <span class="n">get_axon_direction</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span>
 
     <span class="n">axon_diams</span> <span class="o">=</span> <span class="p">[</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">,</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;axon&#39;</span><span class="p">:</span>
+        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">'axon'</span><span class="p">:</span>
             <span class="n">axon_diams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">diam</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
         <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'create axon[2]'</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
     <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -835,9 +835,9 @@
     <span class="n">h</span><span class="o">.</span><span class="n">define_shape</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
-        <span class="c1"># io.log_info(&#39;sec.L: {}&#39;.format(sec.L))</span>
+        <span class="c1"># io.log_info('sec.L: {}'.format(sec.L))</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mi">30</span> <span class="o">-</span> <span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0001</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Axon stub L is less than 30&#39;</span><span class="p">)</span></div>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'Axon stub L is less than 30'</span><span class="p">)</span></div>
 
 
 
@@ -851,8 +851,8 @@
         <span class="n">soma_mid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">h</span><span class="o">.</span><span class="n">x3d</span><span class="p">(</span><span class="n">mid_point</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">),</span> <span class="n">h</span><span class="o">.</span><span class="n">y3d</span><span class="p">(</span><span class="n">mid_point</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">),</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">mid_point</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)])</span>
 
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;axon&#39;</span><span class="p">:</span>
+        <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">'axon'</span><span class="p">:</span>
             <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
             <span class="n">axon_p3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n3d</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
@@ -893,7 +893,7 @@
 <div class="viewcode-block" id="NMLLoad">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.NMLLoad">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">NMLLoad</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamic_params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a NEUROML file to a NEURON hoc cell object.</span>
+<span class="w">    </span><span class="sd">"""Convert a NEUROML file to a NEURON hoc cell object.</span>
 
 <span class="sd">    Current limitations:</span>
 <span class="sd">    * Ignores nml morphology section. You must pass in a swc file</span>
@@ -903,13 +903,13 @@
 <span class="sd">    :param template_name:</span>
 <span class="sd">    :param dynamic_params:</span>
 <span class="sd">    :return:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Last I checked there is no built in way to load a NML file directly into NEURON through the API, instead we have</span>
     <span class="c1"># to manually parse the nml file and build the NEUROM cell object section-by-section.</span>
     <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology_file</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Biophys1</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">))</span>
     <span class="c1"># Depending on if the axon is cut before or after setting cell channels and mechanism can create drastically</span>
-    <span class="c1"># different results. Currently NML files doesn&#39;t produce the same results if you use model_processing directives.</span>
+    <span class="c1"># different results. Currently NML files doesn't produce the same results if you use model_processing directives.</span>
     <span class="c1"># TODO: Find a way to specify model_processing directive with NML file</span>
     <span class="n">fix_axon_peri</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span>
 
@@ -918,39 +918,39 @@
         <span class="n">nml_params</span> <span class="o">=</span> <span class="n">nml_files</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Parse the NML parameters file xml tree and cache.</span>
-        <span class="n">biophys_dirs</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;biophysical_neuron_models_dir&#39;</span><span class="p">)</span>
+        <span class="n">biophys_dirs</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">'biophysical_neuron_models_dir'</span><span class="p">)</span>
         <span class="n">nml_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">biophys_dirs</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span>
         <span class="n">nml_params</span> <span class="o">=</span> <span class="n">NMLTree</span><span class="p">(</span><span class="n">nml_path</span><span class="p">)</span>
         <span class="n">nml_files</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nml_params</span>
 
     <span class="c1"># Iterate through the NML tree by section and use the properties to manually create cell mechanisms</span>
-    <span class="n">section_lists</span> <span class="o">=</span> <span class="p">[(</span><span class="n">sec</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">]</span>
+    <span class="n">section_lists</span> <span class="o">=</span> <span class="p">[(</span><span class="n">sec</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span> <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">sec</span><span class="p">,</span> <span class="n">sec_name</span> <span class="ow">in</span> <span class="n">section_lists</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">prop_obj</span> <span class="ow">in</span> <span class="n">nml_params</span><span class="p">[</span><span class="n">sec_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;resistivity&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'resistivity'</span><span class="p">:</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">value</span>
 
-            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;specificCapacitance&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'specificCapacitance'</span><span class="p">:</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">value</span>
 
-            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;channelDensity&#39;</span> <span class="ow">and</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion_channel</span> <span class="o">==</span> <span class="s1">&#39;pas&#39;</span><span class="p">:</span>
-                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;g_pas&#39;</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">cond_density</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'channelDensity'</span> <span class="ow">and</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion_channel</span> <span class="o">==</span> <span class="s1">'pas'</span><span class="p">:</span>
+                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">'pas'</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">'g_pas'</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">cond_density</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
                     <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">erev</span>
 
-            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;channelDensity&#39;</span> <span class="ow">or</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;channelDensityNernst&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'channelDensity'</span> <span class="ow">or</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'channelDensityNernst'</span><span class="p">:</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">prop_obj</span><span class="o">.</span><span class="n">ion_channel</span><span class="p">)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">cond_density</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion</span> <span class="o">==</span> <span class="s1">&#39;na&#39;</span> <span class="ow">and</span> <span class="n">prop_obj</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion</span> <span class="o">==</span> <span class="s1">'na'</span> <span class="ow">and</span> <span class="n">prop_obj</span><span class="p">:</span>
                     <span class="n">sec</span><span class="o">.</span><span class="n">ena</span> <span class="o">=</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">erev</span>
-                <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion</span> <span class="o">==</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">ion</span> <span class="o">==</span> <span class="s1">'k'</span><span class="p">:</span>
                     <span class="n">sec</span><span class="o">.</span><span class="n">ek</span> <span class="o">=</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">erev</span>
 
-            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;concentrationModel&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">element_tag</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'concentrationModel'</span><span class="p">:</span>
                 <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">prop_obj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;gamma_&#39;</span> <span class="o">+</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">&#39;decay_&#39;</span> <span class="o">+</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">decay</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">'gamma_'</span> <span class="o">+</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="s1">'decay_'</span> <span class="o">+</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prop_obj</span><span class="o">.</span><span class="n">decay</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">hobj</span></div>
 
@@ -959,18 +959,18 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.default_setters.html#bmtk.simulator.bionet.default_setters.cell_models.set_extracellular">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">set_extracellular</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;extracellular&#39;</span><span class="p">)</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">'extracellular'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">hobj</span></div>
 
 
 
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">loadHOC</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;hoc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">NMLLoad</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;nml&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">Biophys1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">Biophys1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">IntFire1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;nrn:IntFire1&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">add_cell_model</span><span class="p">(</span><span class="n">IntFire1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">&#39;nrn:IntFire1&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_neuron&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">loadHOC</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'hoc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">NMLLoad</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'nml'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">Biophys1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'ctdb:Biophys1'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">Biophys1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">IntFire1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'nrn:IntFire1'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_cell_model</span><span class="p">(</span><span class="n">IntFire1</span><span class="p">,</span> <span class="n">directive</span><span class="o">=</span><span class="s1">'nrn:IntFire1'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_neuron'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="n">add_cell_processor</span><span class="p">(</span><span class="n">aibs_perisomatic</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -978,7 +978,7 @@
 <span class="n">add_cell_processor</span><span class="p">(</span><span class="n">aibs_perisomatic_directed</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">add_cell_processor</span><span class="p">(</span><span class="n">aibs_allactive_directed</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">add_cell_processor</span><span class="p">(</span><span class="n">set_extracellular</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">add_cell_processor</span><span class="p">(</span><span class="n">set_extracellular</span><span class="p">,</span> <span class="s1">&#39;extracellular&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add_cell_processor</span><span class="p">(</span><span class="n">set_extracellular</span><span class="p">,</span> <span class="s1">'extracellular'</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 
                 </article>

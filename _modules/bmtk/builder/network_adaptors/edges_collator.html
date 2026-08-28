@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -426,10 +426,10 @@
 <div class="viewcode-block" id="EdgesCollatorSingular">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EdgesCollatorSingular</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process</span>
+<span class="w">    </span><span class="sd">"""Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process</span>
 <span class="sd">    of saving into a SONATA edges file. All the actual edges may be stored across diffrent edge-type-tables/mpi-ranks</span>
 <span class="sd">    and needs to be merged together (and possibly sorted) before writing to HDF5 file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_types_tables</span><span class="p">,</span> <span class="n">network_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types_tables</span> <span class="o">=</span> <span class="n">edge_types_tables</span>
@@ -453,7 +453,7 @@
 <div class="viewcode-block" id="EdgesCollatorSingular.process">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.process">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Processing and collating </span><span class="si">{:,}</span><span class="s1"> edges.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Processing and collating </span><span class="si">{:,}</span><span class="s1"> edges.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">source_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
@@ -463,7 +463,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_prop_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">g_id</span><span class="p">:</span> <span class="p">{</span>
-                <span class="n">n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">g_md</span><span class="p">[</span><span class="s1">&#39;prop_size&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g_md</span><span class="p">[</span><span class="s1">&#39;prop_names&#39;</span><span class="p">],</span> <span class="n">g_md</span><span class="p">[</span><span class="s1">&#39;prop_type&#39;</span><span class="p">])</span>
+                <span class="n">n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">g_md</span><span class="p">[</span><span class="s1">'prop_size'</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">g_md</span><span class="p">[</span><span class="s1">'prop_names'</span><span class="p">],</span> <span class="n">g_md</span><span class="p">[</span><span class="s1">'prop_type'</span><span class="p">])</span>
             <span class="p">}</span> <span class="k">for</span> <span class="n">g_id</span><span class="p">,</span> <span class="n">g_md</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
 
@@ -498,8 +498,8 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.get_group_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
         <span class="n">grp_md</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
-        <span class="n">grp_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">grp_md</span><span class="p">[</span><span class="s1">&#39;prop_size&#39;</span><span class="p">],</span> <span class="p">)</span>
-        <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span> <span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="n">grp_dim</span><span class="p">}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grp_md</span><span class="p">[</span><span class="s1">&#39;prop_names&#39;</span><span class="p">],</span> <span class="n">grp_md</span><span class="p">[</span><span class="s1">&#39;prop_type&#39;</span><span class="p">])]</span></div>
+        <span class="n">grp_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">grp_md</span><span class="p">[</span><span class="s1">'prop_size'</span><span class="p">],</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s1">'name'</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span> <span class="s1">'dim'</span><span class="p">:</span> <span class="n">grp_dim</span><span class="p">}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grp_md</span><span class="p">[</span><span class="s1">'prop_names'</span><span class="p">],</span> <span class="n">grp_md</span><span class="p">[</span><span class="s1">'prop_type'</span><span class="p">])]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorSingular.assign_groups">
@@ -514,9 +514,9 @@
 
                 <span class="n">group_metadata</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">get_property_metatadata</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_id_itr</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s1">&#39;prop_names&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_metadata</span><span class="p">],</span>
-                    <span class="s1">&#39;prop_type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_metadata</span><span class="p">],</span>
-                    <span class="s1">&#39;prop_size&#39;</span><span class="p">:</span> <span class="mi">0</span>
+                    <span class="s1">'prop_names'</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_metadata</span><span class="p">],</span>
+                    <span class="s1">'prop_type'</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">'dtype'</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">group_metadata</span><span class="p">],</span>
+                    <span class="s1">'prop_size'</span><span class="p">:</span> <span class="mi">0</span>
                 <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_grp_id_itr</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -524,7 +524,7 @@
             <span class="n">et</span><span class="o">.</span><span class="n">edge_group_id</span> <span class="o">=</span> <span class="n">group_id</span>
 
             <span class="c1"># number of rows in each model group</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">&#39;prop_size&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">et</span><span class="o">.</span><span class="n">n_edges</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">'prop_size'</span><span class="p">]</span> <span class="o">+=</span> <span class="n">et</span><span class="o">.</span><span class="n">n_edges</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorSingular.itr_chunks">
@@ -589,22 +589,22 @@
 <div class="viewcode-block" id="EdgesCollatorSingular.sort">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorSingular.sort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">,</span> <span class="n">sort_group_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;In memory sort of the dataset</span>
+<span class="w">        </span><span class="sd">"""In memory sort of the dataset</span>
 
 <span class="sd">        :param sort_by:</span>
 <span class="sd">        :param sort_group_properties:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Find the edges hdf5 column to sort by</span>
-        <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;target_node_id&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">'target_node_id'</span><span class="p">:</span>
             <span class="n">sort_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_ids</span>
-        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;source_node_id&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">'source_node_id'</span><span class="p">:</span>
             <span class="n">sort_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_ids</span>
-        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;edge_type_id&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">'edge_type_id'</span><span class="p">:</span>
             <span class="n">sort_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_ids</span>
-        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">&#39;edge_group_id&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s1">'edge_group_id'</span><span class="p">:</span>
             <span class="n">sort_ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_group_ids</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to sort dataset, unrecognized column </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sort_by</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Unable to sort dataset, unrecognized column </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sort_by</span><span class="p">))</span>
             <span class="k">return</span>
 
         <span class="c1"># check if dataset is already sorted</span>
@@ -620,7 +620,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_group_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_group_index</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">sort_group_properties</span><span class="p">:</span>
-            <span class="c1"># For sorting group properties, so the &quot;edge_group_index&quot; column is sorted (wrt each edge_group_id). Note</span>
+            <span class="c1"># For sorting group properties, so the "edge_group_index" column is sorted (wrt each edge_group_id). Note</span>
             <span class="c1"># that it is not strictly necessary to sort the group properties, as sonata edge_group_index keeps the</span>
             <span class="c1"># reference, but doing the sorting may improve memory/efficency during setting up a simulation</span>
 
@@ -640,12 +640,12 @@
 <div class="viewcode-block" id="EdgesCollatorMPI">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EdgesCollatorMPI</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;For collecting all the different edge-types tables to make writing edges and iterating over the entire network</span>
+<span class="w">    </span><span class="sd">"""For collecting all the different edge-types tables to make writing edges and iterating over the entire network</span>
 <span class="sd">    easier. Similar to above but for when edge-rules data are split across multiple MPI ranks/processors. Can also</span>
 <span class="sd">    be utlized for single core building when the network is too big to store in memory at once.</span>
 
 <span class="sd">    TODO: Consider saving tables to memory on each rank, and using MPI Gather/Send.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_types_tables</span><span class="p">,</span> <span class="n">network_name</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types_tables</span> <span class="o">=</span> <span class="n">edge_types_tables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span> <span class="o">=</span> <span class="n">network_name</span>
@@ -667,7 +667,7 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">builder_uuid</span> <span class="o">=</span> <span class="n">build_time_uuid</span><span class="p">()</span>
-        <span class="k">return</span> <span class="s1">&#39;.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">builder_uuid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="s1">'.edge_types_table.processed.</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">,</span> <span class="n">builder_uuid</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.process">
@@ -680,11 +680,11 @@
         <span class="c1"># NOTE: Assumes that each .edge_type_table*h5 file contains unique edge_type_ids</span>
         <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mpi_size</span><span class="p">):</span>
             <span class="n">rank_edge_table_path</span> <span class="o">=</span> <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rank_edge_table_path</span><span class="p">):</span>  <span class="c1"># possible .tmp file doesn&#39;t exist</span>
-                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">rank_edge_table_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">edge_table_h5</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">et_grp</span> <span class="ow">in</span> <span class="n">edge_table_h5</span><span class="p">[</span><span class="s1">&#39;unprocessed&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="n">et_size</span> <span class="o">=</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span> <span class="o">+=</span> <span class="n">et_size</span>   <span class="c1"># et_grp.attrs[&#39;size&#39;]</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rank_edge_table_path</span><span class="p">):</span>  <span class="c1"># possible .tmp file doesn't exist</span>
+                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">rank_edge_table_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">edge_table_h5</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">et_grp</span> <span class="ow">in</span> <span class="n">edge_table_h5</span><span class="p">[</span><span class="s1">'unprocessed'</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">et_size</span> <span class="o">=</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">n_total_edges</span> <span class="o">+=</span> <span class="n">et_size</span>   <span class="c1"># et_grp.attrs['size']</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span> <span class="o">+=</span> <span class="n">et_size</span> <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="n">mpi_rank</span> <span class="k">else</span> <span class="mi">0</span>
                         <span class="n">edge_type_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">et_id</span><span class="p">)</span>
 
@@ -692,45 +692,45 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_rank_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank_offsets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">et_size</span><span class="p">)</span>
 
                         <span class="c1"># Save metadata about the edge-type-id</span>
-                        <span class="n">group_hash_key</span> <span class="o">=</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;hash_key&#39;</span><span class="p">]</span>
+                        <span class="n">group_hash_key</span> <span class="o">=</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'hash_key'</span><span class="p">]</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                            <span class="s1">&#39;hash_key&#39;</span><span class="p">:</span> <span class="n">group_hash_key</span><span class="p">,</span>
-                            <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="n">et_size</span><span class="p">,</span>
-                            <span class="s1">&#39;rank&#39;</span><span class="p">:</span> <span class="n">rank</span><span class="p">,</span>
-                            <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">[]</span>
+                            <span class="s1">'hash_key'</span><span class="p">:</span> <span class="n">group_hash_key</span><span class="p">,</span>
+                            <span class="s1">'size'</span><span class="p">:</span> <span class="n">et_size</span><span class="p">,</span>
+                            <span class="s1">'rank'</span><span class="p">:</span> <span class="n">rank</span><span class="p">,</span>
+                            <span class="s1">'properties'</span><span class="p">:</span> <span class="p">[]</span>
                         <span class="p">}</span>
-                        <span class="n">et_props</span> <span class="o">=</span> <span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_node_id&#39;</span><span class="p">]]</span>
+                        <span class="n">et_props</span> <span class="o">=</span> <span class="p">[(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">et_grp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="s1">'target_node_id'</span><span class="p">]]</span>
                         <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">pdata</span> <span class="ow">in</span> <span class="n">et_props</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">][</span><span class="s1">&#39;properties&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">pname</span><span class="p">,</span>
-                                <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">pdata</span><span class="o">.</span><span class="n">dtype</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">][</span><span class="s1">'properties'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                                <span class="s1">'name'</span><span class="p">:</span> <span class="n">pname</span><span class="p">,</span>
+                                <span class="s1">'type'</span><span class="p">:</span> <span class="n">pdata</span><span class="o">.</span><span class="n">dtype</span>
                             <span class="p">})</span>
 
         <span class="c1"># Assign the group_ids for each edge-type. If two or more edge-types contain the same property name+types they</span>
-        <span class="c1"># should be assigned to the same group_id. Must also take care to unify group_id&#39;s across multiple</span>
+        <span class="c1"># should be assigned to the same group_id. Must also take care to unify group_id's across multiple</span>
         <span class="c1"># .edge_type_table*h5 files</span>
-        <span class="n">group_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">mg</span><span class="p">[</span><span class="s1">&#39;hash_key&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">mg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="n">group_hashes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">mg</span><span class="p">[</span><span class="s1">'hash_key'</span><span class="p">]</span> <span class="k">for</span> <span class="n">mg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
         <span class="n">ordred_group_hashes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">group_hashes</span><span class="p">)</span>
         <span class="n">ordred_group_hashes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># should ensure order will be uniform across all MPI ranks, maybe use AllGather?</span>
         <span class="n">grp_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># keep track of what hash keys match what group_ids</span>
         <span class="n">grp_id_itr</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">edge_type_id</span><span class="p">,</span> <span class="n">mg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">hash_key</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">&#39;hash_key&#39;</span><span class="p">]</span>
+            <span class="n">hash_key</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">'hash_key'</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">hash_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grp_id_map</span><span class="p">:</span>
                 <span class="c1"># assign hash to the next group_id</span>
                 <span class="n">grp_id_map</span><span class="p">[</span><span class="n">hash_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_id_itr</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_group_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">grp_id_itr</span><span class="p">)</span>
                 <span class="n">grp_id_itr</span> <span class="o">+=</span> <span class="mi">1</span>
 
-            <span class="n">mg</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_id_map</span><span class="p">[</span><span class="n">hash_key</span><span class="p">]</span>
+            <span class="n">mg</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_id_map</span><span class="p">[</span><span class="n">hash_key</span><span class="p">]</span>
 
         <span class="c1"># For model-group, figure out where the offset for that group occurs on each rank. This is so we can align</span>
         <span class="c1"># edge_group_index across multiple mpi ranks below.</span>
         <span class="n">group_rank_sizes</span> <span class="o">=</span> <span class="p">{</span><span class="n">group_id</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mpi_size</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span> <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_ids</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">edge_type_id</span><span class="p">,</span> <span class="n">mg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">rank</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">]</span>
-            <span class="n">group_id</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span>
-            <span class="n">group_rank_sizes</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">rank</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">'rank'</span><span class="p">]</span>
+            <span class="n">group_id</span> <span class="o">=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">]</span>
+            <span class="n">group_rank_sizes</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">rank</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mg</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
         <span class="n">group_rank_offsets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">group_sizes</span> <span class="ow">in</span> <span class="n">group_rank_sizes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">group_rank_offsets</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">group_sizes</span><span class="p">)</span>
@@ -739,84 +739,84 @@
         <span class="n">local_group_props</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">et_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">edge_type_id</span><span class="p">,</span> <span class="n">mg_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mpi_rank</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">'rank'</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mpi_rank</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">group_id</span> <span class="o">=</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span>
+            <span class="n">group_id</span> <span class="o">=</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">group_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_group_props</span><span class="p">:</span>
                 <span class="n">local_group_props</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-                    <span class="s1">&#39;pnames&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]],</span>
-                    <span class="s1">&#39;ptypes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]]</span>
+                    <span class="s1">'size'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                    <span class="s1">'pnames'</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">'properties'</span><span class="p">]],</span>
+                    <span class="s1">'ptypes'</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">'properties'</span><span class="p">]]</span>
                 <span class="p">}</span>
-            <span class="n">local_group_props</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+            <span class="n">local_group_props</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">'size'</span><span class="p">]</span> <span class="o">+=</span> <span class="n">mg_grp</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
             <span class="n">et_count</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="c1"># Try to take all the edge-types-tables on the current rank and combine them into one &quot;processed&quot; table (and</span>
+        <span class="c1"># Try to take all the edge-types-tables on the current rank and combine them into one "processed" table (and</span>
         <span class="c1"># multiple model groups). There will be a penalty for doing more disk writing, and doing this part is not</span>
         <span class="c1"># strictly necessary. But for very large and complicated network it will make the process more parallizable</span>
         <span class="c1"># (since the writing is only done on one rank).</span>
         <span class="n">unprocessed_h5_path</span> <span class="o">=</span> <span class="n">EdgeTypesTableMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">mpi_rank</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">unprocessed_h5_path</span><span class="p">):</span>
-            <span class="n">unprocessed_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">unprocessed_h5_path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">unprocessed_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">unprocessed_h5_path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">'r'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># It is possible a .edge_types_table.&lt;rank&gt;.h5 file doesn&#39;t exist because there are no edges on that rank.</span>
+            <span class="c1"># It is possible a .edge_types_table.&lt;rank&gt;.h5 file doesn't exist because there are no edges on that rank.</span>
             <span class="c1"># As such hack together a fake hdf5 format with /unprocessed/network_name/ path but no data.</span>
             <span class="n">unprocessed_h5</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;unprocessed&#39;</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">:</span> <span class="p">{}}</span>
+                <span class="s1">'unprocessed'</span><span class="p">:</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">:</span> <span class="p">{}}</span>
             <span class="p">}</span>
 
-        <span class="c1"># with h5py.File(&#39;.edge_types_table.processed.{}.h5&#39;.format(mpi_rank), &#39;w&#39;) as local_h5:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_h5</span><span class="p">:</span>
+        <span class="c1"># with h5py.File('.edge_types_table.processed.{}.h5'.format(mpi_rank), 'w') as local_h5:</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">),</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_h5</span><span class="p">:</span>
             <span class="c1"># WARNING: Trying to process the data back into the .edge_types_table*h5 being read from will randomly cause</span>
             <span class="c1">#          resource unavailble errors.</span>
             <span class="n">local_grp_sizes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># count the size of each property model group for all edge-types on this rank</span>
-            <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">edge_grp</span> <span class="ow">in</span> <span class="n">unprocessed_h5</span><span class="p">[</span><span class="s1">&#39;unprocessed&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">group_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)][</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">edge_grp</span> <span class="ow">in</span> <span class="n">unprocessed_h5</span><span class="p">[</span><span class="s1">'unprocessed'</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">group_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">edge_id</span><span class="p">)][</span><span class="s1">'edge_group_id'</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">group_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_grp_sizes</span><span class="p">:</span>
                     <span class="n">local_grp_sizes</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">local_grp_sizes</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">edge_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+                <span class="n">local_grp_sizes</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">edge_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="s1">&#39;processed&#39;</span> <span class="ow">in</span> <span class="n">local_h5</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">local_h5</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">'processed'</span> <span class="ow">in</span> <span class="n">local_h5</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">local_h5</span><span class="p">[</span><span class="s1">'edges'</span><span class="p">]</span>
 
             <span class="c1"># initialize data-sets</span>
-            <span class="n">proc_grp</span> <span class="o">=</span> <span class="n">local_h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;processed&#39;</span><span class="p">)</span>
-            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
-            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
-            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
-            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+            <span class="n">proc_grp</span> <span class="o">=</span> <span class="n">local_h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">'processed'</span><span class="p">)</span>
+            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'source_node_id'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'target_node_id'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'edge_type_id'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'edge_group_id'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+            <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'edge_group_index'</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_local_edges</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">grp_props</span> <span class="ow">in</span> <span class="n">local_group_props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">grp</span> <span class="o">=</span> <span class="n">proc_grp</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">group_id</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grp_props</span><span class="p">[</span><span class="s1">&#39;pnames&#39;</span><span class="p">],</span> <span class="n">grp_props</span><span class="p">[</span><span class="s1">&#39;ptypes&#39;</span><span class="p">]):</span>
-                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">pname</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">grp_props</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ptype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">pname</span><span class="p">,</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">grp_props</span><span class="p">[</span><span class="s1">'pnames'</span><span class="p">],</span> <span class="n">grp_props</span><span class="p">[</span><span class="s1">'ptypes'</span><span class="p">]):</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">pname</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">grp_props</span><span class="p">[</span><span class="s1">'size'</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ptype</span><span class="p">)</span>
 
             <span class="c1"># iterate through all edge-types, write src/trg ids, edge-type-ids, and model properties to the correct</span>
-            <span class="c1"># place in the &quot;processed&quot; table.</span>
+            <span class="c1"># place in the "processed" table.</span>
             <span class="n">idx_beg</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">grp_indices</span> <span class="o">=</span> <span class="p">{</span><span class="n">group_id</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">local_group_props</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-            <span class="k">for</span> <span class="n">edge_type_id_str</span><span class="p">,</span> <span class="n">edge_type_grp</span> <span class="ow">in</span> <span class="n">unprocessed_h5</span><span class="p">[</span><span class="s1">&#39;unprocessed&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">edge_type_id_str</span><span class="p">,</span> <span class="n">edge_type_grp</span> <span class="ow">in</span> <span class="n">unprocessed_h5</span><span class="p">[</span><span class="s1">'unprocessed'</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">edge_type_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">edge_type_id_str</span><span class="p">)</span>
-                <span class="n">idx_end</span> <span class="o">=</span> <span class="n">idx_beg</span> <span class="o">+</span> <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
-                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_grp</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span>
-                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_grp</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span>
-                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_id</span>
+                <span class="n">idx_end</span> <span class="o">=</span> <span class="n">idx_beg</span> <span class="o">+</span> <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
+                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_grp</span><span class="p">[</span><span class="s1">'source_node_id'</span><span class="p">]</span>
+                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_grp</span><span class="p">[</span><span class="s1">'target_node_id'</span><span class="p">]</span>
+                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">'edge_type_id'</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_id</span>
 
                 <span class="n">group_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">]</span>
-                <span class="n">group_id</span> <span class="o">=</span> <span class="n">group_props</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span>
+                <span class="n">group_id</span> <span class="o">=</span> <span class="n">group_props</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">]</span>
                 <span class="n">grp_idx_beg</span> <span class="o">=</span> <span class="n">grp_indices</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
-                <span class="n">grp_idx_end</span> <span class="o">=</span> <span class="n">grp_idx_beg</span> <span class="o">+</span> <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+                <span class="n">grp_idx_end</span> <span class="o">=</span> <span class="n">grp_idx_beg</span> <span class="o">+</span> <span class="n">edge_type_grp</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
 
-                <span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="n">local_group_props</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">&#39;pnames&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="n">local_group_props</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="s1">'pnames'</span><span class="p">]:</span>
                     <span class="n">proc_grp</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">group_id</span><span class="p">)][</span><span class="n">pname</span><span class="p">][</span><span class="n">grp_idx_beg</span><span class="p">:</span><span class="n">grp_idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_grp</span><span class="p">[</span><span class="n">pname</span><span class="p">]</span>
 
-                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_id</span>
+                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_id</span>
 
                 <span class="n">group_index_offset</span> <span class="o">=</span> <span class="n">group_rank_offsets</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">mpi_rank</span><span class="p">]</span>
-                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">&#39;edge_group_index&#39;</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="n">proc_grp</span><span class="p">[</span><span class="s1">'edge_group_index'</span><span class="p">][</span><span class="n">idx_beg</span><span class="p">:</span><span class="n">idx_end</span><span class="p">]</span> <span class="o">=</span> \
                     <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">grp_idx_beg</span><span class="p">,</span> <span class="n">grp_idx_end</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span> <span class="o">+</span> <span class="n">group_index_offset</span>
 
                 <span class="n">idx_beg</span> <span class="o">=</span> <span class="n">idx_end</span>
@@ -832,29 +832,29 @@
 <div class="viewcode-block" id="EdgesCollatorMPI.sort">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.sort">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">,</span> <span class="n">sort_group_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to sort edges.&#39;</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Unable to sort edges.'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_group_metadata">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_metadata">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks."""</span>
         <span class="n">ret_props</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">prop_size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># There has to be a better way of doing this</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">edge_type_md</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_groups_md</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">&#39;edge_group_id&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">group_id</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">'edge_group_id'</span><span class="p">]</span> <span class="o">!=</span> <span class="n">group_id</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">prop_size</span> <span class="o">+=</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+            <span class="n">prop_size</span> <span class="o">+=</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">'size'</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">ret_props</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ret_props</span> <span class="o">=</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">]</span>
+                <span class="n">ret_props</span> <span class="o">=</span> <span class="n">edge_type_md</span><span class="p">[</span><span class="s1">'properties'</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">prop_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ret_props</span><span class="p">:</span>
-                <span class="n">p</span><span class="p">[</span><span class="s1">&#39;dim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop_size</span><span class="p">,)</span>
+                <span class="n">p</span><span class="p">[</span><span class="s1">'dim'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">prop_size</span><span class="p">,)</span>
             <span class="k">return</span> <span class="n">ret_props</span></div>
 
 
@@ -871,11 +871,11 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_processed_h5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span> <span class="c1">#  &#39;.edge_types_table.processed.{}.h5&#39;.format(rank)</span>
+        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span> <span class="c1">#  '.edge_types_table.processed.{}.h5'.format(rank)</span>
         <span class="k">if</span> <span class="n">h5_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span><span class="p">[</span><span class="n">h5_path</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">h5_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">h5_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_proc_fhandles</span><span class="p">[</span><span class="n">h5_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5_handle</span>
             <span class="k">return</span> <span class="n">h5_handle</span>
 
@@ -883,35 +883,35 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_source_node_ids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_source_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed/source_node_id&#39;</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed/source_node_id'</span><span class="p">][()]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_target_node_ids">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_target_node_ids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_target_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed/target_node_id&#39;</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed/target_node_id'</span><span class="p">][()]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_edge_type_ids">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_type_ids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_type_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed/edge_type_id&#39;</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed/edge_type_id'</span><span class="p">][()]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_edge_group_ids">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_group_ids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_group_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed/edge_group_id&#39;</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed/edge_group_id'</span><span class="p">][()]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_edge_group_indices">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_edge_group_indices">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_group_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed/edge_group_index&#39;</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed/edge_group_index'</span><span class="p">][()]</span></div>
 
 
 <div class="viewcode-block" id="EdgesCollatorMPI.get_group_data">
@@ -919,7 +919,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">ret_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="n">processed</span> <span class="o">=</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;/processed&#39;</span><span class="p">]</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'/processed'</span><span class="p">]</span>
         <span class="n">ranked_grp_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">grp_id_str</span> <span class="k">for</span> <span class="n">grp_id_str</span><span class="p">,</span> <span class="n">h5_obj</span> <span class="ow">in</span> <span class="n">processed</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5_obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)]</span>
         <span class="k">for</span> <span class="n">grp_id</span> <span class="ow">in</span> <span class="n">ranked_grp_ids</span><span class="p">:</span>
             <span class="n">grp_size</span> <span class="o">=</span> <span class="mi">0</span>
@@ -936,17 +936,17 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.network_adaptors.html#bmtk.builder.network_adaptors.edges_collator.EdgesCollatorMPI.get_group_property">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_group_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">):</span>
         <span class="n">rank_h5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_processed_h5</span><span class="p">(</span><span class="n">rank</span><span class="o">=</span><span class="n">chunk_id</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">&#39;processed&#39;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">group_id</span><span class="p">)][</span><span class="n">prop_name</span><span class="p">][()]</span></div>
+        <span class="k">return</span> <span class="n">rank_h5</span><span class="p">[</span><span class="s1">'processed'</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">group_id</span><span class="p">)][</span><span class="n">prop_name</span><span class="p">][()]</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># clean up .h5 file that is saved to disk</span>
-        <span class="n">tmp_h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">)</span> <span class="c1"># &#39;.edge_types_table.processed.{}.h5&#39;.format(mpi_rank)</span>
+        <span class="n">tmp_h5_path</span> <span class="o">=</span> <span class="n">EdgesCollatorMPI</span><span class="o">.</span><span class="n">get_tmp_table_path</span><span class="p">(</span><span class="n">mpi_rank</span><span class="p">)</span> <span class="c1"># '.edge_types_table.processed.{}.h5'.format(mpi_rank)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to delete temp edges file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Unable to delete temp edges file </span><span class="si">{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp_h5_path</span><span class="p">))</span></div>
 
 
             

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -383,7 +383,11 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </details></li>
@@ -502,9 +506,9 @@ optimization and perturbation tasks.</p>
 <p>For example, when creating a model of the auditory pathway we may divide it into 3 different network populations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net_coch</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;Cochlea&quot;</span><span class="p">)</span>
-<span class="n">net_aud1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;AUD1&quot;</span><span class="p">)</span>
-<span class="n">net_aud2</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;AUD2&quot;</span><span class="p">)</span>
+<span class="n">net_coch</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"Cochlea"</span><span class="p">)</span>
+<span class="n">net_aud1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"AUD1"</span><span class="p">)</span>
+<span class="n">net_aud2</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"AUD2"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Creating an individual <em>net</em> makes it easy to assign unique cells, cell-models, and attributes to each population. We can still connect them
@@ -531,12 +535,12 @@ cells.</p>
 
 <span class="n">n_nodes</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">&quot;VISp&quot;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">"VISp"</span><span class="p">)</span>
 <span class="n">coords</span> <span class="o">=</span> <span class="n">positions_columnar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">200.0</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="n">n_nodes</span><span class="p">,</span>
-   <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-   <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Pyr.swc&#39;</span><span class="p">,</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+   <span class="n">morphology</span><span class="o">=</span><span class="s1">'Pyr.swc'</span><span class="p">,</span>
    <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
    <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
    <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
@@ -553,7 +557,7 @@ are SONATA reserved keywords, like <strong>model_type</strong> and <strong>morph
 modelers can also define their own parameters as they deem appropriate.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
       <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-      <span class="n">parameter1</span><span class="o">=</span><span class="s1">&#39;my_string&#39;</span><span class="p">,</span>
+      <span class="n">parameter1</span><span class="o">=</span><span class="s1">'my_string'</span><span class="p">,</span>
       <span class="n">parameter2</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
       <span class="n">parameter3</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
       <span class="o">...</span>
@@ -569,11 +573,11 @@ example</div>
 Certain parameters, like <strong>morphology</strong> or <strong>rotation_angle</strong> don’t apply to <em>point</em>-type neurons so are not called.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-   <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-   <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyr_cell.swc&#39;</span><span class="p">,</span>
-   <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">],</span>
-   <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span>
-   <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+   <span class="n">morphology</span><span class="o">=</span><span class="s1">'pyr_cell.swc'</span><span class="p">,</span>
+   <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">],</span>
+   <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">],</span>
+   <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">],</span>
    <span class="n">rotation_angle_xaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">),</span>
    <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">),</span>
    <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="n">n_nodes</span><span class="p">),</span>
@@ -581,10 +585,10 @@ Certain parameters, like <strong>morphology</strong> or <strong>rotation_angle</
 
 <span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-   <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point&#39;</span><span class="p">,</span>
-   <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">],</span>
-   <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span>
-   <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s1">'point'</span><span class="p">,</span>
+   <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">],</span>
+   <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">],</span>
+   <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">],</span>
    <span class="n">v_reset</span><span class="o">=-</span><span class="mf">60.0</span><span class="p">,</span>
    <span class="n">v_threshold</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
 <span class="p">)</span>
@@ -605,7 +609,7 @@ which will assign each cell the corresponding index value in the list. These are
 cells the <strong>loc_region</strong> property is the same value (<cite>Layer2/3</cite>). But the <strong>loc_order</strong> will be different for each cell.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-   <span class="n">loc_region</span><span class="o">=</span><span class="s2">&quot;Layer2/3&quot;</span><span class="p">,</span>
+   <span class="n">loc_region</span><span class="o">=</span><span class="s2">"Layer2/3"</span><span class="p">,</span>
    <span class="n">loc_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -617,7 +621,7 @@ still assigned the same <strong>loc_region</strong> value, but by passing in a l
 three values:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
    <span class="n">N</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
-   <span class="n">loc_region</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Layer2/3&quot;</span><span class="p">,</span> <span class="s2">&quot;Layer4&quot;</span><span class="p">,</span> <span class="s2">&quot;Layer5&quot;</span><span class="p">),</span>
+   <span class="n">loc_region</span><span class="o">=</span><span class="p">(</span><span class="s2">"Layer2/3"</span><span class="p">,</span> <span class="s2">"Layer4"</span><span class="p">,</span> <span class="s2">"Layer5"</span><span class="p">),</span>
    <span class="n">loc_order</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
@@ -695,8 +699,8 @@ to set the <strong>node_id</strong> and <strong>node_type_id</strong> parameter 
 <p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> will return an iterator of the nodes in a
 network. By default, it returns all nodes but one can filter by specific property values. The nodes themselves can have
 their properties accessed like a dictionary. For example to get all biophysically detailed inhibitory (inh) neurons:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">):</span>
-   <span class="n">x</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;position_x&#39;</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'inh'</span><span class="p">):</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">'position_x'</span><span class="p">]</span>
    <span class="o">...</span>
 </pre></div>
 </div>
@@ -725,11 +729,11 @@ you use the following:</p>
 <div class="sd-card-title sd-font-weight-bold docutils">
 example</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-      <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>                                 <span class="c1"># 1</span>
-      <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;ephys_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fast_spiking&#39;</span><span class="p">},</span>
+      <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span>                                 <span class="c1"># 1</span>
+      <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'ephys_type'</span><span class="p">:</span> <span class="s1">'fast_spiking'</span><span class="p">},</span>
       <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_connection_func</span><span class="p">,</span>                   <span class="c1"># 2</span>
-      <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">&#39;i2e.json&#39;</span><span class="p">,</span>                        <span class="c1"># 3</span>
-      <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;alphaSyn&#39;</span><span class="p">,</span>
+      <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">'i2e.json'</span><span class="p">,</span>                        <span class="c1"># 3</span>
+      <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">'alphaSyn'</span><span class="p">,</span>
       <span class="n">syn_weight</span><span class="o">=</span><span class="mf">1.34e-05</span><span class="p">,</span>
       <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span>
  <span class="p">)</span>
@@ -756,11 +760,11 @@ connections from the Thalamus <cite>ON-OFF</cite> cells onto the VISp excitatory
 except instead of passing in dictionaries to filter the <strong>source</strong> and <strong>target</strong> we used the
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net_visp</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-      <span class="n">source</span><span class="o">=</span><span class="n">net_thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">&#39;on-off&#39;</span><span class="p">),</span>
-      <span class="n">target</span><span class="o">=</span><span class="n">net_visp</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">),</span>
+      <span class="n">source</span><span class="o">=</span><span class="n">net_thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s1">'on-off'</span><span class="p">),</span>
+      <span class="n">target</span><span class="o">=</span><span class="n">net_visp</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">),</span>
       <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_connection_func</span><span class="p">,</span>
-      <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">&#39;on_off_exc.json&#39;</span><span class="p">,</span>
-      <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;alphaSyn&#39;</span><span class="p">,</span>
+      <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">'on_off_exc.json'</span><span class="p">,</span>
+      <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">'alphaSyn'</span><span class="p">,</span>
       <span class="n">syn_weight</span><span class="o">=</span><span class="mf">1.34e-05</span><span class="p">,</span>
       <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span>
 <span class="p">)</span>
@@ -776,31 +780,31 @@ list-of-lists, or matrix). The function’s first two parameters will be the sou
 can be accessed like a dictionary. It should return an integer <strong>N</strong> for the number of connections between the source and
 target. The value will be 0 or None if there is no connection.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_connection_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-   <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
-   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+   <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
+   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
    <span class="o">...</span>
    <span class="k">return</span> <span class="n">N_syns</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-   <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;ephys_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fast_spiking&#39;</span><span class="p">},</span>
+   <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'ephys_type'</span><span class="p">:</span> <span class="s1">'fast_spiking'</span><span class="p">},</span>
    <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_connection_func</span><span class="p">,</span>
-   <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">&#39;i2e.json&#39;</span><span class="p">,</span>
+   <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">'i2e.json'</span><span class="p">,</span>
    <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <p>If the connection_rule function requires additional arguments, use the <code class="docutils literal notranslate"><span class="pre">connection_params</span></code> option:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_connection_func</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_edges</span><span class="p">,</span> <span class="n">max_edges</span><span class="p">):</span>
-   <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
-   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+   <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
+   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
    <span class="o">...</span>
    <span class="k">return</span> <span class="n">N_syns</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-   <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;ephys_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fast_spiking&#39;</span><span class="p">},</span>
+   <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'inh'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'exc'</span><span class="p">,</span> <span class="s1">'ephys_type'</span><span class="p">:</span> <span class="s1">'fast_spiking'</span><span class="p">},</span>
    <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_connection_func</span><span class="p">,</span>
-   <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_edges&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max_edges&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
-   <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">&#39;i2e.json&#39;</span><span class="p">,</span>
+   <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'min_edges'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'max_edges'</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+   <span class="n">dynamic_parameters</span><span class="o">=</span><span class="s1">'i2e.json'</span><span class="p">,</span>
    <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -813,10 +817,10 @@ change the signature and return values of their connection_rule function. By set
 it will pass in a list of all <strong>N</strong> source neurons instead of passing in a single source neuron, and will expect a
 corresponding list of size <strong>N</strong>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bulk_connection_func</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+   <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
    <span class="n">syn_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">))</span>
    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
-      <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+      <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
       <span class="o">...</span>
    <span class="k">return</span> <span class="n">syn_list</span>
 </pre></div>
@@ -834,25 +838,25 @@ the exact number of connections is not known in advance.</p>
 add individual properties for each edge using our own user-defined functions. Like with our connection_rule function,
 the connection_map <code class="docutils literal notranslate"><span class="pre">rule</span></code> function takes in a source and target node and returns a corresponding value:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-   <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+   <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
    <span class="o">...</span>
    <span class="k">return</span> <span class="n">syn_weight</span>
 
 <span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="o">....</span><span class="p">)</span>
-<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span> <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">'syn_weight'</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">'delay'</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">),</span> <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the <code class="docutils literal notranslate"><span class="pre">rule</span></code> requires extra arguments we can use the <code class="docutils literal notranslate"><span class="pre">rule_params</span></code> option:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_weight</span><span class="p">,</span> <span class="n">max_weight</span><span class="p">):</span>
-   <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+   <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'position'</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">'position'</span><span class="p">]</span>
    <span class="o">...</span>
    <span class="k">return</span> <span class="n">syn_weight</span>
 
 <span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span>
+   <span class="n">name</span><span class="o">=</span><span class="s1">'syn_weight'</span><span class="p">,</span>
    <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">,</span>
-   <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_weight&#39;</span><span class="p">:</span> <span class="mf">1.0e-06</span><span class="p">,</span> <span class="s1">&#39;max_weight&#39;</span><span class="p">:</span> <span class="mf">1.0e-04</span><span class="p">},</span>
+   <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'min_weight'</span><span class="p">:</span> <span class="mf">1.0e-06</span><span class="p">,</span> <span class="s1">'max_weight'</span><span class="p">:</span> <span class="mf">1.0e-04</span><span class="p">},</span>
    <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span>
 <span class="p">)</span>
 </pre></div>
@@ -865,7 +869,7 @@ and <code class="docutils literal notranslate"><span class="pre">dtypes</span></
    <span class="k">return</span> <span class="n">syn_region</span><span class="p">,</span> <span class="n">syn_dist</span>
 
 <span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;syn_region&#39;</span><span class="p">,</span> <span class="s1">&#39;syn_dist&#39;</span><span class="p">],</span>
+   <span class="n">name</span><span class="o">=</span><span class="p">[</span><span class="s1">'syn_region'</span><span class="p">,</span> <span class="s1">'syn_dist'</span><span class="p">],</span>
    <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">,</span>
    <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span>

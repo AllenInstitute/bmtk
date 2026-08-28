@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -426,22 +426,22 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;cell&#39;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'cell'</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;hoc:L5PCtemplate.hoc&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;cell3.asc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'hoc:L5PCtemplate.hoc'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'cell3.asc'</span><span class="p">,</span>
 
     <span class="c1"># optional</span>
-    <span class="c1"># ei_type=&#39;exc&#39;,</span>
-    <span class="c1"># model_name=&#39;Scnn1a&#39;,</span>
-    <span class="c1"># species=&#39;mouse&#39;,</span>
-    <span class="c1"># location=&#39;VISp&#39;,</span>
-    <span class="c1"># layer=&#39;L4&#39;</span>
+    <span class="c1"># ei_type='exc',</span>
+    <span class="c1"># model_name='Scnn1a',</span>
+    <span class="c1"># species='mouse',</span>
+    <span class="c1"># location='VISp',</span>
+    <span class="c1"># layer='L4'</span>
 <span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -458,26 +458,26 @@ WARNING:root:No edges have been made for this network, skipping saving of edges 
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">virt_exc</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;virt_exc&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">virt_exc</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'virt_exc'</span><span class="p">)</span>
 <span class="n">virt_exc</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">ei_type</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">ei_type</span><span class="o">=</span><span class="s1">'exc'</span>
 <span class="p">)</span>
 <span class="n">conns</span> <span class="o">=</span> <span class="n">virt_exc</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">virt_exc</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
     <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e20</span><span class="p">],</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'soma'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.01</span>
 <span class="p">)</span>
 
 <span class="n">virt_exc</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">virt_exc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">virt_exc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -494,11 +494,11 @@ WARNING:root:No edges have been made for this network, skipping saving of edges 
 <span class="kn">from</span><span class="w"> </span><span class="nn">neuron</span><span class="w"> </span><span class="kn">import</span> <span class="n">h</span>
 
 
-<span class="n">h</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s2">&quot;import3d.hoc&quot;</span><span class="p">)</span>
+<span class="n">h</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s2">"import3d.hoc"</span><span class="p">)</span>
 
-<span class="nd">@bionet</span><span class="o">.</span><span class="n">cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">&#39;hoc:L5PCtemplate.hoc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
+<span class="nd">@bionet</span><span class="o">.</span><span class="n">cell_model</span><span class="p">(</span><span class="n">directive</span><span class="o">=</span><span class="s1">'hoc:L5PCtemplate.hoc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">loadHayModel</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
-    <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
+    <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">]</span>
     <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">L5PCtemplate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">hobj</span>
 </pre></div>
@@ -512,8 +512,8 @@ WARNING:root:No edges have been made for this network, skipping saving of edges 
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="c1"># conf = bionet.Config.from_json(&#39;config.iclamp.json&#39;)</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.with_syns.json&#39;</span><span class="p">)</span>
+<span class="c1"># conf = bionet.Config.from_json('config.iclamp.json')</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.with_syns.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -584,8 +584,8 @@ NEURON mechanisms not found in ./components/mechanisms.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.with_syns.json&#39;</span><span class="p">)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.with_syns.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.with_syns.json'</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.with_syns.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'v_report'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

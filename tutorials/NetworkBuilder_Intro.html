@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -481,16 +481,16 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="c1"># Initialize our network</span>
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;mcortex&quot;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"mcortex"</span><span class="p">)</span>
 
 <span class="c1"># Add a population of 10 nodes (all of which share model_type, dynamics_params, etc.)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
-              <span class="n">mem_potential</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-              <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
-              <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span>
+              <span class="n">mem_potential</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+              <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_fit.json'</span><span class="p">,</span>
+              <span class="n">morphology</span><span class="o">=</span><span class="s1">'Scnn1a_473845048_m.swc'</span><span class="p">)</span>
 
 <span class="c1"># If needed we can add more populations</span>
 <span class="c1"># net.add_nodes(N, ...)</span>
@@ -499,7 +499,7 @@
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
 <span class="c1"># Save the network into the specificed directory</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -513,8 +513,8 @@
 </ul>
 <p>However the NetworkBuilder is simulator agnositc allowing modelers to choose whatever parameters they need depending on simulator and/or required to describe the models. For example the following could be used by another simulator to build a network describing 100 Izhikevich point neurons. Notice we no longer need parameters like morphology or model_processing, but have new parameter a, b, c, and d which would be required by any Izhikevich neuron model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nrn:Izhikevich.hoc&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nrn:Izhikevich.hoc'</span><span class="p">,</span>
               <span class="n">param_a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">param_b</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">param_c</span><span class="o">=-</span><span class="mf">55.0</span><span class="p">,</span> <span class="n">parm_d</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -526,8 +526,8 @@ and it also makes easier to change properties (like updating ephys params or usi
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">nodes_table</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_nodes.h5&#39;</span><span class="p">)</span>
-<span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex_nodes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'mcortex_nodes.h5'</span><span class="p">)</span>
+<span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">'network/mcortex_nodes.h5'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'mcortex'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -626,8 +626,8 @@ mcortex_nodes.h5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">node_types_table</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_node_types.h5&#39;</span><span class="p">)</span>
-<span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'mcortex_node_types.h5'</span><span class="p">)</span>
+<span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">'network/mcortex_node_types.csv'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'mcortex'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -700,24 +700,24 @@ mcortex_node_types.h5
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;mcortex2&quot;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;pyr&#39;</span><span class="p">,</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;pyr_ephys.json&#39;</span><span class="p">,</span>
-              <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;pyr_morph.swc&#39;</span><span class="p">,</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"mcortex2"</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'pyr'</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'pyr_ephys.json'</span><span class="p">,</span>
+              <span class="n">morphology</span><span class="o">=</span><span class="s1">'pyr_morph.swc'</span><span class="p">,</span>
               <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;izh&#39;</span><span class="p">,</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nrn:Izhikevich.hoc&#39;</span><span class="p">,</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'izh'</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nrn:Izhikevich.hoc'</span><span class="p">,</span>
               <span class="n">param_a</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
               <span class="n">param_b</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
               <span class="n">param_c</span><span class="o">=-</span><span class="mf">55.0</span><span class="p">,</span>
               <span class="n">d</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -727,8 +727,8 @@ mcortex_node_types.h5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">nodes_table</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_nodes.h5&#39;</span><span class="p">)</span>
-<span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex2_nodes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex2&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'mcortex_nodes.h5'</span><span class="p">)</span>
+<span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">'network/mcortex2_nodes.h5'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'mcortex2'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -900,8 +900,8 @@ mcortex_nodes.h5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">node_types_table</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_node_types.h5&#39;</span><span class="p">)</span>
-<span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex2_node_types.csv&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'mcortex_node_types.h5'</span><span class="p">)</span>
+<span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">'network/mcortex2_node_types.csv'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'mcortex'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -983,25 +983,25 @@ mcortex_node_types.h5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create connections between pyr --&gt; izh cells</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;izh&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'izh'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">5.0e-03</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 
 <span class="c1"># Build and save our network</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Breaking this down, first we specify which nodes to use as sources and which to use as targets by filtering on the parameters of our choice</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;izh&#39;</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'izh'</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>We could also filter by more than one parameter if we wanted</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;izh&#39;</span><span class="p">,</span> <span class="s1">&#39;param_a&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'izh'</span><span class="p">,</span> <span class="s1">'param_a'</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>If source and/or target are not specified it uses all possible nodes.</p>
@@ -1012,8 +1012,8 @@ mcortex_node_types.h5
 <p>In this example there are (10 pyr) x (5 izh) = 50 source-target pairs, each with 12 synaptic connection. You can pass in a list of 50 integers. And in the next sections we will show how to customized connection property.</p>
 <p>Finally we add edge properties</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">syn_weight</span><span class="o">=</span><span class="mf">5.0e-03</span><span class="p">,</span>
-<span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToExc.json&#39;</span><span class="p">,</span>
-<span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+<span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToExc.json'</span><span class="p">,</span>
+<span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
 <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1027,24 +1027,24 @@ mcortex_node_types.h5
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">like2like</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_syns</span><span class="p">,</span> <span class="n">max_syns</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A simple function for setting # of synaptic connections based on pop-name attribute. &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""A simple function for setting # of synaptic connections based on pop-name attribute. """</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]:</span>
         <span class="c1"># No autapses</span>
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="c1"># favor like-to-like connections</span>
-    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">max_syns</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">min_syns</span>
 
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;izh&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'pyr'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'izh'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">like2like</span><span class="p">,</span> <span class="c1"># Note that we are passing in the function name but not calling it</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_syns&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;max_syns&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span> <span class="c1"># are used to set min_syns, max_syns params in like2like function</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'min_syns'</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">'max_syns'</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span> <span class="c1"># are used to set min_syns, max_syns params in like2like function</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">5.0e-03</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 
 <span class="c1"># Build and save connections</span>
@@ -1071,20 +1071,20 @@ connections for a pair the function should return 0.</p>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_weight</span><span class="p">,</span> <span class="n">max_weight</span><span class="p">)</span>
 
 <span class="n">conn</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
-                     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-                     <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+                     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+                     <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
                      <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 
-<span class="n">conn</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">'syn_weight'</span><span class="p">,</span>
                     <span class="n">rule</span><span class="o">=</span><span class="n">rand_syn_weight</span><span class="p">,</span>
-                    <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_weight&#39;</span><span class="p">:</span> <span class="mf">1.0e-06</span><span class="p">,</span> <span class="s1">&#39;max_weight&#39;</span><span class="p">:</span> <span class="mf">1.0e-03</span><span class="p">},</span>
+                    <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'min_weight'</span><span class="p">:</span> <span class="mf">1.0e-06</span><span class="p">,</span> <span class="s1">'max_weight'</span><span class="p">:</span> <span class="mf">1.0e-03</span><span class="p">},</span>
                     <span class="n">dtypes</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <p>Once again the rand_syn_weight function will be called during the build process. The function will pass in the source and target nodes for every connection, along with any option parameters set in rule_params. The function must return a numerical value according to the specified dtypes. You can also specifiy multiple params in the same call.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conn</span><span class="o">.</span><span class="n">add_properties</span><span class="p">([</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="s1">&#39;sec_id&#39;</span><span class="p">],</span> <span class="n">rule</span><span class="o">=</span><span class="n">my_fnc</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">conn</span><span class="o">.</span><span class="n">add_properties</span><span class="p">([</span><span class="s1">'syn_weight'</span><span class="p">,</span> <span class="s1">'sec_id'</span><span class="p">],</span> <span class="n">rule</span><span class="o">=</span><span class="n">my_fnc</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">])</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">my_fnc</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="n">syn_weight</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># float</span>

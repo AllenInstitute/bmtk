@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -417,20 +417,20 @@
 <div class="viewcode-block" id="SimReport">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimReport</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default</span>
+<span class="w">    </span><span class="sd">"""Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default</span>
 <span class="sd">    values.</span>
 
-<span class="sd">    Use the build() method to convert a &quot;reports&quot; section dictionary to a SimReport object. The SimReport object has</span>
+<span class="sd">    Use the build() method to convert a "reports" section dictionary to a SimReport object. The SimReport object has</span>
 <span class="sd">    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**::</span>
 
 <span class="sd">        report = SimReport.build(</span>
-<span class="sd">            report_name=&#39;my_report&#39;,</span>
-<span class="sd">            params = {&#39;module&#39;: &#39;my_mod&#39;, ...})</span>
+<span class="sd">            report_name='my_report',</span>
+<span class="sd">            params = {'module': 'my_mod', ...})</span>
 <span class="sd">        ...</span>
 <span class="sd">        MyReport(**report.params)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">default_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+    <span class="n">default_dir</span> <span class="o">=</span> <span class="s1">'.'</span>
     <span class="n">registry</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Used by factory to keep track of subclasses</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
@@ -439,9 +439,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
 
         <span class="c1"># Not part of standard, just want a quick way to turn off modules</span>
-        <span class="k">if</span> <span class="s1">&#39;enabled&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
-            <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'enabled'</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'enabled'</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s1">'enabled'</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -450,7 +450,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">node_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cells&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'cells'</span><span class="p">,</span> <span class="s1">'all'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">default_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defaults</span><span class="p">():</span>
@@ -458,7 +458,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_val</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Should be overwritten by subclass with list of (var_name, default_val) tuples.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Should be overwritten by subclass with list of (var_name, default_val) tuples."""</span>
         <span class="k">return</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="SimReport.avail_modules">
@@ -473,19 +473,19 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport.build">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Factory method to get the module subclass, using the params (particularlly the &#39;module&#39; value, which is</span>
+<span class="w">        </span><span class="sd">"""Factory method to get the module subclass, using the params (particularlly the 'module' value, which is</span>
 <span class="sd">        required). If there is no registered subclass a generic SimReport object will be returned</span>
 
 <span class="sd">        :param report_name: name of report</span>
 <span class="sd">        :param params: parameters of report</span>
 <span class="sd">        :return: A SimReport (or subclass) object with report parameters parsed out.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;report </span><span class="si">{}</span><span class="s1"> does not specify the module.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report_name</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">'module'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'report </span><span class="si">{}</span><span class="s1"> does not specify the module.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report_name</span><span class="p">))</span>
 
-        <span class="n">module_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
-        <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'module'</span><span class="p">]</span>
+        <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s1">'module'</span><span class="p">]</span>
         <span class="n">module_cls</span> <span class="o">=</span> <span class="n">SimReport</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">SimReport</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">module_cls</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 
@@ -501,7 +501,7 @@
         <span class="n">modules</span> <span class="o">=</span> <span class="n">mod_list</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mod_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="p">[</span><span class="n">mod_list</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">mod_name</span> <span class="ow">in</span> <span class="n">modules</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">mod_name</span> <span class="ow">in</span> <span class="n">mod_registry</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Multiple modules named </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_name</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Multiple modules named </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_name</span><span class="p">))</span>
             <span class="n">mod_registry</span><span class="p">[</span><span class="n">mod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subclass</span>
 
         <span class="k">return</span> <span class="n">subclass</span></div>
@@ -516,39 +516,39 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MembraneReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="c1"># Want variable_name option to allow for singular of list of params</span>
-        <span class="n">variables</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variables</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span> <span class="o">=</span> <span class="n">variables</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">variables</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">variables</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;buffer_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'buffer_data'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'buffer'</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">var_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">var_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">]</span> <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># directory for saving temporary files created during simulation</span>
         <span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span>
 
-        <span class="c1"># Find the report file name. Either look for &quot;file_name&quot; parameter, or else it is &lt;report-name&gt;.h5</span>
-        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf&#39;</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
+        <span class="c1"># Find the report file name. Either look for "file_name" parameter, or else it is &lt;report-name&gt;.h5</span>
+        <span class="k">if</span> <span class="s1">'file_name'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf'</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf5'</span><span class="p">):</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span>  <span class="c1"># Check for case report.h5.h5</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;cells&#39;</span><span class="p">,</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;transform&#39;</span><span class="p">,</span> <span class="p">{})]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">'cells'</span><span class="p">,</span> <span class="s1">'biophysical'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'sections'</span><span class="p">,</span> <span class="s1">'all'</span><span class="p">),</span> <span class="p">(</span><span class="s1">'tmp_dir'</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">'file_name'</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">'buffer'</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="p">(</span><span class="s1">'transform'</span><span class="p">,</span> <span class="p">{})]</span>
 
 <div class="viewcode-block" id="MembraneReport.add_variables">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.MembraneReport.add_variables">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">transform</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MembraneReport.can_combine">
@@ -557,14 +557,14 @@
         <span class="k">def</span><span class="w"> </span><span class="nf">param_eq</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">&#39;cells&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">&#39;file_name&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">'cells'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">'sections'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">'file_name'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">param_eq</span><span class="p">(</span><span class="s1">'buffer'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MembraneReport.avail_modules">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.MembraneReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;membrane_report&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'membrane_report'</span></div>
 
 
 <div class="viewcode-block" id="MembraneReport.build">
@@ -572,17 +572,17 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="n">report</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cells&#39;</span><span class="p">,</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sections&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'cells'</span><span class="p">,</span> <span class="s1">'biophysical'</span><span class="p">)</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'sections'</span><span class="p">,</span> <span class="s1">'all'</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'file_name'</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
             <span class="n">report</span><span class="o">.</span><span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">file_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">,</span> <span class="s1">&#39;cell_vars.h5&#39;</span><span class="p">)</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">,</span> <span class="s1">'cell_vars.h5'</span><span class="p">)</span>
             <span class="n">report</span><span class="o">.</span><span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span>
 
-        <span class="n">variables</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'variable_name'</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variables</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">report</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span>
         <span class="k">else</span><span class="p">:</span>
@@ -611,7 +611,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SpikesReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;spikes_report&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'spikes_report'</span></div>
 
 
 <div class="viewcode-block" id="SpikesReport.from_output_dict">
@@ -619,20 +619,20 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_output_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_dict</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;spikes_file&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="s1">&#39;compression&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;compression&#39;</span><span class="p">,</span> <span class="s1">&#39;gzip&#39;</span><span class="p">),</span>
-            <span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="s1">&#39;tmp_dir&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span>
-            <span class="s1">&#39;cache_to_disk&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache_to_disk&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="s1">'spikes_file'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'spikes_file'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s1">'compression'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'compression'</span><span class="p">,</span> <span class="s1">'gzip'</span><span class="p">),</span>
+            <span class="s1">'spikes_file_csv'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'spikes_file_csv'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s1">'spikes_file_nwb'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'spikes_file_nwb'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s1">'spikes_sort_order'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'spikes_sort_order'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="s1">'tmp_dir'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'output_dir'</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span>
+            <span class="s1">'cache_to_disk'</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'cache_to_disk'</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">]):</span>
-            <span class="c1"># User hasn&#39;t specified any spikes file</span>
-            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">'spikes_file'</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">'spikes_file_csv'</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">'spikes_file_nwb'</span><span class="p">]):</span>
+            <span class="c1"># User hasn't specified any spikes file</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">'enabled'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="s1">&#39;spikes_report&#39;</span><span class="p">,</span> <span class="s1">&#39;spikes_report&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="s1">'spikes_report'</span><span class="p">,</span> <span class="s1">'spikes_report'</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
 </div>
 
 
@@ -648,12 +648,12 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ClampReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;clamp_report&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'clamp_report'</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">node_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;all&#39;</span>
+        <span class="k">return</span> <span class="s1">'all'</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
         <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">default_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defaults</span><span class="p">():</span>
@@ -664,16 +664,16 @@
         <span class="c1"># directory for saving temporary files created during simulation</span>
         <span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span>
 
-        <span class="c1"># Find the report file name. Either look for &quot;file_name&quot; parameter, or else it is &lt;report-name&gt;.h5</span>
-        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf&#39;</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
+        <span class="c1"># Find the report file name. Either look for "file_name" parameter, or else it is &lt;report-name&gt;.h5</span>
+        <span class="k">if</span> <span class="s1">'file_name'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf'</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf5'</span><span class="p">):</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span>  <span class="c1"># Check for case report.h5.h5</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">'file_name'</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="p">(</span><span class="s1">'tmp_dir'</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">)]</span></div>
 
 
 
@@ -688,7 +688,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SEClampReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;SEClamp&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'SEClamp'</span></div>
 </div>
 
 
@@ -707,19 +707,19 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ECPReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;extracellular&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'extracellular'</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf&#39;</span><span class="p">)</span> \
-                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">'file_name'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf'</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.hdf5'</span><span class="p">):</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span>  <span class="c1"># Check for case report.h5.h5</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">'tmp_dir'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">'file_name'</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="ECPReport.build">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ECPReport.build">[docs]</a>
@@ -727,15 +727,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="n">report</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">'file_name'</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'file_name'</span><span class="p">]</span>
             <span class="n">report</span><span class="o">.</span><span class="n">tmp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">file_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">,</span> <span class="s1">&#39;ecp.h5&#39;</span><span class="p">)</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">,</span> <span class="s1">'ecp.h5'</span><span class="p">)</span>
             <span class="n">report</span><span class="o">.</span><span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span>
 
-        <span class="n">report</span><span class="o">.</span><span class="n">contributions_dir</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;contributions_dir&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">positions_file</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;electrode_positions&#39;</span><span class="p">]</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">contributions_dir</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'contributions_dir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">report</span><span class="o">.</span><span class="n">positions_file</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'electrode_positions'</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">report</span></div>
 </div>
 
@@ -752,7 +752,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SaveSynapses.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;SaveSynapses&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'SaveSynapses'</span></div>
 </div>
 
 
@@ -765,7 +765,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.MultimeterReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;multimeter&#39;</span><span class="p">,</span> <span class="s1">&#39;multimeter_report&#39;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">'multimeter'</span><span class="p">,</span> <span class="s1">'multimeter_report'</span><span class="p">]</span></div>
 </div>
 
 
@@ -778,7 +778,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.NetconReport.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;netcon_report&#39;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">'netcon_report'</span><span class="p">]</span></div>
 </div>
 
 
@@ -791,21 +791,21 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.WeightRecorder.avail_modules">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">avail_modules</span><span class="p">():</span>
-        <span class="k">return</span> <span class="s1">&#39;weight_recorder&#39;</span></div>
+        <span class="k">return</span> <span class="s1">'weight_recorder'</span></div>
 
    
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span><span class="p">)</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'output_dir'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span><span class="p">)</span>
 
-        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'file_name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">))</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.csv'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">file_name</span>           
         <span class="k">else</span><span class="p">:</span>
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;clean_temp_file&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">'file_name'</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="p">(</span><span class="s1">'output_dir'</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> <span class="p">(</span><span class="s1">'clean_temp_file'</span><span class="p">,</span> <span class="kc">True</span><span class="p">)]</span></div>
 
 
 
@@ -820,7 +820,7 @@
     <span class="k">for</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">report_params</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># Get the Report class from the module_name parameter</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">report_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">report_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'enabled'</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
             <span class="c1"># not a part of the standard but will help skip modules</span>
             <span class="k">continue</span>
 
@@ -834,7 +834,7 @@
             <span class="c1"># except for the variable name differs.</span>
             <span class="k">for</span> <span class="n">existing_report</span> <span class="ow">in</span> <span class="n">membrane_reports</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">existing_report</span><span class="o">.</span><span class="n">can_combine</span><span class="p">(</span><span class="n">report</span><span class="p">):</span>
-                    <span class="n">existing_report</span><span class="o">.</span><span class="n">add_variables</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;transform&#39;</span><span class="p">])</span>
+                    <span class="n">existing_report</span><span class="o">.</span><span class="n">add_variables</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'transform'</span><span class="p">])</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">reports_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>

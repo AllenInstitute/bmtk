@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -435,15 +435,15 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest2">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_multimeter_nest2</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
-        <span class="s1">&#39;multimeter&#39;</span><span class="p">,</span>
+        <span class="s1">'multimeter'</span><span class="p">,</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
-            <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
-            <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s1">&#39;to_memory&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s1">&#39;record_from&#39;</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
-            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span>
+            <span class="s1">'start'</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">'stop'</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">'to_file'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">'to_memory'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">'withtime'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">'record_from'</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
+            <span class="s1">'label'</span><span class="p">:</span> <span class="n">label</span>
         <span class="p">}</span>
     <span class="p">)</span></div>
 
@@ -453,13 +453,13 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest3">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_multimeter_nest3</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
-        <span class="s1">&#39;multimeter&#39;</span><span class="p">,</span>
+        <span class="s1">'multimeter'</span><span class="p">,</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
-            <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
-            <span class="s1">&#39;record_to&#39;</span><span class="p">:</span> <span class="s1">&#39;ascii&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;record_from&#39;</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
-            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span>
+            <span class="s1">'start'</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">'stop'</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">'record_to'</span><span class="p">:</span> <span class="s1">'ascii'</span><span class="p">,</span>
+            <span class="s1">'record_from'</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
+            <span class="s1">'label'</span><span class="p">:</span> <span class="n">label</span>
         <span class="p">}</span>
     <span class="p">)</span></div>
 
@@ -468,15 +468,15 @@
 <div class="viewcode-block" id="read_dat_nest2">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest2">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_dat_nest2</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nest_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'nest_id'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">]</span><span class="o">+</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="read_dat_nest3">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest3">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_dat_nest3</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
-    <span class="n">report_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
-    <span class="n">report_df</span> <span class="o">=</span> <span class="n">report_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sender&#39;</span><span class="p">:</span> <span class="s1">&#39;nest_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ms&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">})</span>
+    <span class="n">report_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">'#'</span><span class="p">)</span>
+    <span class="n">report_df</span> <span class="o">=</span> <span class="n">report_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'sender'</span><span class="p">:</span> <span class="s1">'nest_id'</span><span class="p">,</span> <span class="s1">'time_ms'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">})</span>
     <span class="k">return</span> <span class="n">report_df</span></div>
 
 
@@ -495,7 +495,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MultimeterMod</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_h5</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                  <span class="n">delete_dat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_params</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;For recording neuron properties using a NEST multimeter object</span>
+<span class="w">        </span><span class="sd">"""For recording neuron properties using a NEST multimeter object</span>
 
 <span class="sd">        :param tmp_dir: ouput directory</span>
 <span class="sd">        :param file_name: Name of (SONATA hdf5) file that will be saved to</span>
@@ -507,7 +507,7 @@
 <span class="sd">        :param to_h5: True to save to sonata .h5 format (default: True)</span>
 <span class="sd">        :param delete_dat: True to delete the .dat files created by NEST (default True)</span>
 <span class="sd">        :param opt_params:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span> <span class="o">=</span> <span class="n">variable_name</span>
@@ -524,7 +524,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_delay</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Required for calculating steps recorded</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span><span class="p">,</span> <span class="s1">&#39;__bmtk_nest_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span><span class="p">,</span> <span class="s1">'__bmtk_nest_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># CellVarRecorder(self._file_name, self._output_dir, self._variable_name, buffer_data=False)</span>
 
 <div class="viewcode-block" id="MultimeterMod.initialize">
@@ -540,7 +540,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span> <span class="ow">or</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span> <span class="o">=</span> <span class="n">create_multimeter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">)</span>
 
-        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="s1">&#39;interval&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span><span class="p">)</span>
+        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="s1">'interval'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span><span class="p">)</span>
         <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span><span class="p">)</span></div>
 
 
@@ -551,17 +551,17 @@
 
         <span class="c1"># min_delay needs to be fetched after simulation otherwise the value will be off. There also seems to be some</span>
         <span class="c1"># MPI barrier inside GetKernelStatus</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_min_delay</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">GetKernelStatus</span><span class="p">(</span><span class="s1">&#39;min_delay&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_delay</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">GetKernelStatus</span><span class="p">(</span><span class="s1">'min_delay'</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_h5</span> <span class="ow">and</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Initialize hdf5 file including preallocated data block of recorded variables</span>
-            <span class="c1">#   Unfortantely with NEST the final time-step recorded can&#39;t be calculated in advanced, and even with the</span>
+            <span class="c1">#   Unfortantely with NEST the final time-step recorded can't be calculated in advanced, and even with the</span>
             <span class="c1"># same min/max_delay can be different. We need to read the output-file to get n_steps</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">get_var_recorder</span><span class="p">(</span><span class="n">node_recording_df</span><span class="p">):</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                                            <span class="n">default_population</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_population</span><span class="p">,</span>
-                                                           <span class="n">tstart</span><span class="o">=</span><span class="n">node_recording_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
-                                                           <span class="n">tstop</span><span class="o">=</span><span class="n">node_recording_df</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                                                           <span class="n">tstart</span><span class="o">=</span><span class="n">node_recording_df</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+                                                           <span class="n">tstop</span><span class="o">=</span><span class="n">node_recording_df</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
                                                            <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_interval</span><span class="p">,</span>
                                                            <span class="n">n_steps</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">node_recording_df</span><span class="p">),</span>
                                                            <span class="n">mpi_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -576,14 +576,14 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span>
 
             <span class="n">gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span>
-            <span class="k">for</span> <span class="n">nest_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">)):</span>
-                <span class="c1"># report_df = pd.read_csv(nest_file, index_col=False, names=[&#39;nest_id&#39;, &#39;time&#39;]+self._variable_name,</span>
-                <span class="c1">#                         sep=&#39;\t&#39;, comment=&#39;#&#39;)</span>
+            <span class="k">for</span> <span class="n">nest_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1">*'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">)):</span>
+                <span class="c1"># report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,</span>
+                <span class="c1">#                         sep='\t', comment='#')</span>
                 <span class="n">report_df</span> <span class="o">=</span> <span class="n">read_dat</span><span class="p">(</span><span class="n">nest_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">)</span>
                 <span class="c1"># print(report_df)</span>
                 <span class="c1"># exit()</span>
 
-                <span class="k">for</span> <span class="n">grp_id</span><span class="p">,</span> <span class="n">grp_df</span> <span class="ow">in</span> <span class="n">report_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;nest_id&#39;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">grp_id</span><span class="p">,</span> <span class="n">grp_df</span> <span class="ow">in</span> <span class="n">report_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'nest_id'</span><span class="p">):</span>
                     <span class="n">pop_id</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)</span>
                     <span class="n">vr</span> <span class="o">=</span> <span class="n">get_var_recorder</span><span class="p">(</span><span class="n">grp_df</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">:</span>

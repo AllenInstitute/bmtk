@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -436,7 +436,7 @@
 <div class="viewcode-block" id="SimulatorMod">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SimulatorMod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for writing custom bionet functions that will be called during the simulation. To use overwrite one or</span>
+<span class="w">    </span><span class="sd">"""Class for writing custom bionet functions that will be called during the simulation. To use overwrite one or</span>
 <span class="sd">    more of the following methods in a subclass, and bionet will call the function at the appropiate time.</span>
 
 <span class="sd">    To call during a simulation:</span>
@@ -446,14 +446,14 @@
 <span class="sd">      sim.add_mod(mymod)</span>
 <span class="sd">      sim.run()</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 <div class="viewcode-block" id="SimulatorMod.preload">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod.preload">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">preload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Will be called once at the beginning of the simulation run before network is loaded</span>
+<span class="w">        </span><span class="sd">"""Will be called once at the beginning of the simulation run before network is loaded</span>
 
 <span class="sd">        :param sim: Simulation object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
@@ -461,32 +461,32 @@
 <div class="viewcode-block" id="SimulatorMod.initialize">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod.initialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Will be called once at the beginning of the simulation run, after the network and simulation parameters have</span>
+<span class="w">        </span><span class="sd">"""Will be called once at the beginning of the simulation run, after the network and simulation parameters have</span>
 <span class="sd">        all been finalized.</span>
 
 <span class="sd">        :param sim: Simulation object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="SimulatorMod.step">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod.step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called on every single time step (dt).</span>
+<span class="w">        </span><span class="sd">"""Called on every single time step (dt).</span>
 
 <span class="sd">        The step method is used for anything that should be recorded or changed continously. dt is determined during</span>
 <span class="sd">        the setup, and the sim parameter can be used to access simulation, network and individual cell properties</span>
 
 <span class="sd">        :param sim: Simulation object.</span>
 <span class="sd">        :param tstep: The decrete time-step</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="SimulatorMod.block">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod.block">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is called once after every block of time, as specified by the configuration.</span>
+<span class="w">        </span><span class="sd">"""This method is called once after every block of time, as specified by the configuration.</span>
 
 <span class="sd">        Unlike the step method which is called during every time-step, the block method will typically be called only a</span>
 <span class="sd">        few times over the entire simulation. The block method is preferable for accessing and saving to the disk,</span>
@@ -494,17 +494,17 @@
 
 <span class="sd">        :param sim: Simulation object</span>
 <span class="sd">        :param block_interval: The time interval (tstep_start, tstep_end) for which the block is being called on.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="SimulatorMod.finalize">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.sim_module.SimulatorMod.finalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call once at the very end of the simulation.</span>
+<span class="w">        </span><span class="sd">"""Call once at the very end of the simulation.</span>
 
 <span class="sd">        :param sim: Simulation object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 </div>
 

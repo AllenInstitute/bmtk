@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -474,13 +474,13 @@
         <span class="n">model_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_pop</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span><span class="o">.</span><span class="n">COL_MODEL_TYPE</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grp</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;property </span><span class="si">{}</span><span class="s1"> is missing from nodes.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span><span class="o">.</span><span class="n">COL_MODEL_TYPE</span><span class="p">))</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">'property </span><span class="si">{}</span><span class="s1"> is missing from nodes.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span><span class="o">.</span><span class="n">COL_MODEL_TYPE</span><span class="p">))</span>
 
             <span class="n">model_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span><span class="o">.</span><span class="n">COL_MODEL_TYPE</span><span class="p">))))</span>
 
-        <span class="k">if</span> <span class="s1">&#39;virtual&#39;</span> <span class="ow">in</span> <span class="n">model_types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">'virtual'</span> <span class="ow">in</span> <span class="n">model_types</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_has_virtual_nodes</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">model_types</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;virtual&#39;</span><span class="p">])</span>
+            <span class="n">model_types</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">'virtual'</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_has_virtual_nodes</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -495,7 +495,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_adaptor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grp</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span><span class="o">.</span><span class="n">create_adaptor</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
 
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''</span>
 <span class="sd">    def _preprocess_node_types(self, network):</span>
 <span class="sd">        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just</span>
 <span class="sd">        # process them all</span>
@@ -504,48 +504,48 @@
 <span class="sd">        node_types_table = self._node_pop.types_table</span>
 
 <span class="sd">        # TODO: Convert model_type to a enum</span>
-<span class="sd">        if network.has_component(&#39;morphologies_dir&#39;):</span>
-<span class="sd">            morph_dir = network.get_component(&#39;morphologies_dir&#39;)</span>
-<span class="sd">            if morph_dir is not None and &#39;morphology_file&#39; in node_types_table.columns:</span>
+<span class="sd">        if network.has_component('morphologies_dir'):</span>
+<span class="sd">            morph_dir = network.get_component('morphologies_dir')</span>
+<span class="sd">            if morph_dir is not None and 'morphology_file' in node_types_table.columns:</span>
 <span class="sd">                for nt_id in node_type_ids:</span>
 <span class="sd">                    node_type = node_types_table[nt_id]</span>
-<span class="sd">                    if node_type[&#39;morphology_file&#39;] is None:</span>
+<span class="sd">                    if node_type['morphology_file'] is None:</span>
 <span class="sd">                        continue</span>
 <span class="sd">                    # TODO: Check the file exits</span>
 <span class="sd">                    # TODO: See if absolute path is stored in csv</span>
-<span class="sd">                    node_type[&#39;morphology_file&#39;] = os.path.join(morph_dir, node_type[&#39;morphology_file&#39;])</span>
+<span class="sd">                    node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])</span>
 
-<span class="sd">        if &#39;dynamics_params&#39; in node_types_table.columns and &#39;model_type&#39; in node_types_table.columns:</span>
+<span class="sd">        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:</span>
 <span class="sd">            for nt_id in node_type_ids:</span>
 <span class="sd">                node_type = node_types_table[nt_id]</span>
-<span class="sd">                dynamics_params = node_type[&#39;dynamics_params&#39;]</span>
+<span class="sd">                dynamics_params = node_type['dynamics_params']</span>
 <span class="sd">                if isinstance(dynamics_params, dict):</span>
 <span class="sd">                    continue</span>
 
-<span class="sd">                model_type = node_type[&#39;model_type&#39;]</span>
-<span class="sd">                if model_type == &#39;biophysical&#39;:</span>
-<span class="sd">                    params_dir = network.get_component(&#39;biophysical_neuron_models_dir&#39;)</span>
-<span class="sd">                elif model_type == &#39;point_process&#39;:</span>
-<span class="sd">                    params_dir = network.get_component(&#39;point_neuron_models_dir&#39;)</span>
-<span class="sd">                elif model_type == &#39;point_soma&#39;:</span>
-<span class="sd">                    params_dir = network.get_component(&#39;point_neuron_models_dir&#39;)</span>
+<span class="sd">                model_type = node_type['model_type']</span>
+<span class="sd">                if model_type == 'biophysical':</span>
+<span class="sd">                    params_dir = network.get_component('biophysical_neuron_models_dir')</span>
+<span class="sd">                elif model_type == 'point_process':</span>
+<span class="sd">                    params_dir = network.get_component('point_neuron_models_dir')</span>
+<span class="sd">                elif model_type == 'point_soma':</span>
+<span class="sd">                    params_dir = network.get_component('point_neuron_models_dir')</span>
 <span class="sd">                else:</span>
 <span class="sd">                    # Not sure what to do in this case, throw Exception?</span>
-<span class="sd">                    params_dir = network.get_component(&#39;custom_neuron_models&#39;)</span>
+<span class="sd">                    params_dir = network.get_component('custom_neuron_models')</span>
 
 <span class="sd">                params_path = os.path.join(params_dir, dynamics_params)</span>
 
 <span class="sd">                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
 <span class="sd">                # cell_model loader function handle the extension.</span>
 <span class="sd">                try:</span>
-<span class="sd">                    params_val = json.load(open(params_path, &#39;r&#39;))</span>
-<span class="sd">                    node_type[&#39;dynamics_params&#39;] = params_val</span>
+<span class="sd">                    params_val = json.load(open(params_path, 'r'))</span>
+<span class="sd">                    node_type['dynamics_params'] = params_val</span>
 <span class="sd">                except Exception:</span>
 <span class="sd">                    # TODO: Check dynamics_params before</span>
-<span class="sd">                    network.io.log_exception(&#39;Could not find node dynamics_params file {}.&#39;.format(params_path))</span>
+<span class="sd">                    network.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))</span>
 
 <span class="sd">        # TODO: Use adaptor to validate model_type and model_template values</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    '''</span>
 
 <div class="viewcode-block" id="SonataNodes.load">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.load">[docs]</a>
@@ -655,52 +655,52 @@
                     <span class="k">yield</span> <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">get_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span></div>
 
 
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">'''</span>
 <span class="sd">    def _preprocess_edge_types(self, network):</span>
 <span class="sd">        edge_types_table = self._edge_pop.types_table</span>
 <span class="sd">        edge_type_ids = np.unique(self._edge_pop.type_ids)</span>
 
 <span class="sd">        for et_id in edge_type_ids:</span>
 <span class="sd">            edge_type = edge_types_table[et_id]</span>
-<span class="sd">            if &#39;dynamics_params&#39; in edge_types_table.columns:</span>
-<span class="sd">                dynamics_params = edge_type[&#39;dynamics_params&#39;]</span>
-<span class="sd">                params_dir = network.get_component(&#39;synaptic_models_dir&#39;)</span>
+<span class="sd">            if 'dynamics_params' in edge_types_table.columns:</span>
+<span class="sd">                dynamics_params = edge_type['dynamics_params']</span>
+<span class="sd">                params_dir = network.get_component('synaptic_models_dir')</span>
 
 <span class="sd">                params_path = os.path.join(params_dir, dynamics_params)</span>
 
 <span class="sd">                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
 <span class="sd">                # cell_model loader function handle the extension.</span>
 <span class="sd">                try:</span>
-<span class="sd">                    params_val = json.load(open(params_path, &#39;r&#39;))</span>
-<span class="sd">                    edge_type[&#39;dynamics_params&#39;] = params_val</span>
+<span class="sd">                    params_val = json.load(open(params_path, 'r'))</span>
+<span class="sd">                    edge_type['dynamics_params'] = params_val</span>
 <span class="sd">                except Exception:</span>
 <span class="sd">                    # TODO: Check dynamics_params before</span>
-<span class="sd">                    self.io.log_exception(&#39;Could not find edge dynamics_params file {}.&#39;.format(params_path))</span>
+<span class="sd">                    self.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))</span>
 
 <span class="sd">            # Split target_sections</span>
-<span class="sd">            if &#39;target_sections&#39; in edge_type:</span>
-<span class="sd">                trg_sec = edge_type[&#39;target_sections&#39;]</span>
+<span class="sd">            if 'target_sections' in edge_type:</span>
+<span class="sd">                trg_sec = edge_type['target_sections']</span>
 <span class="sd">                if trg_sec is not None:</span>
 <span class="sd">                    try:</span>
-<span class="sd">                        edge_type[&#39;target_sections&#39;] = ast.literal_eval(trg_sec)</span>
+<span class="sd">                        edge_type['target_sections'] = ast.literal_eval(trg_sec)</span>
 <span class="sd">                    except Exception as exc:</span>
-<span class="sd">                        self.io.log_warning(&#39;Unable to split target_sections list {}&#39;.format(trg_sec))</span>
-<span class="sd">                        edge_type[&#39;target_sections&#39;] = None</span>
+<span class="sd">                        self.io.log_warning('Unable to split target_sections list {}'.format(trg_sec))</span>
+<span class="sd">                        edge_type['target_sections'] = None</span>
 
 <span class="sd">            # Split target distances</span>
-<span class="sd">            if &#39;distance_range&#39; in edge_type:</span>
-<span class="sd">                dist_range = edge_type[&#39;distance_range&#39;]</span>
+<span class="sd">            if 'distance_range' in edge_type:</span>
+<span class="sd">                dist_range = edge_type['distance_range']</span>
 <span class="sd">                if dist_range is not None:</span>
 <span class="sd">                    try:</span>
 <span class="sd">                        # TODO: Make the distance range has at most two values</span>
-<span class="sd">                        edge_type[&#39;distance_range&#39;] = json.loads(dist_range)</span>
+<span class="sd">                        edge_type['distance_range'] = json.loads(dist_range)</span>
 <span class="sd">                    except Exception as e:</span>
 <span class="sd">                        try:</span>
-<span class="sd">                            edge_type[&#39;distance_range&#39;] = [0.0, float(dist_range)]</span>
+<span class="sd">                            edge_type['distance_range'] = [0.0, float(dist_range)]</span>
 <span class="sd">                        except Exception as e:</span>
-<span class="sd">                            self.io.log_warning(&#39;Unable to parse distance_range {}&#39;.format(dist_range))</span>
-<span class="sd">                            edge_type[&#39;distance_range&#39;] = None</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">                            self.io.log_warning('Unable to parse distance_range {}'.format(dist_range))</span>
+<span class="sd">                            edge_type['distance_range'] = None</span>
+<span class="sd">    '''</span>
 
 <div class="viewcode-block" id="SonataEdges.load">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataEdges.load">[docs]</a>

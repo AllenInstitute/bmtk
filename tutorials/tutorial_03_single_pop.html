@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -485,19 +485,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.node_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
 
-<span class="n">cortex</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="n">cortex</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'mcortex'</span><span class="p">)</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span>
     <span class="n">positions</span><span class="o">=</span><span class="n">positions_columnar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
     <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
     <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="mf">3.646878266</span><span class="p">,</span>
-    <span class="n">potental</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
-    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span>
+    <span class="n">potental</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'biophysical'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'ctdb:Biophys1.hoc'</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">'aibs_perisomatic'</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_fit.json'</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">'Scnn1a_473845048_m.swc'</span>
 <span class="p">)</span>
 <br/></pre></div>
 </div>
@@ -525,7 +525,7 @@
 <p>Next we want to add recurrent edges. To create the connections we will use the built-in <code class="docutils literal notranslate"><span class="pre">distance_connector</span></code> function, which will assign the number of connections between two cells randomly (in the range <em>nsyn_min</em> and <em>nsysn_max</em>) but weighted by distance. The other parameters, including the synaptic model (<em>AMPA_ExcToExc</em>) will be shared by all connections.</p>
 <p>To use this, or to use customized connection functions, we must pass in the name of our connection function using the “connection_rule” parameter, and the function parameters through “connection_params” as a dictionary, which will looks something like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection_rule</span><span class="o">=&lt;</span><span class="n">name_of_function</span><span class="o">&gt;</span>
-<span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;param_arg1&#39;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s1">&#39;param_arg2&#39;</span><span class="p">:</span> <span class="n">val2</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'param_arg1'</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s1">'param_arg2'</span><span class="p">:</span> <span class="n">val2</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>The connection_rule method isn’t explicitly called by the script. Rather when the build() method is called, the connection_rule will iterate through every source/target node pair, and use the rule to build a connection matrix.</p>
@@ -538,15 +538,15 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.edge_connectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_connector</span>
 
 <span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'Scnn1a'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'Scnn1a'</span><span class="p">},</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">2.0e-04</span><span class="p">,</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;soma&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">,</span> <span class="s1">'soma'</span><span class="p">],</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span>
 <span class="p">)</span>
 <br/><br/></pre></div>
 </div>
@@ -568,8 +568,8 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">cortex</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
-<span class="n">cortex</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch03/network'</span><span class="p">)</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch03/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -581,12 +581,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'mthalamus'</span><span class="p">)</span>
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
-    <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">'tON'</span><span class="p">,</span>
+    <span class="n">potential</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -602,18 +602,18 @@
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">connect_random</span><span class="p">,</span>
-    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span>
+    <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span>
     <span class="n">syn_weight</span><span class="o">=</span><span class="mf">5.0e-05</span><span class="p">,</span>
     <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
-    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">'basal'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">],</span>
     <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'exp2syn'</span>
 <span class="p">)</span>
 
 <span class="n">thalamus</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">thalamus</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
-<span class="n">thalamus</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch03/network'</span><span class="p">)</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch03/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -627,13 +627,13 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
-<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">'mthalamus'</span><span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>  <span class="c1"># Have 10 nodes to match mthalamus</span>
         <span class="n">firing_rate</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>    <span class="c1"># 15 Hz, we can also pass in a nonhomogeneous function/array</span>
         <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>    <span class="c1"># Firing starts at 0 s up to 3 s</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;sim_ch03/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">'sim_ch03/inputs/mthalamus_spikes.h5'</span><span class="p">)</span>
 
-<span class="c1"># Let&#39;s do a quick check that we have reasonable results. Should see somewhere on the order of 15*3*100 = 4500</span>
+<span class="c1"># Let's do a quick check that we have reasonable results. Should see somewhere on the order of 15*3*100 = 4500</span>
 <span class="c1"># spikes</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 <br/></pre></div>
@@ -729,13 +729,13 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03&#39;</span><span class="p">,</span>
-    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_ch03'</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'sim_ch03/network'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>     <span class="c1"># Record membrane potential and calcium (default soma)</span>
-    <span class="n">spikes_inputs</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">,</span>   <span class="c1"># Name of population which spikes will be generated for</span>
-                    <span class="s1">&#39;sim_ch03/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)],</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">'v'</span><span class="p">,</span> <span class="s1">'cai'</span><span class="p">],</span>     <span class="c1"># Record membrane potential and calcium (default soma)</span>
+    <span class="n">spikes_inputs</span><span class="o">=</span><span class="p">[(</span><span class="s1">'mthalamus'</span><span class="p">,</span>   <span class="c1"># Name of population which spikes will be generated for</span>
+                    <span class="s1">'sim_ch03/inputs/mthalamus_spikes.h5'</span><span class="p">)],</span>
     <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files</span>
     <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
 <span class="p">)</span>
@@ -744,12 +744,12 @@
 </div>
 <p>It’s a good idea to check the configuration files <strong>sim_ch03/circuit_config.json</strong> and <strong>sim_ch03/simulation_config.json</strong>, especially to make sure that bmtk will know to use our generated spikes file (if you don’t see the below section in the simulation_config.json file, go ahead and add it).</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;tc_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${BASE_DIR}/mthalamus_spikes.csv&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mthalamus&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"tc_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"csv"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${BASE_DIR}/mthalamus_spikes.csv"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mthalamus"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -772,7 +772,7 @@ $<span class="w"> </span>python<span class="w"> </span>run_bionet.py<span class=
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_ch03/config.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -1016,7 +1016,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch03/config.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1034,9 +1034,9 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">])</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch03/config.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'v_report'</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch03/config.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'v_report'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch03/config.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'cai_report'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1068,7 +1068,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 <h3>Customized node parameters<a class="headerlink" href="#Customized-node-parameters" title="Link to this heading">#</a></h3>
 <p>When building our cortex nodes, we used some built-in functions to set certain parameters like positions and y-axis rotations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                 <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+                 <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span>
                  <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
                  <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
                  <span class="o">...</span>
@@ -1082,8 +1082,8 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 56.62 seconds
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cortex_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
 <span class="n">n0</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">n1</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 0: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n0</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 1: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'cell 0: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n0</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">'positions'</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">'rotation_angle_yaxis'</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'cell 1: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">'positions'</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">'rotation_angle_yaxis'</span><span class="p">]))</span>
 <br/></pre></div>
 </div>
 </div>
@@ -1120,17 +1120,17 @@ cell 1: pop_name: Scnn1a, positions: [ -1.22804411  91.62129377 -11.58852979], a
 <p>The Builder will iterate over that function, passing in every source/target node pair (filtered by the source and target parameters in <code class="docutils literal notranslate"><span class="pre">add_edges()</span></code>). The source and target parameters are essentially dictionaries that can be used to fetch properties of the nodes. A typical example would look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">customized_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">node_id</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">node_id</span><span class="p">:</span>
-        <span class="c1"># necessary if we don&#39;t want autapses</span>
+        <span class="c1"># necessary if we don't want autapses</span>
         <span class="k">return</span> <span class="mi">0</span>
-    <span class="n">source_pot</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
-    <span class="n">target_pot</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
+    <span class="n">source_pot</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">'potential'</span><span class="p">]</span>
+    <span class="n">target_pot</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'potential'</span><span class="p">]</span>
     <span class="c1"># some code to determine number of connections</span>
     <span class="k">return</span> <span class="n">n_synapses</span>
 
 <span class="o">...</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=&lt;</span><span class="n">source_nodes</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">target</span><span class="o">=&lt;</span><span class="n">target_nodes</span><span class="o">&gt;</span><span class="p">,</span>
                  <span class="n">connection_rule</span><span class="o">=</span><span class="n">customized_connector</span><span class="p">,</span>
-                 <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;param1&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p1</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;param2&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p2</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;param3&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p3</span><span class="o">&gt;</span><span class="p">},</span>
+                 <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'param1'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p1</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">'param2'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p2</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">'param3'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p3</span><span class="o">&gt;</span><span class="p">},</span>
                  <span class="o">...</span>
 </pre></div>
 </div>

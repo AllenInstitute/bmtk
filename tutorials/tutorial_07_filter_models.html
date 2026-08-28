@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -480,31 +480,31 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;lgn&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;lgn&#39;</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'lgn'</span><span class="p">)</span>  <span class="c1"># Initialize network called 'lgn'</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple OFF cells</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tOFF_TF15&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:tOFF_TF15'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
     <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;tOFF_TF15.json&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'tOFF_TF15.json'</span>
 <span class="p">)</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tON&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:tON'</span><span class="p">,</span>
     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
     <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;tON_TF8.json&#39;</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'tON_TF8.json'</span>
 <span class="p">)</span>
 
 <span class="c1"># Create and save the network</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch07/network'</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -520,26 +520,26 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_filternet</span>
 
 <span class="n">build_env_filternet</span><span class="p">(</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network&#39;</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_ch07'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'sim_ch07/network'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span>                   <span class="c1"># run the simulation for 3 seconds</span>
-    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we&#39;ll use in this tutorial</span>
+    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we'll use in this tutorial</span>
 </pre></div>
 </div>
 </div>
 <p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
 <p>By default the config file does not contain any stimulus so the network will simply be active at the baseline firing rate. We will change this and play a certain type of movie/stimulus. Here we will use a movie with a bright full-screen flash for an extended period of time. To do so open up simulation_config.json and add the following inputs section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">    </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"full_field_flash"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"full_field_flash"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"row_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"col_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"t_on"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"t_off"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"max_intensity"</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -564,7 +564,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">filternet</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_ch07/config.json'</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
@@ -659,7 +659,7 @@ INFO:FilterNetIOUtils:Done.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch07/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_template'</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -682,12 +682,12 @@ INFO:FilterNetIOUtils:Done.
 <p>Allows playing a custom movie file in the form of a three-dimension array saved in a <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">npy file</a>.</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;movie_input&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"movie_input"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"data_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/my/movie.npy"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -704,19 +704,19 @@ INFO:FilterNetIOUtils:Done.
 <p>Plays a drifting grating across the screen</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;grating&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;cpd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.04</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;contrast&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;theta&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"grating"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"row_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"col_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"gray_screen_dur"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"cpd"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.04</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"temporal_f"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"contrast"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"theta"</span><span class="p">:</span><span class="w"> </span><span class="mf">45.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"phase"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -738,16 +738,16 @@ INFO:FilterNetIOUtils:Done.
 <p>Creates a bright (or dark) flash on a gray screen for a duration determined by <strong>t_on</strong> and <strong>t_off</strong> milliseconds</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;t_on&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;t_off&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
-<span class="w">            </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">    </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"full_field_flash"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"full_field_flash"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"row_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"col_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"t_on"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"t_off"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"max_intensity"</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span>
+<span class="w">            </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -766,15 +766,15 @@ INFO:FilterNetIOUtils:Done.
 <p>Creates a spreading black field originating from the center.</p>
 <p><em>example</em></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;looming&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;row_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;col_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;t_looming&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"movie"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"looming"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"row_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"col_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"frame_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"gray_screen_dur"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"t_looming"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -796,8 +796,8 @@ INFO:FilterNetIOUtils:Done.
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>.</p>
 <p>There are also a number of special types (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (<a class="reference external" href="https://doi.org/10.1523/JNEUROSCI.1741-16.2016">Durant et. al 2016</a>, <a class="reference external" href="https://doi.org/10.1016/j.neuron.2020.01.040">Billeh et. al 2019</a>).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="75b092d422824a08913a4bd55a3792c3" class="no-scaled-link" src="../_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="d49d6ecbbc9b4c1fa267a0b508d9d5a0" class="no-scaled-link" src="../_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="1590e3441432466d9c9f0edc0c84e988" class="no-scaled-link" src="../_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="51e1e74bdabd444fb26a47040c72d8b1" class="no-scaled-link" src="../_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="Parameters:">
 <h4>Parameters:<a class="headerlink" href="#Parameters:" title="Link to this heading">#</a></h4>
@@ -805,7 +805,7 @@ INFO:FilterNetIOUtils:Done.
 spontaneous firing rate using the spont_fr variable (see below) you would just add the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
     <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tON&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:tON'</span><span class="p">,</span>
     <span class="n">spont_fr</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="c1"># create a rand list of 20 firing rates between 1 to 2 Hz</span>
     <span class="o">....</span>
 <span class="p">)</span>
@@ -816,14 +816,14 @@ spontaneous firing rate using the spont_fr variable (see below) you would just a
 <li><p><em>spatial_size</em>: (float, float) - the row and column spread of the gaussian filter, default: (1.0, 1.0)</p></li>
 <li><p><em>spatial_rotation</em>: float - the gaussian rotation in degrees, default: 0.0</p></li>
 </ul>
-<img alt="../_images/filternet_sfilt_params.png" src="../_images/filternet_sfilt_params.png" />
+<img alt="../_images/filternet_sfilt_params1.png" src="../_images/filternet_sfilt_params1.png" />
 <p><strong>temporal filter parameters</strong></p>
 <ul class="simple">
 <li><p><em>weights</em>: (float, float) - used to control amplitude of the two bumps in cosine filter. The first value is used to set the major bump. The values used must satisfy the conditions weights[0] &gt; weights[1]</p></li>
 <li><p><em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first.</p></li>
 <li><p><em>delays</em>: (float, float) - controls the delays of the first and second bumps</p></li>
 </ul>
-<img alt="../_images/filternet_tfilt_params.png" src="../_images/filternet_tfilt_params.png" />
+<img alt="../_images/filternet_tfilt_params1.png" src="../_images/filternet_tfilt_params1.png" />
 <p><strong>non-linear filter parameters</strong></p>
 <ul class="simple">
 <li><p><em>spont_fr</em>: float - The spontaneous/resting firing rate of the cell. ON/OFF cells use the function <span class="math notranslate nohighlight">\(Heaviside(s+spont\_fr) \cdot (s+spont\_fr)\)</span> to filter the firing rate following the spatialtemporal filter.</p></li>

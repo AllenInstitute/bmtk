@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -486,7 +486,7 @@ clamp.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sources/chapter05/converted_network/V1_node_types_bionet.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'sources/chapter05/converted_network/V1_node_types_bionet.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -582,7 +582,7 @@ clamp.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sources/chapter05/converted_network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'sources/chapter05/converted_network/V1_node_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -680,7 +680,7 @@ clamp.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sources/chapter05/converted_network/V1_V1_edge_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'sources/chapter05/converted_network/V1_V1_edge_types.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -842,32 +842,32 @@ clamp.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.networks</span><span class="w"> </span><span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.node_params</span><span class="w"> </span><span class="kn">import</span> <span class="n">positions_columinar</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;V1&quot;</span><span class="p">)</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">"V1"</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>  <span class="c1"># Create a population of 80 neurons</span>
               <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
-              <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point.json&#39;</span>  <span class="c1"># File containing iaf_psc_alpha mdoel parameters</span>
+              <span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'VisL4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472363762_point.json'</span>  <span class="c1"># File containing iaf_psc_alpha mdoel parameters</span>
              <span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'PV'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'VisL4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'i'</span><span class="p">,</span>
               <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472912177_point.json&#39;</span><span class="p">)</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'472912177_point.json'</span><span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_exc&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'LIF_exc'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">,</span>
               <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;IntFire1_exc_point.json&#39;</span><span class="p">)</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'IntFire1_exc_point.json'</span><span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_inh&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;L4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'LIF_inh'</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">'L4'</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">'i'</span><span class="p">,</span>
               <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;IntFire1_inh_point.json&#39;</span><span class="p">)</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">'point_process'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'nest:iaf_psc_alpha'</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'IntFire1_inh_point.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -881,74 +881,74 @@ clamp.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.builder.auxi.edge_connectors</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance_connector</span>
 
 <span class="c1">## E-to-E connections</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'Scnn1a'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_exc&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'LIF_exc'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
 
 <span class="c1">### Generating I-to-I connections</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;PV&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'PV'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToInh.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'InhToInh.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_inh&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">,</span> <span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'LIF_inh'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousInh.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousInh.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
 <span class="c1">### Generating I-to-E connections</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'Scnn1a'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'InhToExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_exc&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'i'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">,</span> <span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'LIF_exc'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousInh.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousInh.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
 <span class="c1">### Generating E-to-I connections</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;PV&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'PV'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToInh.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_inh&#39;</span><span class="p">},</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">'ei'</span><span class="p">:</span> <span class="s1">'e'</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">'pop_name'</span><span class="p">:</span> <span class="s1">'LIF_inh'</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.26</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'d_weight_min'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">'d_weight_max'</span><span class="p">:</span> <span class="mf">0.26</span><span class="p">,</span> <span class="s1">'d_max'</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">'nsyn_min'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'nsyn_max'</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -969,8 +969,8 @@ clamp.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05/network&#39;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch05/network'</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch05/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -984,8 +984,8 @@ clamp.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
-<span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'LGN'</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">'tON'</span><span class="p">,</span> <span class="n">potential</span><span class="o">=</span><span class="s1">'exc'</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1004,41 +1004,41 @@ clamp.</p>
     <span class="n">syns</span><span class="p">[</span><span class="n">selected_sources</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nsyns_min</span><span class="p">,</span> <span class="n">nsyns_max</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nsources</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">syns</span>
 
-<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">),</span>
-              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'Scnn1a'</span><span class="p">),</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">'all_to_one'</span><span class="p">,</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'nsources_min'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">'nsources_max'</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV&#39;</span><span class="p">),</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'PV'</span><span class="p">),</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">35</span><span class="p">},</span>
-              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'nsources_min'</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">'nsources_max'</span><span class="p">:</span> <span class="mi">35</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">'all_to_one'</span><span class="p">,</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">6.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'ExcToInh.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_exc&#39;</span><span class="p">),</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'LIF_exc'</span><span class="p">),</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
-              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'nsources_min'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">'nsources_max'</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">'all_to_one'</span><span class="p">,</span>
               <span class="n">syn_weight</span><span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 
-<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_inh&#39;</span><span class="p">),</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">'LIF_inh'</span><span class="p">),</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
-              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
-              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">'nsources_min'</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">'nsources_max'</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">'all_to_one'</span><span class="p">,</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
               <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instantaneousExc.json&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;static_synapse&#39;</span><span class="p">)</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'instantaneousExc.json'</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">'static_synapse'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1057,8 +1057,8 @@ clamp.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">lgn</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05/network&#39;</span><span class="p">)</span>
-<span class="n">lgn</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05/network&#39;</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch05/network'</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_ch05/network'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1083,8 +1083,8 @@ clamp.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_pointnet</span>
 
-<span class="n">build_env_pointnet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05&#39;</span><span class="p">,</span>
-                   <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch05/network&#39;</span><span class="p">,</span>
+<span class="n">build_env_pointnet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_ch05'</span><span class="p">,</span>
+                   <span class="n">network_dir</span><span class="o">=</span><span class="s1">'sim_ch05/network'</span><span class="p">,</span>
                    <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span>
                    <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
                    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>         <span class="c1"># Copies components files</span>
@@ -1103,12 +1103,12 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </div>
 <p>Then we must edit the simulation_config.json file to tell the simulator to find the file and which network to associate it with.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<span class="w">  </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/lgn_spikes.h5"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1134,7 +1134,7 @@ $<span class="w"> </span>wget<span class="w"> </span>https://github.com/AllenIns
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">pointnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_ch05/config.json'</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
@@ -1328,7 +1328,7 @@ INFO:NestIOUtils:Done.
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates</span>
 
-<span class="n">_</span><span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">&#39;seaborn-muted&#39;</span><span class="p">)</span>
+<span class="n">_</span><span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch05/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">'seaborn-muted'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1344,7 +1344,7 @@ INFO:NestIOUtils:Done.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="o">=</span> <span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">&#39;seaborn-muted&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_</span><span class="o">=</span> <span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch05/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">'seaborn-muted'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1363,15 +1363,15 @@ INFO:NestIOUtils:Done.
 <h3>Recording membrane potential (and other cell properties)<a class="headerlink" href="#Recording-membrane-potential-(and-other-cell-properties)" title="Link to this heading">#</a></h3>
 <p>By default BMTK will automatically record and save the spike-trains of our (non-virtual) cells. Sometimes it can be useful to record other properties besides spikes, like the membrane voltage traces, of all or a subsection of the cells. To do so we only need to open the <em>simulation_config.json</em> file with our prefered text editor and insert the following section:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"reports"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"membrane_potential"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"cells"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V1"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]</span>
 <span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V_m&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">      </span><span class="nt">"variable_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V_m"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"multimeter_report"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"sections"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1385,7 +1385,7 @@ can read using hdf5 or bmtk like below:</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">&#39;seaborn-muted&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_ch05/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">,</span> <span class="n">plt_style</span><span class="o">=</span><span class="s1">'seaborn-muted'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1401,51 +1401,51 @@ can read using hdf5 or bmtk like below:</p>
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Link to this heading">#</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being supressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference internal" href="tutorial_01_single_cell_clamped.html"><span class="doc">Tutorial 1: Bionet</span></a>.</p>
 <p>The <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/point_120cells">‘point_120cells’ network</a> in the BMTK examples folder consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows:</p>
-<p><img alt="28072fbbb46f4b2fbcfb36c5917932e9" src="../_images/raster_120cells_orig.png" /></p>
+<p><img alt="be786f35f3c24ee4a87203c8dbebc256" src="../_images/raster_120cells_orig.png" /></p>
 <p>To stimulate some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">26</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span><span class="w"> </span><span class="mi">29</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">35</span><span class="p">,</span><span class="w"> </span><span class="mi">36</span><span class="p">,</span><span class="w"> </span><span class="mi">37</span><span class="p">,</span><span class="w"> </span><span class="mi">38</span><span class="p">,</span><span class="w"> </span><span class="mi">39</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"exc_perturbation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cortex"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">26</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span><span class="w"> </span><span class="mi">29</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">35</span><span class="p">,</span><span class="w"> </span><span class="mi">36</span><span class="p">,</span><span class="w"> </span><span class="mi">37</span><span class="p">,</span><span class="w"> </span><span class="mi">38</span><span class="p">,</span><span class="w"> </span><span class="mi">39</span><span class="p">]</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">230.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">230.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to stimulate. However it is also possible to get a subset using a specific property - for example if we wanted to only select inhibitory L2/3 cells:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;i&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L2/3&quot;</span>
+<span class="w">  </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cortex"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"i"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"L2/3"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>To simulate suppression of cells 40 to 49 we will add another current_clamp but with a large negative current:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">41</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">43</span><span class="p">,</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">46</span><span class="p">,</span><span class="w"> </span><span class="mi">47</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">,</span><span class="w"> </span><span class="mi">49</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"inh_perturbation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cortex"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">41</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">43</span><span class="p">,</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">46</span><span class="p">,</span><span class="w"> </span><span class="mi">47</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">,</span><span class="w"> </span><span class="mi">49</span><span class="p">]</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-230.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">-230.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>After we rerun the simulation:</p>
-<p><img alt="7d5129875d1e42f2a945fe415b8170f6" src="../_images/raster_120cells_perturbed.png" /></p>
+<p><img alt="33672383c26f452cad4b548c173ed79c" src="../_images/raster_120cells_perturbed.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

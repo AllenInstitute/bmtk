@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -471,20 +471,20 @@
 <section id="1.-Example:-Advanced-IClamp-Options">
 <h2>1. Example: Advanced IClamp Options<a class="headerlink" href="#1.-Example:-Advanced-IClamp-Options" title="Link to this heading">#</a></h2>
 <p>By default you can insert a simple step current into a cell in your simulation by adding a corresponding statement to the “inputs” section of your SONATA configuration file. For example, say we want to insert a 0.100 nA injection at t=500 ms, for the duration 1000 ms into the soma of our first cell:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;net&quot;</span>
-<span class="w">            </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="nt">"net"</span>
+<span class="w">            </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_dist&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_dist"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -505,7 +505,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.current_clamp.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.current_clamp.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -537,7 +537,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.current_clamp.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.current_clamp.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -551,17 +551,17 @@
 <section id="Selecting-multiple-cells">
 <h3>Selecting multiple cells<a class="headerlink" href="#Selecting-multiple-cells" title="Link to this heading">#</a></h3>
 <p>In the above cells #1-4 have a flat trace since we only applied the current to cell #0. If you want to apply the same current to a specific population of cells you can use the <strong>node_set</strong> option to filter according to any available attributes. For example, say we want to apply the current cells in our network that have <strong>model_type=biophysical</strong>:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"current_clamp"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -572,7 +572,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.current_clamp_allcells.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.current_clamp_allcells.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -605,7 +605,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.current_clamp.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.current_clamp.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -622,19 +622,19 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <p>Besides the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, most morphologically detailed models will also give you options to place a clamp at the <code class="docutils literal notranslate"><span class="pre">axon</span></code>, <code class="docutils literal notranslate"><span class="pre">dend</span></code> (dendrites), <code class="docutils literal notranslate"><span class="pre">basal</span></code> (the basal dendrites), or the <code class="docutils literal notranslate"><span class="pre">apic</span></code> (the apical dendrites). However unlike the <code class="docutils literal notranslate"><span class="pre">soma</span></code>, these other sections may be split into hundreds of different <strong>section_index</strong> (aka branches and compartments). If you do not know the specific section index for where you want to place the clamp you can specify a range (in microns from the soma) of where
 you want BMTK to place it randomly.</p>
 <p>For example if we want to place the current at a random location on the apical or basal dendrites that is atleast 500 um away from the soma</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_apic&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_apic"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;dend&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;apic&quot;</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">&quot;section_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0e20</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"dend"</span><span class="p">,</span><span class="w"> </span><span class="s2">"apic"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"section_index"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0e20</span><span class="p">]</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -650,7 +650,7 @@ you want BMTK to place it randomly.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.current_clamp_apic.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.current_clamp_apic.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -682,7 +682,7 @@ you want BMTK to place it randomly.</p>
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.current_clamp_apic.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.current_clamp_apic.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -697,41 +697,41 @@ you want BMTK to place it randomly.</p>
 <section id="Adding-multiple-Clamps">
 <h3>Adding multiple Clamps<a class="headerlink" href="#Adding-multiple-Clamps" title="Link to this heading">#</a></h3>
 <p>If you need to add multiple current-clamps (whether they overlap in time or not) to you simulation you can easily do it by adding multiple sections to the “inputs” sections:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"current_clamp_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1750</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1750</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_3&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="w">    </span><span class="nt">"current_clamp_3"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2000</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2000</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -739,18 +739,18 @@ you want BMTK to place it randomly.</p>
 <section id="As-a-list">
 <h4>As a list<a class="headerlink" href="#As-a-list" title="Link to this heading">#</a></h4>
 <p>However if you are applying clamps to the same <strong>node_set</strong> and <strong>section</strong> it is also possible to set <strong>amp</strong>, <strong>duration</strong>, and <strong>delay</strong> as a list. The main difference is that we must set the <strong>module</strong> to value <code class="docutils literal notranslate"><span class="pre">list</span></code>.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_list&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;list&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_list"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"current_clamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"list"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1500</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1750</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2000</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">],</span>
-<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">500.0</span><span class="p">]</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1500</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1750</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2000</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">500.0</span><span class="p">]</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -767,16 +767,16 @@ you want BMTK to place it randomly.</p>
 <li><p>Instead of specifying the <strong>amp</strong>, <strong>delay</strong>, or <strong>duration</strong>; instead you specify the <strong>file</strong> path to the csv file.</p></li>
 </ol>
 <p>For example to have a sequences of current clamps in the above example we would add the following to our configuration file:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_series&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_series"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/iclamp_inputs_series.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$INPUT_DIR/iclamp_inputs_series.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -788,7 +788,7 @@ you want BMTK to place it randomly.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;inputs/iclamp_inputs_series.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'inputs/iclamp_inputs_series.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -862,7 +862,7 @@ you want BMTK to place it randomly.</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.csv_series.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.csv_series.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -897,7 +897,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.csv_series.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.csv_series.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -923,23 +923,23 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <span class="n">times_secs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">dt</span><span class="o">*</span><span class="mi">200</span><span class="p">)</span><span class="o">/</span><span class="mi">1000</span>
 <span class="n">amps_na</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">times_secs</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">times_secs</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;timestamps&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">times_secs</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-    <span class="s1">&#39;amps&#39;</span><span class="p">:</span> <span class="n">amps_na</span><span class="o">*</span><span class="mf">.1</span>
-<span class="p">})</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/iclamp_damped_wave.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="s1">'timestamps'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">times_secs</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="s1">'amps'</span><span class="p">:</span> <span class="n">amps_na</span><span class="o">*</span><span class="mf">.1</span>
+<span class="p">})</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'inputs/iclamp_damped_wave.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
 <p>Then modify the config as such</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_wave&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_wave"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/iclamp_damped_wave.csv&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span>
+<span class="w">        </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$INPUT_DIR/iclamp_damped_wave.csv"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -952,7 +952,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.csv_wave.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.csv_wave.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -988,7 +988,7 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.csv_wave.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.csv_wave.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1005,20 +1005,20 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <p>Besides the current clamp, we can use a voltage clamp to set one or more cells to have a constant membrane voltage during some period of the simulation. And like the IClamp we can dynamically insert or remove a voltage clamp during any given simulation by simply editing our SONATA configuration json file. However, note that not all models allow us to insert a voltage clamp - in particular only models with conductance based mechanics allow voltage clamps (so for example we cannot clamp an
 integrate-and-fire neuron).</p>
 <p>In the network built using the file <em>build_network.voltage_clamp.py</em> we have a simple network of two cells, with cell #1 synapsing onto cell #2. As we might do with a simple in-vitro experiment we want to clamp only one cell and see the results it has on both cells. And we want to use a simple single-electrode clamp (eg <code class="docutils literal notranslate"><span class="pre">SEClamp</span></code>) which is the simplest way to fix the voltage of one or more cells. To do so we add the following to the SONATA configuration <strong>“inputs</strong>” section:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;se_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;clamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SEClamp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;net&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"se_clamp_1"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"clamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SEClamp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"net"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_ids"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;section_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;section_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;section_dist&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span>
+<span class="w">    </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"duration"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"delay"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"section_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soma"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"section_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"section_dist"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1038,7 +1038,7 @@ integrate-and-fire neuron).</p>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.voltage_clamp.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.voltage_clamp.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -1074,7 +1074,7 @@ integrate-and-fire neuron).</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.voltage_clamp.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;net&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.voltage_clamp.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'net'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1094,7 +1094,7 @@ realistic current-clamping stimuli that would be difficult to rebuild from scrat
 <h3>Step 1: Downloading the data<a class="headerlink" href="#Step-1:-Downloading-the-data" title="Link to this heading">#</a></h3>
 <p>First step is to determine which experimental conditions we want to replicate and which stimulus types to use. Different cells in the Allen Cell Types Database were optimized and tested against different types of current clamps. For example if we look at the electrophysiology page for <a class="reference external" href="https://celltypes.brain-map.org/experiment/electrophysiology/488683425">cell 488683425</a> we can see we have stimulus types including <code class="docutils literal notranslate"><span class="pre">Long</span> <span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">Noise</span></code>, <code class="docutils literal notranslate"><span class="pre">Ramp</span></code>, <code class="docutils literal notranslate"><span class="pre">Short</span> <span class="pre">Square</span></code> and <code class="docutils literal notranslate"><span class="pre">Square</span></code>. And for
 each types there are different <em>sweeps</em> where amplitudes and times were varied (or not) between trials:</p>
-<div><p><img alt="4f4d4aec36b34935a703c23efb3a09e6" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
+<div><p><img alt="27b67160b0064f398a94c91eb15fac16" class="no-scaled-link" src="../_images/cell_types_screen.png" style="width: 1000px;" /></p>
 </div><p>If you click on the “<code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Data</span></code>” button it will download an ephys nwb file containing all the <em>sweep</em> available for said experiment. You just need to put it in a directory that can be accessed by BMTK. If you need a more programtic way to download multiple such files you can use the AllenSDK, and BMTK also includes helper functions to download the data. You can run the following in a command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_ephys_data<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--download-dir<span class="o">=</span>ecephys_inputs
 </pre></div>
@@ -1108,7 +1108,7 @@ each types there are different <em>sweeps</em> where amplitudes and times were v
 
 <span class="n">download_ephys_data</span><span class="p">(</span>
     <span class="n">specimen_id</span><span class="o">=</span><span class="mi">488683425</span><span class="p">,</span>
-    <span class="n">download_dir</span><span class="o">=</span><span class="s1">&#39;ephys_inputs&#39;</span>
+    <span class="n">download_dir</span><span class="o">=</span><span class="s1">'ephys_inputs'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1120,14 +1120,14 @@ each types there are different <em>sweeps</em> where amplitudes and times were v
 <p>The downloaded ephys data can be used with any cell-type (even cells that are not from the Allen Cell-Types Database). However for testing and replication purposes you may want to run the downloaded ephys data on the original cell. If you click on <code class="docutils literal notranslate"><span class="pre">Select</span> <span class="pre">neuronal</span> <span class="pre">model</span></code> button on the page it will give you an option to download a possible GLIF Model (which can be run using PointNet) or a Biophysical (run using BioNet) model. This will download a zip file containing the <em>fit_parameters.json</em>
 which you can use as the <strong>dynamics_params</strong> in you SONATA network. Also for Biophysical models it will contain the file <em>reconstruction.swc</em> which is the <strong>morphology</strong> swc file for the specific cell. You can move these file(s) into their appropriate <em>components/</em> directory and rebuild/modify the SONATA network file so that <strong>dynamics_params</strong> and <strong>morphology</strong> points to the correct paths.</p>
 <p>Alternatively you can use BMTK to download, move and rename the files for you. In the command line you can run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_model<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--model-dir<span class="o">=</span><span class="s2">&quot;components&quot;</span><span class="w"> </span>--model-type<span class="o">=</span><span class="s2">&quot;Biophysical - all active&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bmtk.utils.cell_types_db<span class="w"> </span>download_model<span class="w"> </span>--specimen-id<span class="o">=</span><span class="m">488683425</span><span class="w"> </span>--model-dir<span class="o">=</span><span class="s2">"components"</span><span class="w"> </span>--model-type<span class="o">=</span><span class="s2">"Biophysical - all active"</span>
 </pre></div>
 </div>
 <p>or in python</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_dir</span> <span class="o">=</span> <span class="n">download_model</span><span class="p">(</span>
     <span class="n">specimen_id</span><span class="o">=</span><span class="mi">488683425</span><span class="p">,</span>
-    <span class="n">model_dir</span><span class="o">=</span><span class="s1">&#39;components&#39;</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical - all active&#39;</span>
+    <span class="n">model_dir</span><span class="o">=</span><span class="s1">'components'</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'Biophysical - all active'</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1135,13 +1135,13 @@ which you can use as the <strong>dynamics_params</strong> in you SONATA network.
 <section id="Step-3:-Set-the-configuration">
 <h3>Step 3: Set the configuration<a class="headerlink" href="#Step-3:-Set-the-configuration" title="Link to this heading">#</a></h3>
 <p>To use the downloaded ephys.nwb file we just need to create an “inputs sections with <strong>module</strong> set to <code class="docutils literal notranslate"><span class="pre">iclamp</span></code> and <strong>input_type</strong> set to <code class="docutils literal notranslate"><span class="pre">allen</span></code>. Use the <strong>file</strong> option to point to the path of our downloaded nwb file. And finally we must select our <strong>sweep</strong> number. In this case we’ll use sweep #35 which is just a 1 second long-square current.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;current_clamp_allen&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;allen&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${INPUT_DIR}/488683423_ephys.nwb&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;sweep_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;35&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"current_clamp_allen"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IClamp"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"allen"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"${INPUT_DIR}/488683423_ephys.nwb"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"sweep_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"35"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1153,7 +1153,7 @@ which you can use as the <strong>dynamics_params</strong> in you SONATA network.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.cell_types.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.cell_types.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -1187,7 +1187,7 @@ which you can use as the <strong>dynamics_params</strong> in you SONATA network.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.cell_types.json&#39;</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.cell_types.json'</span><span class="p">,</span>  <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1207,22 +1207,22 @@ which you can use as the <strong>dynamics_params</strong> in you SONATA network.
 single-compartment “soma” cells, but won’t work for integrate-and-fire type neurons.</p>
 <p>When extracellular stimulation(s) are inserted into a simulation, the effect the generated filed has on the extracellular membrane of each cell compartment will depend on the geometric relationship between the cell and the electrode(s). Thus it is important that we specify the <strong>x</strong>, <strong>y</strong>, <strong>z</strong> attributes for each cell, plus make sure the cell is rotated properly (as specified by attributes <strong>rotation_angle_x</strong>, <strong>rotation_angle_y</strong>, <strong>rotation_angle_z</strong>). Once we have such a network (see
 <em>build_network.xstim.py</em>) we can go ahead and insert an extracellular stimulation into a simulation by adding to the <strong>“inputs”</strong> section of the SONATA config like such:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Extracellular_Stim"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xstim"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lfp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;positions_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;components/stimulations/xstim_coords.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;waveform&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;shape&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sin&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;del&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.100</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;freq&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">8.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">    </span><span class="nt">"positions_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"components/stimulations/xstim_coords.csv"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"resistance"</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"waveform"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"shape"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sin"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"del"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.100</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"dur"</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"freq"</span><span class="p">:</span><span class="w"> </span><span class="mf">8.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"phase"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1241,7 +1241,7 @@ single-compartment “soma” cells, but won’t work for integrate-and-fire typ
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;components/stimulations/xstim_coords.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'components/stimulations/xstim_coords.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1300,7 +1300,7 @@ single-compartment “soma” cells, but won’t work for integrate-and-fire typ
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.xstim_sin.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.xstim_sin.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -1333,7 +1333,7 @@ single-compartment “soma” cells, but won’t work for integrate-and-fire typ
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.compartment</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.xstim_sin.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;bio&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.xstim_sin.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'bio'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1347,20 +1347,20 @@ single-compartment “soma” cells, but won’t work for integrate-and-fire typ
 <section id="More-advanced-wave-forms">
 <h3>More advanced wave-forms<a class="headerlink" href="#More-advanced-wave-forms" title="Link to this heading">#</a></h3>
 <p>In the above example we set it so the stimulus will generate a sine-wave at the electrode site. BMTK has a number of built-in shapes available, including a sine-wave and a direct-current (<strong>waveform</strong>: “dc”)</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Extracellular_Stim"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xstim"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lfp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;positions_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/xstim_coords.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;waveform&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;shape&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dc&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;del&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.400</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;dur&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
+<span class="w">    </span><span class="nt">"positions_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$STIM_DIR/xstim_coords.csv"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"resistance"</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"waveform"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"shape"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dc"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"del"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"amp"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.400</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"dur"</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">},</span>
@@ -1373,14 +1373,14 @@ single-compartment “soma” cells, but won’t work for integrate-and-fire typ
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.xstim_dc.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.xstim_dc.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.xstim_dc.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;bio&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.xstim_dc.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'bio'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1423,9 +1423,9 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <span class="n">amplitude</span> <span class="o">=</span> <span class="n">time</span><span class="o">*</span><span class="mf">0.0002</span><span class="o">-</span><span class="mf">.100</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
-    <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="n">amplitude</span>
-<span class="p">})</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/ramping_xstim.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="s1">'time'</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+    <span class="s1">'amplitude'</span><span class="p">:</span> <span class="n">amplitude</span>
+<span class="p">})</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'inputs/ramping_xstim.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1447,16 +1447,16 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 </div>
 </div>
 <p>Then in our configuration file we just need to change the <strong>waveform</strong> attribute to point to the location of our customized file</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Extracellular_Stim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Extracellular_Stim"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"xstim"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lfp"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"model_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"biophysical"</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;positions_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$STIM_DIR/xstim_coords.csv&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;waveform&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;inputs/ramping_xstim.csv&quot;</span>
+<span class="w">    </span><span class="nt">"positions_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$STIM_DIR/xstim_coords.csv"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"resistance"</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"waveform"</span><span class="p">:</span><span class="w"> </span><span class="s2">"inputs/ramping_xstim.csv"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -1469,14 +1469,14 @@ Mechanisms already loaded from path: ./components/mechanisms.  Aborting.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.xstim_custom.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.xstim_custom.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">graph</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.xstim_custom.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;bio&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.xstim_custom.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'bio'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

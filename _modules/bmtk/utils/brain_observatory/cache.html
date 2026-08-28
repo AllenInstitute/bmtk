@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -426,7 +426,7 @@
                  <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
-        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;MANIFEST_VERSION&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'MANIFEST_VERSION'</span><span class="p">):</span>
             <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MANIFEST_VERSION</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">load_manifest</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
@@ -436,7 +436,7 @@
         <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
 
-                <span class="c1"># make the directory if it doesn&#39;t exist already</span>
+                <span class="c1"># make the directory if it doesn't exist already</span>
                 <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">dirname</span><span class="p">:</span>
                     <span class="n">Manifest</span><span class="o">.</span><span class="n">safe_mkdir</span><span class="p">(</span><span class="n">dirname</span><span class="p">)</span>
@@ -444,39 +444,39 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">build_manifest</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">json_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">json_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">json_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span>
+                        <span class="n">json_string</span> <span class="o">=</span> <span class="s2">"</span><span class="si">{}</span><span class="s2">"</span>
                     <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="n">Manifest</span><span class="p">(</span>
-                    <span class="n">json_obj</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">],</span>
+                    <span class="n">json_obj</span><span class="p">[</span><span class="s1">'manifest'</span><span class="p">],</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">),</span>
                     <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">ManifestVersionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">outdated</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">&quot;is out of date&quot;</span>
+                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">"is out of date"</span>
                 <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">outdated</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">&quot;was made with a newer version of the AllenSDK&quot;</span>
+                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">"was made with a newer version of the AllenSDK"</span>
                 <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">outdated</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">&quot;version did not match the expected version&quot;</span>
+                    <span class="n">intro</span> <span class="o">=</span> <span class="s2">"version did not match the expected version"</span>
 
-                <span class="n">ref_url</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/alleninstitute/allensdk/wiki&quot;</span>
-                <span class="k">raise</span> <span class="n">ManifestVersionError</span><span class="p">((</span><span class="s2">&quot;Your manifest file (</span><span class="si">%s</span><span class="s2">) </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; (its version is &#39;</span><span class="si">%s</span><span class="s2">&#39;, but&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; version &#39;</span><span class="si">%s</span><span class="s2">&#39; is expected). &quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; Please remove this file&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; and it will be regenerated for&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; you the next time you&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; instantiate this class.&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; WARNING: There may be new data&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; files available that replace&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; the ones you already have&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; downloaded. Read the notes&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; for this release for more&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; details on what has changed&quot;</span> <span class="o">+</span>
-                                            <span class="s2">&quot; (</span><span class="si">%s</span><span class="s2">).&quot;</span><span class="p">)</span> <span class="o">%</span>
+                <span class="n">ref_url</span> <span class="o">=</span> <span class="s2">"https://github.com/alleninstitute/allensdk/wiki"</span>
+                <span class="k">raise</span> <span class="n">ManifestVersionError</span><span class="p">((</span><span class="s2">"Your manifest file (</span><span class="si">%s</span><span class="s2">) </span><span class="si">%s</span><span class="s2">"</span> <span class="o">+</span>
+                                            <span class="s2">" (its version is '</span><span class="si">%s</span><span class="s2">', but"</span> <span class="o">+</span>
+                                            <span class="s2">" version '</span><span class="si">%s</span><span class="s2">' is expected). "</span> <span class="o">+</span>
+                                            <span class="s2">" Please remove this file"</span> <span class="o">+</span>
+                                            <span class="s2">" and it will be regenerated for"</span> <span class="o">+</span>
+                                            <span class="s2">" you the next time you"</span> <span class="o">+</span>
+                                            <span class="s2">" instantiate this class."</span> <span class="o">+</span>
+                                            <span class="s2">" WARNING: There may be new data"</span> <span class="o">+</span>
+                                            <span class="s2">" files available that replace"</span> <span class="o">+</span>
+                                            <span class="s2">" the ones you already have"</span> <span class="o">+</span>
+                                            <span class="s2">" downloaded. Read the notes"</span> <span class="o">+</span>
+                                            <span class="s2">" for this release for more"</span> <span class="o">+</span>
+                                            <span class="s2">" details on what has changed"</span> <span class="o">+</span>
+                                            <span class="s2">" (</span><span class="si">%s</span><span class="s2">)."</span><span class="p">)</span> <span class="o">%</span>
                                            <span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">intro</span><span class="p">,</span>
                                             <span class="n">e</span><span class="o">.</span><span class="n">found_version</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
                                             <span class="n">ref_url</span><span class="p">),</span>
@@ -502,8 +502,8 @@
 <div class="viewcode-block" id="Cache.add_manifest_paths">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.cache.Cache.add_manifest_paths">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_manifest_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manifest_builder</span><span class="p">):</span>
-        <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="s1">&#39;BASEDIR&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;MANIFEST_CONFIG&#39;</span><span class="p">):</span>
+        <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="s1">'BASEDIR'</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'MANIFEST_CONFIG'</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MANIFEST_CONFIG</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">manifest_builder</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">**</span><span class="n">config</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">manifest_builder</span></div>
@@ -527,8 +527,8 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.cache.get_default_manifest_file">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_default_manifest_file</span><span class="p">(</span><span class="n">cache_name</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_MANIFEST&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
-        <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/manifest.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="s1">'</span><span class="si">{}</span><span class="s1">_MANIFEST'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
+        <span class="s1">'</span><span class="si">{}</span><span class="s1">/manifest.json'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cache_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
     <span class="p">)</span></div>
 
 </pre></div>

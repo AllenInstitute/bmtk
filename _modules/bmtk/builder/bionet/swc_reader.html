@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -424,15 +424,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.bionet</span><span class="w"> </span><span class="kn">import</span> <span class="n">nrn</span>
 
 
-<span class="n">SegmentProps</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;SegmentProps&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;dist&#39;</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;dist0&#39;</span><span class="p">,</span> <span class="s1">&#39;dist1&#39;</span><span class="p">,</span> <span class="s1">&#39;sec_id&#39;</span><span class="p">])</span>
-<span class="n">SegmentCoords</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;SegmentCoords&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;p0&#39;</span><span class="p">,</span> <span class="s1">&#39;p1&#39;</span><span class="p">,</span> <span class="s1">&#39;p05&#39;</span><span class="p">])</span>
+<span class="n">SegmentProps</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'SegmentProps'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'type'</span><span class="p">,</span> <span class="s1">'area'</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="s1">'dist'</span><span class="p">,</span> <span class="s1">'length'</span><span class="p">,</span> <span class="s1">'dist0'</span><span class="p">,</span> <span class="s1">'dist1'</span><span class="p">,</span> <span class="s1">'sec_id'</span><span class="p">])</span>
+<span class="n">SegmentCoords</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'SegmentCoords'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'p0'</span><span class="p">,</span> <span class="s1">'p1'</span><span class="p">,</span> <span class="s1">'p05'</span><span class="p">])</span>
 
 
 <div class="viewcode-block" id="rotation_matrix">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.rotation_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
+<span class="sd">    """</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
     <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
@@ -453,10 +453,10 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SWCReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">sec_type_swc</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;soma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="s1">&#39;axon&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;axonal&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
-        <span class="s1">&#39;dend&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="s1">&#39;apic&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">:</span> <span class="mi">4</span>
+        <span class="s1">'soma'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'somatic'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">'axon'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'axonal'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">'dend'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">'apic'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">:</span> <span class="mi">4</span>
     <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">swc_path</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -522,7 +522,7 @@
             <span class="c1"># for sec in self.hobj.all:</span>
             <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">):</span>
                 <span class="n">fullsecname</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
-                <span class="n">sec_type</span> <span class="o">=</span> <span class="n">fullsecname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># get sec name type without the cell name</span>
+                <span class="n">sec_type</span> <span class="o">=</span> <span class="n">fullsecname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># get sec name type without the cell name</span>
                 <span class="n">sec_type_swc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">sec_type</span><span class="p">]</span>  <span class="c1"># convert to swc code</span>
 
                 <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
@@ -637,8 +637,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">swc_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;pid&#39;</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
-            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">swc_df</span><span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="s1">'pid'</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">'#'</span><span class="p">)</span>
+            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">swc_df</span><span class="p">[[</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">]]</span>
 
             <span class="n">name_indices</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">ln</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">swc_df</span><span class="p">)):</span>
@@ -651,12 +651,12 @@
                 <span class="n">name_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">nl</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span><span class="o">.</span><span class="n">nameindex</span><span class="p">)</span>
                 <span class="n">name_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name_index</span><span class="p">)</span>
 
-            <span class="n">swc_df</span><span class="p">[</span><span class="s1">&#39;nameindex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_indices</span>
+            <span class="n">swc_df</span><span class="p">[</span><span class="s1">'nameindex'</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_indices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span> <span class="o">=</span> <span class="n">swc_df</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    @soma_position.setter</span>
 <span class="sd">    def soma_position(self, coords):</span>
 <span class="sd">        assert(len(coords) == 3)</span>
@@ -669,7 +669,7 @@
 <span class="sd">            self._seg_coords = None</span>
 
 <span class="sd">        self._soma_pos = new_soma_coords</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="SWCReader.get_section">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_section">[docs]</a>
@@ -680,17 +680,17 @@
 <div class="viewcode-block" id="SWCReader.fix_axon">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.fix_axon">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fix_axon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes and refixes axon&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Removes and refixes axon"""</span>
         <span class="n">axon_diams</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diam</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-            <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;axon&#39;</span><span class="p">:</span>
+            <span class="n">section_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">'axon'</span><span class="p">:</span>
                 <span class="n">axon_diams</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">diam</span>
 
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
             <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
 
-        <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'create axon[2]'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">):</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">30</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="mi">1</span>
@@ -724,9 +724,9 @@
 <div class="viewcode-block" id="SWCReader.set_segment_dl">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.set_segment_dl">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_segment_dl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Define number of segments in a cell"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unable to segment the morphology after coordinates have already been calculated&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Unable to segment the morphology after coordinates have already been calculated'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dl</span><span class="p">))</span>
@@ -736,15 +736,15 @@
 <div class="viewcode-block" id="SWCReader.choose_sections">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.choose_sections">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">choose_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
-<span class="sd">        return less if there aren&#39;t as many sections</span>
+<span class="w">        </span><span class="sd">"""Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
+<span class="sd">        return less if there aren't as many sections</span>
 
-<span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
+<span class="sd">        :param section_names: 'soma', 'dend', 'apic', 'axon'</span>
 <span class="sd">        :param distance_range: [float, float]: distance range of sections from the soma, in um.</span>
 <span class="sd">        :param n_sections: int: maximum number of sections to select</span>
 <span class="sd">        :return: [int], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)</span>
 <span class="sd">            that meet the given critera.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">secs</span><span class="p">,</span> <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_sections</span><span class="p">(</span><span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">)</span>
         <span class="n">secs_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">secs</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">probs</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">sec_id</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
@@ -753,14 +753,14 @@
 <div class="viewcode-block" id="SWCReader.find_sections">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.find_sections">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
+<span class="w">        </span><span class="sd">"""Retrieves a list of sections ids and section x's given a section name/type (eg axon, soma, apic, dend) and</span>
 <span class="sd">        the distance from the soma.</span>
 
-<span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
+<span class="sd">        :param section_names: 'soma', 'dend', 'apic', 'axon'</span>
 <span class="sd">        :param distance_range: [float, float]: distance range of sections from the soma, in um.</span>
 <span class="sd">        :return: [float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)</span>
 <span class="sd">            that meet the given critera.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">dmin</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">seg_d0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">dist0</span>
@@ -859,8 +859,8 @@
         <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
         <span class="n">sec_nameindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sec_nameindex</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
         <span class="n">sec_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sec_type</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">filtered_swc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_type</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">&#39;nameindex&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_nameindex</span><span class="p">)]</span>
-        <span class="n">swc_ids</span> <span class="o">=</span> <span class="n">filtered_swc</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">filtered_swc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_type</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">'nameindex'</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_nameindex</span><span class="p">)]</span>
+        <span class="n">swc_ids</span> <span class="o">=</span> <span class="n">filtered_swc</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
         <span class="c1"># use sec_x, a value between [0, 1], to estimate which swc_id/line to choose.</span>
         <span class="c1"># Note: At the moment it assumes each line in the swc is the same distance apart, making estimating the sec_x</span>
@@ -877,14 +877,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_sec_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
         <span class="n">sec_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">hname</span><span class="p">()</span>
-        <span class="n">sec_type_str</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sec_type_str</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'['</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">type_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">sec_type_str</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">type_str</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_sec_nameindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
         <span class="n">sec_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">hname</span><span class="p">()</span>
-        <span class="n">sec_type_name</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">nameindex_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[(\d+)\]&#39;</span><span class="p">,</span> <span class="n">sec_type_name</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sec_type_name</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">nameindex_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\[(\d+)\]'</span><span class="p">,</span> <span class="n">sec_type_name</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">nameindex_str</span><span class="p">)</span></div>
 
 
@@ -895,38 +895,38 @@
 <div class="viewcode-block" id="get_swc">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.get_swc">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_swc</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">morphology_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">cell_pop</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
-    <span class="n">cell_node_id</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span>
+    <span class="n">cell_pop</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'population'</span><span class="p">,</span> <span class="s1">'default'</span><span class="p">)</span>
+    <span class="n">cell_node_id</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">'node_id'</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">use_cache</span> <span class="ow">and</span> <span class="n">cell_pop</span> <span class="ow">in</span> <span class="n">swc_cache</span> <span class="ow">and</span> <span class="n">cell_node_id</span> <span class="ow">in</span> <span class="n">swc_cache</span><span class="p">[</span><span class="n">cell_pop</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">swc_cache</span><span class="p">[</span><span class="n">cell_pop</span><span class="p">][</span><span class="n">cell_node_id</span><span class="p">]</span>
 
-    <span class="n">swc_path</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span>
+    <span class="n">swc_path</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">'morphology'</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">morphology_dir</span><span class="p">:</span>
         <span class="n">swc_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">morphology_dir</span><span class="p">,</span> <span class="n">swc_path</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">swc_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.swc&#39;</span><span class="p">):</span>
-        <span class="n">swc_path</span> <span class="o">+=</span> <span class="s1">&#39;.swc&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">swc_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.swc'</span><span class="p">):</span>
+        <span class="n">swc_path</span> <span class="o">+=</span> <span class="s1">'.swc'</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">swc_path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> does not exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">swc_path</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'File </span><span class="si">{}</span><span class="s1"> does not exists.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">swc_path</span><span class="p">))</span>
 
     <span class="n">swc</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dL</span><span class="p">:</span>
         <span class="n">swc</span><span class="o">.</span><span class="n">set_segment_dl</span><span class="p">(</span><span class="n">dL</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_processing&#39;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'model_processing'</span><span class="p">,</span> <span class="s1">'NULL'</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'aibs_perisomatic'</span><span class="p">:</span>
         <span class="n">swc</span><span class="o">.</span><span class="n">fix_axon</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">cn</span> <span class="ow">in</span> <span class="n">cell</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">]]):</span>
-        <span class="n">soma_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">cn</span> <span class="ow">in</span> <span class="n">cell</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'x'</span><span class="p">,</span> <span class="s1">'y'</span><span class="p">,</span> <span class="s1">'z'</span><span class="p">]]):</span>
+        <span class="n">soma_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'z'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">soma_coords</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">cn</span> <span class="ow">in</span> <span class="n">cell</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rotation_angle_xaxis&#39;</span><span class="p">,</span> <span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">,</span> <span class="s1">&#39;rotation_angle_zaxis&#39;</span><span class="p">]]):</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">cn</span> <span class="ow">in</span> <span class="n">cell</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'rotation_angle_xaxis'</span><span class="p">,</span> <span class="s1">'rotation_angle_yaxis'</span><span class="p">,</span> <span class="s1">'rotation_angle_zaxis'</span><span class="p">]]):</span>
         <span class="n">rotation_angles</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotation_angle_xaxis&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rotation_angle_zaxis&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'rotation_angle_xaxis'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'rotation_angle_yaxis'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'rotation_angle_zaxis'</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">rotation_angles</span> <span class="o">=</span> <span class="kc">None</span>

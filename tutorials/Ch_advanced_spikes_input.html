@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -484,12 +484,12 @@ easier to analyze and use with other programs.</p>
 
 <span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">()</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-    <span class="n">node_ids</span><span class="o">=</span><span class="s1">&#39;network_csv_spikes/inputs_nodes.h5&#39;</span><span class="p">,</span>
+    <span class="n">node_ids</span><span class="o">=</span><span class="s1">'network_csv_spikes/inputs_nodes.h5'</span><span class="p">,</span>
     <span class="n">firing_rate</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
     <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
-    <span class="n">population</span><span class="o">=</span><span class="s1">&#39;inputs&#39;</span>
+    <span class="n">population</span><span class="o">=</span><span class="s1">'inputs'</span>
 <span class="p">)</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;inputs/simple_spikes.csv&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'inputs/simple_spikes.csv'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -500,16 +500,16 @@ easier to analyze and use with other programs.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="n">spikes_inputs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;inputs/simple_spikes.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">spikes_inputs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'inputs/simple_spikes.csv'</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
 
-<span class="c1"># Let&#39;s quickly check that our csv file makes sense</span>
-<span class="n">n_nodes</span> <span class="o">=</span> <span class="n">spikes_inputs</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># Let's quickly check that our csv file makes sense</span>
+<span class="n">n_nodes</span> <span class="o">=</span> <span class="n">spikes_inputs</span><span class="p">[</span><span class="s1">'node_ids'</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">n_spikes</span> <span class="o">=</span> <span class="n">spikes_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of cells in spikes-file: </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5)&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Avg. number of spikes per cell: </span><span class="si">{</span><span class="n">n_spikes</span><span class="o">/</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5sec x 10Hz ~ 50)&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Min spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">&quot;timestamps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Max spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">&quot;timestamps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Number of cells in spikes-file: </span><span class="si">{</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5)'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Avg. number of spikes per cell: </span><span class="si">{</span><span class="n">n_spikes</span><span class="o">/</span><span class="n">n_nodes</span><span class="si">}</span><span class="s1"> (expected: 5sec x 10Hz ~ 50)'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Min spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">"timestamps"</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Max spike-time: </span><span class="si">{</span><span class="n">spikes_inputs</span><span class="p">[</span><span class="s2">"timestamps"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s1"> ms'</span><span class="p">)</span>
 
 <span class="n">spikes_inputs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -602,16 +602,16 @@ Max spike-time: 4998.560456807771 ms
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;inputs/custom_spikes.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-    <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'inputs/custom_spikes.csv'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+    <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">' '</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">'#'</span><span class="p">)</span>
 
     <span class="c1"># write the header</span>
-    <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;timestamps&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">])</span>
+    <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">'timestamps'</span><span class="p">,</span> <span class="s1">'population'</span><span class="p">,</span> <span class="s1">'node_ids'</span><span class="p">])</span>
 
     <span class="c1"># For node 0 we have it fire randomly at 1 Hz for 5 seconds, for node 1 at 2Hz, etc.</span>
     <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5000.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">node_id</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">5</span><span class="p">)):</span>
-            <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">timestamp</span><span class="p">,</span> <span class="s1">&#39;inputs&#39;</span><span class="p">,</span> <span class="n">node_id</span><span class="p">])</span>
+            <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">timestamp</span><span class="p">,</span> <span class="s1">'inputs'</span><span class="p">,</span> <span class="n">node_id</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -621,7 +621,7 @@ Max spike-time: 4998.560456807771 ms
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;inputs/custom_spikes.csv&#39;</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">'inputs/custom_spikes.csv'</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -769,14 +769,14 @@ Successfully created x86_64/special
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.analyzer.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">to_dataframe</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.csv_spikes.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.csv_spikes.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.csv_spikes.json&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.csv_spikes.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -829,12 +829,12 @@ Warning: no DISPLAY environment variable.
 <p>Pregenerating spike trains for your simulations inside an hdf5 or CSV file is computationally efficient and makes your results more accessible to reproduce and share. However, at times, it may be beneficial for users to generate spike trains dynamically during each simulation. If you are doing quick simulations and spot-checks, it can be cumbersome having to regenerate a file beforehand. Or if a user is running thousands of simulations or doing some kind of gradient search, the cost of
 potentially creating thousands of spike files beforehand may not be reasonable.</p>
 <p>BMTK also allows modelers to create their own special function, which will generate new spike trains at the start of each simulation. To do so, you only need to make changes to the configuration for a “spikes” input so that the <strong>module</strong> is set to value <code class="docutils literal notranslate"><span class="pre">function</span></code>, and instead of spikes_input, you specify a <strong>spikes_function</strong> parameter that will be the name of your custom function.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;LGN_spikes_sonata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;spikes_function&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;my_spikes_generator&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"LGN_spikes_sonata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"function"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"spikes_function"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my_spikes_generator"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"LGN"</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -850,10 +850,10 @@ potentially creating thousands of spike files beforehand may not be reasonable.<
 
 <span class="nd">@spikes_generator</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">my_spikes_generator</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Generating custom spike trains for node </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">population_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tON&#39;</span><span class="p">:</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating custom spike trains for node </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">population_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">node</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'tON'</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;tOFF&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">node</span><span class="p">[</span><span class="s1">'pop_name'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'tOFF'</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
@@ -878,7 +878,7 @@ potentially creating thousands of spike files beforehand may not be reasonable.<
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.spikes_generator.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.spikes_generator.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -964,7 +964,7 @@ Observatory</a>, we will want not only to use such data as a base-line for valid
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">allensdk.brain_observatory.ecephys.ecephys_project_cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">EcephysProjectCache</span>
 
 <span class="n">cache</span> <span class="o">=</span> <span class="n">EcephysProjectCache</span><span class="o">.</span><span class="n">from_warehouse</span><span class="p">(</span>
-    <span class="n">manifest</span><span class="o">=</span><span class="s1">&#39;./ecephys_cache_dir/neuropixels.manifest.json&#39;</span>
+    <span class="n">manifest</span><span class="o">=</span><span class="s1">'./ecephys_cache_dir/neuropixels.manifest.json'</span>
 <span class="p">)</span>
 <span class="n">cache</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">(</span><span class="mi">715093703</span><span class="p">)</span>
 <span class="n">cache</span><span class="o">.</span><span class="n">get_session_data</span><span class="p">(</span><span class="mi">798911424</span><span class="p">)</span>
@@ -1048,18 +1048,18 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <h3>Step 2: Connecting VISL and sub-cortical area onto our V1 cells.<a class="headerlink" href="#Step-2:-Connecting-VISL-and-sub-cortical-area-onto-our-V1-cells." title="Link to this heading">#</a></h3>
 <p>To simulate synaptic stimulation from the VisL and Hippocampal cell recordings onto our V1 model, we will need to create a population of virtual cells representing the new cells and synapses. Unfortunately, the electrophysiology data doesn’t include information about network geometry, so it is up to the modeler to decide how to connect the experimental data to our network.</p>
 <p>As we did before, we will separate node populations called ‘VISl’ and ‘Hippocampus’ and use the NetworkBuilder to create feedforward synaptic connections.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">visl</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;VISl&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">visl</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'VISl'</span><span class="p">)</span>
 <span class="n">visl</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span><span class="o">=</span><span class="n">n_visl_units</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">)</span>
 <span class="n">visl</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">visal</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
-    <span class="n">target</span><span class="o">=</span><span class="n">visp</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">visp</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">'e'</span><span class="p">),</span>
     <span class="n">connection_rule</span><span class="o">=</span><span class="n">connection_rule_e2e</span><span class="p">,</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AMPA_ExcToExc.json'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'Exp2Syn'</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -1075,36 +1075,36 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <li><p>Know which time interval in the experimental data to use in our simulation.</p></li>
 </ol>
 <p>The most straightforward way of doing this is to add the following to our configuration file (<em>config.nwb_inputs.json</em>) in the “inputs” section:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;hippo_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hippocampus&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;CA1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CA3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Po&quot;</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"hippo_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hippocampus"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./ecephys_cache_dir/session_715093703/session_715093703.nwb"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"CA1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CA3"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Po"</span><span class="p">]</span>
 <span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
+<span class="w">        </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"interval_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"drifting_gratings"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"temporal_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"orientation"</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
 <span class="w">        </span><span class="p">}</span>
 
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;visl_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ecephys_probe&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISl&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;mapping&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;units&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISl&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"visl_spikes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ecephys_probe"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"node_set"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISl"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./ecephys_cache_dir/session_715093703/session_715093703.nwb"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"mapping"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sample"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"units"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISl"</span><span class="p">,</span>
 <span class="w">        </span><span class="p">}</span>
-<span class="w">        </span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;interval_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;drifting_gratings&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;temporal_frequency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;orientation&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
+<span class="w">        </span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"interval_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"drifting_gratings"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"temporal_frequency"</span><span class="p">:</span><span class="w"> </span><span class="mf">4.0</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"orientation"</span><span class="p">:</span><span class="w"> </span><span class="mi">90</span>
 <span class="w">        </span><span class="p">},</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
@@ -1115,10 +1115,10 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <li><p>The <strong>node_set</strong> is the subset of cells in our network used as virtual cells that generate spikes.</p></li>
 <li><p>The <strong>input_file</strong> in the name of the nwb file(s) to use for spikes. To use data from multiple sessions, just use a list of files:</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_715093703/session_715093703.nwb&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_798911424/session_798911424.nwb&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="s2">&quot;./ecephys_cache_dir/session_754829445/session_754829445.nwb&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"input_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"./ecephys_cache_dir/session_715093703/session_715093703.nwb"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"./ecephys_cache_dir/session_798911424/session_798911424.nwb"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"./ecephys_cache_dir/session_754829445/session_754829445.nwb"</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -1127,7 +1127,7 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <li><p><strong>mapping</strong> tells how to map NWB <strong>units</strong> -&gt; SONATA <strong>node_set</strong>. Setting the value to <code class="docutils literal notranslate"><span class="pre">sample</span></code> will result in a random mapping without replacement. You can also use option <code class="docutils literal notranslate"><span class="pre">sample_with_replacement</span></code>, which is useful if your model has more nodes than units in your data. Or if you have a specific mapping from NWB unit_ids to SONATA node_ids, you can use option <code class="docutils literal notranslate"><span class="pre">units_map</span></code> (in which case <strong>units</strong> will point to a CSV file).</p></li>
 <li><p><strong>interval</strong> tells the simulation which time interval to fetch spikes from. Inside the NWB file, there is a stimulus table that marks the stimuli at any given epoch. We use this table to get only spikes recorded in which a “drifting grating” stimulus was present with a given orientation and frequency. You can also use the following option if you know the specific time.</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;interval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;start_time_ms&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;end_time_ms&quot;</span><span class="p">]</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"interval"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"start_time_ms"</span><span class="p">,</span><span class="w"> </span><span class="s2">"end_time_ms"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>And finally, we are ready to run our simulation.</p>
@@ -1138,7 +1138,7 @@ WARNING:root:downloading a 2571.776MiB file from http://api.brain-map.org//api/v
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.nwb_inputs.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.nwb_inputs.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -1206,39 +1206,39 @@ Warning: no DISPLAY environment variable.
 <p>So far, in this tutorial, we’ve focused on generating stimuli using synaptic inputs from outside our main modeled network. In other tutorials, we have used different types of input to drive a simulation, including current-clamps, voltage-clamps, and extracellular stimulation. While these can generate the kinds of stimuli we might see in experiments and living brains, they tend not to be very granular, especially when we want to study the secondary effects of activity within a network.</p>
 <p>One option that BMTK offers for having more granular control of internal network activity is forcing certain synapses to spontaneously fire at pre-determined times. This cannot only give us more control of network dynamics, which would be much harder to achieve using current clamps or feedforward spike trains, but it also lets us isolate external activity from recurrent activity.</p>
 <p>In BMTK, this is done by adding a new input type to the “inputs” section of the SONATA config with <strong>input_type</strong> and <strong>module</strong> called <code class="docutils literal notranslate"><span class="pre">syn_activity</span></code>. At the minimum, we must define the pre-synaptic cells that will spontaneously fire and a list of firing times:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;syn_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;precell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"syn_activity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"syn_activity"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"syn_activity"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"precell_filter"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;timestamps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"timestamps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>precell_filter</strong> determines the synapses to activate based on the presynaptic/source cell spontaneously. In this case we tell BMTK spontaneous activity to apply to synapses with a source-cell that has attributes <code class="docutils literal notranslate"><span class="pre">population==VISp</span></code> and <code class="docutils literal notranslate"><span class="pre">ei==e</span></code>. If you know exactly which cells you want to use, you can filter by <code class="docutils literal notranslate"><span class="pre">node_id</span></code>:</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"node_id"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>timestamps</strong> is a list of timestamps, in milliseconds, to activate the neuron following startup. If you have too many timestamps to add to the JSON directly, you can also pass in a string path to a txt file where each line is a timestamp.</p></li>
 </ul>
 <p>In the above example, all the synapses with VISp excitatory pre-synaptic connections will fire at the given timestamp. For further granular control, you can all set the <strong>postcell_filter</strong> too for filtering out synapses based on post-synaptic cells. For example, if you want spontaneous firing in exc -&gt; inh connections (the above example would also include exc -&gt; exc synapses:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;syn_activity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;syn_activity&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;precell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"syn_activity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"syn_activity"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"syn_activity"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"precell_filter"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;postcell_filter&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VISp&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;i&quot;</span>
+<span class="w">  </span><span class="nt">"postcell_filter"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"population"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VISp"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"ei"</span><span class="p">:</span><span class="w"> </span><span class="s2">"i"</span>
 <span class="w">  </span><span class="p">},</span>
-<span class="w">  </span><span class="nt">&quot;timestamps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"timestamps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2500.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3500.0</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -1249,7 +1249,7 @@ Warning: no DISPLAY environment variable.
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">bionet</span>
 
 <span class="n">bionet</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.spont_syns.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.spont_syns.json'</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>

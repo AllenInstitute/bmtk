@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -441,7 +441,7 @@
 <div class="viewcode-block" id="ManifestBuilder">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.ManifestBuilder">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ManifestBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">df_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;parent_key&#39;</span><span class="p">,</span> <span class="s1">&#39;spec&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">]</span>
+    <span class="n">df_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'key'</span><span class="p">,</span> <span class="s1">'parent_key'</span><span class="p">,</span> <span class="s1">'spec'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">,</span> <span class="s1">'format'</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span> <span class="o">=</span> <span class="p">[]</span>
@@ -450,25 +450,25 @@
 <div class="viewcode-block" id="ManifestBuilder.set_version">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.ManifestBuilder.set_version">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">'type'</span><span class="p">:</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span></div>
 
 
 <div class="viewcode-block" id="ManifestBuilder.add_path">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.ManifestBuilder.add_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span>
-                 <span class="n">typename</span><span class="o">=</span><span class="s1">&#39;dir&#39;</span><span class="p">,</span>
+                 <span class="n">typename</span><span class="o">=</span><span class="s1">'dir'</span><span class="p">,</span>
                  <span class="n">parent_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">entry</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
-            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">typename</span><span class="p">,</span>
-            <span class="s1">&#39;spec&#39;</span><span class="p">:</span> <span class="n">spec</span><span class="p">}</span>
+            <span class="s1">'key'</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span>
+            <span class="s1">'type'</span><span class="p">:</span> <span class="n">typename</span><span class="p">,</span>
+            <span class="s1">'spec'</span><span class="p">:</span> <span class="n">spec</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="nb">format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s1">'format'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span>
 
         <span class="k">if</span> <span class="n">parent_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;parent_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_key</span>
+            <span class="n">entry</span><span class="p">[</span><span class="s1">'parent_key'</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent_key</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span></div>
 
@@ -476,10 +476,10 @@
 <div class="viewcode-block" id="ManifestBuilder.write_json_file">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.ManifestBuilder.write_json_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_json_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;wb&#39;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">'wb'</span>
 
         <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;wb+&#39;</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">'wb+'</span>
 
         <span class="n">json_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">write_json_string</span><span class="p">()</span>
 
@@ -487,7 +487,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>   <span class="c1"># Python 2.7</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">json_string</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>  <span class="c1"># Python 3</span></div>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">json_string</span><span class="p">,</span> <span class="s1">'utf-8'</span><span class="p">))</span>  <span class="c1"># Python 3</span></div>
 
 
 <div class="viewcode-block" id="ManifestBuilder.write_json_string">
@@ -510,7 +510,7 @@
 <div class="viewcode-block" id="ManifestBuilder.get_config">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.ManifestBuilder.get_config">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">wrapper</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">}</span>
+        <span class="n">wrapper</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"manifest"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">wrapper</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
 
@@ -523,12 +523,12 @@
 <div class="viewcode-block" id="Manifest">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Manifest</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">DIR</span> <span class="o">=</span> <span class="s1">&#39;dir&#39;</span>
-    <span class="n">FILE</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span>
-    <span class="n">DIRNAME</span> <span class="o">=</span> <span class="s1">&#39;dir_name&#39;</span>
-    <span class="n">VERSION</span> <span class="o">=</span> <span class="s1">&#39;manifest_version&#39;</span>
+    <span class="n">DIR</span> <span class="o">=</span> <span class="s1">'dir'</span>
+    <span class="n">FILE</span> <span class="o">=</span> <span class="s1">'file'</span>
+    <span class="n">DIRNAME</span> <span class="o">=</span> <span class="s1">'dir_name'</span>
+    <span class="n">VERSION</span> <span class="o">=</span> <span class="s1">'manifest_version'</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relative_base_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relative_base_dir</span><span class="o">=</span><span class="s1">'.'</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relative_base_dir</span> <span class="o">=</span> <span class="n">relative_base_dir</span>
 
@@ -538,56 +538,56 @@
 <div class="viewcode-block" id="Manifest.load_config">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest.load_config">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39; Load paths into the manifest from an Allen SDK config section.</span>
+<span class="w">        </span><span class="sd">''' Load paths into the manifest from an Allen SDK config section.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        config : Config</span>
 <span class="sd">            Manifest section of an Allen SDK config.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">found_version</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">path_info</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-            <span class="n">path_type</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="n">path_type</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span>
             <span class="n">path_format</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="s1">&#39;format&#39;</span> <span class="ow">in</span> <span class="n">path_info</span><span class="p">:</span>
-                <span class="n">path_format</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">'format'</span> <span class="ow">in</span> <span class="n">path_info</span><span class="p">:</span>
+                <span class="n">path_format</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'format'</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">path_type</span> <span class="o">==</span> <span class="s1">&#39;file&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path_type</span> <span class="o">==</span> <span class="s1">'file'</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">parent_key</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;parent_key&#39;</span><span class="p">]</span>
+                    <span class="n">parent_key</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'parent_key'</span><span class="p">]</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">parent_key</span> <span class="o">=</span> <span class="kc">None</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span>
-                              <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;spec&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_file</span><span class="p">(</span><span class="n">path_info</span><span class="p">[</span><span class="s1">'key'</span><span class="p">],</span>
+                              <span class="n">path_info</span><span class="p">[</span><span class="s1">'spec'</span><span class="p">],</span>
                               <span class="n">parent_key</span><span class="p">,</span>
                               <span class="n">path_format</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">path_type</span> <span class="o">==</span> <span class="s1">&#39;dir&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">path_type</span> <span class="o">==</span> <span class="s1">'dir'</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">parent_key</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;parent_key&#39;</span><span class="p">]</span>
+                    <span class="n">parent_key</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'parent_key'</span><span class="p">]</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">parent_key</span> <span class="o">=</span> <span class="kc">None</span>
 
-                <span class="n">spec</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;spec&#39;</span><span class="p">]</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'spec'</span><span class="p">]</span>
                 <span class="n">absolute</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">if</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'/'</span><span class="p">:</span>
                     <span class="n">absolute</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span>
-                              <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;spec&#39;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="n">path_info</span><span class="p">[</span><span class="s1">'key'</span><span class="p">],</span>
+                              <span class="n">path_info</span><span class="p">[</span><span class="s1">'spec'</span><span class="p">],</span>
                               <span class="n">path_type</span><span class="p">,</span>
                               <span class="n">absolute</span><span class="p">,</span>
                               <span class="n">path_format</span><span class="p">,</span>
                               <span class="n">parent_key</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">path_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">VERSION</span><span class="p">:</span>
-                <span class="n">found_version</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                <span class="n">found_version</span> <span class="o">=</span> <span class="n">path_info</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">Manifest</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unknown path type in manifest: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+                <span class="n">Manifest</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Unknown path type in manifest: </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span>
                                      <span class="p">(</span><span class="n">path_type</span><span class="p">))</span>
 
 
         <span class="k">if</span> <span class="n">found_version</span> <span class="o">!=</span> <span class="n">version</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">ManifestVersionError</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">found_version</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ManifestVersionError</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">found_version</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span></div>
 
 
@@ -595,7 +595,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest.add_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">DIR</span><span class="p">,</span>
                  <span class="n">absolute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_key</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Insert a new entry.</span>
+<span class="w">        </span><span class="sd">'''Insert a new entry.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -604,25 +604,25 @@
 <span class="sd">        path : string</span>
 <span class="sd">            Specification for a path using %s, %d style substitution.</span>
 <span class="sd">        path_type : string enumeration</span>
-<span class="sd">            &#39;dir&#39; (default) or &#39;file&#39;</span>
+<span class="sd">            'dir' (default) or 'file'</span>
 <span class="sd">        absolute : boolean</span>
 <span class="sd">            Is the spec relative to the process current directory.</span>
 <span class="sd">        path_format : string, optional</span>
 <span class="sd">            Indicate a known file type for further parsing.</span>
 <span class="sd">        parent_key : string</span>
 <span class="sd">            Refer to another entry.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="k">if</span> <span class="n">parent_key</span><span class="p">:</span>
             <span class="n">path_args</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">parent_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">parent_key</span><span class="p">][</span><span class="s1">&#39;spec&#39;</span><span class="p">]</span>
+                <span class="n">parent_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">parent_key</span><span class="p">][</span><span class="s1">'spec'</span><span class="p">]</span>
                 <span class="n">path_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="n">Manifest</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;cannot resolve directory key </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">parent_key</span><span class="p">))</span>
+                    <span class="s2">"cannot resolve directory key </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">parent_key</span><span class="p">))</span>
                 <span class="k">raise</span>
-            <span class="n">path_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+            <span class="n">path_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">))</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path_args</span><span class="p">)</span>
 
         <span class="c1"># TODO: relative paths need to be considered better</span>
@@ -634,11 +634,11 @@
         <span class="k">if</span> <span class="n">path_type</span> <span class="o">==</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">DIRNAME</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">path_type</span><span class="p">,</span>
-                               <span class="s1">&#39;spec&#39;</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="n">path_type</span><span class="p">,</span>
+                               <span class="s1">'spec'</span><span class="p">:</span> <span class="n">path</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">path_type</span> <span class="o">==</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">FILE</span> <span class="ow">and</span> <span class="n">path_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_format</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">'format'</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_format</span></div>
 
 
 <div class="viewcode-block" id="Manifest.add_file">
@@ -648,7 +648,7 @@
                  <span class="n">file_name</span><span class="p">,</span>
                  <span class="n">dir_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">path_format</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Insert a new file entry.</span>
+<span class="w">        </span><span class="sd">'''Insert a new file entry.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -660,49 +660,49 @@
 <span class="sd">            Reference to the parent directory entry.</span>
 <span class="sd">        path_format : string, optional</span>
 <span class="sd">            File type for further parsing.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
         <span class="n">path_args</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">dir_key</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">dir_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">dir_key</span><span class="p">][</span><span class="s1">&#39;spec&#39;</span><span class="p">]</span>
+                <span class="n">dir_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">dir_key</span><span class="p">][</span><span class="s1">'spec'</span><span class="p">]</span>
                 <span class="n">path_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="n">Manifest</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;cannot resolve directory key </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dir_key</span><span class="p">))</span>
+                    <span class="s2">"cannot resolve directory key </span><span class="si">%s</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="n">dir_key</span><span class="p">))</span>
                 <span class="k">raise</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">file_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'/'</span><span class="p">):</span>
             <span class="n">path_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">curdir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
 
-        <span class="n">path_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">))</span>
+        <span class="n">path_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">))</span>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path_args</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">file_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">FILE</span><span class="p">,</span>
-                                    <span class="s1">&#39;spec&#39;</span><span class="p">:</span> <span class="n">file_path</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">file_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="n">Manifest</span><span class="o">.</span><span class="n">FILE</span><span class="p">,</span>
+                                    <span class="s1">'spec'</span><span class="p">:</span> <span class="n">file_path</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">path_format</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">file_key</span><span class="p">][</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_format</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">file_key</span><span class="p">][</span><span class="s1">'format'</span><span class="p">]</span> <span class="o">=</span> <span class="n">path_format</span></div>
 
 
 <div class="viewcode-block" id="Manifest.safe_mkdir">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest.safe_mkdir">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">safe_mkdir</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Create path if not already there.</span>
+<span class="w">        </span><span class="sd">'''Create path if not already there.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        directory : string</span>
-<span class="sd">            create it if it doesn&#39;t exist</span>
+<span class="sd">            create it if it doesn't exist</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        leftmost : string </span>
 <span class="sd">            most rootward directory created</span>
 
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
 
         <span class="n">parts</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">parts</span>
         <span class="n">sub_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
@@ -717,16 +717,16 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EISDIR</span><span class="p">)</span> <span class="ow">and</span> \
-                <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">"darwin"</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EISDIR</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s2">"/"</span><span class="p">)):</span>
                 <span class="c1"># undocumented behavior of mkdir on OSX where for / it raises</span>
                 <span class="c1"># EISDIR and not EEXIST</span>
                 <span class="c1"># https://bugs.python.org/issue24231 (old but still holds true)</span>
                 <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EACCES</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">"win32"</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="n">errno</span><span class="o">.</span><span class="n">EACCES</span><span class="p">:</span>
                 <span class="n">root_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="n">root_path</span> <span class="ow">or</span> \
-                   <span class="n">e</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="n">root_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">):</span>
+                   <span class="n">e</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="n">root_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="se">\\</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"/"</span><span class="p">):</span>
                     <span class="c1"># When attempting to os.makedirs the root drive letter on</span>
                     <span class="c1"># Windows, EACCES is raised, not EEXIST</span>
                     <span class="k">pass</span>
@@ -744,7 +744,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest.safe_make_parent_dirs">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">safe_make_parent_dirs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39; Create a parent directories for file.</span>
+<span class="w">        </span><span class="sd">''' Create a parent directories for file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -755,7 +755,7 @@
 <span class="sd">        leftmost : string </span>
 <span class="sd">            most rootward directory created</span>
 
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        '''</span>
 
         <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
 
@@ -770,7 +770,7 @@
 <div class="viewcode-block" id="Manifest.get_path">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.manifest.Manifest.get_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;Retrieve an entry with substitutions.</span>
+<span class="w">        </span><span class="sd">'''Retrieve an entry with substitutions.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -783,8 +783,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        string</span>
 <span class="sd">            Path with parent structure and substitutions applied.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">path_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">path_key</span><span class="p">][</span><span class="s1">&#39;spec&#39;</span><span class="p">]</span>
+<span class="sd">        '''</span>
+        <span class="n">path_spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_info</span><span class="p">[</span><span class="n">path_key</span><span class="p">][</span><span class="s1">'spec'</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">path_spec</span> <span class="o">%</span> <span class="n">args</span>

@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -462,11 +462,11 @@
         <span class="k">return</span> <span class="n">func_wrapper</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># for the case with decorator arguments</span>
-        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">wkwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">wkwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="c1"># store the function in py_modules but under the name given in the decorator arguments</span>
-            <span class="n">py_modules</span><span class="o">.</span><span class="n">add_user_functions</span><span class="p">(</span><span class="n">wkwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span>
+            <span class="n">py_modules</span><span class="o">.</span><span class="n">add_user_functions</span><span class="p">(</span><span class="n">wkwargs</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span>
 
             <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -492,11 +492,11 @@
         <span class="k">return</span> <span class="n">func_wrapper</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># for the case with decorator arguments</span>
-        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">wkwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">wkwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="c1"># store the function in py_modules but under the name given in the decorator arguments</span>
-            <span class="n">py_modules</span><span class="o">.</span><span class="n">add_activation_function</span><span class="p">(</span><span class="n">wkwargs</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span>
+            <span class="n">py_modules</span><span class="o">.</span><span class="n">add_activation_function</span><span class="p">(</span><span class="n">wkwargs</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">func</span><span class="p">)</span>
 
             <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
             <span class="k">def</span><span class="w"> </span><span class="nf">func_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

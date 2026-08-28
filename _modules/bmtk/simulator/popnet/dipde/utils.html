@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,7 +428,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -449,20 +449,20 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">Most of these functions are not being used directly by popnet, but may still be used in some other capcity. These have</span>
 <span class="sd">been marked as depreciated, and should be removed soon.</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="get_firing_rate_from_nwb">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.get_firing_rate_from_nwb">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_firing_rate_from_nwb</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates firing rates for an external population&quot;&quot;&quot;</span>
-    <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">spike_trains_ds</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;processing&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;spike_train&#39;</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""Calculates firing rates for an external population"""</span>
+    <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+    <span class="n">spike_trains_ds</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">'processing'</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">'spike_train'</span><span class="p">]</span>
 
     <span class="c1"># TODO: look into adding a time window rather than searching for min/max t.</span>
     <span class="n">firing_rates</span> <span class="o">=</span> <span class="p">{}</span>
@@ -471,7 +471,7 @@
         <span class="n">spike_min_t</span> <span class="o">=</span> <span class="mf">1.0e30</span>
         <span class="n">spike_max_t</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">get_gids</span><span class="p">():</span>
-            <span class="n">spike_train_ds</span> <span class="o">=</span> <span class="n">spike_trains_ds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">gid</span><span class="p">)][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="n">spike_train_ds</span> <span class="o">=</span> <span class="n">spike_trains_ds</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">gid</span><span class="p">)][</span><span class="s1">'data'</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">spike_train_ds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_train_ds</span><span class="p">[</span><span class="o">...</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_train_ds</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
                 <span class="n">tmp_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)</span>
@@ -489,9 +489,9 @@
 <div class="viewcode-block" id="get_firing_rates">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.get_firing_rates">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_firing_rates</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates firing rates for an external population&quot;&quot;&quot;</span>
-    <span class="c1">#h5_file = h5py.File(nwb_file, &#39;r&#39;)</span>
-    <span class="c1">#spike_trains_ds = h5_file[&#39;processing&#39;][trial][&#39;spike_train&#39;]</span>
+<span class="w">    </span><span class="sd">"""Calculates firing rates for an external population"""</span>
+    <span class="c1">#h5_file = h5py.File(nwb_file, 'r')</span>
+    <span class="c1">#spike_trains_ds = h5_file['processing'][trial]['spike_train']</span>
 
     <span class="c1"># TODO: look into adding a time window rather than searching for min/max t.</span>
     <span class="n">firing_rates</span> <span class="o">=</span> <span class="p">{}</span>
@@ -547,7 +547,7 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.create_firing_rate_server">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_firing_rate_server</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Hard coded bug fix for mindscope council 4/27/15&#39;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'Hard coded bug fix for mindscope council 4/27/15'</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">/</span><span class="mf">.001</span><span class="o">/</span><span class="mi">200</span>
     <span class="n">interpolation_callable</span> <span class="o">=</span> <span class="n">spinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">interpolation_callable</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
@@ -560,9 +560,9 @@
 <div class="viewcode-block" id="create_nwb_server_file_path">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.create_nwb_server_file_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_nwb_server_file_path</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="n">nwb_path</span><span class="p">):</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/data&#39;</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">][:]</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/data&#39;</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">'</span><span class="si">%s</span><span class="s1">/data'</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">][:]</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">'</span><span class="si">%s</span><span class="s1">/data'</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))</span><span class="o">*</span><span class="n">dt</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">create_firing_rate_server</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
@@ -577,11 +577,11 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">get_mesoscale_connectivity_dict</span><span class="p">():</span>
 
     <span class="c1"># Extract data into a dictionary:</span>
-    <span class="n">mesoscale_data_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mat/iSee_temp_shared/packages/mesoscale_connectivity&#39;</span>
+    <span class="n">mesoscale_data_dir</span> <span class="o">=</span> <span class="s1">'/data/mat/iSee_temp_shared/packages/mesoscale_connectivity'</span>
     <span class="n">nature_data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">mat</span><span class="p">,</span> <span class="n">side</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;PValue&#39;</span><span class="p">],[</span><span class="s1">&#39;ipsi&#39;</span><span class="p">,</span> <span class="s1">&#39;contra&#39;</span><span class="p">]):</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">row_labels</span><span class="p">,</span> <span class="n">col_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">sio</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mesoscale_data_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.mat&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">side</span><span class="p">)))[</span><span class="n">key</span><span class="p">]</span>
-                                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;row_labels&#39;</span><span class="p">,</span> <span class="s1">&#39;col_labels&#39;</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">mat</span><span class="p">,</span> <span class="n">side</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="s1">'W'</span><span class="p">,</span> <span class="s1">'PValue'</span><span class="p">],[</span><span class="s1">'ipsi'</span><span class="p">,</span> <span class="s1">'contra'</span><span class="p">]):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">row_labels</span><span class="p">,</span> <span class="n">col_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">sio</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mesoscale_data_dir</span><span class="p">,</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">.mat'</span> <span class="o">%</span> <span class="p">(</span><span class="n">mat</span><span class="p">,</span> <span class="n">side</span><span class="p">)))[</span><span class="n">key</span><span class="p">]</span>
+                                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'data'</span><span class="p">,</span> <span class="s1">'row_labels'</span><span class="p">,</span> <span class="s1">'col_labels'</span><span class="p">]]</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="p">(</span><span class="n">row_label</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">row_labels</span><span class="p">,</span> <span class="n">data</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="p">(</span><span class="n">col_label</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">col_labels</span><span class="p">,</span> <span class="n">row</span><span class="p">)):</span>
                 <span class="n">nature_data</span><span class="p">[</span><span class="n">mat</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">row_label</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="nb">str</span><span class="p">(</span><span class="n">col_label</span><span class="o">.</span><span class="n">strip</span><span class="p">())]</span> <span class="o">=</span> <span class="n">val</span>
@@ -608,17 +608,17 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.population_to_dict_for_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">population_to_dict_for_dataframe</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     
-    <span class="n">black_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;firing_rate_record&#39;</span><span class="p">,</span> 
-                  <span class="s1">&#39;initial_firing_rate&#39;</span><span class="p">,</span> 
-                  <span class="s1">&#39;metadata&#39;</span><span class="p">,</span> 
-                  <span class="s1">&#39;t_record&#39;</span><span class="p">]</span>
+    <span class="n">black_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'firing_rate_record'</span><span class="p">,</span> 
+                  <span class="s1">'initial_firing_rate'</span><span class="p">,</span> 
+                  <span class="s1">'metadata'</span><span class="p">,</span> 
+                  <span class="s1">'t_record'</span><span class="p">]</span>
     
-    <span class="n">json_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p0&#39;</span><span class="p">,</span> <span class="s1">&#39;tau_m&#39;</span><span class="p">]</span>
+    <span class="n">json_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'p0'</span><span class="p">,</span> <span class="s1">'tau_m'</span><span class="p">]</span>
     
     <span class="n">return_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">p_dict</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
 
-    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">p_dict</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">p_dict</span><span class="p">[</span><span class="s1">'metadata'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">return_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">p_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -647,15 +647,15 @@
 <div class="viewcode-block" id="population_list_to_dataframe">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.population_list_to_dataframe">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">population_list_to_dataframe</span><span class="p">(</span><span class="n">population_list</span><span class="p">):</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;_tmp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]})</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'_tmp'</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]})</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">population_list</span><span class="p">:</span>
-        <span class="n">model_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_tmp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]}</span>
+        <span class="n">model_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'_tmp'</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]}</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">population_to_dict_for_dataframe</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">model_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="n">df_tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">model_dict</span><span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_tmp</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;_tmp&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_tmp</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">'outer'</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">'_tmp'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span></div>
 
 
@@ -665,7 +665,7 @@
 <span class="c1">#############################################</span>
 <div class="viewcode-block" id="df_to_csv">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.df_to_csv">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">df_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">df_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">'None'</span><span class="p">):</span>
     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="n">na_rep</span><span class="p">)</span></div>
 
 
@@ -687,13 +687,13 @@
 <div class="viewcode-block" id="create_instance">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.create_instance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_instance</span><span class="p">(</span><span class="n">data_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;Helper function to create an object from a dictionary containing:</span>
+<span class="w">    </span><span class="sd">'''Helper function to create an object from a dictionary containing:</span>
 
-<span class="sd">    &quot;module&quot;: The name of the module containing the class</span>
-<span class="sd">    &quot;class&quot;: The name of the class to be used to create the object</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    "module": The name of the module containing the class</span>
+<span class="sd">    "class": The name of the class to be used to create the object</span>
+<span class="sd">    '''</span>
 
-    <span class="n">curr_module</span><span class="p">,</span> <span class="n">curr_class</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">),</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">)</span>
+    <span class="n">curr_module</span><span class="p">,</span> <span class="n">curr_class</span> <span class="o">=</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'module'</span><span class="p">),</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'class'</span><span class="p">)</span>
     <span class="n">curr_instance</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">curr_module</span><span class="p">),</span> <span class="n">curr_class</span><span class="p">)(</span><span class="o">**</span><span class="n">data_dict</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">curr_instance</span></div>
@@ -706,12 +706,12 @@
 <div class="viewcode-block" id="assert_model_known">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.assert_model_known">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">assert_model_known</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test if a model in in the model_dict; if not, raise UnknownModelError&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Test if a model in in the model_dict; if not, raise UnknownModelError"""</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">model_dict</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;model </span><span class="si">{}</span><span class="s1"> does not exist.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span></div>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'model </span><span class="si">{}</span><span class="s1"> does not exist.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span></div>
 
 
 
@@ -721,17 +721,17 @@
 <div class="viewcode-block" id="create_population_list">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.popnet.dipde.html#bmtk.simulator.popnet.dipde.utils.create_population_list">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_population_list</span><span class="p">(</span><span class="n">node_table</span><span class="p">,</span> <span class="n">model_table</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a population list from the node and model pandas tables&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Create a population list from the node and model pandas tables"""</span>
 
     <span class="n">model_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">model_table</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">model_dict</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">model_dict</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'model'</span><span class="p">)]</span> <span class="o">=</span> <span class="n">model</span>
 
     <span class="n">population_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">node_table</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;model&#39;</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'model'</span><span class="p">)</span>
 
         <span class="c1"># Check if model type in model dict:</span>
         <span class="n">assert_model_known</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">)</span>
@@ -741,9 +741,9 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">model_dict</span><span class="p">[</span><span class="n">model</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">)):</span>
                 <span class="n">curr_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-        <span class="n">curr_model</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="p">{})[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">curr_model</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'metadata'</span><span class="p">,</span> <span class="p">{})[</span><span class="s1">'model'</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span>
 
-        <span class="n">curr_module</span><span class="p">,</span> <span class="n">curr_class</span> <span class="o">=</span> <span class="n">curr_model</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">],</span> <span class="n">curr_model</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">]</span>
+        <span class="n">curr_module</span><span class="p">,</span> <span class="n">curr_class</span> <span class="o">=</span> <span class="n">curr_model</span><span class="p">[</span><span class="s1">'module'</span><span class="p">],</span> <span class="n">curr_model</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span>
         <span class="n">curr_instance</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">curr_module</span><span class="p">),</span> <span class="n">curr_class</span><span class="p">)(</span><span class="o">**</span><span class="n">curr_model</span><span class="p">)</span>
         <span class="n">population_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_instance</span><span class="p">)</span>
 

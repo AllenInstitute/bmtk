@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -417,7 +417,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
 
-<span class="n">PopulationID</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PopulationID&#39;</span><span class="p">,</span> <span class="s1">&#39;node_id population&#39;</span><span class="p">)</span>
+<span class="n">PopulationID</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">'PopulationID'</span><span class="p">,</span> <span class="s1">'node_id population'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="GidPool">
@@ -455,7 +455,7 @@
 <div class="viewcode-block" id="GidPool.get_pool_id">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.gids.GidPool.get_pool_id">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_pool_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
-        <span class="n">offset_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="s1">&#39;right&#39;</span><span class="p">)</span>
+        <span class="n">offset_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">)</span>
         <span class="n">node_id</span> <span class="o">=</span> <span class="n">gid</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offsets</span><span class="p">[</span><span class="n">offset_indx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">pool_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset2pool_map</span><span class="p">[</span><span class="n">offset_indx</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">PopulationID</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">node_id</span><span class="p">),</span> <span class="n">pool_name</span><span class="p">)</span></div>

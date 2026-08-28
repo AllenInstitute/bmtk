@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>FilterNet - Visual Filter Models &#8212; Brain Modeling Toolkit 1.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="_static/documentation_options.js?v=6efca38a"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'filternet_visual_models';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FilterNet - Auditory Filter Models" href="filternet_auditory_models.html" />
+    <link rel="prev" title="FilterNet" href="filternet.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="builder_features.html">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="simulators_guide.html">Running Network Simulations with BMTK</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="simulators_guide.html" class="nav-link">Running Network Simulations with BMTK</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="filternet.html" class="nav-link">FilterNet</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FilterNet - Visual Filter Models</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="filternet-visual-filter-models">
+<h1>FilterNet - Visual Filter Models<a class="headerlink" href="#filternet-visual-filter-models" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The proceeding page refers to the model types and parameters for LGN (e.g. visual) filters.
+<a class="reference internal" href="filternet_auditory_models.html"><span class="doc">For information about auditory filters please click on this link</span></a>.</p>
+</div>
+<section id="model-types">
+<h2>Model Types<a class="headerlink" href="#model-types" title="Link to this heading">#</a></h2>
+<p>FilterNet’s LGN submodule attempts to recreate behavior of the major cell-types in the early visual area,
+the retina and thalamic relay. These cells-types are mainly classified by how their firing-rate changes to
+an increase (<strong>ON</strong> signal) or decrease (<strong>OFF</strong> signal) of brightness in their immediate visual field.
+ON-cells are excited by an increase in brightness and are depressed by darkness. OFF-cells have the
+opposite reaction. The cells are also classified by if their reaction is sustained (<strong>s</strong>) or transient
+(<strong>t</strong>) for the duration of the change in the visual field.</p>
+<p>As such the main base-line cell models used in by FilterNet are <code class="docutils literal notranslate"><span class="pre">sOFF</span></code> (sustained-ON),
+<code class="docutils literal notranslate"><span class="pre">sOFF</span></code> (sustained-OFF), <code class="docutils literal notranslate"><span class="pre">tON</span></code> (transient-ON), and <code class="docutils literal notranslate"><span class="pre">tOFF</span></code> (transient-OFF).</p>
+<p>Some cells may also have both transient and sustained sub-systems, and can display transient/sustained
+excitation by both ON and OFF signals in their visual field. These include <code class="docutils literal notranslate"><span class="pre">sONsOFF</span></code>, <code class="docutils literal notranslate"><span class="pre">sONtOFF</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">LGNOnOFFCell</span></code>.</p>
+<p>The following shows examples model types and their responses to both an ON and OFF full field flash stimuli.</p>
+<figure class="align-default">
+<img alt="_images/filternet_mtypes_by_flash.png" class="figure-left" src="_images/filternet_mtypes_by_flash.png" />
+</figure>
+<p>Besides the core models (<code class="docutils literal notranslate"><span class="pre">sON</span></code>, <code class="docutils literal notranslate"><span class="pre">sOFF</span></code>, <code class="docutils literal notranslate"><span class="pre">tON</span></code>, <code class="docutils literal notranslate"><span class="pre">tOFF</span></code>, <code class="docutils literal notranslate"><span class="pre">sONsOFF</span></code>, <code class="docutils literal notranslate"><span class="pre">sONtOFF</span></code>), FilterNet
+also includes a number of built in subtypes that refer to their temporal frequency (TF); ex <code class="docutils literal notranslate"><span class="pre">sON_TF4</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tOFF_TF8</span></code>, etc. These have the same behavior, but will have small optimizations based experimental
+data taken from (<a class="reference external" href="https://doi.org/10.1523/JNEUROSCI.1741-16.2016">Durant et. al 2016</a>,
+<a class="reference external" href="https://doi.org/10.1016/j.neuron.2020.01.040">Billeh et. al 2019</a>). These cells will have an optimal experimentally
+shown response at the given frequency at which the grating image moves.</p>
+<section id="representation-in-sonata">
+<h3>Representation in SONATA<a class="headerlink" href="#representation-in-sonata" title="Link to this heading">#</a></h3>
+<p>In the SONATA circuit format, to assign an invidiual cell or cell-type a specific you must use the <code class="docutils literal notranslate"><span class="pre">model_type</span></code> and
+<code class="docutils literal notranslate"><span class="pre">model_template</span></code> attributes. <code class="docutils literal notranslate"><span class="pre">model_type</span></code> must be set to either <strong>virtual</strong> or <strong>filter</strong>, so BMTK and other
+simulators know it’s a filter cell (and not a multi-compartment, LIF, or other type of cell). And the <code class="docutils literal notranslate"><span class="pre">model_template</span></code>
+value must be set to <strong>lgnmodel:&lt;MODEL&gt;</strong> where <strong>&lt;MODEL&gt;</strong> is any one of the available models (ex <code class="docutils literal notranslate"><span class="pre">sON</span></code>, <code class="docutils literal notranslate"><span class="pre">sOFF</span></code>,
+etc).</p>
+<p>In the BMTK <a class="reference internal" href="builder.html"><span class="doc">NetworkBuilder</span></a> you can set a collection of 100 cells to be <code class="docutils literal notranslate"><span class="pre">tON</span></code> using the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+     <span class="n">model_type</span><span class="o">=</span><span class="s1">'filter'</span><span class="p">,</span>
+<span class="hll">     <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:tON'</span><span class="p">,</span>
+</span>     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'tON_params.json'</span><span class="p">,</span>
+     <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+     <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+ <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="model-parameters">
+<h2>Model Parameters<a class="headerlink" href="#model-parameters" title="Link to this heading">#</a></h2>
+<p>While the model-type describes the general behavior of the cell, the exact shape of the response is dependent on
+individual properties of the cell/cell-types. Including how much of the visual field does each cell cover, the intensity
+of response, and the shape of the decay/recovery.</p>
+<p>All cell models have both a spatial and temporal filter used when integrating visual stimuli into firing rate response
+rates.</p>
+<section id="spatial-filter-parameters">
+<h3>Spatial Filter Parameters<a class="headerlink" href="#spatial-filter-parameters" title="Link to this heading">#</a></h3>
+<p>The spatial filter (along with the cells x, y coordinates) is used to define which part of the visual field will trigger a response in each individual cell. The response is a gaussian centered at cell location (x, y) using the following properties:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spatial_size</span></code> (<strong>float</strong>, <strong>float</strong>) - The row and column spread of the filter, specifically the standard
+deviations (std) of the Gaussian, default value (1.0, 1.0).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">spatial_rotation</span></code> (<strong>float</strong>) - The rotation angle of the Gaussian filter in degrees; default value 0.0.</p></li>
+</ul>
+<p>The following image shows how spatial_size and spatial_rotion filter looks for a cell at location (100.0, 100.0)</p>
+<figure class="align-default">
+<img alt="_images/filternet_sfilt_params.png" class="figure-left" src="_images/filternet_sfilt_params.png" />
+</figure>
+<div class="note admonition">
+<p class="admonition-title">Note About Coordinates</p>
+<p>By default, the (x, y) coordinates of each cell should match be within the same spatial coordinates as the row and
+column pixel coordinates of numpy matrix/movie file, respectively. If a  movie has 240x120 pixels, (row_size x
+column_size), then it has pixel coordinates (0, 0) at the top left corner and (240, 120) at the bottom right corner.
+A cell placed outside this range, with a small std-dev, will not receive any input.</p>
+</div>
+</section>
+<section id="temporal-filter-parameters">
+<h3>Temporal Filter parameters<a class="headerlink" href="#temporal-filter-parameters" title="Link to this heading">#</a></h3>
+<p>The temporal component of the filter is a time convolution function used to track changes in the visual field (within
+the given spatial range of each cell). The filter function is a composite of two cosine filters - a larger positive bump
+near time t=0, followed by a smaller negative bump, then decays to 0 as we go further into the past. The filter
+function is controlled by the following 3 parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">opt_weights</span></code> (<strong>float</strong>, <strong>float</strong>) - Sets the magnitude of the first and second cosine bumps, respectively. Should
+have <strong>opt_weights[0] &gt; 0 &gt;= opt_weights[1]</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opt_kpeaks</span></code> (<strong>float</strong>, <strong>float</strong>) - Set the times of the peak/maximum magnitudes for the first (major) and
+second (minor) cosine bumps, before delays are applied. In units of sampling rate <code class="docutils literal notranslate"><span class="pre">dt</span></code> milliseconds (default
+1.0 ms). The kpeaks values of both peaks must be positive, and the second peak must be more spread out than the first;
+<strong>opt_kpeaks[1] &gt; opt_kpeaks[0] &gt; 0.0</strong>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opt_delays</span></code> (<strong>float</strong>, <strong>float</strong>) - Set the delay/onset of the first and second bump, representing the number of
+milliseconds back from the current time. Like above given in units of <code class="docutils literal notranslate"><span class="pre">dt</span></code> milliseconds (default 1.0). Must
+have <strong>opt_delays[1] &gt; opt_delays[0] &gt;= 0</strong>.</p></li>
+</ul>
+<p>The following shows how each parameter effects a typical filter. <strong>See below dropdown for more information on how kernel is calculated!</strong></p>
+<figure class="align-default">
+<img alt="_images/filternet_tfilt_params.png" class="figure-left" src="_images/filternet_tfilt_params.png" />
+</figure>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3" open="open">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-text">An overview of how the temporal filter kernel is generated</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<blockquote>
+<div><p class="sd-card-text">The temporal kernel is made up of two separate long-tailed cosine “bumps”, using a log-function so that the spread of
+the bumps increases as the kpeak values get farther from 0.0. First it uses the <code class="docutils literal notranslate"><span class="pre">opt_kpeaks[0]</span></code> value <span class="math notranslate nohighlight">\(k_0\)</span>
+to create the first cosine bump filter.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y_0(t) = \begin{cases}
+\big( \cos( \frac{\pi}{2} \ln( \frac{t}{k_0} ) + 1 \big) /2 &amp; \text{if} -\pi \le \ln(\frac{t}{k_0}) \le \pi \\
+0 &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p class="sd-card-text">The same formula is used to get the second bump value <span class="math notranslate nohighlight">\(y_1(t)\)</span> using <span class="math notranslate nohighlight">\(k_1\)</span> = <code class="docutils literal notranslate"><span class="pre">opt_kpeaks[1]</span> <span class="pre">&gt;</span> <span class="pre">opt_kpeaks[0]</span></code></p>
+<p class="sd-card-text">Then to get the full kernel <span class="math notranslate nohighlight">\(k(t)\)</span> the we must:</p>
+<ol class="arabic simple">
+<li><p class="sd-card-text">Shift both cosine bumps by <code class="docutils literal notranslate"><span class="pre">opt_delay</span></code> values <span class="math notranslate nohighlight">\(0 \le d_0 \le d_1\)</span>.</p></li>
+<li><p class="sd-card-text">Apply <code class="docutils literal notranslate"><span class="pre">opt_weights</span></code> values <span class="math notranslate nohighlight">\(w_0 &gt; 0 &gt; w_1\)</span> to adjust magnitudes of each bump.</p></li>
+<li><p class="sd-card-text">Combine the two cosine bumps piecewise.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[k(t) = w_0 \cdot y_0(t - d_0) + w_1 \cdot y_1(t - d_1)\]</div>
+<p class="sd-card-text"><strong>note:</strong> <em>regularization and optimization hyperparameters, not described here, may also be applied in actual kernel</em></p>
+</div></blockquote>
+</div>
+</details></section>
+<section id="other-parameters">
+<h3>Other parameters<a class="headerlink" href="#other-parameters" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">spont_fr</span></code> (<strong>float</strong>) - The spontaneous/resting firing rate of the cell, in Hz.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jitter_lower</span></code>, <code class="docutils literal notranslate"><span class="pre">jitter_upper</span></code> (<strong>float</strong>) - Optional. Applies random noise at run-time to the temporal parameters
+(<code class="docutils literal notranslate"><span class="pre">opt_weights</span></code>, <code class="docutils literal notranslate"><span class="pre">opt_kpeaks</span></code>, <code class="docutils literal notranslate"><span class="pre">opt_delays</span></code>) for each cell. Uses function
+<code class="docutils literal notranslate"><span class="pre">np.random.uniform(jitter_lower*opt,</span> <span class="pre">jitter_upper*opt)</span></code>.
+with <strong>jitter_lower &lt;= jitter_upper</strong>.</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Representation in SONATA<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>There are two main ways to store and represent the parameters for each cell and/or cell-type. The first and easiest is
+to store them in a separate <strong>dynamics_params.json</strong> JSON formatted file. A typical example will look like the following
+(but with different values for each different model-type)</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">tOFF_TF1_params.json</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">"spont_fr"</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">"jitter_lower"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">"jitter_upper"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.1</span><span class="p">,</span>
+
+<span class="w">     </span><span class="nt">"spatial_size"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="mf">10.0</span><span class="p">],</span>
+<span class="w">     </span><span class="nt">"spatial_rotation"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+
+
+<span class="w">     </span><span class="nt">"opt_wts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">2.114240294638181</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.2215255706921226</span><span class="p">],</span>
+<span class="w">     </span><span class="nt">"opt_delays"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">],</span>
+<span class="w">     </span><span class="nt">"opt_kpeaks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">54.48070427796576</span><span class="p">,</span><span class="w"> </span><span class="mf">127.92115511653763</span><span class="p">]</span>
+<span class="w"> </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Then in the SONATA nodes or node-types file you must have attribute <code class="docutils literal notranslate"><span class="pre">dynamics_params</span></code> set to the file
+<strong>tOFF_TF1_params.json</strong>. Any node and/or node-type (eg cell and/or cell-type) with that file set to their
+<code class="docutils literal notranslate"><span class="pre">dynamics_params</span></code> will import those parameter values when instantianting their filters.</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">dynamics_params</span></code> how two main benefits:</p>
+<ol class="arabic simple">
+<li><p>It allows you to assign multiple cells to the same filter. Particularly when you have optimized filters that you
+can assign throughout the visual field.</p></li>
+<li><p>You can quickly modify and change parameter values. You can edit the json file with a simple text editor between
+simulations to see how results will vary when altering parameter options.</p></li>
+</ol>
+<p>Alternatively you can set any of the parameters to be in the SONATA nodes.h5 or node-types.csv file. For example in the
+network builder to create 100 tOFF cells with values stored in the hdf5 file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'filter,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgn_model:tOFF'</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">spatial_size</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+    <span class="n">spatial_rotation</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="n">opt_kpeaks</span><span class="o">=</span><span class="n">get_kpeaks</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="c1"># returns 100x2 matrix</span>
+    <span class="n">opt_weights</span><span class="o">=</span><span class="n">get_weights</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="c1"># returns 100x2 matrix</span>
+    <span class="n">opt_delays</span><span class="o">=</span><span class="n">calculate_delays</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="c1"># returns 100x2 matrix</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The main benefit of this is that each cell can have unique parameter values once the network is built.</p>
+<p>If multiple parameter values are found, BMTK will resort to the more granular value. If a cell has both <code class="docutils literal notranslate"><span class="pre">opt_kpeaks</span></code>
+values in both the nodes HDF5 file (assigned value for the individual cell) and the <code class="docutils literal notranslate"><span class="pre">dynamics_params</span></code> (assigned value
+for it cell-type) then it will resort to the value in the HDF5 file.</p>
+<section id="dual-system-cells">
+<h4>Dual System Cells<a class="headerlink" href="#dual-system-cells" title="Link to this heading">#</a></h4>
+<p>Some model types, <code class="docutils literal notranslate"><span class="pre">sONsOFF</span></code> and <code class="docutils literal notranslate"><span class="pre">sONtOFF</span></code>, are composed of two separate and independent temporal filters that
+FilterNet will fluxate between depending on the nature of the stimuli. Such models require two sets of temporal
+parameters; one for the dominate <strong>OFF</strong> subsystem and another for the dominate <strong>ON</strong> subsystem.</p>
+<p>If using external <strong>dynamics_params</strong> file, you can use attribute <code class="docutils literal notranslate"><span class="pre">no_dom_params</span></code> to specify a separate JSON params
+file for the non-dominate <strong>ON</strong> subsystem:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+     <span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+     <span class="n">model_type</span><span class="o">=</span><span class="s1">'filter'</span><span class="p">,</span>
+     <span class="n">model_template</span><span class="o">=</span><span class="s1">'lgnmodel:tON'</span><span class="p">,</span>
+<span class="hll">     <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'tOFF_TF4_params.json'</span><span class="p">,</span>
+</span><span class="hll">     <span class="n">non_dom_params</span><span class="o">=</span><span class="s1">'tON_TF4_params.json'</span><span class="p">,</span>
+</span>     <span class="o">...</span>
+ <span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively you can set individual cell parameters <code class="docutils literal notranslate"><span class="pre">kpeaks_non_dom</span></code>, <code class="docutils literal notranslate"><span class="pre">weights_non_dom</span></code>, and <code class="docutils literal notranslate"><span class="pre">delays_non_dom</span></code>.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-types">Model Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#representation-in-sonata">Representation in SONATA</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-parameters">Model Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-filter-parameters">Spatial Filter Parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-filter-parameters">Temporal Filter parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other-parameters">Other parameters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Representation in SONATA</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-system-cells">Dual System Cells</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/filternet_visual_models.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

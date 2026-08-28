@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">GaborFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">sigma_f</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">Lambda</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">psi</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span> <span class="mf">1.</span><span class="p">,</span>
                  <span class="n">direction</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gabor-like filter: Sinusoidally modulated filter with Gaussian spectral and temporal envelope</span>
+<span class="w">        </span><span class="sd">"""Gabor-like filter: Sinusoidally modulated filter with Gaussian spectral and temporal envelope</span>
 <span class="sd">        As currently implemented, the envelope is not rotated with the sinusoid.</span>
 
 <span class="sd">        :param translate: float, the origin of the filter in units of log(freq/min_freq)</span>
@@ -436,7 +436,7 @@
 <span class="sd">        :param psi: float, phase of sinusoidal component (radians)</span>
 <span class="sd">        :param amplitude: float, amplitude applied to filter after normalization</span>
 <span class="sd">        :param direction: int, direction of tilt: +1 for upward, -1 for downward, 0 for no tilt</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">translate</span> <span class="o">=</span> <span class="n">translate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma_f</span> <span class="o">=</span> <span class="n">sigma_f</span>
@@ -457,28 +457,28 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.gaborfilter.GaborFilter.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
-            <span class="s1">&#39;translate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">,</span>
-            <span class="s1">&#39;sigma_f&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_f</span><span class="p">,</span>
-            <span class="s1">&#39;sigma_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
-            <span class="s1">&#39;theta&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span>
-            <span class="s1">&#39;lambda&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lambda</span><span class="p">,</span>
-            <span class="s1">&#39;psi&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="p">,</span>
-            <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">,</span>
-            <span class="s1">&#39;direction&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span>
+            <span class="s1">'class'</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+            <span class="s1">'translate'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">,</span>
+            <span class="s1">'sigma_f'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_f</span><span class="p">,</span>
+            <span class="s1">'sigma_t'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma_t</span><span class="p">,</span>
+            <span class="s1">'theta'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span>
+            <span class="s1">'lambda'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Lambda</span><span class="p">,</span>
+            <span class="s1">'psi'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="p">,</span>
+            <span class="s1">'amplitude'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">,</span>
+            <span class="s1">'direction'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span>
         <span class="p">}</span></div>
 
         
 <div class="viewcode-block" id="GaborFilter.get_kernel">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.gaborfilter.GaborFilter.get_kernel">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold_rel</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a 2D gaussian filter (kernel) for the given dimensions which can be used</span>
+<span class="w">        </span><span class="sd">"""Creates a 2D gaussian filter (kernel) for the given dimensions which can be used</span>
 
 <span class="sd">        :param row_range: array of times</span>
 <span class="sd">        :param col_range: array of frequency centers</span>
 <span class="sd">        :param threshold_rel: crop filter to region with amplitudes greater than threshold_rel * max value</span>
 <span class="sd">        :return: A Kernel2D object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">)</span>
 
         <span class="n">translate_t</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Lambda</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">)</span>
@@ -499,7 +499,7 @@
         <span class="n">kernel</span><span class="o">.</span><span class="n">normalize2</span><span class="p">()</span>
         <span class="n">kernel</span><span class="o">.</span><span class="n">kernel</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span>
         <span class="c1"># Uncomment this to visualize the filter</span>
-        <span class="c1">#kernel.imshow(truncate_col=True, xlabel=&#39;Time(s)&#39;, ylabel=&#39;log(freq) re: 50 Hz&#39;)</span>
+        <span class="c1">#kernel.imshow(truncate_col=True, xlabel='Time(s)', ylabel='log(freq) re: 50 Hz')</span>
 
         <span class="k">return</span> <span class="n">kernel</span></div>
 </div>

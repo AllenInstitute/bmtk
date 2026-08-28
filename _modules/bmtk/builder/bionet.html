@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -417,8 +417,8 @@
 
 <div class="viewcode-block" id="rand_syn_locations">
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.rand_syn_locations">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">rand_syn_locations</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">),</span> <span class="n">distance_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e20</span><span class="p">),</span>
-                       <span class="n">morphology_dir</span><span class="o">=</span><span class="s1">&#39;./components/morphologies&#39;</span><span class="p">,</span> <span class="n">return_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rand_syn_locations</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">(</span><span class="s1">'soma'</span><span class="p">,</span> <span class="s1">'apical'</span><span class="p">,</span> <span class="s1">'basal'</span><span class="p">),</span> <span class="n">distance_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e20</span><span class="p">),</span>
+                       <span class="n">morphology_dir</span><span class="o">=</span><span class="s1">'./components/morphologies'</span><span class="p">,</span> <span class="n">return_coords</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">trg_swc</span> <span class="o">=</span> <span class="n">get_swc</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">morphology_dir</span><span class="o">=</span><span class="n">morphology_dir</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="n">dL</span><span class="p">)</span>
 
     <span class="n">sec_ids</span><span class="p">,</span> <span class="n">seg_xs</span> <span class="o">=</span> <span class="n">trg_swc</span><span class="o">.</span><span class="n">choose_sections</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>

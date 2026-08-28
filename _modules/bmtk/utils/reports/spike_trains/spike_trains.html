@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -450,19 +450,19 @@
 <div class="viewcode-block" id="SpikeTrains">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.SpikeTrains">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpikeTrains</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class for creating and reading spike files.</span>
+<span class="w">    </span><span class="sd">"""A class for creating and reading spike files.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_adaptor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># There are a number of strategies for reading and writing spike trains, depending on memory limitations, if</span>
-        <span class="c1">#  MPI is being used, or if there if read-only from disk. I&#39;m using a decorator/adaptor pattern and moving</span>
+        <span class="c1">#  MPI is being used, or if there if read-only from disk. I'm using a decorator/adaptor pattern and moving</span>
         <span class="c1">#  the actual functionality to the Buffered/ReadOnly classes that implement SpikeTrainsAPI.</span>
         <span class="k">if</span> <span class="n">spikes_adaptor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span> <span class="o">=</span> <span class="n">spikes_adaptor</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># TODO: Check that comm has gather, reduce, etc methods; if not can&#39;t use STMPIBuffer</span>
+            <span class="c1"># TODO: Check that comm has gather, reduce, etc methods; if not can't use STMPIBuffer</span>
             <span class="n">use_mpi</span> <span class="o">=</span> <span class="n">MPI_size</span> <span class="o">&gt;</span> <span class="mi">1</span>
-            <span class="n">cache_to_disk</span> <span class="o">=</span> <span class="s1">&#39;cache_dir&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache_to_disk&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">cache_to_disk</span> <span class="o">=</span> <span class="s1">'cache_dir'</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'cache_to_disk'</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">use_mpi</span> <span class="ow">and</span> <span class="n">cache_to_disk</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span> <span class="o">=</span> <span class="n">STCSVMPIBufferV2</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -500,11 +500,11 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">file_type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">file_type</span> <span class="k">else</span> <span class="n">find_file_type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;h5&#39;</span> <span class="ow">or</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;sonata&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">'h5'</span> <span class="ow">or</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">'sonata'</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_sonata</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;nwb&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">'nwb'</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_nwb</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">file_type</span> <span class="o">==</span> <span class="s1">'csv'</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -512,7 +512,7 @@
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;adaptor&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">'adaptor'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">adaptor</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -543,49 +543,49 @@
 <div class="viewcode-block" id="SpikeGenerator">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.SpikeGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpikeGenerator</span><span class="p">(</span><span class="n">SpikeTrains</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">'ms'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">max_spikes_per_node</span> <span class="o">=</span> <span class="mi">10000000</span>
-        <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;default_population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;default_population&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">population</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'default_population'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'default_population'</span><span class="p">]</span><span class="o">=</span> <span class="n">population</span>
 
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">SpikeGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">output_units</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># self.units = units</span>
-        <span class="k">if</span> <span class="n">output_units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="s1">&#39;millisecond&#39;</span><span class="p">,</span> <span class="s1">&#39;milliseconds&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span>
+        <span class="k">if</span> <span class="n">output_units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'ms'</span><span class="p">,</span> <span class="s1">'millisecond'</span><span class="p">,</span> <span class="s1">'milliseconds'</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="s1">'ms'</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_conversion</span> <span class="o">=</span> <span class="mf">1000.0</span>
-        <span class="k">elif</span> <span class="n">output_units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">,</span> <span class="s1">&#39;seconds&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="s1">&#39;s&#39;</span>
+        <span class="k">elif</span> <span class="n">output_units</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'s'</span><span class="p">,</span> <span class="s1">'second'</span><span class="p">,</span> <span class="s1">'seconds'</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="s1">'s'</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_conversion</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Unknown output_units value </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_units</span><span class="p">))</span></div>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">'Unknown output_units value </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_units</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="PoissonSpikeGenerator">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">SpikeGenerator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A Class for generating spike-trains with a homogeneous and inhomogeneous Poisson distribution.</span>
+<span class="w">    </span><span class="sd">""" A Class for generating spike-trains with a homogeneous and inhomogeneous Poisson distribution.</span>
 
 <span class="sd">    Uses the methods describe in Dayan and Abbott, 2001.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">'ms'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PoissonSpikeGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">output_units</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PoissonSpikeGenerator.add">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator.add">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">abs_ref</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tau_ref</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :param firing_rate: Scalar stationary firing rate or array of values for inhomogeneous (Hz)</span>
 <span class="sd">        :param times: Start and end time for spike train (s)</span>
 <span class="sd">        :param abs_ref: Absolute refractory period (s)</span>
 <span class="sd">        :param tau_ref: Relative refractory period time constant for exponential recovery (s)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Refractory period time constant (sec) cannot be negative.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Refractory period time constant (sec) cannot be negative.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">abs_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Absolute refractory period (sec) cannot be negative.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Absolute refractory period (sec) cannot be negative.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
             <span class="c1"># if user passes in path to nodes.h5 file count number of nodes</span>
             <span class="n">node_ids</span> <span class="o">=</span> <span class="n">get_node_ids</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
@@ -602,7 +602,7 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator.time_range">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">]</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'timestamps'</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">timestamps</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span></div>
 
 
@@ -614,17 +614,17 @@
             <span class="n">tstart</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">tstop</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">tstart</span> <span class="o">&gt;=</span> <span class="n">tstop</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid start and stop times.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Invalid start and stop times.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Firing rates must not be negative.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Firing rates must not be negative.'</span><span class="p">)</span>
 
         <span class="c1"># If there are refractory properties, correct starting firing rate and check firing limit</span>
         <span class="k">if</span> <span class="n">abs_ref</span><span class="o">!=</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">tau_ref</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
             <span class="n">max_fr_lim</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">fr_corr</span><span class="p">(</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fr</span> <span class="o">&gt;</span> <span class="n">max_fr_lim</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute&#39;</span>
-                                 <span class="sa">f</span><span class="s1">&#39; and relative refractory properties. Also consider using&#39;</span>
-                                 <span class="sa">f</span><span class="s1">&#39; the GammaSpikeGenerator instead.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute'</span>
+                                 <span class="sa">f</span><span class="s1">' and relative refractory properties. Also consider using'</span>
+                                 <span class="sa">f</span><span class="s1">' the GammaSpikeGenerator instead.'</span><span class="p">)</span>
             <span class="n">fr</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
 
         <span class="c1">#rs2 = np.random.RandomState(0)</span>
@@ -650,15 +650,15 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_inhomogeneous_fr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">fr</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Firing rates must not be negative&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Firing rates must not be negative'</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;If using a time series for firing rate, times must be an array of equal length&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'If using a time series for firing rate, times must be an array of equal length'</span><span class="p">)</span>
 
         <span class="n">max_fr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
 
         <span class="n">max_fr_lim</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">fr_corr</span><span class="p">(</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">max_fr</span> <span class="o">&gt;</span> <span class="n">max_fr_lim</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute and relative refractory properties&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute and relative refractory properties'</span><span class="p">)</span>
 
         <span class="n">fr</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
 
@@ -698,19 +698,19 @@
 <div class="viewcode-block" id="GammaSpikeGenerator">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GammaSpikeGenerator</span><span class="p">(</span><span class="n">SpikeGenerator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot; A Class for generating spike-trains based on a gamma-distributed renewal process.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">""" A Class for generating spike-trains based on a gamma-distributed renewal process.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_units</span><span class="o">=</span><span class="s1">'ms'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GammaSpikeGenerator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">output_units</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GammaSpikeGenerator.add">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator.add">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        :param firing_rate: Stationary firing rate (Hz)</span>
 <span class="sd">        :param a: Shape parameter (a&gt;0). For a=1, this becomes a Poisson distribution.</span>
 <span class="sd">        :param times: Start and end time for spike train (s)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
             <span class="c1"># if user passes in path to nodes.h5 file count number of nodes</span>
             <span class="n">node_ids</span> <span class="o">=</span> <span class="n">get_node_ids</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
@@ -721,14 +721,14 @@
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">firing_rate</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_fixed_fr</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">firing_rate</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Firing rate must be stationary for GammaSpikeGenerator&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Firing rate must be stationary for GammaSpikeGenerator'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GammaSpikeGenerator.time_range">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator.time_range">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">]</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">'timestamps'</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">timestamps</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span></div>
 
 
@@ -740,11 +740,11 @@
             <span class="n">tstart</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">tstop</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">tstart</span> <span class="o">&gt;=</span> <span class="n">tstop</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid start and stop times.&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Invalid start and stop times.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Firing rates must not be negative.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Firing rates must not be negative.'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shape parameter `a` cannot be negative.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Shape parameter `a` cannot be negative.'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">:</span>
             <span class="n">c_time</span> <span class="o">=</span> <span class="n">tstart</span>

@@ -33,7 +33,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -479,42 +479,42 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="c1"># Clear existing outputs and network files if rerunning</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;./sim_aud/output&#39;</span><span class="p">):</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">&#39;./sim_aud/output&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;./sim_aud/network&#39;</span><span class="p">):</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">&#39;./sim_aud/network&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'./sim_aud/output'</span><span class="p">):</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">'./sim_aud/output'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'./sim_aud/network'</span><span class="p">):</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">'./sim_aud/network'</span><span class="p">)</span>
 
 <span class="c1"># Add a single node and plot its properties and response to the sound</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;aud&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;aud&#39;</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'aud'</span><span class="p">)</span>  <span class="c1"># Initialize network called 'aud'</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;audmodel:AUD_filt&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'audmodel:AUD_filt'</span><span class="p">,</span>
     <span class="n">y</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>      <span class="c1"># log2(center frequency/50 Hz)</span>
     <span class="n">t_mod_freq</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
     <span class="n">sp_mod_freq</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">delay</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>      <span class="c1"># ms</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AUD_filt_partial.json&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AUD_filt_partial.json'</span><span class="p">,</span>
     <span class="n">plot_filt</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># Create and save the network</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_aud/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_aud/network'</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.sim_setup</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_env_filternet</span>
 
 <span class="n">build_env_filternet</span><span class="p">(</span>
-    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_aud&#39;</span><span class="p">,</span>
-    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_aud/network&#39;</span><span class="p">,</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">'sim_aud'</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">'sim_aud/network'</span><span class="p">,</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span>                   <span class="c1"># run the simulation for 3 seconds</span>
-    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we&#39;ll use in this tutorial</span>
+    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we'll use in this tutorial</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">filternet</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_aud/config.json&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_aud/config.json'</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
@@ -532,28 +532,28 @@
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mf">4.5</span><span class="p">),</span><span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">sample_rate</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;sim_aud/audio/sa1.wav&#39;</span><span class="p">)</span>
+<span class="n">sample_rate</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'sim_aud/audio/sa1.wav'</span><span class="p">)</span>
 <span class="n">frequencies</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
 
 <span class="n">ax0</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">times</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">))</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency [kHz]&#39;</span><span class="p">)</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time [ms]&#39;</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Frequency [kHz]'</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Time [ms]'</span><span class="p">)</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">3000</span><span class="p">))</span>
 
-<span class="n">figr</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_aud/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+<span class="n">figr</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_aud/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_template'</span><span class="p">)</span>
 <span class="n">figr</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <p>Let’s take a look in the simulation_config.json file, where the stimulus is controlled:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;movie&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;audio&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wav_file&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;data_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/audio/sa1.wav&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;normalize&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;full&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;interp_to_freq&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;padding&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;edge&quot;</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"movie"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"input_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"audio"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"wav_file"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"data_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$BASE_DIR/audio/sa1.wav"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"normalize"</span><span class="p">:</span><span class="w"> </span><span class="s2">"full"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"interp_to_freq"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"padding"</span><span class="p">:</span><span class="w"> </span><span class="s2">"edge"</span>
 <span class="w">   </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -561,7 +561,7 @@
 <p>To change the stimulus to a WAV file of your choice, point to the relative path of the file under “data_file”.</p>
 <p>The filter carrier consists of a sinusoidal modulation in 2D akin to a plane wave. This carrier is multiplied by a Gaussian envelope in the spectral axis and an asymmetric scaled gamma distribution function in the temporal axis to allow for faster onset of responses and a slower tail decay.</p>
 <p>Filters with very little spectral modulation have a “vertical” appearance and respond preferentially to broadband temporal edges such as sound onsets. Filters with very little temporal modulation have a “horizontal” appearance and respond preferentially to sustained spectral edges. If the nodes are ordered by their center frequencies, we can construct different “views” of the stimulus (speech in this case) through these different types of filters.</p>
-<div><p><img alt="90909ef04e26498991d44ba1f85f2777" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
+<div><p><img alt="98b8da593bae4f5aa14400d8a960db3d" class="no-scaled-link" src="../_images/Filters_sp_t_mod.png" style="width: 800px;" /></p>
 </div><img alt="Responses" src="../_images/Responses_to_diff_scales_and_orientations.png" />
 <p>Now we will build a larger bank of filters with randomly assigned properties. Beware that if n_filts is set larger, the code could take a long time to run in the notebook.</p>
 <div class="nbinput nblast docutils container">
@@ -595,33 +595,33 @@
                                <span class="n">size</span> <span class="o">=</span> <span class="n">n_filts</span><span class="p">))</span>
 
 <span class="c1"># Clear existing outputs and network files if rerunning</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;./sim_aud/output&#39;</span><span class="p">):</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">&#39;./sim_aud/output&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;./sim_aud/network&#39;</span><span class="p">):</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">&#39;./sim_aud/network&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'./sim_aud/output'</span><span class="p">):</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">'./sim_aud/output'</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'./sim_aud/network'</span><span class="p">):</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="s1">'./sim_aud/network'</span><span class="p">)</span>
 
 <span class="c1"># Add a single node and plot its properties and response to the sound</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;aud&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;aud&#39;</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">'aud'</span><span class="p">)</span>  <span class="c1"># Initialize network called 'aud'</span>
 
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">N</span> <span class="o">=</span> <span class="n">n_filts</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
-    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;audmodel:AUD_filt&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'virtual'</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">'audmodel:AUD_filt'</span><span class="p">,</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">logCF_list</span><span class="p">,</span>
     <span class="n">t_mod_freq</span> <span class="o">=</span> <span class="n">tmod_list</span><span class="p">,</span>
     <span class="n">sp_mod_freq</span> <span class="o">=</span> <span class="n">spmod_list</span><span class="p">,</span>
     <span class="n">delay</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>      <span class="c1"># ms</span>
-    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AUD_filt_partial.json&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">'AUD_filt_partial.json'</span><span class="p">,</span>
     <span class="n">plot_filt</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span>
 
 <span class="c1"># Create and save the network</span>
 <span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_aud/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">'sim_aud/network'</span><span class="p">)</span>
 
 <span class="c1"># Run simulation - this can be slow...</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_aud/config.json&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'sim_aud/config.json'</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
@@ -639,15 +639,15 @@
 
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax0</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mf">3.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">sample_rate</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;sim_aud/audio/sa1.wav&#39;</span><span class="p">)</span>
+<span class="n">sample_rate</span><span class="p">,</span> <span class="n">samples</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">'sim_aud/audio/sa1.wav'</span><span class="p">)</span>
 <span class="n">frequencies</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
 
 <span class="n">ax0</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">times</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">))</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency [kHz]&#39;</span><span class="p">)</span>
-<span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time [ms]&#39;</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Frequency [kHz]'</span><span class="p">)</span>
+<span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Time [ms]'</span><span class="p">)</span>
 <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">3000</span><span class="p">))</span>
 
-<span class="n">figr</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_aud/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+<span class="n">figr</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'sim_aud/config.json'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'model_template'</span><span class="p">)</span>
 <span class="n">figr</span><span class="o">.</span><span class="n">set_figwidth</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>

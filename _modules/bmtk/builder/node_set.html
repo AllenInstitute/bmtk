@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -425,7 +425,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -445,8 +445,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__node_params</span> <span class="o">=</span> <span class="n">node_params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__node_type_properties</span> <span class="o">=</span> <span class="n">node_type_properties</span>
 
-        <span class="k">assert</span><span class="p">(</span><span class="s1">&#39;node_type_id&#39;</span> <span class="ow">in</span> <span class="n">node_type_properties</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__node_type_id</span> <span class="o">=</span> <span class="n">node_type_properties</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
+        <span class="k">assert</span><span class="p">(</span><span class="s1">'node_type_id'</span> <span class="ow">in</span> <span class="n">node_type_properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__node_type_id</span> <span class="o">=</span> <span class="n">node_type_properties</span><span class="p">[</span><span class="s1">'node_type_id'</span><span class="p">]</span>
 
         <span class="c1"># Used for determining which node_sets share the same params columns</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__node_params</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -473,7 +473,7 @@
 <a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.node_set.NodeSet.build">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid_generator</span><span class="p">):</span>
         <span class="c1"># fetch existing node ids or create new ones</span>
-        <span class="n">node_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__node_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">node_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__node_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'node_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">nid</span> <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">nid_generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span>
 

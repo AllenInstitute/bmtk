@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -430,13 +430,13 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">jitter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span>
-        <span class="n">has_lj</span> <span class="o">=</span> <span class="s1">&#39;jitter_lower&#39;</span> <span class="ow">in</span> <span class="n">conds</span>
-        <span class="n">has_uj</span> <span class="o">=</span> <span class="s1">&#39;jitter_upper&#39;</span> <span class="ow">in</span> <span class="n">conds</span>
+        <span class="n">has_lj</span> <span class="o">=</span> <span class="s1">'jitter_lower'</span> <span class="ow">in</span> <span class="n">conds</span>
+        <span class="n">has_uj</span> <span class="o">=</span> <span class="s1">'jitter_upper'</span> <span class="ow">in</span> <span class="n">conds</span>
 
         <span class="k">if</span> <span class="n">has_lj</span> <span class="ow">and</span> <span class="n">has_uj</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">conds</span><span class="p">[</span><span class="s1">&#39;jitter_lower&#39;</span><span class="p">],</span> <span class="n">conds</span><span class="p">[</span><span class="s1">&#39;jitter_upper&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">conds</span><span class="p">[</span><span class="s1">'jitter_lower'</span><span class="p">],</span> <span class="n">conds</span><span class="p">[</span><span class="s1">'jitter_upper'</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">has_lj</span> <span class="o">^</span> <span class="n">has_uj</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Please define both jitter_upper and jitter_lower parameters&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Please define both jitter_upper and jitter_lower parameters'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 

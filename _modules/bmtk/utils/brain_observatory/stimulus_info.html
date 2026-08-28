@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,13 +428,13 @@
 <span class="c1"># and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
 <span class="c1"># 3. Redistributions for commercial purposes are not permitted without the</span>
-<span class="c1"># Allen Institute&#39;s written permission.</span>
+<span class="c1"># Allen Institute's written permission.</span>
 <span class="c1"># For purposes of this license, commercial purposes is the incorporation of the</span>
-<span class="c1"># Allen Institute&#39;s software into anything for which you will charge fees or</span>
+<span class="c1"># Allen Institute's software into anything for which you will charge fees or</span>
 <span class="c1"># other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
 <span class="c1"># opportunities.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"</span>
 <span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
 <span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
 <span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
@@ -455,53 +455,53 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
 
 <span class="c1"># some handles for stimulus types</span>
-<span class="n">DRIFTING_GRATINGS</span> <span class="o">=</span> <span class="s2">&quot;drifting_gratings&quot;</span>
-<span class="n">DRIFTING_GRATINGS_SHORT</span> <span class="o">=</span> <span class="s2">&quot;dg&quot;</span>
-<span class="n">DRIFTING_GRATINGS_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#a6cee3&quot;</span>
+<span class="n">DRIFTING_GRATINGS</span> <span class="o">=</span> <span class="s2">"drifting_gratings"</span>
+<span class="n">DRIFTING_GRATINGS_SHORT</span> <span class="o">=</span> <span class="s2">"dg"</span>
+<span class="n">DRIFTING_GRATINGS_COLOR</span> <span class="o">=</span> <span class="s2">"#a6cee3"</span>
 
-<span class="n">STATIC_GRATINGS</span> <span class="o">=</span> <span class="s2">&quot;static_gratings&quot;</span>
-<span class="n">STATIC_GRATINGS_SHORT</span> <span class="o">=</span> <span class="s2">&quot;sg&quot;</span>
-<span class="n">STATIC_GRATINGS_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#1f78b4&quot;</span>
+<span class="n">STATIC_GRATINGS</span> <span class="o">=</span> <span class="s2">"static_gratings"</span>
+<span class="n">STATIC_GRATINGS_SHORT</span> <span class="o">=</span> <span class="s2">"sg"</span>
+<span class="n">STATIC_GRATINGS_COLOR</span> <span class="o">=</span> <span class="s2">"#1f78b4"</span>
 
-<span class="n">NATURAL_MOVIE_ONE</span> <span class="o">=</span> <span class="s2">&quot;natural_movie_one&quot;</span>
-<span class="n">NATURAL_MOVIE_ONE_SHORT</span> <span class="o">=</span> <span class="s2">&quot;nm1&quot;</span>
-<span class="n">NATURAL_MOVIE_ONE_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#b2df8a&quot;</span>
+<span class="n">NATURAL_MOVIE_ONE</span> <span class="o">=</span> <span class="s2">"natural_movie_one"</span>
+<span class="n">NATURAL_MOVIE_ONE_SHORT</span> <span class="o">=</span> <span class="s2">"nm1"</span>
+<span class="n">NATURAL_MOVIE_ONE_COLOR</span> <span class="o">=</span> <span class="s2">"#b2df8a"</span>
 
-<span class="n">NATURAL_MOVIE_TWO</span> <span class="o">=</span> <span class="s2">&quot;natural_movie_two&quot;</span>
-<span class="n">NATURAL_MOVIE_TWO_SHORT</span> <span class="o">=</span> <span class="s2">&quot;nm2&quot;</span>
-<span class="n">NATURAL_MOVIE_TWO_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#33a02c&quot;</span>
+<span class="n">NATURAL_MOVIE_TWO</span> <span class="o">=</span> <span class="s2">"natural_movie_two"</span>
+<span class="n">NATURAL_MOVIE_TWO_SHORT</span> <span class="o">=</span> <span class="s2">"nm2"</span>
+<span class="n">NATURAL_MOVIE_TWO_COLOR</span> <span class="o">=</span> <span class="s2">"#33a02c"</span>
 
-<span class="n">NATURAL_MOVIE_THREE</span> <span class="o">=</span> <span class="s2">&quot;natural_movie_three&quot;</span>
-<span class="n">NATURAL_MOVIE_THREE_SHORT</span> <span class="o">=</span> <span class="s2">&quot;nm3&quot;</span>
-<span class="n">NATURAL_MOVIE_THREE_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#fb9a99&quot;</span>
+<span class="n">NATURAL_MOVIE_THREE</span> <span class="o">=</span> <span class="s2">"natural_movie_three"</span>
+<span class="n">NATURAL_MOVIE_THREE_SHORT</span> <span class="o">=</span> <span class="s2">"nm3"</span>
+<span class="n">NATURAL_MOVIE_THREE_COLOR</span> <span class="o">=</span> <span class="s2">"#fb9a99"</span>
 
-<span class="n">NATURAL_SCENES</span> <span class="o">=</span> <span class="s2">&quot;natural_scenes&quot;</span>
-<span class="n">NATURAL_SCENES_SHORT</span> <span class="o">=</span> <span class="s2">&quot;ns&quot;</span>
-<span class="n">NATURAL_SCENES_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#e31a1c&quot;</span>
+<span class="n">NATURAL_SCENES</span> <span class="o">=</span> <span class="s2">"natural_scenes"</span>
+<span class="n">NATURAL_SCENES_SHORT</span> <span class="o">=</span> <span class="s2">"ns"</span>
+<span class="n">NATURAL_SCENES_COLOR</span> <span class="o">=</span> <span class="s2">"#e31a1c"</span>
 
 <span class="c1"># note that this stimulus is equivalent to LOCALLY_SPARSE_NOISE_4DEG in session</span>
 <span class="c1"># C2 files</span>
-<span class="n">LOCALLY_SPARSE_NOISE</span> <span class="o">=</span> <span class="s2">&quot;locally_sparse_noise&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_SHORT</span> <span class="o">=</span> <span class="s2">&quot;lsn&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#fdbf6f&quot;</span>
+<span class="n">LOCALLY_SPARSE_NOISE</span> <span class="o">=</span> <span class="s2">"locally_sparse_noise"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_SHORT</span> <span class="o">=</span> <span class="s2">"lsn"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_COLOR</span> <span class="o">=</span> <span class="s2">"#fdbf6f"</span>
 
-<span class="n">LOCALLY_SPARSE_NOISE_4DEG</span> <span class="o">=</span> <span class="s2">&quot;locally_sparse_noise_4deg&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_4DEG_SHORT</span> <span class="o">=</span> <span class="s2">&quot;lsn4&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_4DEG_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#fdbf6f&quot;</span>
+<span class="n">LOCALLY_SPARSE_NOISE_4DEG</span> <span class="o">=</span> <span class="s2">"locally_sparse_noise_4deg"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_4DEG_SHORT</span> <span class="o">=</span> <span class="s2">"lsn4"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_4DEG_COLOR</span> <span class="o">=</span> <span class="s2">"#fdbf6f"</span>
 
-<span class="n">LOCALLY_SPARSE_NOISE_8DEG</span> <span class="o">=</span> <span class="s2">&quot;locally_sparse_noise_8deg&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_8DEG_SHORT</span> <span class="o">=</span> <span class="s2">&quot;lsn8&quot;</span>
-<span class="n">LOCALLY_SPARSE_NOISE_8DEG_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#ff7f00&quot;</span>
+<span class="n">LOCALLY_SPARSE_NOISE_8DEG</span> <span class="o">=</span> <span class="s2">"locally_sparse_noise_8deg"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_8DEG_SHORT</span> <span class="o">=</span> <span class="s2">"lsn8"</span>
+<span class="n">LOCALLY_SPARSE_NOISE_8DEG_COLOR</span> <span class="o">=</span> <span class="s2">"#ff7f00"</span>
 
-<span class="n">SPONTANEOUS_ACTIVITY</span> <span class="o">=</span> <span class="s2">&quot;spontaneous&quot;</span>
-<span class="n">SPONTANEOUS_ACTIVITY_SHORT</span> <span class="o">=</span> <span class="s2">&quot;sp&quot;</span>
-<span class="n">SPONTANEOUS_ACTIVITY_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#cab2d6&quot;</span>
+<span class="n">SPONTANEOUS_ACTIVITY</span> <span class="o">=</span> <span class="s2">"spontaneous"</span>
+<span class="n">SPONTANEOUS_ACTIVITY_SHORT</span> <span class="o">=</span> <span class="s2">"sp"</span>
+<span class="n">SPONTANEOUS_ACTIVITY_COLOR</span> <span class="o">=</span> <span class="s2">"#cab2d6"</span>
 
 <span class="c1"># handles for stimulus names</span>
-<span class="n">THREE_SESSION_A</span> <span class="o">=</span> <span class="s2">&quot;three_session_A&quot;</span>
-<span class="n">THREE_SESSION_B</span> <span class="o">=</span> <span class="s2">&quot;three_session_B&quot;</span>
-<span class="n">THREE_SESSION_C</span> <span class="o">=</span> <span class="s2">&quot;three_session_C&quot;</span>
-<span class="n">THREE_SESSION_C2</span> <span class="o">=</span> <span class="s2">&quot;three_session_C2&quot;</span>
+<span class="n">THREE_SESSION_A</span> <span class="o">=</span> <span class="s2">"three_session_A"</span>
+<span class="n">THREE_SESSION_B</span> <span class="o">=</span> <span class="s2">"three_session_B"</span>
+<span class="n">THREE_SESSION_C</span> <span class="o">=</span> <span class="s2">"three_session_C"</span>
+<span class="n">THREE_SESSION_C2</span> <span class="o">=</span> <span class="s2">"three_session_C2"</span>
 
 <span class="n">SESSION_LIST</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">THREE_SESSION_A</span><span class="p">,</span>
@@ -571,7 +571,7 @@
 <span class="n">STIMULUS_GRAY</span> <span class="o">=</span> <span class="mi">127</span>
 <span class="n">STIMULUS_BITDEPTH</span> <span class="o">=</span> <span class="mi">8</span>
 
-<span class="c1"># Note: the &quot;8deg&quot; stimulus is actually 9.3 visual degrees on a side</span>
+<span class="c1"># Note: the "8deg" stimulus is actually 9.3 visual degrees on a side</span>
 <span class="n">LOCALLY_SPARSE_NOISE_PIXEL_SIZE</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">LOCALLY_SPARSE_NOISE</span><span class="p">:</span> <span class="mf">4.65</span><span class="p">,</span>
     <span class="n">LOCALLY_SPARSE_NOISE_4DEG</span><span class="p">:</span> <span class="mf">4.65</span><span class="p">,</span>
@@ -584,7 +584,7 @@
 <div class="viewcode-block" id="sessions_with_stimulus">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.sessions_with_stimulus">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sessions_with_stimulus</span><span class="p">(</span><span class="n">stimulus</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the names of the sessions that contain a given stimulus.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the names of the sessions that contain a given stimulus."""</span>
 
     <span class="n">sessions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">session</span><span class="p">,</span> <span class="n">session_stimuli</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">SESSION_STIMULUS_MAP</span><span class="p">):</span>
@@ -598,7 +598,7 @@
 <div class="viewcode-block" id="stimuli_in_session">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.stimuli_in_session">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stimuli_in_session</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">allow_unknown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list what stimuli are available in a given session.</span>
+<span class="w">    </span><span class="sd">"""Return a list what stimuli are available in a given session.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -609,7 +609,7 @@
 <span class="sd">            stimulus_info.THREE_SESSION_C,</span>
 <span class="sd">            stimulus_info.THREE_SESSION_C2</span>
 <span class="sd">            ]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">SESSION_STIMULUS_MAP</span><span class="p">[</span><span class="n">session</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -623,7 +623,7 @@
 <div class="viewcode-block" id="all_stimuli">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.all_stimuli">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_stimuli</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of all stimuli in the data set&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return a list of all stimuli in the data set"""</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span>
         <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">vl</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">iteritems</span><span class="p">(</span><span class="n">SESSION_STIMULUS_MAP</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vl</span><span class="p">]</span>
     <span class="p">)</span></div>
@@ -637,21 +637,21 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.BinaryIntervalSearchTree.from_df">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_df</span><span class="p">(</span><span class="n">input_df</span><span class="p">):</span>
-        <span class="n">search_list</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">&quot;records&quot;</span><span class="p">)</span>
+        <span class="n">search_list</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s2">"records"</span><span class="p">)</span>
 
         <span class="n">new_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">search_list</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]:</span>
-                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">==</span> <span class="n">x</span><span class="p">[</span><span class="s2">"end"</span><span class="p">]:</span>
+                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">"end"</span><span class="p">],</span> <span class="n">x</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># -.01 prevents endpoint-overlapping intervals; assigns ties to</span>
                 <span class="c1"># intervals that start at requested index</span>
-                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;end&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="s2">"start"</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">"end"</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">BinaryIntervalSearchTree</span><span class="p">(</span><span class="n">new_list</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_list</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a binary tree to search for a point within a list of</span>
+<span class="w">        </span><span class="sd">"""Create a binary tree to search for a point within a list of</span>
 <span class="sd">        intervals.  Assumes that the intervals are non-overlapping.  If two</span>
 <span class="sd">        intervals share an endpoint, the left-side wins the tie.</span>
 
@@ -660,9 +660,9 @@
 <span class="sd">        return value for the lookup</span>
 
 <span class="sd">        Example:</span>
-<span class="sd">        bist = BinaryIntervalSearchTree([(0,.5,&#39;A&#39;), (1,2,&#39;B&#39;)])</span>
+<span class="sd">        bist = BinaryIntervalSearchTree([(0,.5,'A'), (1,2,'B')])</span>
 <span class="sd">        print(bist.search(1.5))</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Double-check that the list is sorted</span>
         <span class="n">search_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">search_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -716,7 +716,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nwb_dataset</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nwb_data</span> <span class="o">=</span> <span class="n">nwb_dataset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_df</span> <span class="o">=</span> <span class="n">nwb_dataset</span><span class="o">.</span><span class="n">get_stimulus_epoch_table</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">master_df</span> <span class="o">=</span> <span class="n">nwb_dataset</span><span class="o">.</span><span class="n">get_stimulus_table</span><span class="p">(</span><span class="s2">&quot;master&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">master_df</span> <span class="o">=</span> <span class="n">nwb_dataset</span><span class="o">.</span><span class="n">get_stimulus_table</span><span class="p">(</span><span class="s2">"master"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_bst</span> <span class="o">=</span> <span class="n">BinaryIntervalSearchTree</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_df</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">master_bst</span> <span class="o">=</span> <span class="n">BinaryIntervalSearchTree</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">master_df</span><span class="p">)</span>
 
@@ -737,7 +737,7 @@
                 <span class="c1"># Frame is in a coarse-grain  epoch, but not a fine grain</span>
                 <span class="c1">#   interval; look backwards to find most recent find nearest</span>
                 <span class="c1">#   matching interval</span>
-                <span class="k">if</span> <span class="n">fi</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">fi</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"start"</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="kc">None</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">fi</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
@@ -810,8 +810,8 @@
 <div class="viewcode-block" id="get_spatio_temporal_grating">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.get_spatio_temporal_grating">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_spatio_temporal_grating</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">temporal_frequency</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">temporal_frequency</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
+    <span class="n">kwargs</span><span class="p">[</span><span class="s2">"phase"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"phase"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">temporal_frequency</span><span class="p">)</span> <span class="o">%</span> <span class="mi">1</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">get_spatial_grating</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -1039,7 +1039,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Monitor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_pixels_r</span><span class="p">,</span> <span class="n">n_pixels_c</span><span class="p">,</span> <span class="n">panel_size</span><span class="p">,</span> <span class="n">spatial_unit</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">=</span> <span class="n">spatial_unit</span>
-        <span class="k">if</span> <span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">"cm"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conversion_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>  <span class="c1"># pragma: no cover</span>
@@ -1078,9 +1078,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">set_spatial_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_unit</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new_unit</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">new_unit</span> <span class="o">==</span> <span class="s2">&quot;inch&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">new_unit</span> <span class="o">==</span> <span class="s2">"inch"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">"cm"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conversion_factor</span> <span class="o">*=</span> <span class="mf">0.393701</span>
-        <span class="k">elif</span> <span class="n">new_unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">&quot;inch&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">new_unit</span> <span class="o">==</span> <span class="s2">"cm"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">"inch"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conversion_factor</span> <span class="o">*=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">0.393701</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>  <span class="c1"># pragma: no cover</span>
@@ -1132,7 +1132,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">img</span><span class="p">,</span>
         <span class="n">stimulus_type</span><span class="p">,</span>
-        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span>
         <span class="n">background_color</span><span class="o">=</span><span class="n">STIMULUS_GRAY</span><span class="p">,</span>
         <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
     <span class="p">):</span>
@@ -1164,9 +1164,9 @@
             <span class="n">full_image</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="n">translation</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;lower&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"lower"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">full_image</span>
-        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;upper&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"upper"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">full_image</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span>
@@ -1177,7 +1177,7 @@
 <div class="viewcode-block" id="Monitor.natural_scene_image_to_screen">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.Monitor.natural_scene_image_to_screen">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">natural_scene_image_to_screen</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">full_image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_c</span><span class="p">),</span> <span class="mi">127</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span>
@@ -1194,9 +1194,9 @@
             <span class="n">full_image</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="n">translation</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;lower&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"lower"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">full_image</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;upper&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"upper"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">full_image</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span></div>
@@ -1205,7 +1205,7 @@
 <div class="viewcode-block" id="Monitor.natural_movie_image_to_screen">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.Monitor.natural_movie_image_to_screen">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">natural_movie_image_to_screen</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="p">):</span>
         <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">NATURAL_MOVIE_PIXELS</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
@@ -1233,9 +1233,9 @@
             <span class="n">full_image</span><span class="p">,</span> <span class="n">translation</span><span class="o">=</span><span class="n">translation</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;lower&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"lower"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">full_image</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;upper&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"upper"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">full_image</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span></div>
@@ -1308,7 +1308,7 @@
 <div class="viewcode-block" id="Monitor.show_image">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.Monitor.show_image">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_image</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">warp</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">"lower"</span>
     <span class="p">):</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
@@ -1326,7 +1326,7 @@
         <span class="k">if</span> <span class="n">warp</span><span class="p">:</span>
             <span class="k">assert</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">False</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"none"</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mask</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">make_display_mask</span><span class="p">(</span>
@@ -1335,14 +1335,14 @@
             <span class="n">alpha_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4</span><span class="p">))</span>
             <span class="n">alpha_mask</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">mask</span>
             <span class="n">alpha_mask</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.4</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">alpha_mask</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">alpha_mask</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"none"</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;upper&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"upper"</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;lower&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">"lower"</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span>
@@ -1420,16 +1420,16 @@
 <div class="viewcode-block" id="BrainObservatoryMonitor">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.BrainObservatoryMonitor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BrainObservatoryMonitor</span><span class="p">(</span><span class="n">Monitor</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    http://help.brain-map.org/display/observatory/Documentation?preview=/10616846/10813485/VisualCoding_VisualStimuli.pdf  # noqa: E501</span>
 <span class="sd">    https://www.cnet.com/products/asus-pa248q/specs/</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_geometry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">MONITOR_DIMENSIONS</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">BrainObservatoryMonitor</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mf">61.214</span><span class="p">,</span> <span class="s2">&quot;cm&quot;</span>
+            <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mf">61.214</span><span class="p">,</span> <span class="s2">"cm"</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">experiment_geometry</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1472,7 +1472,7 @@
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.BrainObservatoryMonitor.warp_image">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">warp_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels_c</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">&quot;cm&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_unit</span> <span class="o">==</span> <span class="s2">"cm"</span>
 
         <span class="k">return</span> <span class="n">spndi</span><span class="o">.</span><span class="n">map_coordinates</span><span class="p">(</span>
             <span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_geometry</span><span class="o">.</span><span class="n">warp_coordinates</span><span class="o">.</span><span class="n">T</span>
@@ -1523,7 +1523,7 @@
     <span class="n">mon_res</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1200</span><span class="p">),</span>
     <span class="n">eyepoint</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    For a list of screen vertices, provides a corresponding list of texture</span>
 <span class="sd">    coordinates.</span>
 
@@ -1549,14 +1549,14 @@
 <span class="sd">        coordinates are displayed an the input coordinates after warping the</span>
 <span class="sd">        stimulus.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">mon_width_cm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mon_width_cm</span><span class="p">)</span>
     <span class="n">mon_height_cm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mon_height_cm</span><span class="p">)</span>
     <span class="n">distance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
     <span class="n">mon_res_x</span><span class="p">,</span> <span class="n">mon_res_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mon_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">mon_res</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-    <span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">)</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float"</span><span class="p">)</span>
 
     <span class="c1"># from pixels (-1920/2 -&gt; 1920/2) to stimulus space (-0.5-&gt;0.5)</span>
     <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">mon_res_x</span>
@@ -1612,9 +1612,9 @@
 <div class="viewcode-block" id="make_display_mask">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.utils.brain_observatory.html#bmtk.utils.brain_observatory.stimulus_info.make_display_mask">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_display_mask</span><span class="p">(</span><span class="n">display_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1200</span><span class="p">)):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a display-shaped mask that indicates which pixels are on screen</span>
+<span class="w">    </span><span class="sd">"""Build a display-shaped mask that indicates which pixels are on screen</span>
 <span class="sd">    after warping the stimulus.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">display_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">-</span> <span class="n">display_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">display_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="n">display_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">display_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)))</span>
@@ -1650,7 +1650,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">mask_stimulus_template</span><span class="p">(</span>
     <span class="n">template_display_coords</span><span class="p">,</span> <span class="n">template_shape</span><span class="p">,</span> <span class="n">display_mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a mask for a stimulus template of a given shape and display</span>
+<span class="w">    </span><span class="sd">"""Build a mask for a stimulus template of a given shape and display</span>
 <span class="sd">    coordinates that indicates which part of the template is on screen after</span>
 <span class="sd">    warping.</span>
 
@@ -1673,7 +1673,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    tuple: (template mask, pixel fraction)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">display_mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">display_mask</span> <span class="o">=</span> <span class="n">make_display_mask</span><span class="p">()</span>
 

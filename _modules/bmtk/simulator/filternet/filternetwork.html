@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -443,7 +443,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_register_adaptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FilterNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_register_adaptors</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_node_adaptors</span><span class="p">[</span><span class="s1">&#39;sonata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterNodeAdaptor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_adaptors</span><span class="p">[</span><span class="s1">'sonata'</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterNodeAdaptor</span>
 
 <div class="viewcode-block" id="FilterNetwork.cells">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filternetwork.FilterNetwork.cells">[docs]</a>
@@ -460,24 +460,24 @@
 <div class="viewcode-block" id="FilterNetwork.set_default_processing">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filternetwork.FilterNetwork.set_default_processing">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_default_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">processing_fnc</span><span class="p">):</span>
-        <span class="n">py_modules</span><span class="o">.</span><span class="n">add_cell_processor</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">processing_fnc</span><span class="p">)</span></div>
+        <span class="n">py_modules</span><span class="o">.</span><span class="n">add_cell_processor</span><span class="p">(</span><span class="s1">'default'</span><span class="p">,</span> <span class="n">processing_fnc</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FilterNetwork.build_nodes">
 <a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filternetwork.FilterNetwork.build_nodes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rank_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39; (on rank </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">)</span>
+        <span class="n">rank_msg</span> <span class="o">=</span> <span class="s1">''</span> <span class="k">if</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">' (on rank </span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
             <span class="n">nodes</span> <span class="o">=</span> <span class="n">node_pop</span><span class="p">[</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">::</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">]</span>
             <span class="n">n_rank_nodes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">node_pop</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">()</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">))</span>
 
             <span class="n">ten_percent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_rank_nodes</span><span class="o">*</span><span class="mf">0.1</span><span class="p">))</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39; Adding </span><span class="si">{}</span><span class="s1"> cells.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">' Adding </span><span class="si">{}</span><span class="s1"> cells.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="n">ten_percent</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39;  Adding cell </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_rank_nodes</span><span class="p">,</span> <span class="n">rank_msg</span><span class="p">))</span>
+                    <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">'  Adding cell </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}{}</span><span class="s1">.'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n_rank_nodes</span><span class="p">,</span> <span class="n">rank_msg</span><span class="p">))</span>
 
                 <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">cell</span><span class="o">.</span><span class="n">default_jitter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jitter</span>

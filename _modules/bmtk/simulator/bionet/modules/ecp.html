@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -428,7 +428,7 @@
 <span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
 <span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
 <span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
 <span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
@@ -459,7 +459,7 @@
 <div class="viewcode-block" id="EcpMod">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.EcpMod">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EcpMod</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">electrode_positions</span><span class="p">,</span> <span class="n">file_name_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contributions_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">&#39;v&#39;</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">electrode_positions</span><span class="p">,</span> <span class="n">file_name_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contributions_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variable_name</span><span class="o">=</span><span class="s1">'v'</span><span class="p">,</span>
                  <span class="n">electrode_channels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cell_bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minimum_distance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_positions_file</span> <span class="o">=</span> <span class="n">electrode_positions</span>
@@ -476,7 +476,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span> <span class="o">=</span> <span class="n">cells</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">cell_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">cell_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">minimum_distance</span> <span class="ow">and</span> <span class="n">minimum_distance</span> <span class="o">!=</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">minimum_distance</span> <span class="ow">and</span> <span class="n">minimum_distance</span> <span class="o">!=</span> <span class="s1">'auto'</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">minimum_distance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">minimum_distance</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -507,12 +507,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_path</span> <span class="o">=</span> <span class="n">file_name_nwb</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name_nwb</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name_nwb</span><span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">ie</span><span class="p">:</span>
-                <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;pynwb library is not installed, simulation cannot be saved to </span><span class="si">{file_name_nwb}</span><span class="s1">.&#39;</span><span class="p">)</span>      
+                <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">'pynwb library is not installed, simulation cannot be saved to </span><span class="si">{file_name_nwb}</span><span class="s1">.'</span><span class="p">)</span>      
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_tmp_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_outputdir</span><span class="p">,</span> <span class="s1">&#39;tmp_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_outputdir</span><span class="p">,</span> <span class="s1">'tmp_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">)))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_ecp_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
@@ -520,29 +520,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">tstop</span><span class="o">/</span><span class="n">dt</span><span class="p">))</span>
 
         <span class="c1"># create file to temporary store ecp data on each rank</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_file</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_file</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'/ecp/data'</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span>
                                             <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                                             <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># only the primary node will need to save the final ecp</span>
         <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f5</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f5</span><span class="p">:</span>
                 <span class="n">add_hdf5_magic</span><span class="p">(</span><span class="n">f5</span><span class="p">)</span>
                 <span class="n">add_hdf5_version</span><span class="p">(</span><span class="n">f5</span><span class="p">)</span>
-                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span>
+                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'/ecp/data'</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span>
                                   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
                                   <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">f5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mV&#39;</span>
-                <span class="c1">#f5.attrs[&#39;dt&#39;] = dt</span>
-                <span class="c1">#f5.attrs[&#39;tstart&#39;] = 0.0</span>
-                <span class="c1">#f5.attrs[&#39;tstop&#39;] = tstop</span>
+                <span class="n">f5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'mV'</span>
+                <span class="c1">#f5.attrs['dt'] = dt</span>
+                <span class="c1">#f5.attrs['tstart'] = 0.0</span>
+                <span class="c1">#f5.attrs['tstop'] = tstop</span>
 
-                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
-                <span class="n">f5</span><span class="p">[</span><span class="s1">&#39;/ecp/time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span>
+                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'/ecp/time'</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+                <span class="n">f5</span><span class="p">[</span><span class="s1">'/ecp/time'</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'units'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ms'</span>
 
                 <span class="c1"># Save channels. Current we record from all channels, may want to be more selective in the future.</span>
-                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;/ecp/channel_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rel</span><span class="o">.</span><span class="n">nsites</span><span class="p">))</span>
+                <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'/ecp/channel_id'</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rel</span><span class="o">.</span><span class="n">nsites</span><span class="p">))</span>
 
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
@@ -550,11 +550,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_individ_cells</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contributions_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">gid</span><span class="p">)))</span>
-        <span class="n">file_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contributions_dir</span><span class="p">,</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">.h5'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">gid</span><span class="p">)))</span>
+        <span class="n">file_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cell_var_files</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_h5</span>
-        <span class="n">file_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1"># self._cell_var_files[gid] = file_h5[&#39;ecp&#39;]</span>
+        <span class="n">file_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">'/ecp/data'</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rel_nsites</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># self._cell_var_files[gid] = file_h5['ecp']</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_ecp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rel</span> <span class="o">=</span> <span class="n">RecXElectrode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_positions_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_distance</span><span class="p">)</span>
@@ -575,14 +575,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_fih1</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">FInitializeHandler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">set_pointers</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Add """</span>
         <span class="n">itstart</span><span class="p">,</span> <span class="n">itend</span> <span class="o">=</span> <span class="n">interval</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">itend</span> <span class="o">-</span> <span class="n">itstart</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">itend</span> <span class="o">-</span> <span class="n">itstart</span><span class="p">),</span> <span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_ecp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save ECP from each rank to disk into a single file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Save ECP from each rank to disk into a single file"""</span>
         <span class="n">block_size</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span>
         <span class="n">nblocks</span><span class="p">,</span> <span class="n">remain</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nsteps</span><span class="p">,</span> <span class="n">block_size</span><span class="p">)</span>
         <span class="n">ivals</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">block_size</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nblocks</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
@@ -591,9 +591,9 @@
 
         <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_HOSTS</span><span class="p">):</span>  <span class="c1"># iterate over the ranks</span>
             <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="n">MPI_RANK</span><span class="p">:</span>  <span class="c1"># wait until finished with a particular rank</span>
-                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ecp_f5</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ecp_output</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span> <span class="k">as</span> <span class="n">ecp_f5</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ivals</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-                        <span class="n">ecp_f5</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span>
+                        <span class="n">ecp_f5</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_ecp_handle</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">ivals</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span>
 
             <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
@@ -602,7 +602,7 @@
 
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saved_gids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">h5_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_var_files</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
-            <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;/ecp/data&#39;</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">),</span> <span class="p">:]</span>
+            <span class="n">h5_file</span><span class="p">[</span><span class="s1">'/ecp/data'</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">),</span> <span class="p">:]</span>
             <span class="n">h5_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">data</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -673,7 +673,7 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.EcpMod.finalize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># just in case the simulation doesn&#39;t end on a block step</span>
+            <span class="c1"># just in case the simulation doesn't end on a block step</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_ecp</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
@@ -693,58 +693,58 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">convert2nwb</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="n">orig_hdf5_lfp</span><span class="p">,</span> <span class="n">electrodes_file</span><span class="p">):</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">pynwb</span>
 
-    <span class="c1"># io.log_debug(&#39;Writing to NWB format in {nwb_path}&#39;)</span>
+    <span class="c1"># io.log_debug('Writing to NWB format in {nwb_path}')</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">):</span>
-        <span class="n">io</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">io</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
         <span class="n">nwbfile</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">io</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">io</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBHDF5IO</span><span class="p">(</span><span class="n">nwb_path</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span>
         <span class="n">nwbfile</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">NWBFile</span><span class="p">(</span>
             <span class="n">session_start_time</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tzlocal</span><span class="p">()),</span>
-            <span class="n">session_description</span><span class="o">=</span><span class="s2">&quot;test time&quot;</span><span class="p">,</span>
+            <span class="n">session_description</span><span class="o">=</span><span class="s2">"test time"</span><span class="p">,</span>
             <span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">()),</span>
         <span class="p">)</span>
 
-    <span class="n">electrodes_metdata_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">electrodes_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;channel&#39;</span><span class="p">)</span>
+    <span class="n">electrodes_metdata_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">electrodes_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'channel'</span><span class="p">)</span>
 
     <span class="n">device</span> <span class="o">=</span> <span class="n">nwbfile</span><span class="o">.</span><span class="n">create_device</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ecp electrode matrix&quot;</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"ecp electrode matrix"</span>
     <span class="p">)</span>
 
     <span class="n">electrode_group</span> <span class="o">=</span> <span class="n">nwbfile</span><span class="o">.</span><span class="n">create_electrode_group</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;array 1&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">"array 1"</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
-        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;Brain&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;desc&quot;</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">"Brain"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"desc"</span>
     <span class="p">)</span>
 
     <span class="c1"># electrodes_file</span>
-    <span class="n">nwbfile</span><span class="o">.</span><span class="n">add_electrode_column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;channel_id&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;label of electrode&quot;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">orig_hdf5_lfp</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">orig_h5</span><span class="p">:</span>
-        <span class="n">channels</span> <span class="o">=</span> <span class="n">orig_h5</span><span class="p">[</span><span class="s1">&#39;ecp/channel_id&#39;</span><span class="p">][()]</span>
+    <span class="n">nwbfile</span><span class="o">.</span><span class="n">add_electrode_column</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"channel_id"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"label of electrode"</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">orig_hdf5_lfp</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">orig_h5</span><span class="p">:</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="n">orig_h5</span><span class="p">[</span><span class="s1">'ecp/channel_id'</span><span class="p">][()]</span>
         <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
             <span class="n">chan_data</span> <span class="o">=</span> <span class="n">electrodes_metdata_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">chan</span><span class="p">]</span>
             <span class="n">nwbfile</span><span class="o">.</span><span class="n">add_electrode</span><span class="p">(</span>
                 <span class="n">group</span><span class="o">=</span><span class="n">electrode_group</span><span class="p">,</span>
                 <span class="n">channel_id</span><span class="o">=</span><span class="n">chan</span><span class="p">,</span>
-                <span class="c1"># label=&quot;1&quot;,</span>
-                <span class="n">location</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">),</span>
-                <span class="n">x</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;x_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;Not Avail&#39;</span><span class="p">),</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;y_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;Not Avail&#39;</span><span class="p">),</span>
-                <span class="n">z</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;z_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;Not Avail&#39;</span><span class="p">),</span>
+                <span class="c1"># label="1",</span>
+                <span class="n">location</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'location'</span><span class="p">,</span> <span class="s1">'None'</span><span class="p">),</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'x_pos'</span><span class="p">,</span> <span class="s1">'Not Avail'</span><span class="p">),</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'y_pos'</span><span class="p">,</span> <span class="s1">'Not Avail'</span><span class="p">),</span>
+                <span class="n">z</span><span class="o">=</span><span class="n">chan_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'z_pos'</span><span class="p">,</span> <span class="s1">'Not Avail'</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="n">electrode_region_table</span> <span class="o">=</span> <span class="n">nwbfile</span><span class="o">.</span><span class="n">create_electrode_table_region</span><span class="p">(</span>
             <span class="n">region</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">channels</span><span class="p">),</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;all electrodes&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"all electrodes"</span><span class="p">,</span>
         <span class="p">)</span>
         
-        <span class="n">time</span> <span class="o">=</span> <span class="n">orig_h5</span><span class="p">[</span><span class="s1">&#39;ecp/time&#39;</span><span class="p">][()]</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">orig_h5</span><span class="p">[</span><span class="s1">'ecp/time'</span><span class="p">][()]</span>
         <span class="n">rate</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">time</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">lfp_electrical_series</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">ecephys</span><span class="o">.</span><span class="n">ElectricalSeries</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ElectricalSeries&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;LFP data&quot;</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">orig_h5</span><span class="p">[</span><span class="s1">&#39;ecp/data&#39;</span><span class="p">][()],</span>
-            <span class="c1"># filtering=&#39;Low-pass filter at 300 Hz&#39;,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"ElectricalSeries"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"LFP data"</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">orig_h5</span><span class="p">[</span><span class="s1">'ecp/data'</span><span class="p">][()],</span>
+            <span class="c1"># filtering='Low-pass filter at 300 Hz',</span>
             <span class="n">electrodes</span><span class="o">=</span><span class="n">electrode_region_table</span><span class="p">,</span>
             <span class="n">starting_time</span><span class="o">=</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">rate</span><span class="o">=</span><span class="n">rate</span><span class="p">,</span>
@@ -755,8 +755,8 @@
         <span class="n">lfp</span> <span class="o">=</span> <span class="n">pynwb</span><span class="o">.</span><span class="n">ecephys</span><span class="o">.</span><span class="n">LFP</span><span class="p">(</span><span class="n">lfp_electrical_series</span><span class="p">)</span>
 
         <span class="n">ecephys_module</span> <span class="o">=</span> <span class="n">nwbfile</span><span class="o">.</span><span class="n">create_processing_module</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ecephys&quot;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;processed extracellular electrophysiology data&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">"ecephys"</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"processed extracellular electrophysiology data"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">ecephys_module</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">lfp</span><span class="p">)</span>
 
@@ -767,21 +767,21 @@
 <div class="viewcode-block" id="RecXElectrode">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.RecXElectrode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RecXElectrode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extracellular electrode</span>
+<span class="w">    </span><span class="sd">"""Extracellular electrode</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">minimum_distance</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an array&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create an array"""</span>
         <span class="c1"># self.conf = conf</span>
-        <span class="n">electrode_file</span> <span class="o">=</span> <span class="n">positions</span>  <span class="c1"># self.conf[&quot;recXelectrode&quot;][&quot;positions&quot;]</span>
+        <span class="n">electrode_file</span> <span class="o">=</span> <span class="n">positions</span>  <span class="c1"># self.conf["recXelectrode"]["positions"]</span>
 
         <span class="c1"># convert coordinates to ndarray, The first index is xyz and the second is the channel number</span>
-        <span class="n">el_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">electrode_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">el_df</span><span class="p">[[</span><span class="s1">&#39;x_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;y_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;z_pos&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">values</span>
-        <span class="c1">#self.pos = el_df.as_matrix(columns=[&#39;x_pos&#39;, &#39;y_pos&#39;, &#39;z_pos&#39;]).T</span>
+        <span class="n">el_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">electrode_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">el_df</span><span class="p">[[</span><span class="s1">'x_pos'</span><span class="p">,</span> <span class="s1">'y_pos'</span><span class="p">,</span> <span class="s1">'z_pos'</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1">#self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nsites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="c1"># self.conf[&#39;run&#39;][&#39;nsites&#39;] = self.nsites  # add to the config</span>
+        <span class="c1"># self.conf['run']['nsites'] = self.nsites  # add to the config</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transfer_resistances</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># V_e = transfer_resistance*Im</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">minimum_distance</span> <span class="o">=</span> <span class="n">minimum_distance</span>
 
@@ -801,12 +801,12 @@
 <div class="viewcode-block" id="RecXElectrode.calc_transfer_resistance">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.ecp.RecXElectrode.calc_transfer_resistance">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">calc_transfer_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">seg_coords</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Precompute mapping from segment to electrode locations&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Precompute mapping from segment to electrode locations"""</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.3</span>  <span class="c1"># mS/mm</span>
 
         <span class="n">r05</span> <span class="o">=</span> <span class="p">(</span><span class="n">seg_coords</span><span class="o">.</span><span class="n">p0</span> <span class="o">+</span> <span class="n">seg_coords</span><span class="o">.</span><span class="n">p1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">dl</span> <span class="o">=</span> <span class="n">seg_coords</span><span class="o">.</span><span class="n">p1</span> <span class="o">-</span> <span class="n">seg_coords</span><span class="o">.</span><span class="n">p0</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_distance</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_distance</span> <span class="o">==</span> <span class="s1">'auto'</span><span class="p">:</span>
             <span class="n">rm</span> <span class="o">=</span> <span class="n">seg_coords</span><span class="o">.</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># set minimum distance to the radius of each segment</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">rm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_distance</span>  <span class="c1"># set a common minimum distance</span>
@@ -820,10 +820,10 @@
             <span class="n">rel_05</span> <span class="o">=</span> <span class="n">rel</span> <span class="o">-</span> <span class="n">r05</span>  <span class="c1"># distance between electrode and segment centers</span>
 
             <span class="c1"># compute dot product column-wise, the resulting array has as many columns as original</span>
-            <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">)</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ij,ij-&gt;j'</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">)</span>
 
             <span class="c1"># compute dot product column-wise, the resulting array has as many columns as original</span>
-            <span class="n">rlldl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">,</span> <span class="n">dl</span><span class="p">)</span>
+            <span class="n">rlldl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ij,ij-&gt;j'</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">,</span> <span class="n">dl</span><span class="p">)</span>
             <span class="n">dlmag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dl</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># length of each segment</span>
             <span class="n">rll</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rlldl</span> <span class="o">/</span> <span class="n">dlmag</span><span class="p">)</span>  <span class="c1"># component of r parallel to the segment axis it must be always positive</span>
             <span class="n">rT2</span> <span class="o">=</span> <span class="n">r2</span> <span class="o">-</span> <span class="n">rll</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># square of perpendicular component</span>

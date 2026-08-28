@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -383,7 +383,11 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </details></li>
@@ -484,7 +488,7 @@ a sonata spikes files (or csv or nwb) into memory:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpikeTrains</span>
 
 <span class="n">pop_name</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;output/spikes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'output/spikes.h5'</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">'pop_name'</span><span class="p">)</span>
 <span class="k">assert</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop_name</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">node_ids</span><span class="p">())</span>
@@ -524,7 +528,7 @@ is to use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_
 <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_spike()</span></code></a> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpikeTrains</span>
 
-<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;my_inputs&#39;</span><span class="p">)</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">'my_inputs'</span><span class="p">)</span>
 <span class="n">spikes</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
 <span class="n">spikes</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
                  <span class="n">timestamps</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
@@ -533,12 +537,12 @@ is to use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_
 <p>Another is o use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoissonSpikeGenerator</span></code></a> class</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.utils.reports.spike_trains</span><span class="w"> </span><span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
-<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;thalamus&#39;</span><span class="p">)</span>
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">'thalamus'</span><span class="p">)</span>
 <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mi">100000</span><span class="p">)</span>
 <span class="n">frs</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.0</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">firing_rate</span><span class="o">=</span><span class="n">frs</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">firing_rate</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;./inputs/thamlamus_inputs.h5&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">'./inputs/thamlamus_inputs.h5'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -573,8 +577,8 @@ read data from a cell report.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmtk</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">compartment</span> <span class="kn">import</span><span class="w"> </span><span class="nn">CompartmentReport</span>
 
 <span class="n">pop_name</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">report</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="p">(</span><span class="s1">&#39;output/membrane_vm.h5&#39;</span><span class="p">,</span>
-<span class="n">population</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="p">(</span><span class="s1">'output/membrane_vm.h5'</span><span class="p">,</span>
+<span class="n">population</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'r'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">variable</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">tstart</span><span class="p">(),</span> <span class="n">report</span><span class="o">.</span><span class="n">tstop</span><span class="p">(),</span> <span class="n">report</span><span class="o">.</span><span class="n">dt</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">element_ids</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>

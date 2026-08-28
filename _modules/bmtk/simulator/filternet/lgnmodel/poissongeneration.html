@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -438,19 +438,19 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_poisson_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate cannot be None&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Rate cannot be None'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Very high rate encountered: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'Very high rate encountered: </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span> 
         <span class="k">assert</span> <span class="n">rate</span> <span class="o">&gt;=</span> <span class="mi">0</span>
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Negative rate (</span><span class="si">%s</span><span class="s1">) not allowed&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Negative rate (</span><span class="si">%s</span><span class="s1">) not allowed'</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
     
     <span class="k">try</span><span class="p">:</span> 
         <span class="k">assert</span> <span class="n">rate</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate (</span><span class="si">%s</span><span class="s1">) must be finite&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span> 
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Rate (</span><span class="si">%s</span><span class="s1">) must be finite'</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span> 
 
     <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>

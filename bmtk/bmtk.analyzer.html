@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -491,26 +491,26 @@
 <dd><p>Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
 attempt to look in the SONATA simulation configuration json “reports” sections for any matching “membrane_report”
 outputs with a matching report_name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “report_path”
 option instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">report_path</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">report_path</span><span class="o">=</span><span class="s1">'/my/path/to/membrane_potential.h5'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To display the traces of only a select number of nodes you can filter using the node_ids options:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The average option will find the mean value of all the traces to display:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You may also group together different subsets of nodes and display multiple averages based on certain attributes
 of the network, which can be done using the group_by key. The group_exlcudes option will exclude certain groups.
 For example if you want to plot the averaged membrane potential across each cortical “layer”, exclude L1:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="s1">'membrane_potential'</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">'layer'</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">'L1'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -616,18 +616,18 @@ save plot.</p></li>
 <dd><p>Create a raster plot (plus optional histogram) from the results of the simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
 display them:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
 option instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">'/my/path/to/membrane_potential.h5'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
 option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
 subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">'layer'</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">'L1'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -668,18 +668,18 @@ the config.</p></li>
 simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
 display them:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
 option instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">'/my/path/to/membrane_potential.h5'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
 option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
 subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">'layer'</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">'L1'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -720,18 +720,18 @@ the config.</p></li>
 <dd><p>Creates a box plot of the firing rates taken from nodes recorded during the simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
 display them:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
 option instead:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">'/my/path/to/membrane_potential.h5'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
 option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
 subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">'config.json'</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">'layer'</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">'L1'</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

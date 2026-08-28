@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -446,20 +446,20 @@
 <div class="viewcode-block" id="LGNOnOffCell">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnOffCell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LGNOnOffCell</span><span class="p">(</span><span class="n">MultiLNUnit</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A cell model for a OnOff cell&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A cell model for a OnOff cell"""</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_filter</span><span class="p">,</span> <span class="n">off_filter</span><span class="p">,</span>
                  <span class="n">transfer_function</span><span class="o">=</span><span class="n">MultiTransferFunction</span><span class="p">((</span><span class="n">symbolic_x</span><span class="p">,</span> <span class="n">symbolic_y</span><span class="p">),</span>
-                                                         <span class="s1">&#39;Heaviside(x)*(x)+Heaviside(y)*(y)&#39;</span><span class="p">)):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Summary</span>
+                                                         <span class="s1">'Heaviside(x)*(x)+Heaviside(y)*(y)'</span><span class="p">)):</span>
+<span class="w">        </span><span class="sd">"""Summary</span>
 
 <span class="sd">        :param on_filter:</span>
 <span class="sd">        :param off_filter:</span>
 <span class="sd">        :param transfer_function:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span> <span class="o">=</span> <span class="n">on_filter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">off_filter</span> <span class="o">=</span> <span class="n">off_filter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">on_unit</span> <span class="o">=</span> <span class="n">OnUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">off_unit</span> <span class="o">=</span> <span class="n">OffUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_unit</span> <span class="o">=</span> <span class="n">OnUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">'s'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_unit</span> <span class="o">=</span> <span class="n">OffUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">'s'</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">LGNOnOffCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">on_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_unit</span><span class="p">],</span> <span class="n">transfer_function</span><span class="p">)</span></div>
 
         
@@ -470,7 +470,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dominant_filter</span><span class="p">,</span> <span class="n">nondominant_filter</span><span class="p">,</span> <span class="n">subfield_separation</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">onoff_axis_angle</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
                  <span class="n">dominant_subfield_location</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
                  <span class="n">transfer_function</span><span class="o">=</span><span class="n">MultiTransferFunction</span><span class="p">((</span><span class="n">symbolic_x</span><span class="p">,</span> <span class="n">symbolic_y</span><span class="p">),</span>
-                                                         <span class="s1">&#39;Heaviside(x)*(x)+Heaviside(y)*(y)&#39;</span><span class="p">)):</span>
+                                                         <span class="s1">'Heaviside(x)*(x)+Heaviside(y)*(y)'</span><span class="p">)):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subfield_separation</span> <span class="o">=</span> <span class="n">subfield_separation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">onoff_axis_angle</span> <span class="o">=</span> <span class="n">onoff_axis_angle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dominant_subfield_location</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>
@@ -478,9 +478,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span> <span class="o">=</span> <span class="n">nondominant_filter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transfer_function</span> <span class="o">=</span> <span class="n">transfer_function</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">'s'</span><span class="p">),</span>
                                     <span class="n">amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">'s'</span><span class="p">),</span>
                                        <span class="n">amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">TwoSubfieldLinearCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_unit</span><span class="p">],</span>
@@ -494,17 +494,17 @@
 
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">class LGNOnCell(OnUnit):</span>
 <span class="sd">    def __init__(self, **kwargs):</span>
-<span class="sd">        self.position = kwargs.pop(&#39;position&#39;, None)</span>
-<span class="sd">        self.weights = kwargs.pop(&#39;weights&#39;, None)</span>
-<span class="sd">        self.kpeaks = kwargs.pop(&#39;kpeaks&#39;, None)</span>
-<span class="sd">        self.delays = kwargs.pop(&#39;delays&#39;, None)</span>
-<span class="sd">        self.amplitude = kwargs.pop(&#39;amplitude&#39;, None)</span>
-<span class="sd">        self.sigma = kwargs.pop(&#39;sigma&#39;, None)</span>
-<span class="sd">        self.transfer_function_str = kwargs.pop(&#39;transfer_function_str&#39;, &#39;s&#39;)  # &#39;Heaviside(s)*s&#39;)</span>
-<span class="sd">        self.metadata = kwargs.pop(&#39;metadata&#39;, {})</span>
+<span class="sd">        self.position = kwargs.pop('position', None)</span>
+<span class="sd">        self.weights = kwargs.pop('weights', None)</span>
+<span class="sd">        self.kpeaks = kwargs.pop('kpeaks', None)</span>
+<span class="sd">        self.delays = kwargs.pop('delays', None)</span>
+<span class="sd">        self.amplitude = kwargs.pop('amplitude', None)</span>
+<span class="sd">        self.sigma = kwargs.pop('sigma', None)</span>
+<span class="sd">        self.transfer_function_str = kwargs.pop('transfer_function_str', 's')  # 'Heaviside(s)*s')</span>
+<span class="sd">        self.metadata = kwargs.pop('metadata', {})</span>
 
 <span class="sd">        temporal_filter = TemporalFilterCosineBump(self.weights, self.kpeaks, self.delays)</span>
 <span class="sd">        spatial_filter = GaussianSpatialFilter(translate=self.position, sigma=self.sigma,</span>
@@ -516,13 +516,13 @@
 
 <span class="sd">class LGNOffCell(OffUnit):</span>
 <span class="sd">    def __init__(self, **kwargs):</span>
-<span class="sd">        lattice_unit_center = kwargs.pop(&#39;lattice_unit_center&#39;, None)</span>
-<span class="sd">        weights = kwargs.pop(&#39;weights&#39;, None)</span>
-<span class="sd">        kpeaks = kwargs.pop(&#39;kpeaks&#39;, None)</span>
-<span class="sd">        amplitude = kwargs.pop(&#39;amplitude&#39;, None)</span>
-<span class="sd">        sigma = kwargs.pop(&#39;sigma&#39;, None)</span>
-<span class="sd">        width = kwargs.pop(&#39;width&#39;, 5)</span>
-<span class="sd">        transfer_function_str = kwargs.pop(&#39;transfer_function_str&#39;, &#39;Heaviside(s)*s&#39;)</span>
+<span class="sd">        lattice_unit_center = kwargs.pop('lattice_unit_center', None)</span>
+<span class="sd">        weights = kwargs.pop('weights', None)</span>
+<span class="sd">        kpeaks = kwargs.pop('kpeaks', None)</span>
+<span class="sd">        amplitude = kwargs.pop('amplitude', None)</span>
+<span class="sd">        sigma = kwargs.pop('sigma', None)</span>
+<span class="sd">        width = kwargs.pop('width', 5)</span>
+<span class="sd">        transfer_function_str = kwargs.pop('transfer_function_str', 'Heaviside(s)*s')</span>
 
 <span class="sd">        dxi = np.random.uniform(-width*1./2, width*1./2)</span>
 <span class="sd">        dyi = np.random.uniform(-width*1./2, width*1./2)</span>
@@ -531,15 +531,15 @@
 <span class="sd">        spatiotemporal_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)</span>
 <span class="sd">        transfer_function = ScalarTransferFunction(transfer_function_str)</span>
 <span class="sd">        super(LGNOnCell, self).__init__(spatiotemporal_filter, transfer_function)</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">movie_file</span> <span class="o">=</span> <span class="s1">&#39;/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy&#39;</span>
-    <span class="n">m_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">movie_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">movie_file</span> <span class="o">=</span> <span class="s1">'/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy'</span>
+    <span class="n">m_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">movie_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">Movie</span><span class="p">(</span><span class="n">m_data</span><span class="p">[</span><span class="mi">1000</span><span class="p">:],</span> <span class="n">frame_rate</span><span class="o">=</span><span class="mf">30.</span><span class="p">)</span>
     
     <span class="c1"># Create second cell:</span>
-    <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+    <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">'s'</span><span class="p">)</span>
     <span class="n">temporal_filter</span> <span class="o">=</span> <span class="n">TemporalFilterCosineBump</span><span class="p">((</span><span class="mf">0.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
     <span class="n">cell_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">5</span><span class="p">):</span>
@@ -553,7 +553,7 @@
     
     <span class="n">lgn</span> <span class="o">=</span> <span class="n">LGNModel</span><span class="p">(</span><span class="n">cell_list</span><span class="p">)</span>  <span class="c1"># Here include a list of all cells</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">lgn</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Does the filtering + non-linearity on movie object m</span>
-    <span class="n">heat_plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">heat_plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
                 </article>

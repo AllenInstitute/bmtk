@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -531,8 +531,8 @@ as well as some (non-SONATA) special features. This class should be able to:
 <div><p>You can read in a root sonata config json file (or just the circuit or simulation files individual) by passing
 the file path or a file-pointer, which will return a dictionary like object you can use to build and run your
 simulation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;/path/to/sonata_config.json&#39;</span><span class="p">)</span>
-<span class="o">...</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'/path/to/sonata_config.json'</span><span class="p">)</span>
+<span class="o">...</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">'run'</span><span class="p">][</span><span class="s1">'tstop'</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>You can also pass in a dictionary and use the from_dict() factory method:</p>
@@ -546,17 +546,17 @@ simulation:</p>
 of doing this by using the ‘manifest’ section to set the variable name and value to be used in other parts of
 the json. If the json file looks like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s1">&#39;manifest&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$CIRCUIT_HOME&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/john/cortex_simulation/network&#39;</span><span class="p">},</span>
-    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{CIRCUIT_HOME}</span><span class="s1">/nodes.h5,</span>
-        <span class="s1">&#39;node_types&#39;</span><span class="p">:</span> <span class="s1">&#39;${$CIRCUIT_HOME}/nodes_types.csv&#39;</span>
+    <span class="s1">'manifest'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'$CIRCUIT_HOME'</span><span class="p">:</span> <span class="s1">'/home/john/cortex_simulation/network'</span><span class="p">},</span>
+    <span class="s1">'network'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">'nodes'</span><span class="p">:</span> <span class="s1">'$</span><span class="si">{CIRCUIT_HOME}</span><span class="s1">/nodes.h5,</span>
+        <span class="s1">'node_types'</span><span class="p">:</span> <span class="s1">'${$CIRCUIT_HOME}/nodes_types.csv'</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>SonataConfig will resolve the $CIRCUIT_HOME variable when accessed:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">][</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/john/cortex_simulation/network/nodes.h5&#39;</span>
-<span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">][</span><span class="s1">&#39;node_types&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/john/cortex_simulation/network/nodes_types.h5&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span><span class="p">[</span><span class="s1">'network'</span><span class="p">][</span><span class="s1">'nodes'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'/home/john/cortex_simulation/network/nodes.h5'</span>
+<span class="n">sim_params</span><span class="p">[</span><span class="s1">'network'</span><span class="p">][</span><span class="s1">'node_types'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'/home/john/cortex_simulation/network/nodes_types.h5'</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -564,16 +564,16 @@ the json. If the json file looks like:</p>
 <blockquote>
 <div><p>You can also create your own predefined variables:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">circuit_config</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;run&#39;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{time_step}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;overwrite_output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{overwrite}</span><span class="s2">&quot;</span>
+    <span class="s1">'run'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"dt"</span><span class="p">:</span> <span class="s2">"$</span><span class="si">{time_step}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="s2">"overwrite_output_dir"</span><span class="p">:</span> <span class="s2">"$</span><span class="si">{overwrite}</span><span class="s2">"</span>
     <span class="p">}</span>
-    <span class="s1">&#39;target_simulator&#39;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{simulator}</span><span class="s2">&quot;</span>
+    <span class="s1">'target_simulator'</span><span class="p">:</span> <span class="s2">"$</span><span class="si">{simulator}</span><span class="s2">"</span>
 <span class="p">}</span>
-<span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">circuit_config</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simlator</span><span class="o">=</span><span class="s1">&#39;CoreNeuron&#39;</span><span class="p">)</span>
-<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.001</span>
-<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;overwrite_output_dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
-<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;target_simulator&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CoreNeuron&#39;</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">circuit_config</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simlator</span><span class="o">=</span><span class="s1">'CoreNeuron'</span><span class="p">)</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">'run'</span><span class="p">][</span><span class="s1">'dt'</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.001</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">'run'</span><span class="p">][</span><span class="s1">'overwrite_output_dir'</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">'target_simulator'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'CoreNeuron'</span>
 </pre></div>
 </div>
 <p>There are also a number of built in variables which you can add to your json</p>
@@ -587,7 +587,7 @@ the json. If the json file looks like:</p>
 <blockquote>
 <div><p>You can check if the schema is valid, making suring certain section variables that are required actually exists
 in the config and is of the right type:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.json'</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">is_valid</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">valid</span><span class="p">()</span>
 <span class="n">catch</span> <span class="ne">Exception</span> <span class="n">e</span><span class="p">:</span>
@@ -599,9 +599,9 @@ returns true it may still be missing parts of the config to run a complete simul
 <p>You can also add your own schema validator, just as long as it’s a class instance that has a validate(cfg)
 method. The easiest way to do this is by using jsonschema:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jsonschema</span><span class="w"> </span><span class="kn">import</span> <span class="n">Draft4Validator</span>
-<span class="n">validator</span> <span class="o">=</span> <span class="n">Drafter4Validator</span><span class="p">(</span><span class="s1">&#39;/path/to/schema.json&#39;</span><span class="p">)</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">Drafter4Validator</span><span class="p">(</span><span class="s1">'/path/to/schema.json'</span><span class="p">)</span>
 
-<span class="n">cfg</span> <span class="o">=</span> <span class="n">Sonata</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">Sonata</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">'config.json'</span><span class="p">)</span>
 <span class="n">cfg</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span>
 <span class="n">cfg</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 </pre></div>

@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=777dd980" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=f64e6960" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
@@ -421,12 +421,12 @@
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeFitStruct_GLM">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">makeFitStruct_GLM</span><span class="p">(</span><span class="n">dtsim</span><span class="p">,</span> <span class="n">kbasprs</span><span class="p">,</span> <span class="n">nkt</span><span class="p">,</span> <span class="n">flag_exp</span><span class="p">):</span>
     <span class="n">gg</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;dc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;kt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nkt</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;ktbas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;kbasprs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kbasprs</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtsim</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'k'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'dc'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'kt'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nkt</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'ktbas'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'kbasprs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kbasprs</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'dt'</span><span class="p">]</span> <span class="o">=</span> <span class="n">dtsim</span>
     
     <span class="n">nkt</span> <span class="o">=</span> <span class="n">nkt</span>
     <span class="k">if</span> <span class="n">flag_exp</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>    
@@ -434,8 +434,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ktbas</span> <span class="o">=</span> <span class="n">makeBasis_StimKernel_exp</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span><span class="n">nkt</span><span class="p">)</span>
     
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;ktbas&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ktbas</span>
-    <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gg</span><span class="p">[</span><span class="s1">&#39;ktbas&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gg</span><span class="p">[</span><span class="s1">&#39;kt&#39;</span><span class="p">]</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'ktbas'</span><span class="p">]</span> <span class="o">=</span> <span class="n">ktbas</span>
+    <span class="n">gg</span><span class="p">[</span><span class="s1">'k'</span><span class="p">]</span> <span class="o">=</span> <span class="n">gg</span><span class="p">[</span><span class="s1">'ktbas'</span><span class="p">]</span><span class="o">*</span><span class="n">gg</span><span class="p">[</span><span class="s1">'kt'</span><span class="p">]</span>
     
     <span class="k">return</span> <span class="n">gg</span></div>
 
@@ -444,12 +444,12 @@
 <div class="viewcode-block" id="makeBasis_StimKernel">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">makeBasis_StimKernel</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span> <span class="n">nkt</span><span class="p">):</span>
-    <span class="n">neye</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;neye&#39;</span><span class="p">]</span>
-    <span class="n">ncos</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;ncos&#39;</span><span class="p">]</span>
-    <span class="n">kpeaks</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span>
+    <span class="n">neye</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'neye'</span><span class="p">]</span>
+    <span class="n">ncos</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'ncos'</span><span class="p">]</span>
+    <span class="n">kpeaks</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'kpeaks'</span><span class="p">]</span>
     <span class="n">kdt</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
-    <span class="n">delays_raw</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]</span>
+    <span class="n">delays_raw</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'delays'</span><span class="p">]</span>
     <span class="n">delays</span> <span class="o">=</span> <span class="n">delays_raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     
     <span class="n">ylim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">100.</span><span class="p">,</span><span class="mf">200.</span><span class="p">])</span>  <span class="c1"># !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HARD-CODED FOR NOW </span>
@@ -503,8 +503,8 @@
 <div class="viewcode-block" id="makeBasis_StimKernel_exp">
 <a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel_exp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">makeBasis_StimKernel_exp</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span><span class="n">nkt</span><span class="p">):</span>
-    <span class="n">ks</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;ks&#39;</span><span class="p">]</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'ks'</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">kbasprs</span><span class="p">[</span><span class="s1">'b'</span><span class="p">]</span>
     <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nkt</span><span class="p">)</span>
     <span class="n">kbasis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nkt</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)))</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)):</span>
