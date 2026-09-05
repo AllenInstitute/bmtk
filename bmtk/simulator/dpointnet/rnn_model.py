@@ -89,7 +89,7 @@ class RNN:
             self.cell_cls = cell_models[cell_cls]
         else:
             self.cell_cls = cell_cls
-        
+
         self.cell_params = cell_params
         self._components = {}
         self._node_populations = {}
@@ -106,8 +106,7 @@ class RNN:
         self._built_recurrent_net = None
 
         self._model_built = False
-        
-        
+
         self._input_networks = {}  # 
         self._inputs_order = []
         self._inputs_dict = None
@@ -189,7 +188,7 @@ class RNN:
 
     def get_input_network(self, population_name):
         return self._input_networks[population_name]
-    
+
     # @property
     # def inputs(self):
     #     if self._inputs_dict is None:
@@ -285,7 +284,7 @@ class RNN:
                 raise ValueError(f'Multiple input networks with name {in_net.name}; {self._input_networks[in_net.name].file_path}, {in_net.file_path}')
             self._input_networks[in_net.name] = in_net
     '''
-    
+
     @property
     def cell(self):
         if self._cell is None:
@@ -316,7 +315,7 @@ class RNN:
     def recurrent_network(self):
         if self._built_recurrent_net:
             return self._built_recurrent_net
-        
+
         for network in self._recurrent_networks.values():
             self._built_recurrent_net = network.to_dict()
 
@@ -390,7 +389,9 @@ class RNN:
         # what makes the loop-invariant connectivity-variable reads be hoisted out of the RNN
         # while_loop instead of stacked per timestep (the cause of full-network OOM). Mirrors
         # the reference V1_GLIF_model, which builds create_model() within strategy.scope().
-        cell_params = {} if self.cell_params is None else self.cell_params
+        cell_params = {} if self.cell_params is None else dict(self.cell_params)
+        if issubclass(self.cell_cls, GLIF3Cell):
+            cell_params.setdefault('batch_size', _batch_size)
         with self.strategy.scope():
             self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
             self.zero_state, state_names = self._cell.zero_state(self.batch_size, self.dtype, with_names=True)
@@ -439,11 +440,53 @@ class RNN:
         return inputs
 
     def _build_extractor_model(self):
-        rnn_out, rnn_state = self._split_rnn_layer_output(self.model.get_layer('rsnn').output)
-        return tf.keras.Model(
-            inputs=self.model.inputs,
-            outputs=list(rnn_out) + list(rnn_state)
+        rnn_out, rnn_state = self._split_rnn_layer_output(
+            self.model.get_layer("rsnn").output
         )
+        initial_noise_step = next(
+            (
+                value
+                for value in self.model.inputs
+                if value.name.split(":", 1)[0].endswith("noise_step0")
+            ),
+            None,
+        )
+        rnn_state = self._complete_noise_state_output(
+            rnn_state, self.model.inputs[0], initial_noise_step
+        )
+        return tf.keras.Model(
+            inputs=self.model.inputs, outputs=list(rnn_out) + list(rnn_state)
+        )
+
+    def _complete_noise_state_output(
+        self, state_outputs, sequence_input, initial_noise_step
+    ):
+        state_outputs = list(state_outputs)
+        if len(state_outputs) == len(self.zero_state):
+            return state_outputs
+        if len(state_outputs) != len(self.zero_state) - 1:
+            raise ValueError(
+                f"RNN returned {len(state_outputs)} states; "
+                f"expected {len(self.zero_state)}."
+            )
+        if initial_noise_step is None:
+            final_noise_step = tf.keras.layers.Lambda(
+                lambda value: tf.fill(
+                    [tf.shape(value)[0]],
+                    tf.cast(tf.shape(value)[1], tf.int32),
+                ),
+                output_shape=(),
+                dtype=tf.int32,
+                name="final_noise_step",
+            )(sequence_input)
+        else:
+            final_noise_step = tf.keras.layers.Lambda(
+                lambda values: values[0] + tf.cast(tf.shape(values[1])[1], tf.int32),
+                output_shape=(),
+                name="final_noise_step",
+            )([initial_noise_step, sequence_input])
+        state_outputs.insert(6, final_noise_step)
+        return state_outputs
 
     def _split_rnn_layer_output(self, rnn_layer_output):
         if isinstance(rnn_layer_output, (list, tuple)):
@@ -457,13 +500,33 @@ class RNN:
             return list(sequence_output), list(state_output)
 
         output_shape = sequence_output.shape
-        output_rank = getattr(output_shape, 'rank', None)
+        output_rank = getattr(output_shape, "rank", None)
         if output_rank is None and output_shape is not None:
             output_rank = len(output_shape)
 
-        n_neurons = getattr(self._cell, '_n_neurons', None)
-        if n_neurons is not None and output_rank is not None and output_rank >= 3 and output_shape[-1] == n_neurons * 2:
-            return [sequence_output[..., :n_neurons], sequence_output[..., n_neurons:]], list(state_output)
+        n_neurons = getattr(self._cell, "_n_neurons", None)
+        if (
+            n_neurons is not None
+            and getattr(self._cell, "_track_voltage_penalty", False)
+            and not getattr(self._cell, "_return_voltage_sequences", True)
+            and output_rank is not None
+            and output_rank >= 3
+            and output_shape[-1] == n_neurons + 1
+        ):
+            return [
+                sequence_output[..., :n_neurons],
+                sequence_output[..., n_neurons],
+            ], list(state_output)
+        if (
+            n_neurons is not None
+            and output_rank is not None
+            and output_rank >= 3
+            and output_shape[-1] == n_neurons * 2
+        ):
+            return [
+                sequence_output[..., :n_neurons],
+                sequence_output[..., n_neurons:],
+            ], list(state_output)
 
         if output_rank is not None and output_rank >= 4 and output_shape[0] == 2:
             return [sequence_output[0], sequence_output[1]], list(state_output)
@@ -472,8 +535,7 @@ class RNN:
 
         return [sequence_output], list(state_output)
 
-    @staticmethod
-    def _unpack_extractor_output(flat_output):
+    def _unpack_extractor_output(self, flat_output):
         flat_output = tuple(flat_output)
         return ((flat_output[0], flat_output[1]),) + flat_output[2:]
 
@@ -481,6 +543,10 @@ class RNN:
         if self.extractor_model is None:
             with self.strategy.scope():
                 self.extractor_model = self._build_extractor_model()
+        advance_noise_seed = getattr(self.cell, "advance_noise_seed", None)
+        if advance_noise_seed is not None:
+            advance_noise_seed()
+        initial_state = self.cell.reset_voltage_penalty_state(initial_state)
         return self._unpack_extractor_output(
             self.extractor_model(self.model_inputs(spikes, initial_state))
         )
@@ -488,7 +554,7 @@ class RNN:
     @property
     def rsnn_layer(self):
         if self._rsnn_layer is None:
-            self._rsnn_layer = self.model.get_layer('rsnn')
+            self._rsnn_layer = self.model.get_layer("rsnn")
 
         return self._rsnn_layer
 
@@ -503,10 +569,10 @@ class RNN:
                 full_inputs = rnn_inputs
                 state_inputs = []
             state_rnn = tf.keras.layers.RNN(
-                self.rsnn_layer.cell, 
-                return_sequences=False, 
-                return_state=True, 
-                name='rsnn_state'
+                self.rsnn_layer.cell,
+                return_sequences=False,
+                return_state=True,
+                name="rsnn_state",
             )
             # Preserve heterogeneous state dtypes for the state rollout path as well.
             state_rnn._autocast = False
@@ -514,9 +580,21 @@ class RNN:
                 state_out = state_rnn(full_inputs, initial_state=state_inputs)
             else:
                 state_out = state_rnn(full_inputs)
+            final_state = self._complete_noise_state_output(
+                state_out[1:],
+                full_inputs,
+                next(
+                    (
+                        value
+                        for value in self.model.inputs
+                        if value.name.split(":", 1)[0].endswith("noise_step0")
+                    ),
+                    None,
+                ),
+            )
             self._state_only_model = tf.keras.Model(
                 inputs=self.model.inputs,
-                outputs=state_out[1:]
+                outputs=final_state
             )
 
         return self._state_only_model
@@ -548,13 +626,13 @@ class RNN:
         inference_obj = None
         if inference is not None or spikes is None or initial_state is None:
             inference_obj = self._select_inference(inference)
-        
+
         # Fetch the spikes
         if spikes is None:
             if inference_obj is None:
                 raise ValueError('No inference input is configured. Pass spikes or add an inference block.')
             spikes, y = inference_obj.data_itr.next_spikes()
-        
+
         elif isinstance(spikes, DataIterator):
             spikes, y = spikes.next_spikes()
 
@@ -565,7 +643,7 @@ class RNN:
         if initial_state is None:
             if inference_obj is not None:
                 initial_state = inference_obj.get_initial_state()
-       
+
         # Get version of model for pass-through only and reutrns spikes, voltages, and model states
         # Run inputs through the model; fetch, package and return results
         out = self.run_extractor(spikes, initial_state)
@@ -636,7 +714,7 @@ class RNN:
         if not self._model_built:
             io.log_info('Building Model.')
             self.build()
-        
+
         if self.training_engine:
             io.log_info('Training Model.')
             self.train()
@@ -656,7 +734,6 @@ class RNN:
 
         io.log_info('RNN.run() completed.')
         return results
-
 
     def add_init_state(self, mod):
         self._init_state = mod
@@ -749,7 +826,7 @@ class RNN:
             if isinstance(params, str):
                 mod = network.parent.get_init_state(name=name)
                 network.add_initial_state(mod)
-            
+
             else:
                 enabled = params.get('enabled', True)
                 if not enabled:
@@ -765,10 +842,10 @@ class RNN:
 
     def parse_input_mods_from_config(self, json_config):
         inputs_modules_lu = InputModules()
-        
+
         mod_params_list = []
         # mod_names, mod_params = [], []
-        
+
         mod_instances = []
         if json_config is None or len(json_config) == 0:
             return []
@@ -839,12 +916,9 @@ class RNN:
         else:
             return list(self._recurrent_networks.values())[0]
 
-
-
     @property
     def input_populations(self):
         pass
-
 
     @classmethod
     def from_config(cls, config, **kwargs):        
@@ -861,7 +935,7 @@ class RNN:
         #     network.add_component(name, value)
 
         # cell_type = config.get('RNN_cell', GLIF3Cell)
-        
+
         cell_model_params = dict(config['rnn_cell_params'])
         cell_model_str = cell_model_params.pop('cell_model')
         basis_weights_file = cell_model_params.pop('basis_weights_file', None)
@@ -888,16 +962,19 @@ class RNN:
                 raise ValueError(f'Multiple input networks with name {in_net.name}; {network._input_networks[in_net.name].file_path}, {in_net.file_path}')
             network._input_networks[in_net.name] = in_net
         """
-            
+
         components_dirs = dict(config.components) if config.components else {}
         if basis_weights_file is not None:
-            existing_basis_weights_file = components_dirs.get('basis_weights_file')
-            if existing_basis_weights_file is not None and existing_basis_weights_file != basis_weights_file:
+            existing_basis_weights_file = components_dirs.get("basis_weights_file")
+            if (
+                existing_basis_weights_file is not None
+                and existing_basis_weights_file != basis_weights_file
+            ):
                 raise ValueError(
-                    'Conflicting basis_weights_file values in rnn_cell_params and components: '
-                    f'{basis_weights_file} != {existing_basis_weights_file}'
+                    "Conflicting basis_weights_file values in rnn_cell_params and components: "
+                    f"{basis_weights_file} != {existing_basis_weights_file}"
                 )
-            components_dirs['basis_weights_file'] = basis_weights_file
+            components_dirs["basis_weights_file"] = basis_weights_file
 
         if components_dirs:
             for net in network._recurrent_networks.values():
@@ -905,7 +982,9 @@ class RNN:
             for net in network._input_networks.values():
                 net.add_components_dirs(components_dirs)
 
-        for input_name, input_mod in network.parse_input_mods_from_config(config.inputs):
+        for input_name, input_mod in network.parse_input_mods_from_config(
+            config.inputs
+        ):
             network.add_input(name=input_name, mod=input_mod)
             # network._inference_inputs[input_name] = input_mod
 
@@ -938,11 +1017,9 @@ class RNN:
             mod_cls = StateModules().get_init_state_module(init_state_params['module'])
             network.add_init_state(mod_cls(rnn=network, **init_state_params))
 
-
         # init_states = config.get('initial_states', None)
         # if init_states:
         #     network.parse_initial_states_from_config(init_states)
-
 
         train_dict = config.get('training', None)
         if train_dict:                        
@@ -950,6 +1027,9 @@ class RNN:
             steps_per_epoch = train_dict['steps_per_epoch']
             training_approach = train_dict.get('training_approach', None)
             gradient_checkpointing = train_dict.get('gradient_checkpointing', False)
+            gradient_checkpoint_chunk_size = train_dict.get(
+                'gradient_checkpoint_chunk_size', 25
+            )
             regenerate_initial_state_each_epoch = train_dict.get('regenerate_initial_state_each_epoch', True)
             training_engine = network.set_training(
                 rnn=network,
@@ -957,6 +1037,7 @@ class RNN:
                 steps_per_epoch=steps_per_epoch,
                 training_approach=training_approach,
                 gradient_checkpointing=gradient_checkpointing,
+                gradient_checkpoint_chunk_size=gradient_checkpoint_chunk_size,
                 regenerate_initial_state_each_epoch=regenerate_initial_state_each_epoch
             )
 
@@ -971,7 +1052,7 @@ class RNN:
                 raise ValueError('Learning rate must by a dictionary or number.')
 
             training_engine.set_learning_rate(learning_rate)
-            
+
             # Note: This won't immedietly call optimizer.build() - that must be done only at the
             # begging of training.
             optimizer_params = train_dict['optimizer']
@@ -1007,34 +1088,49 @@ class RNN:
             ## process "callbacks" class
             callback_params = train_dict.get('callbacks', False)
             if callback_params:
-                cb_name = callback_params.pop('class')
+                cb_name = callback_params.pop("class")
                 cb_class = callback_classes[cb_name]
                 callbacks = cb_class(rnn=network, **callback_params)
                 training_engine.set_callbacks(callbacks=callbacks)
 
             shared_loss_cache = {}
-            for train_params_dict in train_dict['parameters']:
-                pname = train_params_dict['name']
-                pbatch_size = train_dict.get('batch_size', network.batch_size)
-                pseq_len = train_dict.get('seq_len', network.seq_len)
-                training_params = training_engine.add_parameters(pname, batch_size=pbatch_size, seq_len=pseq_len)
-                
-                ## For each "parameter" process the spike input modules
-                for input_name, input_mod in network.parse_input_mods_from_config(train_params_dict['inputs']):
-                    training_params.add_inputs_generator(name=input_name, input_mod=input_mod)
+            parameter_specs = []
+            for train_params_dict in train_dict["parameters"]:
+                pname = train_params_dict["name"]
+                pbatch_size = train_params_dict.get(
+                    "batch_size", train_dict.get("batch_size", network.batch_size)
+                )
+                pseq_len = train_params_dict.get(
+                    "seq_len", train_dict.get("seq_len", network.seq_len)
+                )
+                training_params = training_engine.add_parameters(
+                    pname, batch_size=pbatch_size, seq_len=pseq_len
+                )
+                parameter_specs.append((train_params_dict, training_params))
 
+                ## For each "parameter" process the spike input modules
+                for input_name, input_mod in network.parse_input_mods_from_config(
+                    train_params_dict["inputs"]
+                ):
+                    training_params.add_inputs_generator(
+                        name=input_name, input_mod=input_mod
+                    )
+
+            for train_params_dict, training_params in parameter_specs:
                 ## For each "parameter" process the loss functions
-                for loss_fnc_name, loss_fnc_params in train_params_dict['loss_functions'].items():
-                    if not loss_fnc_params.get('enabled', True):
+                for loss_fnc_name, loss_fnc_params in train_params_dict[
+                    "loss_functions"
+                ].items():
+                    if not loss_fnc_params.get("enabled", True):
                         continue
-                    loss_mod = LossModules().get_module(loss_fnc_params['module'])
+                    loss_mod = LossModules().get_module(loss_fnc_params["module"])
                     loss_obj = None
-                    if loss_fnc_params['module'] == 'EMDWeightRegularization':
+                    if loss_fnc_params["module"] == "EMDWeightRegularization":
                         cache_key = tuple(
                             sorted(
                                 (key, repr(value))
                                 for key, value in loss_fnc_params.items()
-                                if key != 'enabled'
+                                if key != "enabled"
                             )
                         )
                         loss_obj = shared_loss_cache.get(cache_key)
@@ -1046,13 +1142,11 @@ class RNN:
                         loss_obj = loss_mod(rnn=network, **loss_fnc_params)
 
                     training_params.add_loss_function(
-                        name=loss_fnc_name,
-                        loss_mod=loss_obj
+                        name=loss_fnc_name, loss_mod=loss_obj
                     )
 
-        inference_dict = config.get('inference', None)
+        inference_dict = config.get("inference", None)
         if inference_dict:
             cls._add_inferences_from_config(network, config, inference_dict)
-
 
         return network

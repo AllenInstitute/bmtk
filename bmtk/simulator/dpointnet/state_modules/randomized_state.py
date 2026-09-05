@@ -32,14 +32,14 @@ class RandomizedStateModule:
         self.params = params
         # self._rnn = kwargs.get('rnn', None)
         self._function_ptrs = None
-        
+
     def _build_funcs(self, func_opts):
         fnc_name = func_opts['random_func']
         dtype = func_opts.get('dtype', self._rnn.dtype)
         if isinstance(dtype, str):
             dtype = tf.dtypes.as_dtype(dtype)
         shape = func_opts.get('shape', ())
-       
+
         if fnc_name == 'binary':
             return partial(binary, shape=shape, dtype=dtype, firing_rate=func_opts['firing_rate'], dt=self._rnn.dt)
 
@@ -59,29 +59,53 @@ class RandomizedStateModule:
     def function_pointers(self):
         if self._function_ptrs is None:
             if self._rnn is None:
-                raise ValueError(f'{self.__class__}: Please set rnn before attempting to get params')
-            
+                raise ValueError(
+                    f"{self.__class__}: Please set rnn before attempting to get params"
+                )
+
             zs_params, state_names = self._rnn.cell.zero_state(
-                batch_size=self._rnn.batch_size, 
-                dtype=self._rnn.dtype, 
-                with_names=True
+                batch_size=self._rnn.batch_size, dtype=self._rnn.dtype, with_names=True
             )
-            
+
             rand_funcs = []
             if isinstance(self.params, dict):
-                if set(state_names) > set(self.params.keys()):
-                    missing = set(state_names) - set(self.params.keys())
-                    raise ValueError(f'{self.__class__}: The following state parameters are missing from RNN Column class {self._rnn.cell.__class__}; {missing}.')
+                missing = set(state_names) - set(self.params.keys())
+                required_missing = missing - {"noise_step0"}
+                if required_missing:
+                    raise ValueError(
+                        f"{self.__class__}: The following state parameters are missing from RNN Column class {self._rnn.cell.__class__}; {missing}."
+                    )
                 elif set(state_names) < set(self.params.keys()):
                     extra = set(self.params.keys()) - set(state_names)
-                    io.log_warning(f'{self.__class__.__name__}: Contains extra parameters that are not used by {self._rnn.cell.__class__.__name__}: {list(extra)}')
+                    io.log_warning(
+                        f"{self.__class__.__name__}: Contains extra parameters that are not used by {self._rnn.cell.__class__.__name__}: {list(extra)}"
+                    )
 
                 for name in state_names:
-                    rand_funcs.append(self._build_funcs(self.params[name]))
+                    if name == "noise_step0" and name not in self.params:
+                        rand_funcs.append(
+                            partial(
+                                constant,
+                                shape=(),
+                                dtype=tf.int32,
+                                value=0,
+                            )
+                        )
+                    else:
+                        rand_funcs.append(self._build_funcs(self.params[name]))
 
             else:
                 for func_params in self.params:
                     rand_funcs.append(self._build_funcs(func_params))
+                if len(rand_funcs) == len(state_names) - 1:
+                    rand_funcs.append(
+                        partial(
+                            constant,
+                            shape=(),
+                            dtype=tf.int32,
+                            value=0,
+                        )
+                    )
 
             self._function_ptrs = rand_funcs
 

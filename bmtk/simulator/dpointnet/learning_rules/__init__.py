@@ -1,5 +1,13 @@
-from .base import BPTTLearningRule, LearningRule, LearningRuleObservations, WeightSurface
+from .base import (
+    BPTTLearningRule,
+    LearningRule,
+    LearningRuleObservations,
+    WeightSurface,
+)
 from .eprop import EPropLearningRule
+from .local import LocalRateHomeostasisLearningRule, PairSTDPLearningRule
+from .modulated import ModulatedEligibilityLearningRule
+from .neuron_local import NeuronLocalThreeFactorLearningRule
 from .three_factor import ThreeFactorLearningRule
 
 
@@ -12,7 +20,7 @@ class LearningRules:
         return cls._instance
 
     def __init__(self):
-        if getattr(self, '_initialized', False):
+        if getattr(self, "_initialized", False):
             return
         self._rules = {}
         self._initialized = True
@@ -25,8 +33,10 @@ class LearningRules:
 
     def get_rule(self, name):
         if name not in self._rules:
-            available = ', '.join(sorted(self._rules))
-            raise ValueError(f'Unknown learning rule "{name}". Available rules: {available}.')
+            available = ", ".join(sorted(self._rules))
+            raise ValueError(
+                f'Unknown learning rule "{name}". Available rules: {available}.'
+            )
         return self._rules[name]
 
 
@@ -38,9 +48,14 @@ def register_learning_rule(_cls=None, *, name=None, overwrite=True):
     def decorator(cls):
         add_learning_rule(cls, name=name, overwrite=overwrite)
         return cls
+
     return decorator if _cls is None else decorator(_cls)
 
 
 LearningRules().add_rule(BPTTLearningRule, overwrite=False)
 LearningRules().add_rule(EPropLearningRule, overwrite=False)
 LearningRules().add_rule(ThreeFactorLearningRule, overwrite=False)
+LearningRules().add_rule(PairSTDPLearningRule, overwrite=False)
+LearningRules().add_rule(LocalRateHomeostasisLearningRule, overwrite=False)
+LearningRules().add_rule(ModulatedEligibilityLearningRule, overwrite=False)
+LearningRules().add_rule(NeuronLocalThreeFactorLearningRule, overwrite=False)

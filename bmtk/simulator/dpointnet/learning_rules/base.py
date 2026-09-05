@@ -23,13 +23,14 @@ class LearningRuleObservations:
     spike_learning_signal: tf.Tensor
     voltage_learning_signal: tf.Tensor
     direct_weight_gradients: tuple
+    targets: object = None
 
 
 class LearningRule(tf.Module):
     """Interface for DPointNet weight-update strategies."""
 
     uses_bptt = False
-    supported_training_approaches = ('single',)
+    supported_training_approaches = ("single",)
 
     def __init__(self, name=None):
         super().__init__(name=name)
@@ -65,18 +66,23 @@ class LearningRule(tf.Module):
         pass
 
     def get_config(self):
-        return {'name': self.module()}
+        return {"name": self.module()}
 
 
 class BPTTLearningRule(LearningRule):
     """Marker strategy retaining DPointNet's existing gradient path."""
 
     uses_bptt = True
-    supported_training_approaches = ('single', 'parallel', 'series', 'series_accumulate')
+    supported_training_approaches = (
+        "single",
+        "parallel",
+        "series",
+        "series_accumulate",
+    )
 
     @classmethod
     def module(cls):
-        return 'bptt'
+        return "bptt"
 
     def build(self, rnn):
         self.rnn = rnn
@@ -85,4 +91,4 @@ class BPTTLearningRule(LearningRule):
         return ()
 
     def compute_updates(self, observations):
-        raise RuntimeError('BPTT updates are computed by TrainingEngine.')
+        raise RuntimeError("BPTT updates are computed by TrainingEngine.")

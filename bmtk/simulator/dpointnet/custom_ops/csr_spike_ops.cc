@@ -11,6 +11,8 @@ REGISTER_OP("DpointnetCsrReorder")
     .Attr("T: {half, float}")
     .Attr("Tindex: {uint32, int64}")
     .Attr("n_edges: int >= 0")
+  .Attr("n_sources: int >= 1")
+  .Attr("n_pairs: int >= 0")
     .Output("reordered: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle values;
@@ -25,11 +27,13 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Input("metadata: resource")
     .Input("weights: T")
     .Input("basis: T")
+    .Input("spike_gradient_scale: T")
     .Attr("T: {half, float}")
     .Attr("Tmaster: {half, float}")
     .Attr("Tindex: {uint32, int64}")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
+    .Attr("n_pairs: int >= 0")
     .Attr("compute_spike_gradient: bool")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
@@ -37,6 +41,9 @@ REGISTER_OP("DpointnetCsrSpikeForward")
       ShapeHandle basis;
       TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
       TF_RETURN_IF_ERROR(context->WithRank(context->input(4), 2, &basis));
+        ShapeHandle spike_gradient_scale;
+        TF_RETURN_IF_ERROR(context->WithRank(
+          context->input(5), 0, &spike_gradient_scale));
       int n_post;
       TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
       DimensionHandle flattened_batch;
@@ -53,10 +60,12 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
     .Input("metadata: resource")
     .Input("weights: T")
     .Input("basis: T")
+    .Input("spike_gradient_scale: T")
     .Attr("T: {half, float}")
     .Attr("Tindex: {uint32, int64}")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
+    .Attr("n_pairs: int >= 0")
     .Output("spike_grad: T")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
@@ -64,6 +73,9 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
       ShapeHandle weights;
       TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
       TF_RETURN_IF_ERROR(context->WithRank(context->input(3), 1, &weights));
+        ShapeHandle spike_gradient_scale;
+        TF_RETURN_IF_ERROR(context->WithRank(
+          context->input(5), 0, &spike_gradient_scale));
       context->set_output(0, spikes);
       context->set_output(1, weights);
       return absl::OkStatus();
@@ -78,6 +90,7 @@ REGISTER_OP("DpointnetCsrWeightGrad")
     .Attr("Tindex: {uint32, int64}")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
+    .Attr("n_pairs: int >= 0")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle edge_ids;

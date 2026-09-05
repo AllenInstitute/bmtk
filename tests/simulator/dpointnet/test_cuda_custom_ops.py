@@ -15,7 +15,9 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
 )
 from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     _fused_cuda_dtype_error,
+    _resolve_pair_projection,
     _validate_fused_cuda_option,
+    _validate_pair_projection_option,
 )
 
 
@@ -54,13 +56,19 @@ def _metadata_values(connectivity):
 
 
 def test_build_csr_connectivity_groups_edges_by_source():
-    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 3, 2, 2)
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
+    )
     metadata = _metadata_values(connectivity).numpy()
 
     np.testing.assert_array_equal(metadata[:4], [0, 1, 0, 1])
     np.testing.assert_array_equal(metadata[4:8], [0, 1, 1, 0])
     np.testing.assert_array_equal(metadata[8:12], [0, 2, 3, 4])
-    np.testing.assert_array_equal(metadata[12:], [0, 1, 3, 2])
+    np.testing.assert_array_equal(metadata[12:16], [0, 1, 3, 2])
+    np.testing.assert_array_equal(metadata[16:20], [0, 3, 1, 2])
+    np.testing.assert_array_equal(metadata[20:24], [0, 0, 1, 1])
+    np.testing.assert_array_equal(metadata[24:], [0, 1, 0, 1])
+    assert connectivity['n_pairs'] == 4
     assert connectivity['index_dtype'] == 'uint32'
     assert _metadata_values(connectivity).dtype == tf.uint32
 
@@ -149,6 +157,65 @@ def test_fused_cuda_option_rejects_non_boolean_lookalikes(value):
         _validate_fused_cuda_option(value)
 
 
+@pytest.mark.parametrize(
+    'value',
+    [
+        'auto',
+        np.str_('auto'),
+        b'auto',
+        np.bytes_('auto'),
+        np.array('auto'),
+        np.array(b'auto'),
+        True,
+        False,
+    ],
+)
+def test_pair_projection_option_accepts_auto_and_booleans(value):
+    expected = value.item() if isinstance(value, np.ndarray) else value
+    if isinstance(expected, bytes):
+        expected = expected.decode('utf-8')
+    assert _validate_pair_projection_option(value) == expected
+
+
+@pytest.mark.parametrize('value', [0, 1, np.bool_(False), np.bool_(True), 'yes'])
+def test_pair_projection_option_rejects_lookalikes(value):
+    with pytest.raises(ValueError, match='use_pair_projection'):
+        _validate_pair_projection_option(value)
+
+
+@pytest.mark.parametrize(
+    ('option', 'fused_cuda', 'batch_size', 'n_syn_basis', 'expected'),
+    [
+        ('auto', True, 32, 4, True),
+        ('auto', True, 5, 4, False),
+        ('auto', True, 32, 5, False),
+        ('auto', False, 32, 4, False),
+        (False, True, 32, 4, False),
+        (False, False, 5, 5, False),
+        (True, True, 32, 4, True),
+    ],
+)
+def test_pair_projection_policy_resolution(
+        option, fused_cuda, batch_size, n_syn_basis, expected):
+    assert _resolve_pair_projection(
+        option, fused_cuda, batch_size, n_syn_basis
+    ) is expected
+
+
+@pytest.mark.parametrize(
+    ('fused_cuda', 'batch_size', 'n_syn_basis', 'message'),
+    [
+        (False, 32, 4, 'fused CUDA'),
+        (True, 5, 4, 'batch_size is 5'),
+        (True, 32, 5, 'basis has 5 columns'),
+    ],
+)
+def test_forced_pair_projection_rejects_incompatible_models(
+        fused_cuda, batch_size, n_syn_basis, message):
+    with pytest.raises(ValueError, match=message):
+        _resolve_pair_projection(True, fused_cuda, batch_size, n_syn_basis)
+
+
 def test_fused_cuda_dtype_error_describes_unsupported_policy():
     assert _fused_cuda_dtype_error(tf.float16, tf.float32) is None
     message = _fused_cuda_dtype_error(tf.bfloat16, tf.float32)
@@ -235,6 +302,96 @@ def test_fused_recurrent_currents_match_forward_and_gradients(dtype, spike_value
     )
 
     tolerance = 2e-3 if dtype == tf.float16 else 1e-6
+    np.testing.assert_allclose(
+        fused.numpy(), reference.numpy(), rtol=tolerance, atol=tolerance
+    )
+    for fused_gradient, reference_gradient in zip(fused_gradients, reference_gradients):
+        np.testing.assert_allclose(
+            fused_gradient.numpy(),
+            reference_gradient.numpy(),
+            rtol=tolerance,
+            atol=tolerance,
+        )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_fused_recurrent_gradient_scale_only_affects_spike_gradient():
+    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 3, 2, 2)
+    master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+    csr_weights = reorder_csr_values(master_weights, connectivity)
+    basis = tf.constant([[1.0, 0.5], [0.25, 2.0]], dtype=tf.float32)
+
+    def currents_and_gradients(scale):
+        spikes = tf.Variable([[1.0, 0.0, 2.0], [0.0, 3.0, 0.0]], dtype=tf.float32)
+        with tf.GradientTape() as tape:
+            currents = fused_spike_currents(
+                spikes,
+                master_weights,
+                csr_weights,
+                connectivity,
+                basis,
+                n_post=2,
+                compute_spike_gradient=True,
+                spike_gradient_scale=scale,
+            )
+            loss = tf.reduce_sum(currents)
+        gradients = tape.gradient(loss, (spikes, master_weights))
+        return currents.numpy(), tuple(gradient.numpy() for gradient in gradients)
+
+    full = currents_and_gradients(1.0)
+    dampened = currents_and_gradients(0.25)
+
+    np.testing.assert_allclose(dampened[0], full[0])
+    np.testing.assert_allclose(dampened[1][0], full[1][0] * 0.25)
+    np.testing.assert_allclose(dampened[1][1], full[1][1])
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_pair_projected_batch32_matches_forward_and_gradients(dtype):
+    batch_size = 32
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
+    )
+    master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+    csr_weights = reorder_csr_values(tf.cast(master_weights, dtype), connectivity)
+    basis = tf.constant(
+        [[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]],
+        dtype=dtype,
+    )
+    spike_values = np.zeros((batch_size, 3), dtype=np.float32)
+    spike_values[::2, 0] = 1.0
+    spike_values[1::3, 1] = 2.0
+    spike_values[2::5, 2] = 3.0
+    spikes = tf.Variable(spike_values, dtype=dtype)
+    loss_weights = tf.reshape(
+        tf.cast(tf.range(1, batch_size * 2 * 4 + 1), dtype),
+        [batch_size * 2, 4],
+    ) / tf.cast(batch_size * 2 * 4, dtype)
+
+    with tf.GradientTape() as fused_tape:
+        fused = fused_spike_currents(
+            spikes,
+            master_weights,
+            csr_weights,
+            connectivity,
+            basis,
+            n_post=2,
+            compute_spike_gradient=True,
+        )
+        fused_loss = tf.reduce_sum(fused * loss_weights)
+    fused_gradients = fused_tape.gradient(
+        fused_loss, [spikes, master_weights]
+    )
+
+    with tf.GradientTape() as reference_tape:
+        reference = _reference_currents(spikes, master_weights, basis)
+        reference_loss = tf.reduce_sum(reference * loss_weights)
+    reference_gradients = reference_tape.gradient(
+        reference_loss, [spikes, master_weights]
+    )
+
+    tolerance = 2e-2 if dtype == tf.float16 else 1e-4
     np.testing.assert_allclose(
         fused.numpy(), reference.numpy(), rtol=tolerance, atol=tolerance
     )
