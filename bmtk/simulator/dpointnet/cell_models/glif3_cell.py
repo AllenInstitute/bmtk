@@ -450,35 +450,27 @@ def straight_through_dampen(x, dampening):
 
 @tf.custom_gradient
 def _range_voltage_penalty_mean(voltage, inverse_n_neurons):
-    centered = voltage - tf.cast(0.5, voltage.dtype)
-    outside = tf.nn.relu(tf.abs(centered) - tf.cast(0.5, voltage.dtype))
-    mean_penalty = (
-        tf.reduce_sum(tf.cast(tf.square(outside), tf.float32), axis=1)
-        * inverse_n_neurons
-    )
-    mean_penalty = tf.cast(mean_penalty, voltage.dtype)
+    centered = tf.cast(voltage, tf.float32) - 0.5
+    outside = tf.nn.relu(tf.abs(centered) - 0.5)
+    mean_penalty = tf.reduce_sum(tf.square(outside), axis=1) * inverse_n_neurons
 
     def grad(dy):
-        factor = tf.cast(2.0, voltage.dtype) * outside * tf.sign(centered)
-        reduction = dy[:, None] * tf.cast(inverse_n_neurons, voltage.dtype)
-        return reduction * factor, None
+        factor = 2.0 * outside * tf.sign(centered)
+        reduction = tf.cast(dy, tf.float32)[:, None] * inverse_n_neurons
+        return tf.cast(reduction * factor, voltage.dtype), None
 
     return mean_penalty, grad
 
 
 @tf.custom_gradient
 def _threshold_voltage_penalty_mean(voltage, inverse_n_neurons):
-    offset = voltage - tf.cast(1.0, voltage.dtype)
-    mean_penalty = (
-        tf.reduce_sum(tf.cast(tf.square(offset), tf.float32), axis=1)
-        * inverse_n_neurons
-    )
-    mean_penalty = tf.cast(mean_penalty, voltage.dtype)
+    offset = tf.cast(voltage, tf.float32) - 1.0
+    mean_penalty = tf.reduce_sum(tf.square(offset), axis=1) * inverse_n_neurons
 
     def grad(dy):
-        factor = tf.cast(2.0, voltage.dtype) * offset
-        reduction = dy[:, None] * tf.cast(inverse_n_neurons, voltage.dtype)
-        return reduction * factor, None
+        factor = 2.0 * offset
+        reduction = tf.cast(dy, tf.float32)[:, None] * inverse_n_neurons
+        return tf.cast(reduction * factor, voltage.dtype), None
 
     return mean_penalty, grad
 
@@ -1328,7 +1320,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
             voltage_penalty = voltage_penalty_mean_step(
                 new_v, self._n_neurons, self._voltage_penalty_mode
             )
-            outputs = tf.concat([new_z, voltage_penalty[:, None]], axis=-1)
+            outputs = tf.concat(
+                [tf.cast(new_z, tf.float32), voltage_penalty[:, None]], axis=-1
+            )
         new_state = (
             new_z_buf,
             new_v,
