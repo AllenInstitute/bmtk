@@ -5,7 +5,6 @@ import numpy as np
 import h5py
 
 
-
 CELL_TYPE_QUERY_MAPPING = {
     "i1H": "L1 Htr3a",
     "e23": "L2/3 Exc",
@@ -27,6 +26,7 @@ CELL_TYPE_QUERY_MAPPING = {
 }
 
 CELL_TYPE_ORDER = tuple(CELL_TYPE_QUERY_MAPPING.values())
+_INT32_MAX = 2**31 - 1
 
 
 def spike_trimming(spikes, pre_delay=50, post_delay=50, trim=True):
@@ -38,6 +38,69 @@ def spike_trimming(spikes, pre_delay=50, post_delay=50, trim=True):
         spikes = spikes[:, pre:, :]
     return spikes
 
+
+def temporal_sum(
+    values, dtype=tf.float32, chunk_size=25, full_tensor_element_limit=_INT32_MAX
+):
+    """Sum over time, chunking only above the GPU indexing limit."""
+    sequence_length = values.shape[1]
+    if sequence_length is None:
+        raise ValueError("Temporal reduction requires a static sequence length.")
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be positive.")
+    element_count = values.shape.num_elements()
+    needs_chunks = element_count is None or element_count > full_tensor_element_limit
+
+    @tf.custom_gradient
+    def sum_with_compact_gradient(input_values):
+        if needs_chunks:
+            counts = tf.add_n(
+                [
+                    tf.reduce_sum(input_values[:, start : start + chunk_size], axis=1)
+                    for start in range(0, sequence_length, chunk_size)
+                ]
+            )
+        else:
+            counts = tf.reduce_sum(input_values, axis=1)
+        counts = tf.cast(counts, dtype)
+
+        def gradient(upstream):
+            upstream = tf.cast(upstream, input_values.dtype)[:, tf.newaxis, :]
+            if not needs_chunks:
+                return tf.broadcast_to(upstream, tf.shape(input_values))
+            return tf.concat(
+                [
+                    tf.broadcast_to(
+                        upstream,
+                        tf.shape(input_values[:, start : start + chunk_size]),
+                    )
+                    for start in range(0, sequence_length, chunk_size)
+                ],
+                axis=1,
+            )
+
+        return counts, gradient
+
+    return sum_with_compact_gradient(values)
+
+
+@tf.function(jit_compile=True)
+def temporal_mean(
+    values, dtype=tf.float32, chunk_size=25, full_tensor_element_limit=_INT32_MAX
+):
+    """Return the global mean, chunking only above the GPU indexing limit."""
+    element_count = values.shape.num_elements()
+    if element_count is not None and element_count <= full_tensor_element_limit:
+        return tf.reduce_mean(tf.cast(values, dtype))
+
+    counts_per_sample = temporal_sum(
+        values,
+        dtype=dtype,
+        chunk_size=chunk_size,
+        full_tensor_element_limit=full_tensor_element_limit,
+    )
+    element_count = tf.size(values, out_type=tf.int64)
+    return tf.reduce_sum(counts_per_sample) / tf.cast(element_count, dtype)
 
 
 def compute_spike_rate_target_loss(rates, target_rates, dtype=tf.float32):
@@ -131,7 +194,6 @@ def huber_quantile_loss(u, tau, kappa, dtype=tf.float32):
     branch_1 = num / (2 * kappa) * tf.square(u)
     branch_2 = num * (abs_u - 0.5 * kappa)
     return tf.where(abs_u <= kappa, branch_1, branch_2)
-
 
 
 def get_pop_names(network, core_radius = None, n_selected_neurons=None, data_dir='', return_node_type_ids=False):
@@ -263,7 +325,6 @@ def pop_name_to_cell_type(pop_name, ignore_l5e_subtypes=False):
     return f"L{layer} {subclass}" 
 
 
-
 def _core_mask_to_numpy(core_mask, n_nodes):
     if core_mask is None:
         return np.ones(n_nodes, dtype=bool)
@@ -275,8 +336,6 @@ def _core_mask_to_numpy(core_mask, n_nodes):
             f"core_mask has length {core_mask.shape[0]}, expected {n_nodes}."
         )
     return core_mask
-
-
 
 
 def get_population_neuron_ids(network, data_dir="GLIF_network", core_mask=None, reindex_selected=False):

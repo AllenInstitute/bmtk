@@ -129,7 +129,7 @@ class LGNGenerator(InputsGeneratorMod):
             'temp_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.temporal.pkl'),
             'spatial_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.spatial.pkl'),
         }
-    
+
 
 def _stateless_seed_pair(seed, salt=0):
     if seed is None:
@@ -180,24 +180,49 @@ def _uniform_scalar(minval, maxval, seed_values=None, rng=None):
 
 
 def _as_scalar_tensor(value, dtype, name):
-    value = tf.cast(value, dtype)
-    value = tf.reshape(value, [])
+    value = tf.convert_to_tensor(value, dtype=dtype)
     return tf.ensure_shape(value, [])
+
+
+def _tensorflow_uniform_scalar(minval, maxval, dtype, seed=None):
+    with tf.device("/CPU:0"):
+        if seed is None:
+            value = tf.random.uniform(
+                shape=[], minval=minval, maxval=maxval, dtype=dtype
+            )
+        else:
+            value = tf.random.stateless_uniform(
+                shape=[], seed=seed, minval=minval, maxval=maxval, dtype=dtype
+            )
+    return float(value.numpy())
 
 
 @tf.function(jit_compile=True)
 def movies_concat(movie, pre_delay, post_delay, dtype=tf.float32):
     # add an gray screen period before and after the movie
-    z1 = tf.zeros((pre_delay, movie.shape[1], movie.shape[2], movie.shape[3]), dtype=dtype)
-    z2 = tf.zeros((post_delay, movie.shape[1], movie.shape[2], movie.shape[3]), dtype=dtype)
+    z1 = tf.zeros(
+        (pre_delay, movie.shape[1], movie.shape[2], movie.shape[3]), dtype=dtype
+    )
+    z2 = tf.zeros(
+        (post_delay, movie.shape[1], movie.shape[2], movie.shape[3]), dtype=dtype
+    )
     videos = tf.concat((z1, movie, z2), 0)
     return videos
 
 
-@tf.function(jit_compile=True) # using jit_compile can cause error with input shapes
-def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, image_duration=100, cpd=0.05,
-                                   temporal_f=2, theta=0, phase=0, contrast=1.0, dtype=tf.float32):
-    '''
+def make_drifting_grating_stimulus(
+    row_size=80,
+    col_size=120,
+    moving_flag=True,
+    image_duration=100,
+    cpd=0.05,
+    temporal_f=2,
+    theta=0,
+    phase=0,
+    contrast=1.0,
+    dtype=tf.float32,
+):
+    """
     Create the grating movie with the desired parameters
     :param t_min: start time in seconds
     :param t_max: end time in seconds
@@ -205,7 +230,7 @@ def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, 
     :param temporal_f: in Hz
     :param theta: orientation angle
     :return: Movie object of grating with desired parameters
-    '''
+    """
     #  Franz's code will accept something larger than 101 x 101 because of the
     #  kernel size.
     # row_size = row_size*2 # somehow, Franz's code only accept larger size; thus, i did the mulitplication
@@ -215,6 +240,11 @@ def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, 
     # t_max = tf.cast(image_duration, tf.float32) / 1000
     image_duration_f = tf.cast(image_duration, dtype=dtype)
     pi = tf.constant(np.pi, dtype=dtype)
+    cpd = _as_scalar_tensor(cpd, dtype, "cpd")
+    temporal_f = _as_scalar_tensor(temporal_f, dtype, "temporal_f")
+    theta = _as_scalar_tensor(theta, dtype, "theta")
+    phase = _as_scalar_tensor(phase, dtype, "phase")
+    contrast = _as_scalar_tensor(contrast, dtype, "contrast")
 
     # assert contrast <= 1, "Contrast must be <= 1"
     # assert contrast > 0, "Contrast must be > 0"
@@ -225,18 +255,26 @@ def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, 
     # 1 degree per pixel; LGN x/y are in pixel coords [0, size-1], so avoid linspace endpoint overshoot.
     # If you ever set physical_spacing != 1, you’ll need to rescale LGN x,y or change the stimulus grid size to keep alignment.
     # Otherwise, the movie shape and LGN coordinates will no longer match.
-    physical_spacing = 1.0 # 1 degree, fixed for now. tf version lgn model need this to keep true cpd;
+    physical_spacing = (
+        1.0  # 1 degree, fixed for now. tf version lgn model need this to keep true cpd;
+    )
     # row_range = tf.cast(tf.linspace(0.0, row_size, tf.cast(row_size / physical_spacing, tf.int32)), dtype=dtype)
     # col_range = tf.cast(tf.linspace(0.0, col_size, tf.cast(col_size / physical_spacing, tf.int32)), dtype=dtype)
-    row_range = tf.cast(tf.range(0.0, tf.cast(row_size, dtype=tf.int32), delta=int(physical_spacing)), dtype=dtype)
-    col_range = tf.cast(tf.range(0.0, tf.cast(col_size, dtype=tf.int32), delta=int(physical_spacing)), dtype=dtype)
+    row_range = tf.cast(
+        tf.range(0.0, tf.cast(row_size, dtype=tf.int32), delta=int(physical_spacing)),
+        dtype=dtype,
+    )
+    col_range = tf.cast(
+        tf.range(0.0, tf.cast(col_size, dtype=tf.int32), delta=int(physical_spacing)),
+        dtype=dtype,
+    )
     # number_frames_needed = int(round(frame_rate * t_max))
     # number_frames_needed = tf.cast(tf.math.round(frame_rate * t_max), tf.int32)
     # time_range = tf.cast(tf.linspace(0.0, t_max, number_frames_needed), dtype=dtype)
     number_frames_needed = tf.cast(tf.math.round(image_duration_f), tf.int32)
     time_range = tf.cast(tf.range(number_frames_needed), dtype=dtype) / frame_rate
 
-    tt, yy, xx = tf.meshgrid(time_range, row_range, col_range, indexing='ij')
+    tt, yy, xx = tf.meshgrid(time_range, row_range, col_range, indexing="ij")
 
     # theta_rad = tf.constant(np.pi * (180 - theta) / 180.0, dtype=dtype) #Add negative here to match brain observatory angles!
     # phase_rad = tf.constant(np.pi * (180 - phase) / 180.0, dtype=dtype)
@@ -246,32 +284,33 @@ def make_drifting_grating_stimulus(row_size=80, col_size=120, moving_flag=True, 
     xy = xx * tf.cos(theta_rad) + yy * tf.sin(theta_rad)
     data = contrast * tf.sin(2 * pi * (cpd * xy + temporal_f * tt) + phase_rad)
 
-    if moving_flag: # decide whether the gratings drift or they are static
+    if moving_flag:  # decide whether the gratings drift or they are static
         return data
     else:
         return tf.tile(data[0][tf.newaxis, ...], (image_duration, 1, 1))
 
 
 def create_drifting_gratings_generator(
-        lgn_network,
-        seq_len,
-        orientation=None, 
-        temporal_f=2, 
-        cpd=0.04, 
-        contrast=0.8,                             
-        row_size=80, 
-        col_size=120,
-        pre_delay=0, 
-        post_delay=0,
-        current_input=False, 
-        regular=False,
-        bmtk_compat=True,
-        return_firing_rates=False,
-        rotation='ccw',  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
-        billeh_phase=False,
-        dtype=tf.float32,
-        seed=None,
-        phase=None):
+    lgn_network,
+    seq_len,
+    orientation=None,
+    temporal_f=2,
+    cpd=0.04,
+    contrast=0.8,
+    row_size=80,
+    col_size=120,
+    pre_delay=0,
+    post_delay=0,
+    current_input=False,
+    regular=False,
+    bmtk_compat=True,
+    return_firing_rates=False,
+    rotation="ccw",  # match reference V1_GLIF_model default (flags.rotation='ccw'); cw flips drift/orientation vs the OSI-loss tuning-angle convention
+    billeh_phase=False,
+    dtype=tf.float32,
+    seed=None,
+    phase=None,
+):
 
     # lgn = LGN(
     #     network=network,
@@ -293,8 +332,6 @@ def create_drifting_gratings_generator(
     fixed_phase = phase
 
     def _g():
-        if regular:
-            theta = -45  # to make the first one 0
         sample_idx = 0
         while True:
             orientation_seed = None
@@ -312,51 +349,53 @@ def create_drifting_gratings_generator(
                 # Generate randomly, keeping theta as a Tensor to match the reference
                 # stim_dataset.generate_drifting_grating_tuning path.
                 if regular:
-                    theta = (theta + 45) % 360
+                    sample_theta = float((sample_idx * 45) % 360)
                 elif orientation_seed is None:
-                    theta = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
+                    sample_theta = _tensorflow_uniform_scalar(0, 360, dtype)
                 else:
-                    theta = tf.random.stateless_uniform(
-                        shape=[], seed=orientation_seed, minval=0, maxval=360, dtype=dtype)
+                    sample_theta = _tensorflow_uniform_scalar(
+                        0, 360, dtype, seed=orientation_seed
+                    )
             else:
-                theta = orientation[sample_idx % orientation_list_len]
-                # theta = orientation
+                sample_theta = float(orientation[sample_idx % orientation_list_len])
 
-
-            mov_theta = theta if rotation == "cw" else -theta  # flip the sign for ccw
+            movie_theta = sample_theta if rotation == "cw" else -sample_theta
 
             if billeh_phase:
-                mov_theta += 180
-            # Ensure theta is a Tensor to avoid tf.function retracing on Python scalars.
-            mov_theta = tf.cast(mov_theta, dtype)
+                movie_theta += 180
 
             # Generate a random phase (reference-matched stateless schedule)
             if fixed_phase is not None:
-                phase = tf.cast(fixed_phase, dtype)
+                sample_phase = float(fixed_phase)
             elif phase_seed is None:
-                phase = tf.random.uniform(shape=[], minval=0, maxval=360, dtype=dtype)
+                sample_phase = _tensorflow_uniform_scalar(0, 360, dtype)
             else:
-                phase = tf.random.stateless_uniform(
-                    shape=[], seed=phase_seed, minval=0, maxval=360, dtype=dtype)
+                sample_phase = _tensorflow_uniform_scalar(
+                    0, 360, dtype, seed=phase_seed
+                )
+            sample_phase_tensor = tf.convert_to_tensor(sample_phase, dtype=dtype)
+            orientation_target = np.asarray(
+                [sample_theta], dtype=tf.as_dtype(dtype).as_numpy_dtype
+            )
 
             movie = make_drifting_grating_stimulus(
-                row_size=row_size, 
-                col_size=col_size, 
+                row_size=row_size,
+                col_size=col_size,
                 moving_flag=True,
-                image_duration=duration, 
-                cpd=cpd, 
-                temporal_f=temporal_f, 
-                theta=mov_theta,
-                phase=phase, 
-                contrast=contrast, 
-                dtype=dtype
+                image_duration=duration,
+                cpd=cpd,
+                temporal_f=temporal_f,
+                theta=movie_theta,
+                phase=sample_phase_tensor,
+                contrast=contrast,
+                dtype=dtype,
             )
 
             movie = tf.expand_dims(movie, axis=-1)
             # Add an empty gray screen period before and after the movie
             videos = movies_concat(movie, pre_delay, post_delay, dtype=dtype)
             del movie
-            
+
             # process spatial filters
             spatial = lgn_network.spatial_response(videos, bmtk_compat)
             del videos
@@ -364,13 +403,15 @@ def create_drifting_gratings_generator(
             firing_rates = lgn_network.firing_rates_from_spatial(*spatial)
             if return_firing_rates:
                 # yield tf.constant(firing_rates, dtype=dtype, shape=(seq_len, n_input))
-                results = firing_rates, tf.constant(theta, dtype=dtype, shape=(1,))
+                results = firing_rates, orientation_target
 
             else:
                 del spatial
                 # sample rate
                 # assuming dt = 1 ms
-                _p = 1 - tf.exp(-firing_rates / 1000.) # probability of having a spike before dt = 1 ms
+                _p = 1 - tf.exp(
+                    -firing_rates / 1000.0
+                )  # probability of having a spike before dt = 1 ms
                 del firing_rates
                 # _z = tf.cast(fixed_noise < _p, dtype)
                 if current_input:
@@ -379,14 +420,20 @@ def create_drifting_gratings_generator(
                     if spike_seed is None:
                         _z = tf.random.uniform(tf.shape(_p), dtype=dtype) < _p
                     else:
-                        _z = tf.random.stateless_uniform(
-                            tf.shape(_p), seed=spike_seed, dtype=dtype
-                        ) < _p
+                        _z = (
+                            tf.random.stateless_uniform(
+                                tf.shape(_p), seed=spike_seed, dtype=dtype
+                            )
+                            < _p
+                        )
                 del _p
                 results = _z
 
-            # yield _z, tf.constant(theta, dtype=dtype, shape=(1,)), tf.constant(contrast, dtype=dtype, shape=(1,)), tf.constant(duration, dtype=dtype, shape=(1,))
-            yield results, {'orientation': tf.constant(theta, dtype=dtype, shape=(1,)), 'contrast': tf.constant(contrast, dtype=dtype, shape=(1,)), 'duration': tf.constant(duration, dtype=dtype, shape=(1,))}
+            yield results, {
+                "orientation": orientation_target,
+                "contrast": tf.constant(contrast, dtype=dtype, shape=(1,)),
+                "duration": tf.constant(duration, dtype=dtype, shape=(1,)),
+            }
             sample_idx += 1
 
     if return_firing_rates or current_input:

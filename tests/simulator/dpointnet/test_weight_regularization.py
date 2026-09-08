@@ -97,3 +97,46 @@ def test_emd_gradient_flows(patched_conn_types):
     grad = tape.gradient(loss, w)
     assert grad is not None
     assert float(tf.reduce_sum(tf.abs(grad)).numpy()) > 0
+
+
+def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
+    initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0], dtype=np.float32)
+    group_ids = np.array([0, 0, 1, 1, 0, 1], dtype=np.int64)
+    rnn, reg = _make_reg(initial, group_ids)
+    weights = rnn.cell.recurrent_weight_values
+    weights.assign([1.5, -2.5, 5.0, 2.0, -0.5, 2.5])
+
+    with tf.GradientTape() as actual_tape:
+        actual = reg()
+    actual_gradient = actual_tape.gradient(actual, weights)
+
+    with tf.GradientTape() as reference_tape:
+        losses = []
+        for group_id in np.unique(group_ids):
+            indices = np.flatnonzero(group_ids == group_id)
+            current = tf.sort(tf.gather(weights, indices))
+            baseline = tf.constant(np.sort(initial[indices]), tf.float32)
+            losses.append(tf.reduce_mean(tf.abs(current - baseline)))
+        reference = tf.reduce_mean(tf.stack(losses))
+    reference_gradient = reference_tape.gradient(reference, weights)
+
+    np.testing.assert_allclose(actual, reference, rtol=1e-7, atol=1e-7)
+    np.testing.assert_allclose(
+        tf.convert_to_tensor(actual_gradient),
+        tf.convert_to_tensor(reference_gradient),
+        rtol=1e-7,
+        atol=1e-7,
+    )
+
+
+def test_emd_empty_network_returns_connected_zero(patched_conn_types):
+    rnn, reg = _make_reg([], [])
+    weights = rnn.cell.recurrent_weight_values
+
+    with tf.GradientTape() as tape:
+        loss = reg()
+    gradient = tape.gradient(loss, weights)
+
+    assert float(loss.numpy()) == 0.0
+    assert gradient is not None
+    assert gradient.shape == weights.shape

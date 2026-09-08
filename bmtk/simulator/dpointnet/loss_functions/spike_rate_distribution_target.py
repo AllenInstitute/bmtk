@@ -129,15 +129,17 @@ class SpikeRateDistributionTarget:
         #     if self._post_delay is not None and self._post_delay != 0:
         #         spikes = spikes[:, :-self._post_delay, :]
 
-        spikes = loss_utils.spike_trimming(spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim)
+        spikes = loss_utils.spike_trimming(
+            spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+        )
 
-        if spikes.dtype != self._dtype:
-            spikes = tf.cast(spikes, self._dtype)
+        spike_counts = loss_utils.temporal_sum(spikes, dtype=self._dtype)
+        rates = tf.reduce_mean(spike_counts, axis=0)
+        rates /= tf.cast(tf.shape(spikes)[1], self._dtype)
 
-        leading_axes = tf.range(tf.maximum(tf.rank(spikes) - 1, 0))
-        rates = tf.reduce_mean(spikes, axis=leading_axes) # calculate the mean firing rate over time and batch
-
-        reg_loss = loss_utils.compute_spike_rate_target_loss(rates, self._target_rates, dtype=self._dtype)
+        reg_loss = loss_utils.compute_spike_rate_target_loss(
+            rates, self._target_rates, dtype=self._dtype
+        )
         if self._annulus_target_rates is not None:
             annulus_loss = loss_utils.compute_spike_rate_target_loss(
                 rates,
@@ -147,4 +149,3 @@ class SpikeRateDistributionTarget:
             reg_loss += self._annulus_loss_weight * annulus_loss
 
         return reg_loss * self._rate_cost
-    

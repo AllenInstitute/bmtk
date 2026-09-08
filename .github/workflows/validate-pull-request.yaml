@@ -11,6 +11,8 @@ on:
 jobs:
   run-tests:
     runs-on: ${{ matrix.os }}
+    env:
+      BMTK_DPOINTNET_DISABLE_FUSED_CUDA: "1"
     strategy:
       matrix:
         os: [ubuntu-22.04]

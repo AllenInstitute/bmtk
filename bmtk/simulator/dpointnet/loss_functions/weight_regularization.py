@@ -65,7 +65,9 @@ class EMDWeightRegularization:
         # loss is 0 at init regardless of any weight/lr scaling applied in the cell.
         initial_value_np = self._weights.numpy().astype(np.float32).copy()
 
-        group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(np.int64, copy=False)
+        group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(
+            np.int64, copy=False
+        )
         n_groups = int(np.max(group_ids) + 1) if group_ids.size else 0
 
         # Presort the initial values per group so the call only needs to sort the current weights.
@@ -75,22 +77,35 @@ class EMDWeightRegularization:
             sorted_initial_np = np.empty((0,), dtype=np.float32)
         else:
             order_np, row_splits_np = _build_group_order(group_ids, n_groups)
-            sorted_initial_np = _sort_initial_values_by_group(initial_value_np, order_np, row_splits_np)
+            sorted_initial_np = _sort_initial_values_by_group(
+                initial_value_np, order_np, row_splits_np
+            )
 
         order_dtype = tf.int32 if order_np.size <= np.iinfo(np.int32).max else tf.int64
-        order_tf = tf.convert_to_tensor(order_np, dtype=order_dtype)
-        row_splits_tf = tf.convert_to_tensor(row_splits_np, dtype=tf.int32)
-        sorted_initial_tf = tf.convert_to_tensor(sorted_initial_np, dtype=self._dtype)
-
+        self._n_groups = n_groups
         self.num_unique = tf.constant(n_groups, dtype=tf.int32)
-        # Avoids RaggedTensor.from_value_rowids -> DenseBincount (raises under GPU deterministic
-        # mode in TF 2.15); build row_splits directly from per-type counts instead.
-        self._group_indices = tf.RaggedTensor.from_row_splits(order_tf, row_splits_tf, validate=False)
-        self._sorted_initial_values = tf.RaggedTensor.from_row_splits(sorted_initial_tf, row_splits_tf, validate=False)
+        self._group_order = tf.Variable(
+            order_np,
+            dtype=order_dtype,
+            trainable=False,
+            name="emd_group_order",
+        )
+        self._row_splits = tf.Variable(
+            row_splits_np,
+            dtype=tf.int64,
+            trainable=False,
+            name="emd_row_splits",
+        )
+        self._sorted_initial_values = tf.Variable(
+            sorted_initial_np,
+            dtype=self._dtype,
+            trainable=False,
+            name="emd_sorted_initial_values",
+        )
 
     @staticmethod
     def module():
-        return 'EMDWeightRegularization'
+        return "EMDWeightRegularization"
 
     @tf.function(jit_compile=False)  # jit_compile=True uses a lot of memory.
     def _compute(self, x):
@@ -99,10 +114,16 @@ class EMDWeightRegularization:
         if len(x.shape) > 1 and x.shape[1] == 1:
             x = tf.squeeze(x, axis=1)
 
-        emd_losses = tf.TensorArray(self._dtype, size=self.num_unique)
-        for i in tf.range(self.num_unique):
-            x_i = tf.gather(x, self._group_indices[i])
-            y_i = self._sorted_initial_values[i]  # already presorted at init
+        if self._n_groups == 0:
+            return tf.reduce_sum(x) * tf.cast(0.0, self._dtype)
+
+        grouped_x = tf.gather(x, self._group_order)
+        emd_losses = tf.TensorArray(self._dtype, size=self._n_groups)
+        for i in tf.range(self._n_groups):
+            start = self._row_splits[i]
+            end = self._row_splits[i + 1]
+            x_i = grouped_x[start:end]
+            y_i = self._sorted_initial_values[start:end]
             emd = tf.reduce_mean(tf.abs(tf.sort(x_i) - y_i))
             emd_losses = emd_losses.write(i, emd)
         reg_loss = tf.reduce_mean(emd_losses.stack())
