@@ -670,15 +670,21 @@ def test_training_engine_passes_local_and_direct_learning_signals():
     assert float(loss_values["__total_loss"].numpy()) == 19.0
 
 
-def test_keras3_loss_scaling_uses_physical_values_for_local_rule():
+def test_loss_scaling_uses_physical_values_for_local_rule():
     variable = tf.Variable([1.0])
-    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(tf.keras.optimizers.SGD())
+    optimizer = tf.keras.mixed_precision.LossScaleOptimizer(
+        tf.keras.optimizers.SGD(learning_rate=0.1)
+    )
     optimizer.build([variable])
-    scale = tf.cast(optimizer.dynamic_scale, tf.float32)
-    scaled_gradient = tf.constant([2.0]) * scale
+
+    with tf.GradientTape() as tape:
+        loss = tf.reduce_sum(tf.square(variable))
+        scaled_loss = optimizers.scale_loss_for_optimizer(optimizer, loss)
+    scaled_gradient = tape.gradient(scaled_loss, variable)
 
     unscaled = optimizers.unscale_gradients_for_local_rule(optimizer, [scaled_gradient])
     prepared = optimizers.prepare_local_gradients_for_optimizer(optimizer, unscaled)
+    optimizer.apply_gradients(zip(prepared, [variable]))
 
     np.testing.assert_allclose(unscaled[0].numpy(), [2.0])
-    np.testing.assert_allclose(prepared[0].numpy(), scaled_gradient.numpy())
+    np.testing.assert_allclose(variable.numpy(), [0.8])

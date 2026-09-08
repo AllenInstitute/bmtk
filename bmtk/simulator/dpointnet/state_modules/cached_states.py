@@ -39,10 +39,8 @@ class CachedInitState:
 
     @staticmethod
     def _load_pkl(file_path, rnn):
-        init_state = None
-        with open(file_path, "wb") as f:
-            init_state = pkl.load(file_path)
-        return init_state
+        with open(file_path, "rb") as stream:
+            return pkl.load(stream)
 
     @staticmethod
     def _load_npz(file_path, rnn):
