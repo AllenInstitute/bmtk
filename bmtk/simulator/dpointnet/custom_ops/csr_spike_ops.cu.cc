@@ -350,6 +350,94 @@ inline bool SupportsPackedSm120Backward() {
          major * 10 + minor >= 120;
 }
 
+inline uint32 PackedRowSplitCount(int64_t n_rows) {
+  constexpr int64_t kTargetBlocks = 4512;
+  if (n_rows <= 0) {
+    return 1;
+  }
+  const int64_t splits = (kTargetBlocks + n_rows - 1) / n_rows;
+  return static_cast<uint32>(
+      std::min<int64_t>(64, std::max<int64_t>(1, splits)));
+}
+
+__global__ __launch_bounds__(64) void CsrWeightGradPairPackedBatch32Kernel(
+    int64_t n_pre, const Eigen::half* spikes, const float* projected,
+    const uint32* pair_ids, const uint32* edge_ids,
+    const uint32* row_splits, uint32 splits, float* weight_grad) {
+  constexpr int kBatch = 32;
+  constexpr int kPack = 4;
+  constexpr int kWarps = 2;
+  constexpr int kTile = 32;
+  constexpr int kLanesPerEdge = kBatch / kPack;
+  constexpr int kSlots = 32 / kLanesPerEdge;
+  constexpr int kPerSlot = kTile / kSlots;
+  constexpr int kIndexBits = 3;
+  constexpr uint32 kGrain = kWarps * kTile;
+  const int lane = threadIdx.x & 31;
+  const int warp = threadIdx.x >> 5;
+  const int slot = lane / kLanesPerEdge;
+  const int sub = lane % kLanesPerEdge;
+  const int64_t pre = blockIdx.x;
+  if (pre >= n_pre) {
+    return;
+  }
+
+  const uint64_t row_start = row_splits[pre];
+  const uint64_t row_end = row_splits[pre + 1];
+  const uint64_t chunks = (row_end - row_start + kGrain - 1) / kGrain;
+  const uint64_t chunks_per_split = (chunks + splits - 1) / splits;
+  const uint64_t start =
+      row_start + static_cast<uint64_t>(blockIdx.y) * chunks_per_split * kGrain;
+  if (start >= row_end) {
+    return;
+  }
+  const uint64_t end = min(row_end, start + chunks_per_split * kGrain);
+
+  float spike[kPack];
+#pragma unroll
+  for (int sample = 0; sample < kPack; ++sample) {
+    spike[sample] = ToFloat(
+        spikes[static_cast<int64_t>(sub * kPack + sample) * n_pre + pre]);
+  }
+  const int target = ReverseBits<kIndexBits>(sub & (kPerSlot - 1));
+
+  for (uint64_t base = start + warp * kTile; base < end; base += kGrain) {
+    const uint64_t edge_lane = base + lane;
+    const bool own = edge_lane < end;
+    const uint32 my_pair = own ? pair_ids[edge_lane] : 0;
+    float partial[kPerSlot];
+#pragma unroll
+    for (int step = 0; step < kPerSlot; ++step) {
+      const int column = kSlots * step + slot;
+      const uint32 pair = __shfl_sync(0xffffffff, my_pair, column);
+      float values[kPack] = {0.0f, 0.0f, 0.0f, 0.0f};
+      if (base + column < end) {
+        const ::float4 raw = *reinterpret_cast<const ::float4*>(
+            projected + static_cast<int64_t>(pair) * kBatch + sub * kPack);
+        values[0] = raw.x;
+        values[1] = raw.y;
+        values[2] = raw.z;
+        values[3] = raw.w;
+      }
+      float sum = 0.0f;
+#pragma unroll
+      for (int sample = 0; sample < kPack; ++sample) {
+        sum += values[sample] * spike[sample];
+      }
+      partial[step] = sum;
+    }
+    ButterflyReduce<kPerSlot / 2, 1>(partial, lane);
+#pragma unroll
+    for (int mask = kPerSlot; mask < kLanesPerEdge; mask <<= 1) {
+      partial[0] += __shfl_xor_sync(0xffffffff, partial[0], mask);
+    }
+    const uint64_t edge = base + kSlots * target + slot;
+    if (sub < kPerSlot && edge < end) {
+      weight_grad[static_cast<int64_t>(edge_ids[edge])] = partial[0];
+    }
+  }
+}
+
 template <typename T, typename Index>
 __global__ void CsrWeightGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
@@ -600,9 +688,9 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
     OP_REQUIRES_OK(
-      context,
-      context->GetAttr(
-        "use_packed_sm120_backward", &use_packed_sm120_backward_));
+        context,
+        context->GetAttr(
+            "use_packed_sm120_backward", &use_packed_sm120_backward_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -677,9 +765,9 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
     const Index* edge_ids = row_splits + n_pre + 1;
-    const Index* pair_ids = edge_ids + n_edges_;
-    const Index* pair_posts = pair_ids + n_edges_;
-    const Index* pair_types = pair_posts + n_pairs_;
+    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
+    const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* spike_grad = nullptr;
     Tensor* weight_grad = nullptr;
     OP_REQUIRES_OK(
@@ -790,6 +878,10 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(
+      context,
+      context->GetAttr(
+        "use_packed_sm120_backward", &use_packed_sm120_backward_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -830,18 +922,74 @@ class DpointnetCsrWeightGradOp : public OpKernel {
         context,
         batch * n_pre <= std::numeric_limits<int>::max(),
         errors::InvalidArgument("Tensor size exceeds CUDA kernel index range."));
+    if (use_packed_sm120_backward_) {
+      OP_REQUIRES(
+          context, batch == 32 && n_basis == 4 && n_pairs_ > 0,
+          errors::InvalidArgument(
+              "Packed SM120 external backward requires batch 32, four "
+              "synaptic bases, and compact pair metadata."));
+      if constexpr (
+          !std::is_same<T, Eigen::half>::value ||
+          !std::is_same<Index, uint32>::value) {
+        OP_REQUIRES(
+            context, false,
+            errors::InvalidArgument(
+                "Packed SM120 external backward requires float16 compute "
+                "values and uint32 CSR metadata."));
+      } else {
+        OP_REQUIRES(
+            context, SupportsPackedSm120Backward(),
+            errors::InvalidArgument(
+                "Packed external backward requires GPU compute capability "
+                "SM120 or newer."));
+      }
+    }
 
     const Index* metadata_values = metadata.flat<Index>().data();
     const Index* post_ids = metadata_values;
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
     const Index* edge_ids = row_splits + n_pre + 1;
+    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
+    const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* weight_grad = nullptr;
     OP_REQUIRES_OK(
         context,
         context->allocate_output(
             0, TensorShape({n_edges_}), &weight_grad));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
+    if constexpr (
+      std::is_same<T, Eigen::half>::value &&
+      std::is_same<Index, uint32>::value) {
+      if (use_packed_sm120_backward_) {
+        Tensor projected;
+        const int64_t projected_count = n_pairs_ * 32;
+        OP_REQUIRES_OK(
+            context,
+            context->allocate_temp(
+                DT_FLOAT, TensorShape({projected_count}), &projected));
+        constexpr int projection_threads = 256;
+        OP_REQUIRES_OK(
+            context,
+            GpuLaunchKernel(
+                PairProjectionBatch32Kernel<T, Index>,
+                BlockCountFor(projected_count, projection_threads, device),
+                projection_threads, 0, device.stream(), projected_count,
+                n_post_, current_grad.flat<T>().data(), basis.flat<T>().data(),
+                pair_posts, pair_types, projected.flat<float>().data()));
+        const uint32 splits = PackedRowSplitCount(n_pre);
+        OP_REQUIRES_OK(
+            context,
+            GpuLaunchKernel(
+                CsrWeightGradPairPackedBatch32Kernel,
+                dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
+                device.stream(), n_pre, spikes.flat<T>().data(),
+                projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
+                splits, weight_grad->flat<float>().data()));
+        return;
+      }
+    }
     constexpr int zero_threads = 256;
     OP_REQUIRES_OK(
         context,
@@ -869,6 +1017,7 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   int n_post_;
   int64_t n_edges_;
   int64_t n_pairs_;
+  bool use_packed_sm120_backward_;
 };
 
 #define REGISTER_GPU_KERNELS(T, Index)                                    \

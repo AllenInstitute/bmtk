@@ -16,11 +16,13 @@ from bmtk.simulator.dpointnet.custom_ops import (
     reorder_csr_values,
 )
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
+    _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
 )
 
 try:
     from numba import njit
+
     HAS_NUMBA = True
 except Exception:
     HAS_NUMBA = False
@@ -610,6 +612,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_fused_state=False,
         use_pair_projection="auto",
         use_packed_sm120_backward="auto",
+        use_packed_sm120_external_backward="auto",
         batch_size=None,
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
@@ -808,21 +811,30 @@ class GLIF3Cell(tf.keras.layers.Layer):
             batch_size,
             self._n_syn_basis,
         )
+        self._use_packed_sm120_external_backward = _resolve_packed_sm120_model_option(
+            use_packed_sm120_external_backward,
+            self._use_fused_cuda,
+            self.compute_dtype,
+            batch_size,
+            self._n_syn_basis,
+        )
         if self._use_pair_projection:
             io.log_info(
-                'DPointNet pair-projected recurrent backward enabled '
-                f'(use_pair_projection={use_pair_projection!r}).'
+                "DPointNet pair-projected recurrent backward enabled "
+                f"(use_pair_projection={use_pair_projection!r})."
             )
         elif self._use_fused_cuda:
             io.log_info(
-                'DPointNet general recurrent backward selected '
-                f'(use_pair_projection={use_pair_projection!r}, '
-                f'batch_size={batch_size}, n_syn_basis={self._n_syn_basis}).'
+                "DPointNet general recurrent backward selected "
+                f"(use_pair_projection={use_pair_projection!r}, "
+                f"batch_size={batch_size}, n_syn_basis={self._n_syn_basis})."
             )
 
         # TODO: Allow option to not have recurrent connectivity (eg. in case only want to train feedforward network)
         ### Network recurrent connectivity ###
-        indices = np.array(glif_network["synapses"]["indices"]) # NOTE: These are the tf indices, not SONATA, and in the form [trg, src] 
+        indices = np.array(
+            glif_network["synapses"]["indices"]
+        )  # NOTE: These are the tf indices, not SONATA, and in the form [trg, src]
         weights = np.array(glif_network["synapses"]["weights"])
         dense_shape = np.array(glif_network["synapses"]["dense_shape"])
         syn_ids = np.array(glif_network["synapses"]["syn_ids"])
@@ -967,36 +979,50 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 )
                 input_props['input_weight_values_compute'] = self._untracked_variable(_input_weight_compute)
             else:
-                input_props['input_weight_values_compute'] = input_props['input_weight_values']
-            input_props['input_syn_ids'] = tf.constant(input_syn_ids, dtype=tf.int64) # for efficiency this needs to be in int64
-            input_props['input_type'] = input_type
-            if input_type == 'spikes':
+                input_props["input_weight_values_compute"] = input_props[
+                    "input_weight_values"
+                ]
+            input_props["input_syn_ids"] = tf.constant(
+                input_syn_ids, dtype=tf.int64
+            )  # for efficiency this needs to be in int64
+            input_props["input_type"] = input_type
+            if input_type == "spikes":
                 end_indx = self.inputs_idx[idx] + n_input_nodes
-            elif input_type in ('poisson_spikes_internal', 'noisy_current'):
-                firing_rate = input_options.get('firing_rate', 250.0)
-                input_props['spike_prob'] = tf.constant(firing_rate * dt / 1000.0, dtype=self.compute_dtype)
+            elif input_type in ("poisson_spikes_internal", "noisy_current"):
+                firing_rate = input_options.get("firing_rate", 250.0)
+                input_props["spike_prob"] = tf.constant(
+                    firing_rate * dt / 1000.0, dtype=self.compute_dtype
+                )
                 end_indx = self.inputs_idx[idx]
-            elif input_type == 'current':
+            elif input_type == "current":
                 end_indx = self.inputs_idx[idx] + n_input_nodes
             else:
-                raise ValueError(f'Unknown input type {input_type}')
-            if input_type in ('spikes', 'poisson_spikes_internal', 'noisy_current'):
+                raise ValueError(f"Unknown input type {input_type}")
+            if input_type in ("spikes", "poisson_spikes_internal", "noisy_current"):
                 if self._use_fused_cuda:
-                    input_props['fused_connectivity'] = build_csr_connectivity(
+                    input_props["fused_connectivity"] = build_csr_connectivity(
                         input_indices,
                         input_syn_ids,
                         input_dense_shape[1],
                         self._n_neurons,
                         self.synaptic_basis_weights.shape[0],
-                        build_compact_pairs=False,
+                        build_compact_pairs=(
+                            self._use_packed_sm120_external_backward is not False
+                            and input_trainable
+                        ),
                     )
-                    input_props['pre_input_ind_table'] = None
+                    input_props["use_packed_sm120_backward"] = (
+                        self._use_packed_sm120_external_backward
+                        if input_trainable
+                        else False
+                    )
+                    input_props["pre_input_ind_table"] = None
                     input_csr_weights = tf.Variable(
                         reorder_csr_values(
-                            input_props['input_weight_values_compute'],
-                            input_props['fused_connectivity'],
+                            input_props["input_weight_values_compute"],
+                            input_props["fused_connectivity"],
                         ),
-                        name=f'{input_name}_input_weights_csr_compute',
+                        name=f"{input_name}_input_weights_csr_compute",
                         trainable=False,
                         dtype=self.compute_dtype,
                     )
@@ -1167,17 +1193,25 @@ class GLIF3Cell(tf.keras.layers.Layer):
         uses the per-input dict (input_net) like calculate_input_current_from_spikes.
         """
         batch_size = tf.shape(x_t)[0]
-        input_indices = input_net['input_indices']
-        input_weight_values = input_net['input_weight_values']
-        input_syn_ids = input_net['input_syn_ids']
-        input_dense_shape = input_net['input_dense_shape']
+        input_indices = input_net["input_indices"]
+        input_weight_values = input_net["input_weight_values"]
+        input_syn_ids = input_net["input_syn_ids"]
+        input_dense_shape = input_net["input_dense_shape"]
 
         i_in = tf.TensorArray(dtype=self.compute_dtype, size=self._n_syn_basis)
         for r_id in range(self._n_syn_basis):
-            input_weights_factors = tf.gather(self.synaptic_basis_weights[:, r_id], input_syn_ids, axis=0)
-            weights_syn_receptors = tf.cast(input_weight_values, self.compute_dtype) * input_weights_factors
-            sparse_w_in = tf.sparse.SparseTensor(input_indices, weights_syn_receptors, input_dense_shape)
-            i_receptor = tf.sparse.sparse_dense_matmul(sparse_w_in, tf.cast(x_t, self.compute_dtype), adjoint_b=True)
+            input_weights_factors = tf.gather(
+                self.synaptic_basis_weights[:, r_id], input_syn_ids, axis=0
+            )
+            weights_syn_receptors = (
+                tf.cast(input_weight_values, self.compute_dtype) * input_weights_factors
+            )
+            sparse_w_in = tf.sparse.SparseTensor(
+                input_indices, weights_syn_receptors, input_dense_shape
+            )
+            i_receptor = tf.sparse.sparse_dense_matmul(
+                sparse_w_in, tf.cast(x_t, self.compute_dtype), adjoint_b=True
+            )
             i_in = i_in.write(r_id, i_receptor)
         i_in = i_in.stack()
         i_in = tf.transpose(i_in)  # -> [batch, n_neurons, n_syn_basis] after reshape
@@ -1188,25 +1222,28 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if self._use_fused_cuda:
             return fused_spike_currents(
                 tf.cast(x_t, self.compute_dtype),
-                input_net['input_weight_values'],
-                input_net['csr_weight_values_compute'],
-                input_net['fused_connectivity'],
+                input_net["input_weight_values"],
+                input_net["csr_weight_values_compute"],
+                input_net["fused_connectivity"],
                 self.synaptic_basis_weights,
                 self._n_neurons,
                 compute_spike_gradient=False,
+                use_packed_sm120_backward=input_net.get(
+                    "use_packed_sm120_backward", False
+                ),
             )
         # Memory-efficient input current via the @tf.custom_gradient module function: the forward
         # reads the compute-dtype shadow and the backward recomputes the cheap basis gather (instead
         # of retaining per-timestep activations), while the gradient targets the trainable master.
         return calculate_input_currents(
             x_t,
-            input_net['input_indices'],
-            input_net['input_weight_values'],
-            input_net['input_weight_values_compute'],
-            input_net['input_dense_shape'],
+            input_net["input_indices"],
+            input_net["input_weight_values"],
+            input_net["input_weight_values_compute"],
+            input_net["input_dense_shape"],
             self.synaptic_basis_weights,
-            input_net['input_syn_ids'],
-            input_net['pre_input_ind_table'],
+            input_net["input_syn_ids"],
+            input_net["pre_input_ind_table"],
         )
 
     def update_psc(self, psc, psc_rise, rec_inputs):

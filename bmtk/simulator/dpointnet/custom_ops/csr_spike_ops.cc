@@ -93,6 +93,7 @@ REGISTER_OP("DpointnetCsrWeightGrad")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
     .Attr("n_pairs: int >= 0")
+    .Attr("use_packed_sm120_backward: bool = false")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle edge_ids;

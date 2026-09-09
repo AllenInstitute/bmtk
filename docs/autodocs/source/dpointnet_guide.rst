@@ -46,8 +46,8 @@ This module form ensures that the build uses the active Python environment and d
 ``PATH``. Installing this version of BMTK also creates ``bmtk-build-dpointnet-cuda`` in the environment's executable
 directory; the shortcut is available when that environment is activated.
 
-The build targets compute capabilities 7.0, 7.5, 8.0, 8.6, 8.9, and 9.0 by default, with PTX for the
-highest target. To build for a different set of architectures, provide space-separated architecture numbers:
+The build targets compute capabilities 7.0, 7.5, 8.0, 8.6, 8.9, 9.0, and 12.0 by default, with
+``compute_120`` PTX. To build for a different set of architectures, provide space-separated architecture numbers:
 
 ::
 
@@ -83,6 +83,13 @@ backward for float16 batch-32 models with four basis columns and ``uint32`` comp
 ``false`` for a same-GPU comparison with the prior pair-projected kernel, or to ``true`` to require the packed
 path and fail when any prerequisite is absent. It defaults to ``"auto"`` and does not change the SM70--SM90
 fallback. The default CUDA build includes native SM120 code and ``compute_120`` PTX.
+
+``use_packed_sm120_external_backward`` controls the corresponding weight-only backward for named input
+populations. It has the same ``"auto"``, ``true``, and ``false`` selection contract and additionally builds
+compact pair metadata only for trainable input weights. Fixed LGN connectivity therefore retains its smaller
+metadata layout. The packed kernel splits sparse source rows across blocks, returns no external-activity
+gradient, and writes weight gradients through the CSR-to-canonical edge map. SM70--SM90 and incompatible
+shapes retain the existing external backward.
 
 The optimization exchanges startup time and a small amount of persistent GPU memory for faster batch-32 BPTT.
 Measured examples include a 55.7% update-time reduction on a 66,658-neuron network on A100-PCIE-40GB and a 37.9%
@@ -284,6 +291,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - "auto"
                 * - use_packed_sm120_backward
                   - Select the packed recurrent backward on SM120 or newer. ``True`` requires float16, batch 32, four basis columns, ``uint32`` compact-pair metadata, and SM120 hardware; ``False`` retains the prior pair kernel.
+                  - "auto"
+                * - use_packed_sm120_external_backward
+                  - Select the packed weight-only backward for trainable input populations on SM120 or newer. Fixed inputs do not build compact-pair metadata; ``False`` retains the prior external kernel.
                   - "auto"
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.

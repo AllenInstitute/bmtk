@@ -13,6 +13,7 @@ from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _csr_index_dtype,
     _resolve_packed_sm120_backward,
+    _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
 )
 from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
@@ -41,10 +42,12 @@ INDICES = np.array(
 SYNAPSE_TYPES = np.array([0, 1, 0, 1], dtype=np.int64)
 
 
-def _reference_currents(spikes, master_weights, basis):
-    post_ids = tf.constant(INDICES[:, 0], tf.int32)
-    pre_ids = tf.constant(INDICES[:, 1], tf.int32)
-    edge_basis = tf.gather(basis, SYNAPSE_TYPES)
+def _reference_currents_for_connectivity(
+    spikes, master_weights, basis, indices, synapse_types, n_post
+):
+    post_ids = tf.constant(indices[:, 0], tf.int32)
+    pre_ids = tf.constant(indices[:, 1], tf.int32)
+    edge_basis = tf.gather(basis, synapse_types)
     compute_weights = tf.cast(master_weights, spikes.dtype)
     batch_outputs = []
     for batch in range(spikes.shape[0]):
@@ -53,8 +56,21 @@ def _reference_currents(spikes, master_weights, basis):
             * compute_weights[:, tf.newaxis]
             * edge_basis
         )
-        batch_outputs.append(tf.math.unsorted_segment_sum(edge_values, post_ids, 2))
+        batch_outputs.append(
+            tf.math.unsorted_segment_sum(edge_values, post_ids, n_post)
+        )
     return tf.reshape(tf.stack(batch_outputs), [-1, basis.shape[1]])
+
+
+def _reference_currents(spikes, master_weights, basis):
+    return _reference_currents_for_connectivity(
+        spikes,
+        master_weights,
+        basis,
+        INDICES,
+        SYNAPSE_TYPES,
+        n_post=2,
+    )
 
 
 def _reference_dense_state(
@@ -292,6 +308,23 @@ def test_packed_sm120_auto_selects_eligible_sm120(monkeypatch):
     )
 
 
+@pytest.mark.parametrize(
+    "connectivity",
+    [
+        {"index_dtype": "uint32", "n_pairs": 0},
+        {"index_dtype": "int64", "n_pairs": 1},
+    ],
+)
+def test_packed_sm120_external_auto_falls_back_for_connectivity(
+    monkeypatch, connectivity
+):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 120)
+
+    assert not _resolve_packed_sm120_backward(
+        "auto", tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
+    )
+
+
 def test_forced_packed_sm120_rejects_sm86(monkeypatch):
     connectivity = {
         "index_dtype": "uint32",
@@ -303,6 +336,36 @@ def test_forced_packed_sm120_rejects_sm86(monkeypatch):
         _resolve_packed_sm120_backward(
             True, tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
         )
+
+
+@pytest.mark.parametrize(
+    ("architecture", "expected"),
+    [(86, False), (120, "auto")],
+)
+def test_packed_sm120_external_model_selection(monkeypatch, architecture, expected):
+    monkeypatch.setattr(
+        csr_spike_ops, "_gpu_compute_architecture", lambda: architecture
+    )
+
+    assert (
+        _resolve_packed_sm120_model_option("auto", True, tf.float16, 32, 4) is expected
+    )
+
+
+def test_forced_packed_sm120_external_model_rejects_sm86(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+
+    with pytest.raises(ValueError, match="use_packed_sm120_external_backward.*SM86"):
+        _resolve_packed_sm120_model_option(True, True, tf.float16, 32, 4)
+
+
+def test_fixed_input_connectivity_omits_compact_pair_metadata():
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=False
+    )
+
+    assert connectivity["n_pairs"] == 0
+    assert _metadata_values(connectivity).shape[0] == 3 * len(INDICES) + 3 + 1
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
@@ -325,6 +388,53 @@ def test_fused_currents_forced_packed_sm120_rejects_sm86(monkeypatch):
             compute_spike_gradient=True,
             use_packed_sm120_backward=True,
         )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_fused_external_forced_packed_sm120_rejects_sm86(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
+    )
+    master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+    csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
+
+    with pytest.raises(ValueError, match="SM86"):
+        fused_spike_currents(
+            tf.ones([32, 3], tf.float16),
+            master_weights,
+            csr_weights,
+            connectivity,
+            tf.ones([2, 4], tf.float16),
+            n_post=2,
+            compute_spike_gradient=False,
+            use_packed_sm120_backward=True,
+        )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_external_native_op_revalidates_sm120_requirement(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 120)
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
+    )
+    master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
+    csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
+
+    with pytest.raises(tf.errors.InvalidArgumentError, match="SM120"):
+        with tf.GradientTape() as tape:
+            currents = fused_spike_currents(
+                tf.ones([32, 3], tf.float16),
+                master_weights,
+                csr_weights,
+                connectivity,
+                tf.ones([2, 4], tf.float16),
+                n_post=2,
+                compute_spike_gradient=False,
+                use_packed_sm120_backward=True,
+            )
+            loss = tf.reduce_sum(currents)
+        tape.gradient(loss, master_weights)
 
 
 @pytest.mark.parametrize(
@@ -790,6 +900,74 @@ def test_fused_input_currents_preserve_counts_and_only_differentiate_weights():
     np.testing.assert_allclose(currents.numpy(), reference.numpy())
     np.testing.assert_allclose(
         weight_gradient.numpy(), reference_weight_gradient.numpy()
+    )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("activity_mode", ["zero", "dense", "poisson"])
+def test_fused_sparse_input_batch32_matches_canonical_weight_gradient(
+    activity_mode,
+):
+    rng = np.random.default_rng(59)
+    n_pre = 100
+    n_post = 11
+    edges_per_source = 257
+    pre_ids = np.repeat(np.arange(8), edges_per_source)
+    post_ids = rng.integers(0, n_post, size=pre_ids.size)
+    indices = np.column_stack((post_ids, pre_ids))
+    synapse_types = rng.integers(0, 5, size=pre_ids.size)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        n_pre,
+        n_post,
+        5,
+        build_compact_pairs=True,
+    )
+    master_weights = tf.Variable(
+        rng.uniform(0.1, 1.0, size=pre_ids.size), dtype=tf.float32
+    )
+    csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
+    basis = tf.constant(rng.uniform(0.1, 1.0, size=(5, 4)), tf.float16)
+    if activity_mode == "zero":
+        activity = np.zeros((32, n_pre))
+    elif activity_mode == "dense":
+        activity = np.ones((32, n_pre))
+    else:
+        activity = rng.poisson(0.25, size=(32, n_pre))
+    spike_counts = tf.constant(activity, dtype=tf.float16)
+    loss_weights = tf.constant(
+        rng.uniform(-0.5, 0.5, size=(32 * n_post, 4)), tf.float16
+    )
+
+    with tf.GradientTape() as tape:
+        currents = fused_spike_currents(
+            spike_counts,
+            master_weights,
+            csr_weights,
+            connectivity,
+            basis,
+            n_post=n_post,
+            compute_spike_gradient=False,
+            use_packed_sm120_backward="auto",
+        )
+        loss = tf.reduce_sum(currents * loss_weights)
+    actual_gradient = tape.gradient(loss, master_weights)
+
+    with tf.GradientTape() as tape:
+        reference = _reference_currents_for_connectivity(
+            spike_counts,
+            master_weights,
+            basis,
+            indices,
+            synapse_types,
+            n_post,
+        )
+        reference_loss = tf.reduce_sum(reference * loss_weights)
+    reference_gradient = tape.gradient(reference_loss, master_weights)
+
+    np.testing.assert_allclose(
+        actual_gradient, reference_gradient, rtol=2e-2, atol=2e-2
     )
 
 

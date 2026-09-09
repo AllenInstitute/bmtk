@@ -88,8 +88,8 @@ class CsrConnectivity(Mapping):
 
 
 def _environment_flag(name):
-    value = os.environ.get(name, '').strip().lower()
-    return value in ('1', 'true', 'yes', 'on')
+    value = os.environ.get(name, "").strip().lower()
+    return value in ("1", "true", "yes", "on")
 
 
 def _validate_packed_sm120_option(value):
@@ -148,6 +148,37 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
     return option is not False and not incompatibilities
 
 
+def _resolve_packed_sm120_model_option(
+    option, fused_cuda, compute_dtype, batch_size, basis_width
+):
+    option = _validate_packed_sm120_option(option)
+    incompatibilities = []
+    if not fused_cuda:
+        incompatibilities.append("fused CUDA currents are disabled or unavailable")
+    if tf.as_dtype(compute_dtype) != tf.float16:
+        incompatibilities.append(
+            f"compute dtype is {tf.as_dtype(compute_dtype).name}, not float16"
+        )
+    if batch_size != 32:
+        incompatibilities.append(f"batch size is {batch_size}, not 32")
+    if basis_width != 4:
+        incompatibilities.append(f"basis width is {basis_width}, not 4")
+    architecture = _gpu_compute_architecture()
+    if architecture is None or architecture < 120:
+        description = "unavailable" if architecture is None else f"SM{architecture}"
+        incompatibilities.append(
+            f"GPU compute capability is {description}, not SM120 or newer"
+        )
+    if option is True and incompatibilities:
+        raise ValueError(
+            "use_packed_sm120_external_backward=True is incompatible: "
+            + "; ".join(incompatibilities)
+        )
+    if incompatibilities or option is False:
+        return False
+    return option
+
+
 if not _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
     if _LIBRARY_PATH.exists():
         try:
@@ -156,7 +187,7 @@ if not _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
             _LOAD_ERROR = exc
     else:
         _LOAD_ERROR = FileNotFoundError(
-            f'Fused DPointNet CUDA library does not exist at {_LIBRARY_PATH}.'
+            f"Fused DPointNet CUDA library does not exist at {_LIBRARY_PATH}."
         )
 
 
@@ -295,27 +326,31 @@ def build_csr_connectivity(
         metadata_handle = _create_metadata_resource(
             metadata, index_dtype
         )
-        return CsrConnectivity({
-            'metadata_handle': metadata_handle,
-            'index_dtype': index_dtype.name,
-            'n_edges': int(indices.shape[0]),
-            'n_sources': int(n_source_neurons),
-            'n_post': int(n_target_neurons),
-            'n_synapse_types': int(n_synapse_types),
-            'n_pairs': n_pairs,
-        })
+        return CsrConnectivity(
+            {
+                "metadata_handle": metadata_handle,
+                "index_dtype": index_dtype.name,
+                "n_edges": int(indices.shape[0]),
+                "n_sources": int(n_source_neurons),
+                "n_post": int(n_target_neurons),
+                "n_synapse_types": int(n_synapse_types),
+                "n_pairs": n_pairs,
+            }
+        )
 
 
 def reorder_csr_values(values, connectivity):
     if _OPS is None:
-        raise RuntimeError(f'Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}')
+        raise RuntimeError(
+            f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
+        )
     return _OPS.dpointnet_csr_reorder(
         values,
-        connectivity['metadata_handle'],
-        Tindex=tf.dtypes.as_dtype(connectivity['index_dtype']),
-        n_edges=connectivity['n_edges'],
-        n_sources=connectivity['n_sources'],
-        n_pairs=connectivity['n_pairs'],
+        connectivity["metadata_handle"],
+        Tindex=tf.dtypes.as_dtype(connectivity["index_dtype"]),
+        n_edges=connectivity["n_edges"],
+        n_sources=connectivity["n_sources"],
+        n_pairs=connectivity["n_pairs"],
     )
 
 
@@ -349,6 +384,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_post=n_post,
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
+            use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
         )
     return (
         spike_grad,
