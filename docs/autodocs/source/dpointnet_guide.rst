@@ -502,6 +502,9 @@ configurations retain their previous behavior:
    * - ``gradient_checkpoint_chunk_size``
      - ``25``
      - Number of timesteps per recomputed chunk when checkpointing is enabled.
+   * - ``pack_spike_checkpoints``
+     - ``False``
+     - Pack the binary delayed-spike state into positive 31-bit words at chunk boundaries.
    * - ``regenerate_initial_state_each_epoch``
      - ``True``
      - Generate fresh configured initial state at each epoch boundary. Set to ``False`` to reuse the initial state across epochs.
@@ -519,7 +522,8 @@ stateless random draws as the original forward pass.
     {
       "training": {
         "gradient_checkpointing": true,
-        "gradient_checkpoint_chunk_size": 25
+        "gradient_checkpoint_chunk_size": 25,
+        "pack_spike_checkpoints": true
       }
     }
 
@@ -527,6 +531,13 @@ stateless random draws as the original forward pass.
 length. Smaller chunks reduce activation memory but increase recomputation
 overhead. The default is 25 timesteps; checkpointing remains disabled unless
 explicitly requested.
+
+``pack_spike_checkpoints`` applies only to the first recurrent state, which is
+the binary delayed-spike history for the built-in GLIF cell. Every nonzero value
+is treated as a spike. Voltage, refractory, ASC, PSC, and replay-safe Poisson
+state remain unpacked. Packing is opt-in and has no effect unless segmented
+checkpointing is enabled. It reduces checkpoint memory but can add bit-packing
+work, so benchmark representative training before enabling it by default.
 
 Compact online voltage regularization
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

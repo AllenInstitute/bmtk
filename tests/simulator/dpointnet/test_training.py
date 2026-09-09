@@ -17,6 +17,10 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
 )
 from bmtk.simulator.dpointnet.network_adaptor import lex_sort_order_np
 from bmtk.simulator.dpointnet.rnn_model import RNN
+from bmtk.simulator.dpointnet.segmented_recompute import (
+    _pack_spikes,
+    _unpack_spikes,
+)
 from bmtk.simulator.dpointnet.optimizers import (
     ExponentiatedAdam,
     LinearWarmupCosineDecay,
@@ -196,6 +200,105 @@ def test_segmented_recompute_matches_full_outputs_states_and_gradients():
         np.testing.assert_allclose(segmented, full, rtol=2e-6, atol=2e-6)
 
 
+@pytest.mark.parametrize("width", [31, 32, 62])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_spike_checkpoint_pack_roundtrip(width, dtype):
+    rng = np.random.default_rng(29)
+    patterns = (
+        np.zeros((3, width), dtype=np.float32),
+        np.ones((3, width), dtype=np.float32),
+        rng.integers(0, 2, size=(3, width)).astype(np.float32),
+    )
+
+    for pattern in patterns:
+        spikes = tf.cast(pattern, dtype)
+        packed = _pack_spikes(spikes)
+        restored = _unpack_spikes(packed, width, dtype)
+
+        assert packed.dtype == tf.int32
+        assert packed.shape == (3, (width + 30) // 31)
+        np.testing.assert_array_equal(restored, spikes)
+
+
+def test_spike_checkpoint_pack_treats_nonzero_values_as_spikes():
+    values = tf.constant([[-2.0, 0.0, 0.5, 1.0]], tf.float32)
+
+    restored = _unpack_spikes(_pack_spikes(values), 4, tf.float32)
+
+    np.testing.assert_array_equal(restored, [[1.0, 0.0, 1.0, 1.0]])
+
+
+def test_packed_segmented_recompute_matches_unpacked_outputs_and_gradients():
+    @tf.custom_gradient
+    def binary_straight_through(values):
+        spikes = tf.cast(values > 0.0, values.dtype)
+
+        def grad(upstream):
+            return upstream
+
+        return spikes, grad
+
+    inputs = tf.keras.layers.Input(shape=(None, 3), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(35,), dtype=tf.float32)
+    cell = tf.keras.layers.SimpleRNNCell(
+        35,
+        activation=binary_straight_through,
+        use_bias=False,
+        kernel_initializer=tf.keras.initializers.Constant(0.1),
+        recurrent_initializer=tf.keras.initializers.Constant(0.02),
+    )
+    sequence, final_state = tf.keras.layers.RNN(
+        cell, return_sequences=True, return_state=True
+    )(inputs, initial_state=[initial_state])
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (sequence, sequence * tf.constant(1.5), final_state),
+    )
+    unpacked_runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        differentiate_inputs=True,
+    )
+    packed_runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        differentiate_inputs=True,
+        pack_spike_checkpoints=True,
+    )
+    input_values = (
+        np.random.default_rng(31).uniform(-0.2, 0.2, size=(2, 7, 3)).astype(np.float32)
+    )
+    state_values = np.zeros((2, 35), dtype=np.float32)
+    state_values[:, ::3] = 1.0
+
+    def evaluate(runner):
+        values = tf.Variable(input_values)
+        state = tf.Variable(state_values)
+        with tf.GradientTape() as tape:
+            outputs = runner(values, (state,))
+            loss = (
+                tf.reduce_sum(outputs[0] * 0.25)
+                + tf.reduce_sum(outputs[1] * 0.5)
+                + tf.reduce_sum(outputs[2] * 0.75)
+            )
+        gradients = tape.gradient(
+            loss, (values, state, *core_model.trainable_variables)
+        )
+        return outputs, gradients
+
+    unpacked_outputs, unpacked_gradients = evaluate(unpacked_runner)
+    packed_outputs, packed_gradients = evaluate(packed_runner)
+
+    for packed, unpacked in zip(packed_outputs, unpacked_outputs):
+        np.testing.assert_array_equal(packed, unpacked)
+    for packed, unpacked in zip(packed_gradients, unpacked_gradients):
+        np.testing.assert_allclose(packed, unpacked, rtol=1e-6, atol=1e-6)
+
+
 def test_training_engine_validates_checkpoint_chunk_size():
     engine = training.TrainingEngine(
         rnn=SimpleNamespace(),
@@ -205,6 +308,15 @@ def test_training_engine_validates_checkpoint_chunk_size():
         gradient_checkpoint_chunk_size=17,
     )
     assert engine.gradient_checkpoint_chunk_size == 17
+    assert engine.pack_spike_checkpoints is False
+
+    packed_engine = training.TrainingEngine(
+        rnn=SimpleNamespace(),
+        n_epochs=1,
+        steps_per_epoch=1,
+        pack_spike_checkpoints=True,
+    )
+    assert packed_engine.pack_spike_checkpoints is True
 
     with pytest.raises(ValueError, match="chunk_size must be positive"):
         training.TrainingEngine(

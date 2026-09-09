@@ -140,6 +140,7 @@ class TrainingEngine:
         self.gradient_checkpoint_chunk_size = int(
             kwargs.get("gradient_checkpoint_chunk_size", 25)
         )
+        self.pack_spike_checkpoints = bool(kwargs.get("pack_spike_checkpoints", False))
         if self.gradient_checkpoint_chunk_size < 1:
             raise ValueError("gradient_checkpoint_chunk_size must be positive.")
         self.regenerate_initial_state_each_epoch = kwargs.get(
@@ -542,11 +543,13 @@ class TrainingEngine:
             chunk_size=self.gradient_checkpoint_chunk_size,
             n_sequence_outputs=2,
             differentiate_inputs=False,
+            pack_spike_checkpoints=self.pack_spike_checkpoints,
         )
         io.log_info(
             "Segmented exact BPTT enabled: "
             f"{self._extractor_forward.n_chunks} chunks, "
-            f"chunk_size={self.gradient_checkpoint_chunk_size}."
+            f"chunk_size={self.gradient_checkpoint_chunk_size}, "
+            f"pack_spike_checkpoints={self.pack_spike_checkpoints}."
         )
 
     @staticmethod
