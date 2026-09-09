@@ -92,7 +92,63 @@ def _environment_flag(name):
     return value in ('1', 'true', 'yes', 'on')
 
 
-if not _environment_flag('BMTK_DPOINTNET_DISABLE_FUSED_CUDA'):
+def _validate_packed_sm120_option(value):
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        value = value.item()
+    if value is True or value is False:
+        return value
+    if isinstance(value, (bytes, np.bytes_)):
+        try:
+            value = value.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+    if isinstance(value, (str, np.str_)) and value == "auto":
+        return "auto"
+    raise ValueError('use_packed_sm120_backward must be true, false, or "auto".')
+
+
+def _gpu_compute_architecture():
+    visible_gpus = tf.config.get_visible_devices("GPU")
+    if len(visible_gpus) != 1:
+        return None
+    capability = tf.config.experimental.get_device_details(visible_gpus[0]).get(
+        "compute_capability"
+    )
+    if capability is None:
+        return None
+    return int(capability[0]) * 10 + int(capability[1])
+
+
+def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
+    option = _validate_packed_sm120_option(option)
+    incompatibilities = []
+    if spikes.dtype != tf.float16:
+        incompatibilities.append(f"compute dtype is {spikes.dtype.name}, not float16")
+    if connectivity["index_dtype"] != tf.uint32.name:
+        incompatibilities.append(
+            f'CSR metadata dtype is {connectivity["index_dtype"]}, not uint32'
+        )
+    if spikes.shape[0] != 32:
+        incompatibilities.append(f"batch size is {spikes.shape[0]}, not 32")
+    if basis.shape[1] != 4:
+        incompatibilities.append(f"basis width is {basis.shape[1]}, not 4")
+    if connectivity["n_pairs"] <= 0:
+        incompatibilities.append("compact pair metadata is unavailable")
+    architecture = _gpu_compute_architecture()
+    if architecture is None or architecture < 120:
+        description = "unavailable" if architecture is None else f"SM{architecture}"
+        incompatibilities.append(
+            f"GPU compute capability is {description}, not SM120 or newer"
+        )
+    if option is True and incompatibilities:
+        raise ValueError(
+            "use_packed_sm120_backward=True is incompatible: "
+            + "; ".join(incompatibilities)
+        )
+    return option is not False and not incompatibilities
+
+
+if not _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
     if _LIBRARY_PATH.exists():
         try:
             _OPS = tf.load_op_library(str(_LIBRARY_PATH))
@@ -280,6 +336,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_post=n_post,
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
+            use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
         )
     else:
         spike_grad = None
@@ -312,6 +369,7 @@ def fused_spike_currents(
     n_post,
     compute_spike_gradient,
     spike_gradient_scale=1.0,
+    use_packed_sm120_backward="auto",
 ):
     if _OPS is None:
         raise RuntimeError(
@@ -352,6 +410,10 @@ def fused_spike_currents(
             f'{connectivity["n_synapse_types"]} != {basis.shape[0]}.'
         )
 
+    use_packed_sm120_backward = _resolve_packed_sm120_backward(
+        use_packed_sm120_backward, spikes, connectivity, basis
+    )
+
     return _OPS.dpointnet_csr_spike_forward(
         spikes,
         master_weights,
@@ -364,4 +426,5 @@ def fused_spike_currents(
         n_edges=connectivity["n_edges"],
         n_pairs=connectivity["n_pairs"],
         compute_spike_gradient=compute_spike_gradient,
+        use_packed_sm120_backward=use_packed_sm120_backward,
     )

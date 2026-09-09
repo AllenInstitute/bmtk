@@ -35,6 +35,7 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Attr("n_edges: int >= 0")
     .Attr("n_pairs: int >= 0")
     .Attr("compute_spike_gradient: bool")
+    .Attr("use_packed_sm120_backward: bool = false")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle spikes;
@@ -66,6 +67,7 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
     .Attr("n_post: int >= 1")
     .Attr("n_edges: int >= 0")
     .Attr("n_pairs: int >= 0")
+    .Attr("use_packed_sm120_backward: bool = false")
     .Output("spike_grad: T")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {

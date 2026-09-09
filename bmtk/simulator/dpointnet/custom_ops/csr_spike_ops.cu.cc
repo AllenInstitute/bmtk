@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <type_traits>
 
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/register_types.h"
@@ -207,6 +208,146 @@ __global__ void CsrSpikeGradPairBatch32Kernel(
   }
   spike_grad[static_cast<int64_t>(lane) * n_pre + pre] =
       FromFloat<T>(pre_gradient * ToFloat(*spike_gradient_scale));
+}
+
+template <int kHalf, int kMask>
+__device__ __forceinline__ void ButterflyReduce(float* partial, int lane) {
+  const bool upper = (lane & kMask) != 0;
+#pragma unroll
+  for (int index = 0; index < kHalf; ++index) {
+    const float keep = upper ? partial[kHalf + index] : partial[index];
+    const float send = upper ? partial[index] : partial[kHalf + index];
+    partial[index] = keep + __shfl_xor_sync(0xffffffff, send, kMask);
+  }
+  if constexpr (kHalf > 1) {
+    ButterflyReduce<kHalf / 2, kMask * 2>(partial, lane);
+  }
+}
+
+template <int kBits>
+__device__ __forceinline__ int ReverseBits(int value) {
+  int result = 0;
+#pragma unroll
+  for (int bit = 0; bit < kBits; ++bit) {
+    result |= ((value >> bit) & 1) << (kBits - 1 - bit);
+  }
+  return result;
+}
+
+template <typename Index>
+__global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
+    int n_pre, const Eigen::half* spikes, const Index* row_splits,
+    const Index* edge_ids, const Index* pair_ids, const Eigen::half* weights,
+    const float* projected, Eigen::half* spike_grad, float* weight_grad,
+    const Eigen::half* spike_gradient_scale) {
+  constexpr int kBatch = 32;
+  constexpr int kPack = 4;
+  constexpr int kWarps = 2;
+  constexpr int kTile = 32;
+  constexpr int kLanesPerEdge = kBatch / kPack;
+  constexpr int kSlots = 32 / kLanesPerEdge;
+  constexpr int kPerSlot = kTile / kSlots;
+  constexpr int kIndexBits = 3;
+  const int lane = threadIdx.x & 31;
+  const int warp = threadIdx.x >> 5;
+  const int slot = lane / kLanesPerEdge;
+  const int sub = lane % kLanesPerEdge;
+  const int pre = blockIdx.x;
+  if (pre >= n_pre) {
+    return;
+  }
+
+  __shared__ float spike_partials[kWarps][32];
+  const Index start = row_splits[pre];
+  const Index end = row_splits[pre + 1];
+  float spike[kPack];
+  float pre_gradient[kPack] = {0.0f, 0.0f, 0.0f, 0.0f};
+#pragma unroll
+  for (int sample = 0; sample < kPack; ++sample) {
+    spike[sample] = ToFloat(
+        spikes[static_cast<int64_t>(sub * kPack + sample) * n_pre + pre]);
+  }
+  const int target = ReverseBits<kIndexBits>(sub & (kPerSlot - 1));
+
+  for (Index base = start + static_cast<Index>(warp * kTile); base < end;
+       base += static_cast<Index>(kWarps * kTile)) {
+    const Index edge_lane = base + static_cast<Index>(lane);
+    const bool own = lane < kTile && edge_lane < end;
+    const Index my_pair = own ? pair_ids[edge_lane] : static_cast<Index>(0);
+    const float my_weight =
+        own ? ToFloat(weights[edge_lane]) : 0.0f;
+    float partial[kPerSlot];
+#pragma unroll
+    for (int step = 0; step < kPerSlot; ++step) {
+      const int column = kSlots * step + slot;
+      const Index pair = static_cast<Index>(
+          __shfl_sync(0xffffffff, static_cast<unsigned>(my_pair), column));
+      const float weight = __shfl_sync(0xffffffff, my_weight, column);
+      float values[kPack] = {0.0f, 0.0f, 0.0f, 0.0f};
+      if (base + static_cast<Index>(column) < end) {
+        const ::float4 raw = *reinterpret_cast<const ::float4*>(
+            projected + static_cast<int64_t>(pair) * kBatch + sub * kPack);
+        values[0] = raw.x;
+        values[1] = raw.y;
+        values[2] = raw.z;
+        values[3] = raw.w;
+      }
+      float sum = 0.0f;
+#pragma unroll
+      for (int sample = 0; sample < kPack; ++sample) {
+        pre_gradient[sample] += values[sample] * weight;
+        sum += values[sample] * spike[sample];
+      }
+      partial[step] = sum;
+    }
+    ButterflyReduce<kPerSlot / 2, 1>(partial, lane);
+#pragma unroll
+    for (int mask = kPerSlot; mask < kLanesPerEdge; mask <<= 1) {
+      partial[0] += __shfl_xor_sync(0xffffffff, partial[0], mask);
+    }
+    const Index edge =
+        base + static_cast<Index>(kSlots * target + slot);
+    if (sub < kPerSlot && edge < end) {
+      weight_grad[static_cast<int64_t>(edge_ids[edge])] = partial[0];
+    }
+  }
+
+#pragma unroll
+  for (int mask = kLanesPerEdge; mask < 32; mask <<= 1) {
+#pragma unroll
+    for (int sample = 0; sample < kPack; ++sample) {
+      pre_gradient[sample] +=
+          __shfl_xor_sync(0xffffffff, pre_gradient[sample], mask);
+    }
+  }
+  if (lane < kLanesPerEdge) {
+#pragma unroll
+    for (int sample = 0; sample < kPack; ++sample) {
+      spike_partials[warp][sub * kPack + sample] = pre_gradient[sample];
+    }
+  }
+  __syncthreads();
+  if (warp == 0) {
+    float total = 0.0f;
+#pragma unroll
+    for (int source = 0; source < kWarps; ++source) {
+      total += spike_partials[source][lane];
+    }
+    spike_grad[static_cast<int64_t>(lane) * n_pre + pre] =
+        FromFloat<Eigen::half>(total * ToFloat(*spike_gradient_scale));
+  }
+}
+
+inline bool SupportsPackedSm120Backward() {
+  int device = 0;
+  int major = 0;
+  int minor = 0;
+  return cudaGetDevice(&device) == cudaSuccess &&
+         cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor,
+                                device) == cudaSuccess &&
+         cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor,
+                                device) == cudaSuccess &&
+         major * 10 + minor >= 120;
 }
 
 template <typename T, typename Index>
@@ -458,6 +599,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(
+      context,
+      context->GetAttr(
+        "use_packed_sm120_backward", &use_packed_sm120_backward_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -504,6 +649,28 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES(
         context, batch * n_pre <= std::numeric_limits<int>::max(),
         errors::InvalidArgument("Tensor size exceeds CUDA kernel index range."));
+    if (use_packed_sm120_backward_) {
+      OP_REQUIRES(
+        context, batch == 32 && n_basis == 4 && n_pairs_ > 0,
+        errors::InvalidArgument(
+          "Packed SM120 recurrent backward requires batch 32, four "
+          "synaptic bases, and compact pair metadata."));
+      if constexpr (
+        !std::is_same<T, Eigen::half>::value ||
+        !std::is_same<Index, uint32>::value) {
+      OP_REQUIRES(
+        context, false,
+        errors::InvalidArgument(
+          "Packed SM120 recurrent backward requires float16 compute "
+          "values and uint32 CSR metadata."));
+      } else {
+      OP_REQUIRES(
+        context, SupportsPackedSm120Backward(),
+        errors::InvalidArgument(
+          "Packed recurrent backward requires GPU compute capability "
+          "SM120 or newer."));
+      }
+    }
 
     const Index* metadata_values = metadata.flat<Index>().data();
     const Index* post_ids = metadata_values;
@@ -522,15 +689,6 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         context,
         context->allocate_output(1, weights.shape(), &weight_grad));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
-    constexpr int zero_threads = 256;
-    OP_REQUIRES_OK(
-        context,
-        GpuLaunchKernel(
-            SetZeroKernel<float>,
-            BlockCountFor(n_edges_, zero_threads, device),
-            zero_threads, 0, device.stream(), n_edges_,
-            weight_grad->flat<float>().data()));
-
     if (batch == 32 && n_basis == 4 && n_pairs_ > 0) {
       Tensor projected;
       const int64_t projected_count = n_pairs_ * 32;
@@ -547,21 +705,60 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           projection_threads, 0, device.stream(), projected_count,
           n_post_, current_grad.flat<T>().data(), basis.flat<T>().data(),
           pair_posts, pair_types, projected.flat<float>().data()));
-      constexpr int gradient_threads = 128;
-      constexpr int warps_per_block = gradient_threads / 32;
-      const int gradient_blocks = static_cast<int>(
-        (n_pre + warps_per_block - 1) / warps_per_block);
-      OP_REQUIRES_OK(
-        context,
-        GpuLaunchKernel(
-          CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
-          gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
-          spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
-          weights.flat<T>().data(), projected.flat<float>().data(),
-          spike_grad->flat<T>().data(),
-          weight_grad->flat<float>().data(),
-          spike_gradient_scale.flat<T>().data()));
+      if constexpr (
+          std::is_same<T, Eigen::half>::value &&
+          std::is_same<Index, uint32>::value) {
+        if (use_packed_sm120_backward_) {
+          OP_REQUIRES_OK(
+              context,
+              GpuLaunchKernel(
+                  CsrSpikeGradPairPackedBatch32Kernel<Index>,
+                  static_cast<int>(n_pre), 64, 0, device.stream(),
+                  static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
+                  edge_ids, pair_ids, weights.flat<T>().data(),
+                  projected.flat<float>().data(), spike_grad->flat<T>().data(),
+                  weight_grad->flat<float>().data(),
+                  spike_gradient_scale.flat<T>().data()));
+        } else {
+          constexpr int gradient_threads = 128;
+          constexpr int warps_per_block = gradient_threads / 32;
+          const int gradient_blocks = static_cast<int>(
+              (n_pre + warps_per_block - 1) / warps_per_block);
+          OP_REQUIRES_OK(
+              context,
+              GpuLaunchKernel(
+                  CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                  gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
+                  spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
+                  weights.flat<T>().data(), projected.flat<float>().data(),
+                  spike_grad->flat<T>().data(),
+                  weight_grad->flat<float>().data(),
+                  spike_gradient_scale.flat<T>().data()));
+        }
+      } else {
+        constexpr int gradient_threads = 128;
+        constexpr int warps_per_block = gradient_threads / 32;
+        const int gradient_blocks = static_cast<int>(
+            (n_pre + warps_per_block - 1) / warps_per_block);
+        OP_REQUIRES_OK(
+            context,
+            GpuLaunchKernel(
+                CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
+                spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
+                weights.flat<T>().data(), projected.flat<float>().data(),
+                spike_grad->flat<T>().data(),
+                weight_grad->flat<float>().data(),
+                spike_gradient_scale.flat<T>().data()));
+      }
     } else {
+      constexpr int zero_threads = 256;
+      OP_REQUIRES_OK(
+          context,
+          GpuLaunchKernel(
+              SetZeroKernel<float>,
+              BlockCountFor(n_edges_, zero_threads, device), zero_threads, 0,
+              device.stream(), n_edges_, weight_grad->flat<float>().data()));
       const int work_count = static_cast<int>(batch * n_pre);
       OP_REQUIRES_OK(
         context,
@@ -582,6 +779,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   int n_post_;
   int64_t n_edges_;
   int64_t n_pairs_;
+  bool use_packed_sm120_backward_;
 };
 
 template <typename T, typename Index>

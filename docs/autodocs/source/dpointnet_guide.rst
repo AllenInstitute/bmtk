@@ -78,6 +78,12 @@ reuses it across recurrent edges. It only changes the recurrent backward pass; i
 that do not differentiate through the recurrent dynamics do not benefit. Master weights and checkpoints remain
 in canonical edge order.
 
+On SM120 or newer GPUs, ``use_packed_sm120_backward="auto"`` additionally selects a packed FP32 recurrent
+backward for float16 batch-32 models with four basis columns and ``uint32`` compact-pair metadata. Set it to
+``false`` for a same-GPU comparison with the prior pair-projected kernel, or to ``true`` to require the packed
+path and fail when any prerequisite is absent. It defaults to ``"auto"`` and does not change the SM70--SM90
+fallback. The default CUDA build includes native SM120 code and ``compute_120`` PTX.
+
 The optimization exchanges startup time and a small amount of persistent GPU memory for faster batch-32 BPTT.
 Measured examples include a 55.7% update-time reduction on a 66,658-neuron network on A100-PCIE-40GB and a 37.9%
 reduction on a 19,570-neuron network on RTX 3090. The corresponding peak-memory increases were 0.54% and 0.09%.
@@ -275,6 +281,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - False
                 * - use_pair_projection
                   - Select the recurrent CUDA backward kernel. ``"auto"`` uses pair projection for batch 32 with four basis columns; ``True`` requires it; ``False`` forces the general kernel.
+                  - "auto"
+                * - use_packed_sm120_backward
+                  - Select the packed recurrent backward on SM120 or newer. ``True`` requires float16, batch 32, four basis columns, ``uint32`` compact-pair metadata, and SM120 hardware; ``False`` retains the prior pair kernel.
                   - "auto"
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.

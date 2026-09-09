@@ -15,6 +15,9 @@ from bmtk.simulator.dpointnet.custom_ops import (
     glif_state_op_status,
     reorder_csr_values,
 )
+from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
+    _validate_packed_sm120_option,
+)
 
 try:
     from numba import njit
@@ -606,6 +609,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_fused_cuda=False,
         use_fused_state=False,
         use_pair_projection="auto",
+        use_packed_sm120_backward="auto",
         batch_size=None,
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
@@ -616,6 +620,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         self.__seq_idx = 0
         use_pair_projection = _validate_pair_projection_option(use_pair_projection)
+        self._use_packed_sm120_backward = _validate_packed_sm120_option(
+            use_packed_sm120_backward
+        )
         use_fused_cuda = _validate_fused_cuda_option(use_fused_cuda)
         fused_dtype_error = _fused_cuda_dtype_error(
             self.compute_dtype, self.variable_dtype
@@ -1139,6 +1146,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self._n_neurons,
                 compute_spike_gradient=True,
                 spike_gradient_scale=self._recurrent_dampening,
+                use_packed_sm120_backward=self._use_packed_sm120_backward,
             )
         return calculate_synaptic_currents(
             rec_z_buf,

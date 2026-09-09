@@ -38,7 +38,7 @@ mapfile -t tf_link_flags < <(
   "$python" -c 'import tensorflow as tf; print(*tf.sysconfig.get_link_flags(), sep="\n")'
 )
 
-read -r -a cuda_archs <<<"${DPOINTNET_CUDA_ARCHS:-70 75 80 86 89 90}"
+read -r -a cuda_archs <<<"${DPOINTNET_CUDA_ARCHS:-70 75 80 86 89 90 120}"
 
 gencode_flags=()
 for arch in "${cuda_archs[@]}"; do
