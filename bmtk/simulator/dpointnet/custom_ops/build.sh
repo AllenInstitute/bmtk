@@ -7,6 +7,7 @@ prefix="$("$python" -c 'import sys; print(sys.prefix)')"
 cxx="${CXX:-$prefix/bin/x86_64-conda-linux-gnu-g++}"
 build_dir="${DPOINTNET_CUSTOM_OP_BUILD_DIR:-$custom_ops_dir/build}"
 output="${DPOINTNET_CUSTOM_OP_OUTPUT:-$custom_ops_dir/_csr_spike_ops.so}"
+glif_output="${DPOINTNET_GLIF_OP_OUTPUT:-$custom_ops_dir/_glif_state_ops.so}"
 
 if [[ -n "${NVCC:-}" ]]; then
   nvcc="$NVCC"
@@ -72,10 +73,36 @@ mkdir -p "$build_dir"
   -Wl,-rpath,"$prefix/lib" \
   -o "$output"
 
+"$cxx" -std=c++17 -fPIC -O3 \
+  -I"$prefix/include" \
+  "${tf_compile_flags[@]}" \
+  -c "$custom_ops_dir/glif_state_ops.cc" \
+  -o "$build_dir/glif_state_ops.o"
+
+"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 \
+  --expt-relaxed-constexpr \
+  -DGOOGLE_CUDA=1 \
+  -I"$prefix/include" \
+  "${tf_compile_flags[@]}" \
+  "${gencode_flags[@]}" \
+  -c "$custom_ops_dir/glif_state_ops.cu.cc" \
+  -o "$build_dir/glif_state_ops.cu.o"
+
+"$cxx" -shared \
+  "$build_dir/glif_state_ops.o" \
+  "$build_dir/glif_state_ops.cu.o" \
+  "${tf_link_flags[@]}" \
+  -L"$prefix/lib" -lcudart \
+  -Wl,-rpath,"$prefix/lib" \
+  -o "$glif_output"
+
 arch_file="${output%.so}.archs"
 {
   printf 'sm=%s\n' "${cuda_archs[*]}"
   printf 'ptx=%s\n' "$highest_arch"
 } > "$arch_file"
 
+cp "$arch_file" "${glif_output%.so}.archs"
+
 echo "$output"
+echo "$glif_output"

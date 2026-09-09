@@ -7,11 +7,14 @@ from bmtk.simulator.dpointnet.io_tools import io
 from bmtk.simulator.dpointnet.custom_ops import (
     build_csr_connectivity,
     cuda_op_status,
+    fused_dense_state,
     fused_cuda_available,
+    fused_glif_state_available,
+    fused_spike_shift,
     fused_spike_currents,
+    glif_state_op_status,
     reorder_csr_values,
 )
-
 
 try:
     from numba import njit
@@ -520,11 +523,11 @@ def _validate_pair_projection_option(value):
         return value
     if isinstance(value, (bytes, np.bytes_)):
         try:
-            value = value.decode('utf-8')
+            value = value.decode("utf-8")
         except UnicodeDecodeError:
             pass
-    if isinstance(value, (str, np.str_)) and value == 'auto':
-        return 'auto'
+    if isinstance(value, (str, np.str_)) and value == "auto":
+        return "auto"
     raise ValueError('use_pair_projection must be true, false, or "auto".')
 
 
@@ -532,17 +535,32 @@ def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
     option = _validate_pair_projection_option(option)
     incompatibilities = []
     if not fused_cuda:
-        incompatibilities.append('fused CUDA currents are disabled or unavailable')
+        incompatibilities.append("fused CUDA currents are disabled or unavailable")
     if batch_size != 32:
-        incompatibilities.append(f'batch_size is {batch_size}, not 32')
+        incompatibilities.append(f"batch_size is {batch_size}, not 32")
     if n_syn_basis != 4:
-        incompatibilities.append(
-            f'the synaptic basis has {n_syn_basis} columns, not 4'
-        )
+        incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")
     if option is True and incompatibilities:
         raise ValueError(
-            'use_pair_projection=True is incompatible with this model: '
-            + '; '.join(incompatibilities)
+            "use_pair_projection=True is incompatible with this model: "
+            + "; ".join(incompatibilities)
+        )
+    return option is not False and not incompatibilities
+
+
+def _resolve_fused_state(option, n_syn_basis, pseudo_gauss):
+    option = _validate_fused_cuda_option(option)
+    incompatibilities = []
+    if not fused_glif_state_available():
+        incompatibilities.append(glif_state_op_status())
+    if n_syn_basis != 4:
+        incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")
+    if pseudo_gauss:
+        incompatibilities.append("pseudo_gauss requires the TensorFlow state path")
+    if option is True and incompatibilities:
+        raise ValueError(
+            "use_fused_state=True is incompatible with this model: "
+            + "; ".join(incompatibilities)
         )
     return option is not False and not incompatibilities
 
@@ -586,6 +604,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         tau_basis=None,
         synaptic_basis_weights=None,
         use_fused_cuda=False,
+        use_fused_state=False,
         use_pair_projection="auto",
         batch_size=None,
         track_voltage_penalty=False,
@@ -733,10 +752,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # float32 initial value to a float16 compute_dtype under mixed precision.
         self.decay = tf.Variable(
             tf.cast(tf.gather(membrane_decay, self._node_type_ids), self.compute_dtype),
-            trainable=False, dtype=self.compute_dtype)
+            trainable=False,
+            dtype=self.compute_dtype,
+        )
         self.current_factor = tf.Variable(
             tf.cast(tf.gather(current_factor, self._node_type_ids), self.compute_dtype),
-            trainable=False, dtype=self.compute_dtype)
+            trainable=False,
+            dtype=self.compute_dtype,
+        )
 
         ## TODO: This shouldn't be stored in a separate pickle.
         # path = os.path.join(glif_network["data_dir"], 'tf_data', 'syn_id_to_syn_weights_dict.pkl')
@@ -747,17 +770,31 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # synaptic_basis_weights_ = tf.constant(synaptic_basis_weights_, dtype=self.compute_dtype)
 
         if synaptic_basis_weights is None:
-            _synaptic_basis_weights = glif_network["synapses"]['dynamics_params']['basis_weights']
+            _synaptic_basis_weights = glif_network["synapses"]["dynamics_params"][
+                "basis_weights"
+            ]
         elif isinstance(synaptic_basis_weights, str):
-            with open(synaptic_basis_weights, 'rb') as f:
+            with open(synaptic_basis_weights, "rb") as f:
                 syn_id_to_syn_weights_dict = pkl.load(f)
-            _synaptic_basis_weights = np.array(list(syn_id_to_syn_weights_dict.values()))
+            _synaptic_basis_weights = np.array(
+                list(syn_id_to_syn_weights_dict.values())
+            )
         elif isinstance(synaptic_basis_weights, (list, np.ndarray)):
             _synaptic_basis_weights = np.array(synaptic_basis_weights)
         else:
             raise NotImplementedError()
 
-        self.synaptic_basis_weights = tf.constant(_synaptic_basis_weights, dtype=self.compute_dtype)
+        self.synaptic_basis_weights = tf.constant(
+            _synaptic_basis_weights, dtype=self.compute_dtype
+        )
+        self._use_fused_state = _resolve_fused_state(
+            use_fused_state, self._n_syn_basis, self._pseudo_gauss
+        )
+        if self._use_fused_state:
+            io.log_info(
+                "DPointNet fused GLIF state transition enabled "
+                f"(use_fused_state={use_fused_state!r})."
+            )
         self._use_pair_projection = _resolve_pair_projection(
             use_pair_projection,
             self._use_fused_cuda,
@@ -1293,26 +1330,47 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Scale with the learning rate
         rec_inputs = rec_inputs * self._lr_scale
 
-        new_v, new_r, new_asc, new_psc_rise, new_psc = self._dense_update_impl(
-            batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs
-        )
-
-        # Generate spikes from a high-fidelity membrane lane before state quantization.
-        # v_sc = (new_v - self.v_th) / self.normalizer # normalized is 1 for scaled voltage
-        v_sc = new_v - self.v_th
-        if self._pseudo_gauss:
-            new_z = spike_gauss(v_sc, self._gauss_std, self._dampening_factor)
+        if self._use_fused_state:
+            new_v, new_r, new_asc, new_psc_rise, new_psc = fused_dense_state(
+                prev_z,
+                v,
+                r,
+                asc,
+                psc_rise,
+                psc,
+                rec_inputs,
+                syn_decay=self.syn_decay,
+                psc_initial=self.psc_initial,
+                asc_decay=self.asc_decay,
+                asc_amps=self.asc_amps,
+                decay=self.decay,
+                current_factor=self.current_factor,
+                t_ref_steps=self.t_ref_steps,
+                dt=self._dt,
+                v_reset=self.v_reset,
+                voltage_gradient_dampening=self._voltage_gradient_dampening,
+                hard_reset=self._hard_reset,
+            )
+            new_z, new_z_buf = fused_spike_shift(
+                new_v - self.v_th,
+                new_r > 0,
+                z_buf,
+                self._dampening_factor,
+            )
         else:
-            new_z = spike_function(v_sc, self._dampening_factor)
-
-        # Generate the new spikes if the refractory period is concluded
-        refractory_active = tf.greater(new_r, 0)
-        new_z = tf.where(refractory_active, tf.zeros_like(new_z), new_z)
-
-        # Add current spikes to the buffer
-        new_z_buf = tf.concat(
-            [new_z, z_buf[:, : -self._n_neurons]], axis=1
-        )  # Shift buffer
+            new_v, new_r, new_asc, new_psc_rise, new_psc = self._dense_update_impl(
+                batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs
+            )
+            v_sc = new_v - self.v_th
+            if self._pseudo_gauss:
+                new_z = spike_gauss(v_sc, self._gauss_std, self._dampening_factor)
+            else:
+                new_z = spike_function(v_sc, self._dampening_factor)
+            refractory_active = tf.greater(new_r, 0)
+            new_z = tf.where(refractory_active, tf.zeros_like(new_z), new_z)
+            new_z_buf = tf.concat(
+                [new_z, z_buf[:, : -self._n_neurons]], axis=1
+            )
 
         if self._return_voltage_sequences:
             outputs = tf.concat([new_z, new_v], axis=-1)

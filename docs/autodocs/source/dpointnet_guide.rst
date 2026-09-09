@@ -85,6 +85,15 @@ These measurements are hardware- and topology-dependent; benchmark representativ
 pair kernel. Small-batch specializations were tested but regressed the complete networks, so ``"auto"`` does not
 select pair projection below batch 32.
 
+The optional ``use_fused_state`` cell parameter fuses the GLIF membrane,
+refractory, ASC, PSC, spike, and delayed-history transition. It is ``false`` by
+default. ``"auto"`` selects it only when the CUDA library is available, the
+synaptic basis has four columns, and the triangular surrogate is active;
+``true`` requires those conditions and otherwise raises a configuration error.
+Gaussian surrogate models retain the TensorFlow transition. Soft reset avoids
+retaining refractory history in the custom backward; hard reset remains
+supported and tested.
+
 
 Overview
 ========
