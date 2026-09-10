@@ -4,6 +4,7 @@ from .csr_spike_ops import (
     fused_cuda_available,
     fused_spike_currents,
     reorder_csr_values,
+    restore_csr_values,
 )
 from .glif_state_ops import (
     fused_dense_state,
@@ -22,4 +23,5 @@ __all__ = [
     "fused_spike_currents",
     "glif_state_op_status",
     "reorder_csr_values",
+    "restore_csr_values",
 ]

@@ -43,6 +43,14 @@ __global__ void CsrReorderKernel(
   }
 }
 
+template <typename T, typename Index>
+__global__ void CsrRestoreKernel(
+    int64_t count, const T* values, const Index* edge_ids, T* restored) {
+  for (int64_t index : GpuGridRangeX(count)) {
+    restored[edge_ids[index]] = values[index];
+  }
+}
+
 inline int BlockCountFor(int64_t count, int threads, const GPUDevice& device) {
   const int64_t requested = (count + threads - 1) / threads;
   const int maximum = device.getNumGpuMultiProcessors() * 8;
@@ -345,7 +353,7 @@ __device__ __forceinline__ int ReverseBits(int value) {
   return result;
 }
 
-template <typename Index>
+template <typename Index, bool kWriteCsrGradient>
 __global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
     int n_pre, const Eigen::half* spikes, const Index* row_splits,
     const Index* edge_ids, const Index* pair_ids, const Eigen::half* weights,
@@ -419,7 +427,10 @@ __global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
     const Index edge =
         base + static_cast<Index>(kSlots * target + slot);
     if (sub < kPerSlot && edge < end) {
-      weight_grad[static_cast<int64_t>(edge_ids[edge])] = partial[0];
+      const int64_t target_edge =
+          kWriteCsrGradient ? static_cast<int64_t>(edge)
+                            : static_cast<int64_t>(edge_ids[edge]);
+      weight_grad[target_edge] = partial[0];
     }
   }
 
@@ -694,6 +705,63 @@ class DpointnetCsrReorderOp : public OpKernel {
 };
 
 template <typename T, typename Index>
+class DpointnetCsrRestoreOp : public OpKernel {
+ public:
+  explicit DpointnetCsrRestoreOp(OpKernelConstruction* context)
+      : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
+    OP_REQUIRES_OK(context, context->GetAttr("n_sources", &n_sources_));
+    OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    const Tensor& values = context->input(0);
+    core::RefCountPtr<Var> metadata_variable;
+    if (!LookupVariable<Index>(context, 1, "metadata", &metadata_variable)) {
+      return;
+    }
+    const Tensor& metadata = *metadata_variable->tensor();
+    RequireVector(context, values, "values");
+    RequireVector(context, metadata, "metadata");
+    if (!context->status().ok()) {
+      return;
+    }
+    OP_REQUIRES(
+        context, values.NumElements() == n_edges_,
+        errors::InvalidArgument("values length must equal n_edges."));
+    OP_REQUIRES(
+        context,
+        metadata.NumElements() ==
+            3 * n_edges_ + n_sources_ + 1 +
+                (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
+        errors::InvalidArgument("metadata size does not match connectivity."));
+    const Index* edge_ids =
+        metadata.flat<Index>().data() + 2 * n_edges_ + n_sources_ + 1;
+
+    Tensor* restored = nullptr;
+    OP_REQUIRES_OK(
+        context, context->allocate_output(0, values.shape(), &restored));
+    const int64_t count = values.NumElements();
+    if (count == 0) {
+      return;
+    }
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    constexpr int threads = 256;
+    OP_REQUIRES_OK(
+        context,
+        GpuLaunchKernel(
+            CsrRestoreKernel<T, Index>, BlockCountFor(count, threads, device),
+            threads, 0, device.stream(), count, values.flat<T>().data(),
+            edge_ids, restored->flat<T>().data()));
+  }
+
+ private:
+  int64_t n_edges_;
+  int64_t n_sources_;
+  int64_t n_pairs_;
+};
+
+template <typename T, typename Index>
 class DpointnetCsrSpikeForwardOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeForwardOp(OpKernelConstruction* context)
@@ -888,6 +956,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         context,
         context->GetAttr(
             "use_packed_sm120_backward", &use_packed_sm120_backward_));
+    OP_REQUIRES_OK(
+      context,
+      context->GetAttr(
+        "write_csr_weight_gradient", &write_csr_weight_gradient_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -956,6 +1028,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           "SM86 or newer."));
       }
     }
+      OP_REQUIRES(
+        context,
+        !write_csr_weight_gradient_ || use_packed_sm120_backward_,
+        errors::InvalidArgument(
+          "CSR-ordered gradients require packed recurrent backward."));
 
     const Index* metadata_values = metadata.flat<Index>().data();
     const Index* post_ids = metadata_values;
@@ -994,16 +1071,29 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           std::is_same<T, Eigen::half>::value &&
           std::is_same<Index, uint32>::value) {
         if (use_packed_sm120_backward_) {
-          OP_REQUIRES_OK(
-              context,
-              GpuLaunchKernel(
-                  CsrSpikeGradPairPackedBatch32Kernel<Index>,
-                  static_cast<int>(n_pre), 64, 0, device.stream(),
-                  static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                  edge_ids, pair_ids, weights.flat<T>().data(),
-                  projected.flat<float>().data(), spike_grad->flat<T>().data(),
-                  weight_grad->flat<float>().data(),
-                  spike_gradient_scale.flat<T>().data()));
+          if (write_csr_weight_gradient_) {
+            OP_REQUIRES_OK(
+                context,
+                GpuLaunchKernel(
+                    CsrSpikeGradPairPackedBatch32Kernel<Index, true>,
+                    static_cast<int>(n_pre), 64, 0, device.stream(),
+                    static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
+                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    projected.flat<float>().data(), spike_grad->flat<T>().data(),
+                    weight_grad->flat<float>().data(),
+                    spike_gradient_scale.flat<T>().data()));
+          } else {
+            OP_REQUIRES_OK(
+                context,
+                GpuLaunchKernel(
+                    CsrSpikeGradPairPackedBatch32Kernel<Index, false>,
+                    static_cast<int>(n_pre), 64, 0, device.stream(),
+                    static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
+                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    projected.flat<float>().data(), spike_grad->flat<T>().data(),
+                    weight_grad->flat<float>().data(),
+                    spike_gradient_scale.flat<T>().data()));
+          }
         } else {
           constexpr int gradient_threads = 128;
           constexpr int warps_per_block = gradient_threads / 32;
@@ -1065,6 +1155,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   int64_t n_edges_;
   int64_t n_pairs_;
   bool use_packed_sm120_backward_;
+  bool write_csr_weight_gradient_;
 };
 
 template <typename T, typename Index>
@@ -1224,6 +1315,12 @@ class DpointnetCsrWeightGradOp : public OpKernel {
           .TypeConstraint<T>("T")                                        \
           .TypeConstraint<Index>("Tindex"),                              \
       DpointnetCsrReorderOp<T, Index>);                                  \
+        REGISTER_KERNEL_BUILDER(                                               \
+          Name("DpointnetCsrRestore")                                        \
+            .Device(DEVICE_GPU)                                            \
+            .TypeConstraint<T>("T")                                        \
+            .TypeConstraint<Index>("Tindex"),                              \
+          DpointnetCsrRestoreOp<T, Index>);                                  \
   REGISTER_KERNEL_BUILDER(                                               \
       Name("DpointnetCsrSpikeForward")                                   \
           .Device(DEVICE_GPU)                                            \

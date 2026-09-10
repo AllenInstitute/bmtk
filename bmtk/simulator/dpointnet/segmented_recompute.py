@@ -41,6 +41,7 @@ class SegmentedRecomputeRunner:
         n_sequence_outputs,
         differentiate_inputs=False,
         pack_spike_checkpoints=False,
+        variable_gradient_transform=None,
     ):
         self.core_model = core_model
         self.sequence_length = int(sequence_length)
@@ -48,6 +49,7 @@ class SegmentedRecomputeRunner:
         self.n_sequence_outputs = int(n_sequence_outputs)
         self.differentiate_inputs = bool(differentiate_inputs)
         self.pack_spike_checkpoints = bool(pack_spike_checkpoints)
+        self.variable_gradient_transform = variable_gradient_transform
         if self.sequence_length <= 0:
             raise ValueError("sequence_length must be positive.")
         if not 1 <= self.chunk_size <= self.sequence_length:
@@ -377,6 +379,10 @@ class SegmentedRecomputeRunner:
             gradient if dtype.is_floating or dtype.is_complex else None
             for gradient, dtype in zip(state_cotangents, state_dtypes)
         )
+        if self.variable_gradient_transform is not None:
+            variable_gradients = tuple(
+                self.variable_gradient_transform(variables, variable_gradients)
+            )
         return input_gradient, initial_state_gradients, variable_gradients
 
     def __call__(self, inputs, initial_state):

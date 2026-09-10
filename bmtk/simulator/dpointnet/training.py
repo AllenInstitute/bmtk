@@ -531,6 +531,15 @@ class TrainingEngine:
         return self.rnn.run_extractor(x, init_state)
 
     def prepare_gradient_checkpointing(self):
+        cell = getattr(self.rnn, "cell", None)
+        use_direct_csr_gradient = getattr(
+            cell, "_use_direct_csr_recurrent_gradient", False
+        )
+        if use_direct_csr_gradient and not self.gradient_checkpointing:
+            raise ValueError(
+                "use_direct_csr_recurrent_gradient=True requires "
+                "gradient_checkpointing=True."
+            )
         if not self.gradient_checkpointing or self._extractor_forward is not None:
             return
         if self.rnn.extractor_model is None:
@@ -544,6 +553,11 @@ class TrainingEngine:
             n_sequence_outputs=2,
             differentiate_inputs=False,
             pack_spike_checkpoints=self.pack_spike_checkpoints,
+            variable_gradient_transform=(
+                cell.restore_segmented_variable_gradients
+                if use_direct_csr_gradient
+                else None
+            ),
         )
         io.log_info(
             "Segmented exact BPTT enabled: "

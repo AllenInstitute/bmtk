@@ -8,13 +8,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
 
-
-_LIBRARY_PATH = Path(__file__).with_name('_csr_spike_ops.so')
-_ARCHITECTURE_PATH = Path(__file__).with_name('_csr_spike_ops.archs')
+_LIBRARY_PATH = Path(__file__).with_name("_csr_spike_ops.so")
+_ARCHITECTURE_PATH = Path(__file__).with_name("_csr_spike_ops.archs")
 _OPS = None
 _LOAD_ERROR = None
 _RESOURCE_COUNTER = itertools.count()
-_RESOURCE_CONTAINER = 'bmtk_dpointnet_csr'
+_RESOURCE_CONTAINER = "bmtk_dpointnet_csr"
 
 
 def _read_built_architectures():
@@ -22,47 +21,41 @@ def _read_built_architectures():
         return (), None
     values = {}
     for line in _ARCHITECTURE_PATH.read_text().splitlines():
-        key, separator, value = line.partition('=')
+        key, separator, value = line.partition("=")
         if separator:
             values[key] = value
-    sm_architectures = tuple(
-        int(value) for value in values.get('sm', '').split()
-    )
-    ptx_architecture = values.get('ptx')
-    return sm_architectures, (
-        int(ptx_architecture) if ptx_architecture else None
-    )
+    sm_architectures = tuple(int(value) for value in values.get("sm", "").split())
+    ptx_architecture = values.get("ptx")
+    return sm_architectures, (int(ptx_architecture) if ptx_architecture else None)
 
 
 _SM_ARCHITECTURES, _PTX_ARCHITECTURE = _read_built_architectures()
 
 
 def _gpu_compatibility_error():
-    visible_gpus = tf.config.get_visible_devices('GPU')
+    visible_gpus = tf.config.get_visible_devices("GPU")
     if len(visible_gpus) != 1:
-        return f'fused CUDA requires exactly one visible GPU; found {len(visible_gpus)}'
+        return f"fused CUDA requires exactly one visible GPU; found {len(visible_gpus)}"
     if not _SM_ARCHITECTURES and _PTX_ARCHITECTURE is None:
-        return f'build architecture metadata is missing at {_ARCHITECTURE_PATH}'
+        return f"build architecture metadata is missing at {_ARCHITECTURE_PATH}"
     details = tf.config.experimental.get_device_details(visible_gpus[0])
-    capability = details.get('compute_capability')
+    capability = details.get("compute_capability")
     if capability is None:
-        return f'compute capability is unavailable for {visible_gpus[0].name}'
+        return f"compute capability is unavailable for {visible_gpus[0].name}"
     architecture = int(capability[0]) * 10 + int(capability[1])
     if architecture in _SM_ARCHITECTURES:
         return None
     if _PTX_ARCHITECTURE is not None and architecture >= _PTX_ARCHITECTURE:
         return None
     return (
-        f'GPU compute capability sm_{architecture} is incompatible with '
-        f'sm targets {_SM_ARCHITECTURES} and compute_{_PTX_ARCHITECTURE} PTX'
+        f"GPU compute capability sm_{architecture} is incompatible with "
+        f"sm targets {_SM_ARCHITECTURES} and compute_{_PTX_ARCHITECTURE} PTX"
     )
 
 
 def _destroy_metadata_resource(handle):
     try:
-        tf.raw_ops.DestroyResourceOp(
-            resource=handle, ignore_lookup_error=True
-        )
+        tf.raw_ops.DestroyResourceOp(resource=handle, ignore_lookup_error=True)
     except (tf.errors.OpError, RuntimeError):
         pass
 
@@ -71,7 +64,7 @@ class CsrConnectivity(Mapping):
     def __init__(self, values):
         self._values = values
         self._finalizer = weakref.finalize(
-            self, _destroy_metadata_resource, values['metadata_handle']
+            self, _destroy_metadata_resource, values["metadata_handle"]
         )
 
     def __getitem__(self, key):
@@ -206,8 +199,7 @@ def fused_cuda_available():
     return _OPS is not None and _gpu_compatibility_error() is None
 
 
-def _csr_index_dtype(
-        n_edges, n_source_neurons, n_target_neurons, n_synapse_types):
+def _csr_index_dtype(n_edges, n_source_neurons, n_target_neurons, n_synapse_types):
     maximum_value = max(
         int(n_edges),
         int(n_source_neurons) - 1,
@@ -218,7 +210,7 @@ def _csr_index_dtype(
 
 
 def _create_metadata_resource(metadata, index_dtype):
-    resource_name = f'csr_{os.getpid()}_{next(_RESOURCE_COUNTER)}'
+    resource_name = f"csr_{os.getpid()}_{next(_RESOURCE_COUNTER)}"
     metadata_handle = tf.raw_ops.VarHandleOp(
         dtype=index_dtype,
         shape=metadata.shape,
@@ -371,6 +363,21 @@ def reorder_csr_values(values, connectivity):
     )
 
 
+def restore_csr_values(values, connectivity):
+    if _OPS is None:
+        raise RuntimeError(
+            f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
+        )
+    return _OPS.dpointnet_csr_restore(
+        values,
+        connectivity["metadata_handle"],
+        Tindex=tf.dtypes.as_dtype(connectivity["index_dtype"]),
+        n_edges=connectivity["n_edges"],
+        n_sources=connectivity["n_sources"],
+        n_pairs=connectivity["n_pairs"],
+    )
+
+
 @ops.RegisterGradient("DpointnetCsrSpikeForward")
 def _fused_spike_currents_gradient(op, current_grad):
     compute_spike_gradient = op.get_attr("compute_spike_gradient")
@@ -390,6 +397,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+            write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
         )
         if not compute_weight_gradient:
             weight_grad = None
@@ -438,6 +446,7 @@ def fused_spike_currents(
     use_packed_sm120_backward="auto",
     use_fixed4_forward=False,
     initial_currents=None,
+    write_csr_weight_gradient=False,
 ):
     if _OPS is None:
         raise RuntimeError(
@@ -486,6 +495,10 @@ def fused_spike_currents(
     use_packed_sm120_backward = _resolve_packed_sm120_backward(
         use_packed_sm120_backward, spikes, connectivity, basis
     )
+    if write_csr_weight_gradient and not use_packed_sm120_backward:
+        raise ValueError(
+            "write_csr_weight_gradient=True requires packed recurrent backward."
+        )
     use_grouped_batch32_forward = spikes.shape[0] == 32 and basis.shape[1] == 4
     if use_grouped_batch32_forward:
         active_rows = tf.cast(
@@ -528,4 +541,5 @@ def fused_spike_currents(
         use_grouped_batch32_forward=use_grouped_batch32_forward,
         use_fixed4_forward=use_fixed4_forward,
         use_packed_sm120_backward=use_packed_sm120_backward,
+        write_csr_weight_gradient=write_csr_weight_gradient,
     )

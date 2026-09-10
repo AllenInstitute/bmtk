@@ -21,6 +21,22 @@ REGISTER_OP("DpointnetCsrReorder")
       return absl::OkStatus();
     });
 
+REGISTER_OP("DpointnetCsrRestore")
+    .Input("values: T")
+    .Input("metadata: resource")
+    .Attr("T: {half, float}")
+    .Attr("Tindex: {uint32, int64}")
+    .Attr("n_edges: int >= 0")
+    .Attr("n_sources: int >= 1")
+    .Attr("n_pairs: int >= 0")
+    .Output("restored: T")
+    .SetShapeFn([](InferenceContext* context) -> absl::Status {
+      ShapeHandle values;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 1, &values));
+      context->set_output(0, values);
+      return absl::OkStatus();
+    });
+
 REGISTER_OP("DpointnetCsrSpikeForward")
     .Input("spikes: T")
     .Input("master_weights: Tmaster")
@@ -44,6 +60,7 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Attr("use_grouped_batch32_forward: bool = false")
     .Attr("use_fixed4_forward: bool = false")
     .Attr("use_packed_sm120_backward: bool = false")
+    .Attr("write_csr_weight_gradient: bool = false")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle spikes;
@@ -90,6 +107,7 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
     .Attr("n_edges: int >= 0")
     .Attr("n_pairs: int >= 0")
     .Attr("use_packed_sm120_backward: bool = false")
+    .Attr("write_csr_weight_gradient: bool = false")
     .Output("spike_grad: T")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {

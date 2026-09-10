@@ -321,6 +321,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - use_fused_current_accumulation
                   - Accumulate recurrent and fused spike-input currents through one additive CUDA buffer. Requires fused CUDA currents; current-type inputs retain the TensorFlow addition path.
                   - False
+                * - use_direct_csr_recurrent_gradient
+                  - Accumulate packed recurrent weight gradients in CSR order and restore canonical SONATA order once after segmented exact BPTT. Requires gradient checkpointing, individually trainable recurrent edges, fused CUDA, SM86 or newer, float16 compute, batch 32, four basis columns, and pair projection.
+                  - False
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.
                   - False

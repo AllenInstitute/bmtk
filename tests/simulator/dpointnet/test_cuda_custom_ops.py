@@ -8,6 +8,7 @@ from bmtk.simulator.dpointnet.custom_ops import (
     fused_cuda_available,
     fused_spike_currents,
     reorder_csr_values,
+    restore_csr_values,
 )
 from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
@@ -27,6 +28,7 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     _resolve_fused_state,
     _resolve_pair_projection,
     _validate_fixed4_forward_option,
+    _validate_direct_csr_gradient_option,
     _validate_fused_current_accumulation_option,
     _validate_fused_cuda_option,
     _validate_pair_projection_option,
@@ -94,6 +96,17 @@ def test_fused_current_accumulation_option_accepts_booleans(value):
 def test_fused_current_accumulation_option_rejects_lookalikes(value):
     with pytest.raises(ValueError, match="use_fused_current_accumulation"):
         _validate_fused_current_accumulation_option(value)
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_direct_csr_gradient_option_accepts_booleans(value):
+    assert _validate_direct_csr_gradient_option(value) is value
+
+
+@pytest.mark.parametrize("value", [0, 1, "auto", np.bool_(True)])
+def test_direct_csr_gradient_option_rejects_lookalikes(value):
+    with pytest.raises(ValueError, match="use_direct_csr_recurrent_gradient"):
+        _validate_direct_csr_gradient_option(value)
 
 
 def _reference_currents_for_connectivity(
@@ -201,6 +214,19 @@ def test_build_csr_connectivity_groups_edges_by_source():
     assert connectivity["n_pairs"] == 4
     assert connectivity["index_dtype"] == "uint32"
     assert _metadata_values(connectivity).dtype == tf.uint32
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_csr_reorder_restore_round_trip(dtype):
+    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 3, 2, 2)
+    values = tf.constant([1.0, 2.0, 3.0, 4.0], dtype)
+
+    restored = restore_csr_values(
+        reorder_csr_values(values, connectivity), connectivity
+    )
+
+    np.testing.assert_array_equal(restored, values)
 
 
 def test_csr_index_dtype_retains_int64_beyond_uint32():
@@ -792,8 +818,13 @@ def test_fused_recurrent_gradient_scale_only_affects_spike_gradient():
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
-@pytest.mark.parametrize("packed_option", [False, "auto"])
-def test_pair_projected_batch32_matches_forward_and_gradients(dtype, packed_option):
+@pytest.mark.parametrize(
+    ("packed_option", "write_csr_gradient"),
+    [(False, False), ("auto", False), ("auto", True)],
+)
+def test_pair_projected_batch32_matches_forward_and_gradients(
+    dtype, packed_option, write_csr_gradient
+):
     batch_size = 32
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
@@ -814,6 +845,21 @@ def test_pair_projected_batch32_matches_forward_and_gradients(dtype, packed_opti
         [batch_size * 2, 4],
     ) / tf.cast(batch_size * 2 * 4, dtype)
 
+    if write_csr_gradient and dtype == tf.float32:
+        with pytest.raises(ValueError, match="requires packed recurrent backward"):
+            fused_spike_currents(
+                spikes,
+                master_weights,
+                csr_weights,
+                connectivity,
+                basis,
+                n_post=2,
+                compute_spike_gradient=True,
+                use_packed_sm120_backward=packed_option,
+                write_csr_weight_gradient=True,
+            )
+        return
+
     with tf.GradientTape() as fused_tape:
         fused = fused_spike_currents(
             spikes,
@@ -824,9 +870,12 @@ def test_pair_projected_batch32_matches_forward_and_gradients(dtype, packed_opti
             n_post=2,
             compute_spike_gradient=True,
             use_packed_sm120_backward=packed_option,
+            write_csr_weight_gradient=write_csr_gradient,
         )
         fused_loss = tf.reduce_sum(fused * loss_weights)
-    fused_gradients = fused_tape.gradient(fused_loss, [spikes, master_weights])
+    fused_gradients = list(fused_tape.gradient(fused_loss, [spikes, master_weights]))
+    if write_csr_gradient:
+        fused_gradients[1] = restore_csr_values(fused_gradients[1], connectivity)
 
     with tf.GradientTape() as reference_tape:
         reference = _reference_currents(spikes, master_weights, basis)
@@ -845,6 +894,27 @@ def test_pair_projected_batch32_matches_forward_and_gradients(dtype, packed_opti
             reference_gradient.numpy(),
             rtol=tolerance,
             atol=tolerance,
+        )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_direct_csr_gradient_rejects_nonpacked_backward(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
+    )
+
+    with pytest.raises(ValueError, match="requires packed recurrent backward"):
+        fused_spike_currents(
+            tf.ones([32, 3], tf.float32),
+            tf.ones([4], tf.float32),
+            tf.ones([4], tf.float32),
+            connectivity,
+            tf.ones([2, 4], tf.float32),
+            n_post=2,
+            compute_spike_gradient=True,
+            use_packed_sm120_backward=False,
+            write_csr_weight_gradient=True,
         )
 
 
@@ -1348,6 +1418,7 @@ def test_fused_currents_support_int64_connectivity():
     )
     master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
     csr_weights = reorder_csr_values(master_weights, connectivity)
+    restored_weights = restore_csr_values(csr_weights, connectivity)
     basis = tf.constant([[1.0, 0.5], [0.25, 2.0]], dtype=tf.float32)
     spikes = tf.constant([[1.0, 0.0, 2.0]], dtype=tf.float32)
 
@@ -1365,6 +1436,7 @@ def test_fused_currents_support_int64_connectivity():
         result.numpy(),
         _reference_currents(spikes, master_weights, basis).numpy(),
     )
+    np.testing.assert_array_equal(restored_weights, master_weights)
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
@@ -1378,6 +1450,7 @@ def test_fused_currents_support_empty_connectivity_and_gradients():
     )
     master_weights = tf.Variable([], dtype=tf.float32)
     csr_weights = reorder_csr_values(master_weights, connectivity)
+    restored_weights = restore_csr_values(csr_weights, connectivity)
     basis = tf.constant([[1.0, 0.5], [0.25, 2.0]], dtype=tf.float32)
     spikes = tf.Variable([[1.0, 0.0, 2.0]], dtype=tf.float32)
 
@@ -1397,6 +1470,7 @@ def test_fused_currents_support_empty_connectivity_and_gradients():
     np.testing.assert_array_equal(currents.numpy(), np.zeros((2, 2)))
     np.testing.assert_array_equal(spike_gradient.numpy(), np.zeros((1, 3)))
     assert weight_gradient.shape == (0,)
+    assert restored_weights.shape == (0,)
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")

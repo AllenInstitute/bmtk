@@ -15,6 +15,12 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     calculate_synaptic_currents,
     make_pre_ind_table,
 )
+from bmtk.simulator.dpointnet.custom_ops import (
+    build_csr_connectivity,
+    fused_cuda_available,
+    fused_spike_currents,
+    reorder_csr_values,
+)
 from bmtk.simulator.dpointnet.network_adaptor import lex_sort_order_np
 from bmtk.simulator.dpointnet.rnn_model import RNN
 from bmtk.simulator.dpointnet.segmented_recompute import (
@@ -198,6 +204,169 @@ def test_segmented_recompute_matches_full_outputs_states_and_gradients():
         np.testing.assert_allclose(segmented, full, rtol=1e-6, atol=1e-6)
     for segmented, full in zip(segmented_gradients, full_gradients):
         np.testing.assert_allclose(segmented, full, rtol=2e-6, atol=2e-6)
+
+
+def test_segmented_recompute_transforms_accumulated_variable_gradient_once():
+    inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
+    cell = tf.keras.layers.SimpleRNNCell(
+        1,
+        activation="tanh",
+        use_bias=False,
+        kernel_initializer=tf.keras.initializers.Constant(0.7),
+        recurrent_initializer=tf.keras.initializers.Constant(0.4),
+    )
+    sequence, final_state = tf.keras.layers.RNN(
+        cell, return_sequences=True, return_state=True
+    )(inputs, initial_state=[initial_state])
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (sequence, sequence * tf.constant(1.5), final_state),
+    )
+    transform_calls = []
+
+    def double_variable_gradients(variables, gradients):
+        transform_calls.append(tuple(variable.name for variable in variables))
+        return tuple(2.0 * gradient for gradient in gradients)
+
+    runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        variable_gradient_transform=double_variable_gradients,
+    )
+    values = tf.constant(np.linspace(-0.5, 0.8, 14, dtype=np.float32).reshape(2, 7, 1))
+    state = tf.constant([[0.2], [-0.1]], tf.float32)
+
+    with tf.GradientTape() as tape:
+        output = core_model((values, state))
+        reference_loss = tf.add_n([tf.reduce_sum(value) for value in output])
+    reference_gradients = tape.gradient(reference_loss, core_model.trainable_variables)
+
+    with tf.GradientTape() as tape:
+        output = runner(values, (state,))
+        transformed_loss = tf.add_n([tf.reduce_sum(value) for value in output])
+    transformed_gradients = tape.gradient(
+        transformed_loss, core_model.trainable_variables
+    )
+
+    assert len(transform_calls) == 1
+    for transformed, reference in zip(transformed_gradients, reference_gradients):
+        np.testing.assert_allclose(transformed, 2.0 * reference, rtol=2e-6, atol=2e-6)
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order():
+    indices = np.array([[0, 0], [1, 0], [1, 2], [0, 1]], np.int64)
+    synapse_types = np.array([0, 1, 0, 1], np.int64)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        3,
+        2,
+        2,
+        build_compact_pairs=True,
+    )
+    basis = tf.constant(
+        [[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]],
+        tf.float16,
+    )
+
+    class CurrentSequence(tf.keras.layers.Layer):
+        def __init__(self, write_csr_gradient):
+            super().__init__(dtype="mixed_float16")
+            self.write_csr_gradient = write_csr_gradient
+            self.master = self.add_weight(
+                name="recurrent_master",
+                shape=(4,),
+                dtype=tf.float32,
+                initializer=tf.keras.initializers.Constant([1.0, 2.0, 3.0, 4.0]),
+                autocast=False,
+            )
+
+        def call(self, values):
+            sequence, state = values
+            csr_weights = reorder_csr_values(
+                tf.cast(self.master, tf.float16), connectivity
+            )
+            time_major = tf.transpose(sequence, [1, 0, 2])
+            currents = tf.map_fn(
+                lambda spikes: fused_spike_currents(
+                    spikes,
+                    self.master,
+                    csr_weights,
+                    connectivity,
+                    basis,
+                    n_post=2,
+                    compute_spike_gradient=True,
+                    use_packed_sm120_backward="auto",
+                    write_csr_weight_gradient=self.write_csr_gradient,
+                ),
+                time_major,
+                fn_output_signature=tf.TensorSpec([64, 4], tf.float16),
+            )
+            currents = tf.reshape(currents, [-1, 32, 2, 4])
+            currents = tf.transpose(currents, [1, 0, 2, 3])
+            return currents, currents * tf.constant(1.5, tf.float16), state
+
+    def build_model(write_csr_gradient):
+        sequence = tf.keras.Input(batch_shape=(32, None, 3), dtype=tf.float16)
+        state = tf.keras.Input(batch_shape=(32, 1), dtype=tf.float16)
+        layer = CurrentSequence(write_csr_gradient)
+        return tf.keras.Model((sequence, state), layer((sequence, state))), layer
+
+    canonical_model, canonical_layer = build_model(False)
+    direct_model, direct_layer = build_model(True)
+    canonical_runner = training.SegmentedRecomputeRunner(canonical_model, 5, 2, 2)
+    direct_cell = SimpleNamespace(
+        recurrent_weight_values=direct_layer.master,
+        recurrent_fused_connectivity=connectivity,
+    )
+    direct_runner = training.SegmentedRecomputeRunner(
+        direct_model,
+        5,
+        2,
+        2,
+        variable_gradient_transform=lambda variables, gradients: (
+            GLIF3Cell.restore_segmented_variable_gradients(
+                direct_cell, variables, gradients
+            )
+        ),
+    )
+    spike_values = np.zeros((32, 5, 3), np.float16)
+    spike_values[::2, :, 0] = 1.0
+    spike_values[1::3, 1::2, 1] = 2.0
+    spike_values[2::5, 2:, 2] = 3.0
+    sequence = tf.constant(spike_values)
+    state = tf.zeros([32, 1], tf.float16)
+
+    def evaluate(runner, layer):
+        with tf.GradientTape() as tape:
+            outputs = runner(sequence, (state,))
+            loss = tf.reduce_sum(outputs[0]) + tf.reduce_sum(
+                outputs[1] * tf.constant(0.25, tf.float16)
+            )
+        return outputs, tape.gradient(loss, layer.master)
+
+    canonical_outputs, canonical_gradient = evaluate(canonical_runner, canonical_layer)
+    direct_outputs, direct_gradient = evaluate(direct_runner, direct_layer)
+
+    for direct, canonical in zip(direct_outputs, canonical_outputs):
+        np.testing.assert_array_equal(direct, canonical)
+    np.testing.assert_array_equal(direct_gradient, canonical_gradient)
+
+
+def test_direct_csr_gradient_requires_gradient_checkpointing():
+    engine = object.__new__(training.TrainingEngine)
+    engine.rnn = SimpleNamespace(
+        cell=SimpleNamespace(_use_direct_csr_recurrent_gradient=True)
+    )
+    engine.gradient_checkpointing = False
+    engine._extractor_forward = None
+
+    with pytest.raises(ValueError, match="requires gradient_checkpointing=True"):
+        engine.prepare_gradient_checkpointing()
 
 
 @pytest.mark.parametrize("width", [31, 32, 62])
