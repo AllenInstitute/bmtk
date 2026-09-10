@@ -22,6 +22,7 @@ from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
     fused_spike_shift,
 )
 from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
+    GLIF3Cell,
     _fused_cuda_dtype_error,
     _resolve_fused_state,
     _resolve_pair_projection,
@@ -40,6 +41,35 @@ INDICES = np.array(
     dtype=np.int64,
 )
 SYNAPSE_TYPES = np.array([0, 1, 0, 1], dtype=np.int64)
+
+
+def test_tracked_master_weight_stays_fp32_inside_mixed_precision_call():
+    old_policy = tf.keras.mixed_precision.global_policy()
+    tf.keras.mixed_precision.set_global_policy("mixed_float16")
+
+    class Probe(tf.keras.layers.Layer):
+        _tracked_weight = GLIF3Cell._tracked_weight
+
+        def build(self, _input_shape):
+            self.master = self._tracked_weight(
+                np.ones(3, np.float32), "master", True, tf.float32
+            )
+
+        def call(self, _inputs):
+            return tf.convert_to_tensor(self.master)
+
+    try:
+        probe = Probe()
+        with tf.GradientTape() as tape:
+            value = probe(tf.ones([1], tf.float16))
+            loss = tf.reduce_sum(value)
+        gradient = tape.gradient(loss, probe.master)
+
+        assert probe.master.dtype == "float32"
+        assert value.dtype == tf.float32
+        assert gradient.dtype == tf.float32
+    finally:
+        tf.keras.mixed_precision.set_global_policy(old_policy)
 
 
 def _reference_currents_for_connectivity(

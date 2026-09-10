@@ -579,6 +579,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             dtype=dtype,
             initializer=tf.keras.initializers.Constant(initial_value),
             trainable=trainable,
+            autocast=False,
             constraint=constraint,
         )
 
