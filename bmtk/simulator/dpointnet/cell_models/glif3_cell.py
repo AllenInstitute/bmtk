@@ -1124,10 +1124,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 tf.cast(self.recurrent_weight_values, self.compute_dtype)
             )
         recurrent_csr_shadow = getattr(
-            self, 'recurrent_csr_weight_values_compute', None
+            self, "recurrent_csr_weight_values_compute", None
         )
-        if (recurrent_csr_shadow is not None
-                and self.recurrent_weight_values.trainable):
+        if recurrent_csr_shadow is not None and self.recurrent_weight_values.trainable:
             recurrent_csr_shadow.assign(
                 reorder_csr_values(
                     tf.cast(self.recurrent_weight_values, self.compute_dtype),
@@ -1138,26 +1137,26 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Also sync any trainable input-weight shadows (e.g. trainable background weights),
         # which the input-current custom gradient reads in its forward pass.
         for input_net in self.inputs.values():
-            master = input_net.get('input_weight_values')
-            shadow = input_net.get('input_weight_values_compute')
+            master = input_net.get("input_weight_values")
+            shadow = input_net.get("input_weight_values_compute")
             if shadow is None or shadow is master or not master.trainable:
                 continue
             shadow.assign(tf.cast(master, self.compute_dtype))
-            csr_shadow = input_net.get('csr_weight_values_compute')
+            csr_shadow = input_net.get("csr_weight_values_compute")
             if csr_shadow is not None:
                 csr_shadow.assign(
                     reorder_csr_values(
                         tf.cast(master, self.compute_dtype),
-                        input_net['fused_connectivity'],
+                        input_net["fused_connectivity"],
                     )
                 )
 
     def close_fused_cuda(self):
-        connectivity = getattr(self, 'recurrent_fused_connectivity', None)
+        connectivity = getattr(self, "recurrent_fused_connectivity", None)
         if connectivity is not None:
             connectivity.close()
         for input_net in self.inputs.values():
-            connectivity = input_net.get('fused_connectivity')
+            connectivity = input_net.get("fused_connectivity")
             if connectivity is not None:
                 connectivity.close()
 
@@ -1171,6 +1170,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self.synaptic_basis_weights,
                 self._n_neurons,
                 compute_spike_gradient=True,
+                compute_weight_gradient=self.recurrent_weight_values.trainable,
                 spike_gradient_scale=self._recurrent_dampening,
                 use_packed_sm120_backward=self._use_packed_sm120_backward,
             )
@@ -1228,6 +1228,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self.synaptic_basis_weights,
                 self._n_neurons,
                 compute_spike_gradient=False,
+                compute_weight_gradient=input_net["input_weight_values"].trainable,
                 use_packed_sm120_backward=input_net.get(
                     "use_packed_sm120_backward", False
                 ),
@@ -1251,7 +1252,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         new_psc = psc * self.syn_decay + self._dt * self.syn_decay * psc_rise
         return new_psc, new_psc_rise
 
-    def _dense_update_impl(self, batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs):
+    def _dense_update_impl(
+        self, batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs
+    ):
         # new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
         # new_psc_rise = psc_rise * self.syn_decay + rec_inputs * self.psc_initial
         # new_psc = psc * self.syn_decay + self._dt * self.syn_decay * psc_rise

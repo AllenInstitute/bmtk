@@ -97,6 +97,69 @@ __global__ void CsrSpikeForwardKernel(
 }
 
 template <typename T, typename Index>
+__global__ void CsrSpikeForwardGroupedBatch32Kernel(
+    int64_t n_active_rows, int64_t n_pre, int n_post,
+    const T* spikes, const int64_t* active_rows, const Index* post_ids,
+    const T* weights, const Index* synapse_types, const T* basis,
+    const Index* row_splits, T* currents) {
+  const int64_t active_id = blockIdx.x;
+  if (active_id >= n_active_rows) {
+    return;
+  }
+  const int64_t pre = active_rows[active_id];
+  __shared__ uint32 batch_mask;
+  if (threadIdx.x < 32) {
+    const bool active =
+      ToFloat(spikes[static_cast<int64_t>(threadIdx.x) * n_pre + pre]) >
+      0.0f;
+    const uint32 mask = __ballot_sync(0xffffffff, active);
+    if (threadIdx.x == 0) {
+      batch_mask = mask;
+    }
+  }
+  __syncthreads();
+
+  for (Index edge = row_splits[pre] + threadIdx.x;
+       edge < row_splits[pre + 1]; edge += blockDim.x) {
+    const int post = static_cast<int>(post_ids[edge]);
+    const int synapse_type = static_cast<int>(synapse_types[edge]);
+    const float weight = ToFloat(weights[edge]);
+    uint32 remaining = batch_mask;
+    while (remaining != 0) {
+      const int batch = __ffs(remaining) - 1;
+      remaining &= remaining - 1;
+      const float weighted_spike =
+          ToFloat(spikes[static_cast<int64_t>(batch) * n_pre + pre]) * weight;
+      T* output = currents +
+          (static_cast<int64_t>(batch) * n_post + post) * 4;
+      if constexpr (std::is_same<T, Eigen::half>::value) {
+        const Eigen::half* type_basis = basis + synapse_type * 4;
+        const float2 basis01 = __half22float2(
+            *reinterpret_cast<const __half2*>(type_basis));
+        const float2 basis23 = __half22float2(
+            *reinterpret_cast<const __half2*>(type_basis + 2));
+        atomicAdd(
+            reinterpret_cast<__half2*>(output),
+            __floats2half2_rn(
+                weighted_spike * basis01.x, weighted_spike * basis01.y));
+        atomicAdd(
+            reinterpret_cast<__half2*>(output + 2),
+            __floats2half2_rn(
+                weighted_spike * basis23.x, weighted_spike * basis23.y));
+      } else {
+#pragma unroll
+        for (int receptor = 0; receptor < 4; ++receptor) {
+          FastAtomicAdd(
+              output + receptor,
+              FromFloat<T>(
+                  weighted_spike * ToFloat(basis[synapse_type * 4 + receptor])));
+        }
+      }
+    }
+  }
+}
+
+template <typename T, typename Index>
 __global__ void CsrSpikeGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids, const T* weights,
@@ -338,7 +401,7 @@ __global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
   }
 }
 
-inline bool SupportsPackedSm120Backward() {
+inline bool SupportsPackedBatch32Backward() {
   int device = 0;
   int major = 0;
   int minor = 0;
@@ -347,7 +410,7 @@ inline bool SupportsPackedSm120Backward() {
                                 device) == cudaSuccess &&
          cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor,
                                 device) == cudaSuccess &&
-         major * 10 + minor >= 120;
+         major * 10 + minor >= 86;
 }
 
 inline uint32 PackedRowSplitCount(int64_t n_rows) {
@@ -590,6 +653,10 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(
+      context,
+      context->GetAttr(
+        "use_grouped_batch32_forward", &use_grouped_batch32_forward_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -598,6 +665,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Tensor& weights = context->input(3);
     const Tensor& basis = context->input(4);
     const Tensor& spike_gradient_scale = context->input(5);
+    const Tensor& active_rows = context->input(6);
     core::RefCountPtr<Var> metadata_variable;
     if (!LookupVariable<Index>(
             context, 2, "metadata", &metadata_variable)) {
@@ -609,6 +677,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     RequireVector(context, weights, "weights");
     RequireMatrix(context, basis, "basis");
     RequireScalar(context, spike_gradient_scale, "spike_gradient_scale");
+    RequireVector(context, active_rows, "active_rows");
     RequireVector(context, metadata, "metadata");
     if (!context->status().ok()) {
       return;
@@ -659,24 +728,42 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
             zero_threads, 0, device.stream(), output_count,
             currents->flat<T>().data()));
 
-    const int work_count = static_cast<int>(batch * n_pre);
-    OP_REQUIRES_OK(
-        context,
-        GpuLaunchKernel(
-            CsrSpikeForwardKernel<T, Index>, work_count, 128, 0,
-            device.stream(),
-            work_count,
-            static_cast<int>(n_pre), n_post_, static_cast<int>(n_basis),
-            spikes.flat<T>().data(), post_ids,
-            weights.flat<T>().data(), synapse_types,
-            basis.flat<T>().data(), row_splits,
-            currents->flat<T>().data()));
+    if (use_grouped_batch32_forward_) {
+      OP_REQUIRES(
+          context, batch == 32 && n_basis == 4,
+          errors::InvalidArgument(
+              "Grouped forward requires runtime batch 32 and four "
+              "synaptic bases."));
+      const int64_t n_active_rows = active_rows.NumElements();
+      if (n_active_rows > 0) {
+        OP_REQUIRES_OK(
+            context,
+            GpuLaunchKernel(
+                CsrSpikeForwardGroupedBatch32Kernel<T, Index>,
+                static_cast<int>(n_active_rows), 128, 0, device.stream(),
+                n_active_rows, n_pre, n_post_, spikes.flat<T>().data(),
+                active_rows.flat<int64_t>().data(), post_ids,
+                weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
+                row_splits, currents->flat<T>().data()));
+      }
+    } else {
+      const int work_count = static_cast<int>(batch * n_pre);
+      OP_REQUIRES_OK(
+          context,
+          GpuLaunchKernel(
+              CsrSpikeForwardKernel<T, Index>, work_count, 128, 0,
+              device.stream(), work_count, static_cast<int>(n_pre), n_post_,
+              static_cast<int>(n_basis), spikes.flat<T>().data(), post_ids,
+              weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
+              row_splits, currents->flat<T>().data()));
+    }
   }
 
  private:
   int n_post_;
   int64_t n_edges_;
   int64_t n_pairs_;
+  bool use_grouped_batch32_forward_;
 };
 
 template <typename T, typename Index>
@@ -753,10 +840,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           "values and uint32 CSR metadata."));
       } else {
       OP_REQUIRES(
-        context, SupportsPackedSm120Backward(),
+        context, SupportsPackedBatch32Backward(),
         errors::InvalidArgument(
           "Packed recurrent backward requires GPU compute capability "
-          "SM120 or newer."));
+          "SM86 or newer."));
       }
     }
 
@@ -938,10 +1025,10 @@ class DpointnetCsrWeightGradOp : public OpKernel {
                 "values and uint32 CSR metadata."));
       } else {
         OP_REQUIRES(
-            context, SupportsPackedSm120Backward(),
+            context, SupportsPackedBatch32Backward(),
             errors::InvalidArgument(
                 "Packed external backward requires GPU compute capability "
-                "SM120 or newer."));
+              "SM86 or newer."));
       }
     }
 

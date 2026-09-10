@@ -135,10 +135,10 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
     if connectivity["n_pairs"] <= 0:
         incompatibilities.append("compact pair metadata is unavailable")
     architecture = _gpu_compute_architecture()
-    if architecture is None or architecture < 120:
+    if architecture is None or architecture < 86:
         description = "unavailable" if architecture is None else f"SM{architecture}"
         incompatibilities.append(
-            f"GPU compute capability is {description}, not SM120 or newer"
+            f"GPU compute capability is {description}, not SM86 or newer"
         )
     if option is True and incompatibilities:
         raise ValueError(
@@ -164,10 +164,10 @@ def _resolve_packed_sm120_model_option(
     if basis_width != 4:
         incompatibilities.append(f"basis width is {basis_width}, not 4")
     architecture = _gpu_compute_architecture()
-    if architecture is None or architecture < 120:
+    if architecture is None or architecture < 86:
         description = "unavailable" if architecture is None else f"SM{architecture}"
         incompatibilities.append(
-            f"GPU compute capability is {description}, not SM120 or newer"
+            f"GPU compute capability is {description}, not SM86 or newer"
         )
     if option is True and incompatibilities:
         raise ValueError(
@@ -192,13 +192,13 @@ if not _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
 
 
 def cuda_op_status():
-    if _environment_flag('BMTK_DPOINTNET_DISABLE_FUSED_CUDA'):
-        return 'disabled by BMTK_DPOINTNET_DISABLE_FUSED_CUDA'
+    if _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
+        return "disabled by BMTK_DPOINTNET_DISABLE_FUSED_CUDA"
     if _OPS is not None:
         compatibility_error = _gpu_compatibility_error()
         if compatibility_error is not None:
-            return f'loaded, but {compatibility_error}'
-        return f'loaded from {_LIBRARY_PATH}'
+            return f"loaded, but {compatibility_error}"
+        return f"loaded from {_LIBRARY_PATH}"
     return str(_LOAD_ERROR)
 
 
@@ -357,6 +357,7 @@ def reorder_csr_values(values, connectivity):
 @ops.RegisterGradient("DpointnetCsrSpikeForward")
 def _fused_spike_currents_gradient(op, current_grad):
     compute_spike_gradient = op.get_attr("compute_spike_gradient")
+    compute_weight_gradient = op.get_attr("compute_weight_gradient")
     n_post = op.get_attr("n_post")
     index_dtype = op.get_attr("Tindex")
     if compute_spike_gradient:
@@ -373,7 +374,9 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
         )
-    else:
+        if not compute_weight_gradient:
+            weight_grad = None
+    elif compute_weight_gradient:
         spike_grad = None
         weight_grad = _OPS.dpointnet_csr_weight_grad(
             op.inputs[0],
@@ -386,9 +389,13 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
         )
+    else:
+        spike_grad = None
+        weight_grad = None
     return (
         spike_grad,
-        tf.cast(weight_grad, op.inputs[1].dtype),
+        (tf.cast(weight_grad, op.inputs[1].dtype) if weight_grad is not None else None),
+        None,
         None,
         None,
         None,
@@ -404,6 +411,7 @@ def fused_spike_currents(
     basis,
     n_post,
     compute_spike_gradient,
+    compute_weight_gradient=True,
     spike_gradient_scale=1.0,
     use_packed_sm120_backward="auto",
 ):
@@ -449,6 +457,14 @@ def fused_spike_currents(
     use_packed_sm120_backward = _resolve_packed_sm120_backward(
         use_packed_sm120_backward, spikes, connectivity, basis
     )
+    use_grouped_batch32_forward = spikes.shape[0] == 32 and basis.shape[1] == 4
+    if use_grouped_batch32_forward:
+        active_rows = tf.cast(
+            tf.where(tf.reduce_any(spikes > 0, axis=0))[:, 0],
+            tf.int64,
+        )
+    else:
+        active_rows = tf.zeros([0], tf.int64)
 
     return _OPS.dpointnet_csr_spike_forward(
         spikes,
@@ -457,10 +473,13 @@ def fused_spike_currents(
         csr_weights,
         basis,
         spike_gradient_scale,
+        active_rows,
         Tindex=tf.dtypes.as_dtype(connectivity["index_dtype"]),
         n_post=n_post,
         n_edges=connectivity["n_edges"],
         n_pairs=connectivity["n_pairs"],
         compute_spike_gradient=compute_spike_gradient,
+        compute_weight_gradient=compute_weight_gradient,
+        use_grouped_batch32_forward=use_grouped_batch32_forward,
         use_packed_sm120_backward=use_packed_sm120_backward,
     )
