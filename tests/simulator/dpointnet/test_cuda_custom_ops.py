@@ -27,6 +27,7 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     _resolve_fused_state,
     _resolve_pair_projection,
     _validate_fixed4_forward_option,
+    _validate_fused_current_accumulation_option,
     _validate_fused_cuda_option,
     _validate_pair_projection_option,
     spike_function,
@@ -82,6 +83,17 @@ def test_fixed4_forward_option_accepts_booleans(value):
 def test_fixed4_forward_option_rejects_lookalikes(value):
     with pytest.raises(ValueError, match="use_fixed4_input_forward"):
         _validate_fixed4_forward_option(value)
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_fused_current_accumulation_option_accepts_booleans(value):
+    assert _validate_fused_current_accumulation_option(value) is value
+
+
+@pytest.mark.parametrize("value", [0, 1, "auto", np.bool_(True)])
+def test_fused_current_accumulation_option_rejects_lookalikes(value):
+    with pytest.raises(ValueError, match="use_fused_current_accumulation"):
+        _validate_fused_current_accumulation_option(value)
 
 
 def _reference_currents_for_connectivity(
@@ -956,6 +968,9 @@ def test_fixed4_input_forward_matches_values_and_canonical_weight_gradient(
     activity = tf.constant(np.random.default_rng(67).poisson(0.5, size=(32, 3)), dtype)
     loss_weights = tf.reshape(tf.range(1, 32 * 2 * 4 + 1, dtype=tf.float32), [64, 4])
     loss_weights = tf.cast(loss_weights / tf.reduce_max(loss_weights), dtype)
+    initial_currents = tf.Variable(
+        np.random.default_rng(71).uniform(-0.2, 0.2, size=(64, 4)), dtype=dtype
+    )
 
     with tf.GradientTape() as tape:
         actual = fused_spike_currents(
@@ -968,26 +983,32 @@ def test_fixed4_input_forward_matches_values_and_canonical_weight_gradient(
             compute_spike_gradient=False,
             compute_weight_gradient=True,
             use_fixed4_forward=use_fixed4,
+            initial_currents=initial_currents,
         )
         actual_loss = tf.reduce_sum(actual * loss_weights)
-    actual_gradient = tape.gradient(actual_loss, master_weights)
+    actual_gradient, actual_initial_gradient = tape.gradient(
+        actual_loss, (master_weights, initial_currents)
+    )
 
     with tf.GradientTape() as tape:
-        reference = _reference_currents_for_connectivity(
-            activity,
-            master_weights,
-            basis,
-            indices,
-            synapse_types,
-            n_post=2,
+        reference = initial_currents + _reference_currents_for_connectivity(
+            activity, master_weights, basis, indices, synapse_types, n_post=2
         )
         reference_loss = tf.reduce_sum(reference * loss_weights)
-    reference_gradient = tape.gradient(reference_loss, master_weights)
+    reference_gradient, reference_initial_gradient = tape.gradient(
+        reference_loss, (master_weights, initial_currents)
+    )
 
     tolerance = 2e-2 if dtype == tf.float16 else 1e-6
     np.testing.assert_allclose(actual, reference, rtol=tolerance, atol=tolerance)
     np.testing.assert_allclose(
         actual_gradient, reference_gradient, rtol=tolerance, atol=tolerance
+    )
+    np.testing.assert_allclose(
+        actual_initial_gradient,
+        reference_initial_gradient,
+        rtol=tolerance,
+        atol=tolerance,
     )
     assert connectivity["fixed4_incoming"]
 
@@ -1090,6 +1111,31 @@ def test_fixed4_forward_rejects_non_fixed4_connectivity():
             n_post=2,
             compute_spike_gradient=False,
             use_fixed4_forward=True,
+        )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize(
+    ("initial", "message"),
+    [
+        (tf.ones([1], tf.float32), "rank-one.*empty"),
+        (tf.zeros([0, 4], tf.float32), "rank-two.*nonempty"),
+        (tf.ones([1, 1, 1], tf.float32), "empty vector or rank two"),
+    ],
+)
+def test_fused_currents_reject_malformed_initial_currents(initial, message):
+    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 3, 2, 2)
+
+    with pytest.raises(ValueError, match=message):
+        fused_spike_currents(
+            tf.ones([2, 3], tf.float32),
+            tf.ones([4], tf.float32),
+            tf.ones([4], tf.float32),
+            connectivity,
+            tf.ones([2, 2], tf.float32),
+            n_post=2,
+            compute_spike_gradient=True,
+            initial_currents=initial,
         )
 
 

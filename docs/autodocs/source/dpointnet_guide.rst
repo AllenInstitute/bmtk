@@ -55,7 +55,8 @@ The build targets compute capabilities 7.0, 7.5, 8.0, 8.6, 8.9, 9.0, and 12.0 by
 
 The operator requires exactly one visible GPU. Set ``use_fused_cuda`` to ``true`` in ``rnn_cell_params`` to
 require the operator, or to ``"auto"`` to use it when available and otherwise fall back to TensorFlow. The
-default is ``false``. Rebuild the operator after changing TensorFlow or CUDA installations.
+default is ``false``. Rebuild the operator after changing TensorFlow or CUDA installations or after updating
+BMTK custom-op source; SavedModel graphs containing an older custom-op signature must also be regenerated.
 
 Recurrent backward-kernel selection is controlled separately by ``use_pair_projection``:
 
@@ -103,6 +104,12 @@ basis values without scatter atomics. Selection is derived from connectivity str
 name; nonqualifying populations retain grouped/general forwarding. The default is ``false`` to preserve prior
 mixed-precision summation semantics. Backward continues to use the source-CSR path, preserving canonical
 trainable-weight gradients and the no-activity-gradient contract.
+
+Set ``use_fused_current_accumulation=true`` to thread recurrent and fused spike-input currents through one
+additive CUDA buffer instead of materializing each source and combining them with a separate ``AddN``. The
+option defaults to ``false`` and requires fused CUDA currents. Its custom gradient passes the upstream current
+gradient unchanged through the accumulator while retaining independent canonical gradients for every trainable
+weight surface. Current-type or otherwise non-fused inputs retain the existing TensorFlow addition path.
 
 The optimization exchanges startup time and a small amount of persistent GPU memory for faster batch-32 BPTT.
 Measured examples include a 55.7% update-time reduction on a 66,658-neuron network on A100-PCIE-40GB and a 37.9%
@@ -310,6 +317,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - "auto"
                 * - use_fixed4_input_forward
                   - Use the one-owner input forward for populations with exactly four incoming edges per postsynaptic neuron. Nonqualifying populations retain grouped/general forwarding.
+                  - False
+                * - use_fused_current_accumulation
+                  - Accumulate recurrent and fused spike-input currents through one additive CUDA buffer. Requires fused CUDA currents; current-type inputs retain the TensorFlow addition path.
                   - False
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.

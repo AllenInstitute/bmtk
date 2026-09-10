@@ -544,6 +544,14 @@ def _validate_fixed4_forward_option(value):
     raise ValueError("use_fixed4_input_forward must be true or false.")
 
 
+def _validate_fused_current_accumulation_option(value):
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        value = value.item()
+    if value is True or value is False:
+        return value
+    raise ValueError("use_fused_current_accumulation must be true or false.")
+
+
 def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
     option = _validate_pair_projection_option(option)
     incompatibilities = []
@@ -623,6 +631,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_packed_sm120_backward="auto",
         use_packed_sm120_external_backward="auto",
         use_fixed4_input_forward=False,
+        use_fused_current_accumulation=False,
         batch_size=None,
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
@@ -639,6 +648,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_fixed4_input_forward = _validate_fixed4_forward_option(
             use_fixed4_input_forward
         )
+        self._use_fused_current_accumulation = (
+            _validate_fused_current_accumulation_option(use_fused_current_accumulation)
+        )
         use_fused_cuda = _validate_fused_cuda_option(use_fused_cuda)
         fused_dtype_error = _fused_cuda_dtype_error(
             self.compute_dtype, self.variable_dtype
@@ -653,6 +665,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_fused_cuda = fused_available and (
             use_fused_cuda is True or use_fused_cuda == "auto"
         )
+        if self._use_fused_current_accumulation and not self._use_fused_cuda:
+            raise ValueError(
+                "use_fused_current_accumulation=True requires fused CUDA currents."
+            )
         if use_fused_cuda == "auto" and not self._use_fused_cuda:
             unavailable_reason = fused_dtype_error or cuda_op_status()
             io.log_warning(
@@ -972,12 +988,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
             input_trainable = input_options.get('trainable', False)
 
-            input_props['input_weight_values'] = self._tracked_weight(
-                input_weights * input_options.get('weight_scale', 1.0) / lr_scale,
-                name=f'{input_name}_input_weights',
+            input_props["input_weight_values"] = self._tracked_weight(
+                input_weights * input_options.get("weight_scale", 1.0) / lr_scale,
+                name=f"{input_name}_input_weights",
                 constraint=SignedConstraint(input_weight_positive),
                 trainable=input_trainable,
-                dtype=self.variable_dtype
+                dtype=self.variable_dtype,
             )
             # Non-trainable compute-dtype shadow (mirrors the recurrent weights): the input-current
             # @tf.custom_gradient reads this in the forward (avoids casting in fp16 and avoids reading
@@ -985,12 +1001,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             # master above. Kept in sync via refresh_recurrent_weight_shadow() after each step.
             if self.variable_dtype != self.compute_dtype or input_trainable:
                 _input_weight_compute = tf.Variable(
-                    tf.cast(input_props['input_weight_values'], self.compute_dtype),
-                    name=f'{input_name}_input_weights_compute',
+                    tf.cast(input_props["input_weight_values"], self.compute_dtype),
+                    name=f"{input_name}_input_weights_compute",
                     trainable=False,
                     dtype=self.compute_dtype,
                 )
-                input_props['input_weight_values_compute'] = self._untracked_variable(_input_weight_compute)
+                input_props["input_weight_values_compute"] = self._untracked_variable(
+                    _input_weight_compute
+                )
             else:
                 input_props["input_weight_values_compute"] = input_props[
                     "input_weight_values"
@@ -1237,7 +1255,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         i_in_flat = tf.reshape(i_in, [batch_size * self._n_neurons, self._n_syn_basis])
         return i_in_flat
 
-    def calculate_input_current_from_spikes(self, x_t, input_net):
+    def calculate_input_current_from_spikes(
+        self, x_t, input_net, initial_currents=None
+    ):
         if self._use_fused_cuda:
             return fused_spike_currents(
                 tf.cast(x_t, self.compute_dtype),
@@ -1249,6 +1269,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 compute_spike_gradient=False,
                 compute_weight_gradient=input_net["input_weight_values"].trainable,
                 use_fixed4_forward=input_net.get("use_fixed4_forward", False),
+                initial_currents=initial_currents,
                 use_packed_sm120_backward=input_net.get(
                     "use_packed_sm120_backward", False
                 ),
@@ -1332,7 +1353,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def reset_voltage_penalty_state(self, state):
         return tuple(state)
 
-    def calculate_noise_current(self, batch_size, noise_step, input_net):
+    def calculate_noise_current(
+        self, batch_size, noise_step, input_net, initial_currents=None
+    ):
         step_seed = tf.cast(noise_step[0], tf.int32)
         base_seed = tf.cast(self.noise_seed, tf.int32)
         replica_context = tf.distribute.get_replica_context()
@@ -1358,7 +1381,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             lam=input_net["spike_prob"],
             dtype=tf.int32,
         )
-        return self.calculate_input_current_from_spikes(rest_of_brain, input_net)
+        if initial_currents is None:
+            return self.calculate_input_current_from_spikes(rest_of_brain, input_net)
+        return self.calculate_input_current_from_spikes(
+            rest_of_brain, input_net, initial_currents=initial_currents
+        )
 
     def call(self, inputs, states):
         # lgn_inputs = inputs[:, :self.input_dim]
@@ -1370,12 +1397,21 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         i_rec = self.calculate_i_rec_with_custom_grad(z_buf)
 
+        rec_inputs = i_rec
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
             if input_net["input_type"] in ("poisson_spikes_internal", "noisy_current"):
-                extern_currents.append(
-                    self.calculate_noise_current(batch_size, noise_step, input_net)
-                )
+                if self._use_fused_current_accumulation:
+                    rec_inputs = self.calculate_noise_current(
+                        batch_size,
+                        noise_step,
+                        input_net,
+                        initial_currents=rec_inputs,
+                    )
+                else:
+                    extern_currents.append(
+                        self.calculate_noise_current(batch_size, noise_step, input_net)
+                    )
                 continue
 
             input_spikes = inputs[:, self.inputs_idx[idx] : self.inputs_idx[idx + 1]]
@@ -1386,11 +1422,21 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     )
                 )
             else:
-                extern_currents.append(
-                    self.calculate_input_current_from_spikes(input_spikes, input_net)
-                )
+                if self._use_fused_current_accumulation:
+                    rec_inputs = self.calculate_input_current_from_spikes(
+                        input_spikes,
+                        input_net,
+                        initial_currents=rec_inputs,
+                    )
+                else:
+                    extern_currents.append(
+                        self.calculate_input_current_from_spikes(
+                            input_spikes, input_net
+                        )
+                    )
 
-        rec_inputs = i_rec + tf.add_n(extern_currents)
+        if extern_currents:
+            rec_inputs = rec_inputs + tf.add_n(extern_currents)
         # Reshape i_rec_flat back to [batch_size, num_neurons]
         rec_inputs = tf.reshape(
             rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis]

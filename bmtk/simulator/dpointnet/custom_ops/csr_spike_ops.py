@@ -409,6 +409,7 @@ def _fused_spike_currents_gradient(op, current_grad):
     else:
         spike_grad = None
         weight_grad = None
+    initial_grad = current_grad if op.inputs[10].shape.rank == 2 else None
     return (
         spike_grad,
         (tf.cast(weight_grad, op.inputs[1].dtype) if weight_grad is not None else None),
@@ -420,6 +421,7 @@ def _fused_spike_currents_gradient(op, current_grad):
         None,
         None,
         None,
+        initial_grad,
     )
 
 
@@ -435,6 +437,7 @@ def fused_spike_currents(
     spike_gradient_scale=1.0,
     use_packed_sm120_backward="auto",
     use_fixed4_forward=False,
+    initial_currents=None,
 ):
     if _OPS is None:
         raise RuntimeError(
@@ -492,6 +495,18 @@ def fused_spike_currents(
     else:
         active_rows = tf.zeros([0], tf.int64)
     index_dtype = tf.dtypes.as_dtype(connectivity["index_dtype"])
+    initial_currents = (
+        tf.zeros([0], spikes.dtype)
+        if initial_currents is None
+        else tf.convert_to_tensor(initial_currents, dtype=spikes.dtype)
+    )
+    if initial_currents.shape.rank not in (1, 2):
+        raise ValueError("initial_currents must be an empty vector or rank two.")
+    if initial_currents.shape.rank == 1:
+        if initial_currents.shape[0] != 0:
+            raise ValueError("A rank-one initial_currents tensor must be empty.")
+    elif initial_currents.shape.num_elements() == 0:
+        raise ValueError("A rank-two initial_currents tensor must be nonempty.")
 
     return _OPS.dpointnet_csr_spike_forward(
         spikes,
@@ -504,6 +519,7 @@ def fused_spike_currents(
         tf.cast(connectivity["incoming_pre_ids"], index_dtype),
         tf.cast(connectivity["incoming_edge_ids"], index_dtype),
         tf.cast(connectivity["incoming_types"], index_dtype),
+        initial_currents,
         n_post=n_post,
         n_edges=connectivity["n_edges"],
         n_pairs=connectivity["n_pairs"],

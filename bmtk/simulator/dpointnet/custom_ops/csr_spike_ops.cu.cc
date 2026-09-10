@@ -164,12 +164,19 @@ __global__ void CsrSpikeForwardFixed4Kernel(
   int64_t count, int n_pre, int n_post, int64_t n_edges, int n_types,
   const T* spikes, const T* weights,
     const Index* incoming_pre_ids, const Index* incoming_edge_ids,
-    const Index* incoming_types, const T* basis, T* currents) {
+  const Index* incoming_types, const T* basis, const T* initial,
+  T* currents) {
   for (int64_t index : GpuGridRangeX(count)) {
     const int batch = static_cast<int>(index / n_post);
     const int post = static_cast<int>(
         index - static_cast<int64_t>(batch) * n_post);
     float sums[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    if (initial != nullptr) {
+#pragma unroll
+      for (int receptor = 0; receptor < 4; ++receptor) {
+        sums[receptor] = ToFloat(initial[index * 4 + receptor]);
+      }
+    }
 #pragma unroll
     for (int offset = 0; offset < 4; ++offset) {
       const int64_t incoming = static_cast<int64_t>(post) * 4 + offset;
@@ -713,6 +720,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Tensor& incoming_pre_ids = context->input(7);
     const Tensor& incoming_edge_ids = context->input(8);
     const Tensor& incoming_types = context->input(9);
+    const Tensor& initial = context->input(10);
     core::RefCountPtr<Var> metadata_variable;
     if (!LookupVariable<Index>(
             context, 2, "metadata", &metadata_variable)) {
@@ -736,6 +744,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const int64_t batch = spikes.dim_size(0);
     const int64_t n_pre = spikes.dim_size(1);
     const int64_t n_basis = basis.dim_size(1);
+    const TensorShape output_shape({batch * n_post_, n_basis});
     OP_REQUIRES(
         context, weights.NumElements() == n_edges_,
         errors::InvalidArgument("weights length must equal n_edges."));
@@ -757,6 +766,10 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context,
         batch * n_pre <= std::numeric_limits<int>::max(),
         errors::InvalidArgument("Tensor size exceeds CUDA kernel index range."));
+    OP_REQUIRES(
+      context, initial.NumElements() == 0 || initial.shape() == output_shape,
+      errors::InvalidArgument(
+        "initial currents must be empty or match the forward output."));
     if (use_fixed4_forward_) {
       OP_REQUIRES(
         context, n_basis == 4,
@@ -781,8 +794,8 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     Tensor* currents = nullptr;
     OP_REQUIRES_OK(
         context,
-        context->allocate_output(
-            0, TensorShape({batch * n_post_, n_basis}), &currents));
+      context->forward_input_or_allocate_output(
+        {10}, 0, output_shape, &currents));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     const int64_t output_count = currents->NumElements();
     if (use_fixed4_forward_) {
@@ -799,17 +812,30 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
               incoming_pre_ids.flat<Index>().data(),
               incoming_edge_ids.flat<Index>().data(),
               incoming_types.flat<Index>().data(), basis.flat<T>().data(),
+              initial.NumElements() > 0 ? initial.flat<T>().data() : nullptr,
               currents->flat<T>().data()));
       return;
     }
-    constexpr int zero_threads = 256;
-    OP_REQUIRES_OK(
+    if (initial.NumElements() > 0 &&
+        currents->flat<T>().data() != initial.flat<T>().data()) {
+      OP_REQUIRES(
+        context,
+        cudaMemcpyAsync(
+          currents->flat<T>().data(), initial.flat<T>().data(),
+          output_count * sizeof(T), cudaMemcpyDeviceToDevice,
+          device.stream()) == cudaSuccess,
+        errors::Internal("Failed to copy initial current buffer."));
+    }
+    if (initial.NumElements() == 0) {
+      constexpr int zero_threads = 256;
+      OP_REQUIRES_OK(
         context,
         GpuLaunchKernel(
-            SetZeroKernel<T>,
-            BlockCountFor(output_count, zero_threads, device),
-            zero_threads, 0, device.stream(), output_count,
-            currents->flat<T>().data()));
+          SetZeroKernel<T>,
+          BlockCountFor(output_count, zero_threads, device),
+          zero_threads, 0, device.stream(), output_count,
+          currents->flat<T>().data()));
+    }
 
     if (use_grouped_batch32_forward_) {
       OP_REQUIRES(

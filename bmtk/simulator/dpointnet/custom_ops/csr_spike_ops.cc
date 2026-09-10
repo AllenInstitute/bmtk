@@ -32,6 +32,7 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Input("incoming_pre_ids: Tindex")
     .Input("incoming_edge_ids: Tindex")
     .Input("incoming_types: Tindex")
+    .Input("initial: T")
     .Attr("T: {half, float}")
     .Attr("Tmaster: {half, float}")
     .Attr("Tindex: {uint32, int64}")
@@ -60,6 +61,12 @@ REGISTER_OP("DpointnetCsrSpikeForward")
       TF_RETURN_IF_ERROR(context->WithRank(context->input(7), 1, &incoming_pre_ids));
       TF_RETURN_IF_ERROR(context->WithRank(context->input(8), 1, &incoming_edge_ids));
       TF_RETURN_IF_ERROR(context->WithRank(context->input(9), 1, &incoming_types));
+      ShapeHandle initial = context->input(10);
+      if (context->RankKnown(initial) && context->Rank(initial) != 1 &&
+          context->Rank(initial) != 2) {
+        return absl::InvalidArgumentError(
+            "initial currents must be an empty vector or rank two");
+      }
       int n_post;
       TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
       DimensionHandle flattened_batch;
