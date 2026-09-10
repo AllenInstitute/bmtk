@@ -97,6 +97,13 @@ active batch samples into a 32-bit mask and launch one CUDA block per active sou
 one block for every batch/source combination when biological spike tensors are sparse; other shapes retain the
 general forward kernel.
 
+Set ``use_fixed4_input_forward=true`` to select a fixed-four gather forward for input populations with exactly
+four incoming edges per postsynaptic neuron. One thread owns each ``(batch, post)`` output and writes all four
+basis values without scatter atomics. Selection is derived from connectivity structure rather than population
+name; nonqualifying populations retain grouped/general forwarding. The default is ``false`` to preserve prior
+mixed-precision summation semantics. Backward continues to use the source-CSR path, preserving canonical
+trainable-weight gradients and the no-activity-gradient contract.
+
 The optimization exchanges startup time and a small amount of persistent GPU memory for faster batch-32 BPTT.
 Measured examples include a 55.7% update-time reduction on a 66,658-neuron network on A100-PCIE-40GB and a 37.9%
 reduction on a 19,570-neuron network on RTX 3090. The corresponding peak-memory increases were 0.54% and 0.09%.
@@ -301,6 +308,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - use_packed_sm120_external_backward
                   - Select the packed weight-only backward for trainable input populations on SM86 or newer. Fixed inputs build no pair metadata or backward; ``False`` retains the prior external kernel.
                   - "auto"
+                * - use_fixed4_input_forward
+                  - Use the one-owner input forward for populations with exactly four incoming edges per postsynaptic neuron. Nonqualifying populations retain grouped/general forwarding.
+                  - False
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.
                   - False

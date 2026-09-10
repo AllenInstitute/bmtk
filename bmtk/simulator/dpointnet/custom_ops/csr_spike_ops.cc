@@ -29,6 +29,9 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Input("basis: T")
     .Input("spike_gradient_scale: T")
     .Input("active_rows: int64")
+    .Input("incoming_pre_ids: Tindex")
+    .Input("incoming_edge_ids: Tindex")
+    .Input("incoming_types: Tindex")
     .Attr("T: {half, float}")
     .Attr("Tmaster: {half, float}")
     .Attr("Tindex: {uint32, int64}")
@@ -38,6 +41,7 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Attr("compute_spike_gradient: bool")
     .Attr("compute_weight_gradient: bool = true")
     .Attr("use_grouped_batch32_forward: bool = false")
+    .Attr("use_fixed4_forward: bool = false")
     .Attr("use_packed_sm120_backward: bool = false")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
@@ -50,6 +54,12 @@ REGISTER_OP("DpointnetCsrSpikeForward")
           context->input(5), 0, &spike_gradient_scale));
       ShapeHandle active_rows;
       TF_RETURN_IF_ERROR(context->WithRank(context->input(6), 1, &active_rows));
+      ShapeHandle incoming_pre_ids;
+      ShapeHandle incoming_edge_ids;
+      ShapeHandle incoming_types;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(7), 1, &incoming_pre_ids));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(8), 1, &incoming_edge_ids));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(9), 1, &incoming_types));
       int n_post;
       TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
       DimensionHandle flattened_batch;

@@ -233,48 +233,53 @@ def _create_metadata_resource(metadata, index_dtype):
 
 
 def build_csr_connectivity(
-        indices,
-        synapse_types,
-        n_source_neurons,
-        n_target_neurons,
+    indices,
+    synapse_types,
+    n_source_neurons,
+    n_target_neurons,
     n_synapse_types,
-    build_compact_pairs=False):
+    build_compact_pairs=False,
+    build_fixed4_incoming=False,
+):
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
     for dimension, name in (
-            (n_source_neurons, 'n_source_neurons'),
-            (n_target_neurons, 'n_target_neurons'),
-            (n_synapse_types, 'n_synapse_types')):
+        (n_source_neurons, "n_source_neurons"),
+        (n_target_neurons, "n_target_neurons"),
+        (n_synapse_types, "n_synapse_types"),
+    ):
         if not isinstance(dimension, (int, np.integer)) or dimension <= 0:
-            raise ValueError(f'{name} must be a positive integer.')
+            raise ValueError(f"{name} must be a positive integer.")
     if indices.ndim != 2 or indices.shape[1] != 2:
-        raise ValueError(f'indices must have shape [n_edges, 2], got {indices.shape}.')
+        raise ValueError(f"indices must have shape [n_edges, 2], got {indices.shape}.")
     if synapse_types.shape != (indices.shape[0],):
         raise ValueError(
-            'synapse_types must contain one value per edge, got '
-            f'{synapse_types.shape} for {indices.shape[0]} edges.'
+            "synapse_types must contain one value per edge, got "
+            f"{synapse_types.shape} for {indices.shape[0]} edges."
         )
-    for values, name in (
-            (indices, 'indices'),
-            (synapse_types, 'synapse_types')):
+    for values, name in ((indices, "indices"), (synapse_types, "synapse_types")):
         if not np.issubdtype(values.dtype, np.number):
-            raise TypeError(f'{name} must contain numeric integer values.')
+            raise TypeError(f"{name} must contain numeric integer values.")
         if not np.all(np.isfinite(values)) or not np.all(values == np.floor(values)):
-            raise ValueError(f'{name} must contain finite integer values.')
+            raise ValueError(f"{name} must contain finite integer values.")
         int64_info = np.iinfo(np.int64)
         if np.any(values < int64_info.min) or np.any(values > int64_info.max):
-            raise ValueError(f'{name} values must be within the int64 range.')
+            raise ValueError(f"{name} values must be within the int64 range.")
 
     indices = indices.astype(np.int64, copy=False)
     synapse_types = synapse_types.astype(np.int64, copy=False)
     pre_ids = indices[:, 1]
     if np.any(pre_ids < 0) or np.any(pre_ids >= n_source_neurons):
-        raise ValueError('Presynaptic indices are outside the declared source dimension.')
+        raise ValueError(
+            "Presynaptic indices are outside the declared source dimension."
+        )
     post_ids = indices[:, 0]
     if np.any(post_ids < 0) or np.any(post_ids >= n_target_neurons):
-        raise ValueError('Postsynaptic indices are outside the declared target dimension.')
+        raise ValueError(
+            "Postsynaptic indices are outside the declared target dimension."
+        )
     if np.any(synapse_types < 0) or np.any(synapse_types >= n_synapse_types):
-        raise ValueError('Synapse type indices are outside the basis table.')
+        raise ValueError("Synapse type indices are outside the basis table.")
     index_dtype = _csr_index_dtype(
         indices.shape[0],
         n_source_neurons,
@@ -282,25 +287,35 @@ def build_csr_connectivity(
         n_synapse_types,
     )
     numpy_index_dtype = index_dtype.as_numpy_dtype
-    edge_ids = np.argsort(pre_ids, kind='stable').astype(
-        numpy_index_dtype, copy=False
-    )
+    edge_ids = np.argsort(pre_ids, kind="stable").astype(numpy_index_dtype, copy=False)
     sorted_pre_ids = pre_ids[edge_ids]
     counts = np.bincount(sorted_pre_ids, minlength=n_source_neurons)
-    row_splits = np.empty(
-        n_source_neurons + 1, dtype=numpy_index_dtype
-    )
+    row_splits = np.empty(n_source_neurons + 1, dtype=numpy_index_dtype)
     row_splits[0] = 0
     np.cumsum(counts, dtype=np.int64, out=row_splits[1:])
 
-    device = '/GPU:0' if tf.config.get_visible_devices('GPU') else '/CPU:0'
+    device = "/GPU:0" if tf.config.get_visible_devices("GPU") else "/CPU:0"
     with tf.device(device):
-        post_ids = indices[edge_ids, 0].astype(
-            numpy_index_dtype, copy=False
-        )
+        post_ids = indices[edge_ids, 0].astype(numpy_index_dtype, copy=False)
         sorted_synapse_types = synapse_types[edge_ids].astype(
             numpy_index_dtype, copy=False
         )
+        incoming_pre_ids = np.empty(0, dtype=numpy_index_dtype)
+        incoming_edge_ids = np.empty(0, dtype=numpy_index_dtype)
+        incoming_types = np.empty(0, dtype=numpy_index_dtype)
+        if build_fixed4_incoming and post_ids.size == 4 * n_target_neurons:
+            post_counts = np.bincount(post_ids, minlength=n_target_neurons)
+            if np.all(post_counts == 4):
+                incoming_order = np.argsort(post_ids, kind="stable").astype(
+                    numpy_index_dtype, copy=False
+                )
+                source_ids = np.repeat(
+                    np.arange(n_source_neurons, dtype=numpy_index_dtype),
+                    counts,
+                )
+                incoming_pre_ids = source_ids[incoming_order]
+                incoming_edge_ids = incoming_order
+                incoming_types = sorted_synapse_types[incoming_order]
         metadata_parts = [
             post_ids,
             sorted_synapse_types,
@@ -323,9 +338,7 @@ def build_csr_connectivity(
             )
             n_pairs = int(pairs.shape[0])
         metadata = np.concatenate(metadata_parts)
-        metadata_handle = _create_metadata_resource(
-            metadata, index_dtype
-        )
+        metadata_handle = _create_metadata_resource(metadata, index_dtype)
         return CsrConnectivity(
             {
                 "metadata_handle": metadata_handle,
@@ -335,6 +348,10 @@ def build_csr_connectivity(
                 "n_post": int(n_target_neurons),
                 "n_synapse_types": int(n_synapse_types),
                 "n_pairs": n_pairs,
+                "fixed4_incoming": bool(incoming_pre_ids.size),
+                "incoming_pre_ids": tf.constant(incoming_pre_ids, dtype=index_dtype),
+                "incoming_edge_ids": tf.constant(incoming_edge_ids, dtype=index_dtype),
+                "incoming_types": tf.constant(incoming_types, dtype=index_dtype),
             }
         )
 
@@ -400,6 +417,9 @@ def _fused_spike_currents_gradient(op, current_grad):
         None,
         None,
         None,
+        None,
+        None,
+        None,
     )
 
 
@@ -414,6 +434,7 @@ def fused_spike_currents(
     compute_weight_gradient=True,
     spike_gradient_scale=1.0,
     use_packed_sm120_backward="auto",
+    use_fixed4_forward=False,
 ):
     if _OPS is None:
         raise RuntimeError(
@@ -453,6 +474,11 @@ def fused_spike_currents(
             "Connectivity synapse types do not match the basis table: "
             f'{connectivity["n_synapse_types"]} != {basis.shape[0]}.'
         )
+    if use_fixed4_forward and not connectivity["fixed4_incoming"]:
+        raise ValueError(
+            "use_fixed4_forward=True requires exactly four incoming edges "
+            "per postsynaptic neuron."
+        )
 
     use_packed_sm120_backward = _resolve_packed_sm120_backward(
         use_packed_sm120_backward, spikes, connectivity, basis
@@ -465,6 +491,7 @@ def fused_spike_currents(
         )
     else:
         active_rows = tf.zeros([0], tf.int64)
+    index_dtype = tf.dtypes.as_dtype(connectivity["index_dtype"])
 
     return _OPS.dpointnet_csr_spike_forward(
         spikes,
@@ -474,12 +501,15 @@ def fused_spike_currents(
         basis,
         spike_gradient_scale,
         active_rows,
-        Tindex=tf.dtypes.as_dtype(connectivity["index_dtype"]),
+        tf.cast(connectivity["incoming_pre_ids"], index_dtype),
+        tf.cast(connectivity["incoming_edge_ids"], index_dtype),
+        tf.cast(connectivity["incoming_types"], index_dtype),
         n_post=n_post,
         n_edges=connectivity["n_edges"],
         n_pairs=connectivity["n_pairs"],
         compute_spike_gradient=compute_spike_gradient,
         compute_weight_gradient=compute_weight_gradient,
         use_grouped_batch32_forward=use_grouped_batch32_forward,
+        use_fixed4_forward=use_fixed4_forward,
         use_packed_sm120_backward=use_packed_sm120_backward,
     )

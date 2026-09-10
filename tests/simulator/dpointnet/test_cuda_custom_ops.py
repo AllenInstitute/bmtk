@@ -26,6 +26,7 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     _fused_cuda_dtype_error,
     _resolve_fused_state,
     _resolve_pair_projection,
+    _validate_fixed4_forward_option,
     _validate_fused_cuda_option,
     _validate_pair_projection_option,
     spike_function,
@@ -70,6 +71,17 @@ def test_tracked_master_weight_stays_fp32_inside_mixed_precision_call():
         assert gradient.dtype == tf.float32
     finally:
         tf.keras.mixed_precision.set_global_policy(old_policy)
+
+
+@pytest.mark.parametrize("value", [True, False])
+def test_fixed4_forward_option_accepts_booleans(value):
+    assert _validate_fixed4_forward_option(value) is value
+
+
+@pytest.mark.parametrize("value", [0, 1, "auto", np.bool_(True)])
+def test_fixed4_forward_option_rejects_lookalikes(value):
+    with pytest.raises(ValueError, match="use_fixed4_input_forward"):
+        _validate_fixed4_forward_option(value)
 
 
 def _reference_currents_for_connectivity(
@@ -907,6 +919,178 @@ def test_fused_input_currents_preserve_counts_and_only_differentiate_weights():
     np.testing.assert_allclose(
         weight_gradient.numpy(), reference_weight_gradient.numpy()
     )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("use_fixed4", [False, True])
+def test_fixed4_input_forward_matches_values_and_canonical_weight_gradient(
+    dtype, use_fixed4
+):
+    indices = np.array(
+        [
+            [1, 2],
+            [0, 1],
+            [1, 0],
+            [0, 2],
+            [1, 1],
+            [0, 0],
+            [1, 2],
+            [0, 1],
+        ],
+        dtype=np.int64,
+    )
+    synapse_types = np.array([1, 0, 0, 1, 1, 0, 0, 1], dtype=np.int64)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        3,
+        2,
+        2,
+        build_compact_pairs=True,
+        build_fixed4_incoming=True,
+    )
+    master_weights = tf.Variable([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0], tf.float32)
+    csr_weights = reorder_csr_values(tf.cast(master_weights, dtype), connectivity)
+    basis = tf.constant([[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]], dtype)
+    activity = tf.constant(np.random.default_rng(67).poisson(0.5, size=(32, 3)), dtype)
+    loss_weights = tf.reshape(tf.range(1, 32 * 2 * 4 + 1, dtype=tf.float32), [64, 4])
+    loss_weights = tf.cast(loss_weights / tf.reduce_max(loss_weights), dtype)
+
+    with tf.GradientTape() as tape:
+        actual = fused_spike_currents(
+            activity,
+            master_weights,
+            csr_weights,
+            connectivity,
+            basis,
+            n_post=2,
+            compute_spike_gradient=False,
+            compute_weight_gradient=True,
+            use_fixed4_forward=use_fixed4,
+        )
+        actual_loss = tf.reduce_sum(actual * loss_weights)
+    actual_gradient = tape.gradient(actual_loss, master_weights)
+
+    with tf.GradientTape() as tape:
+        reference = _reference_currents_for_connectivity(
+            activity,
+            master_weights,
+            basis,
+            indices,
+            synapse_types,
+            n_post=2,
+        )
+        reference_loss = tf.reduce_sum(reference * loss_weights)
+    reference_gradient = tape.gradient(reference_loss, master_weights)
+
+    tolerance = 2e-2 if dtype == tf.float16 else 1e-6
+    np.testing.assert_allclose(actual, reference, rtol=tolerance, atol=tolerance)
+    np.testing.assert_allclose(
+        actual_gradient, reference_gradient, rtol=tolerance, atol=tolerance
+    )
+    assert connectivity["fixed4_incoming"]
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_fixed4_forward_supports_dynamic_batch_signature():
+    indices = np.array(
+        [[post, pre] for post in range(2) for pre in (0, 1, 2, 0)],
+        dtype=np.int64,
+    )
+    synapse_types = np.arange(8, dtype=np.int64) % 2
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        3,
+        2,
+        2,
+        build_fixed4_incoming=True,
+    )
+    master_weights = tf.Variable(tf.range(1, 9, dtype=tf.float32))
+    csr_weights = reorder_csr_values(master_weights, connectivity)
+    basis = tf.constant([[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]])
+
+    @tf.function(input_signature=[tf.TensorSpec([None, 3], tf.float32)])
+    def run(activity):
+        return fused_spike_currents(
+            activity,
+            master_weights,
+            csr_weights,
+            connectivity,
+            basis,
+            n_post=2,
+            compute_spike_gradient=False,
+            compute_weight_gradient=True,
+            use_fixed4_forward=True,
+        )
+
+    activity = tf.ones([32, 3], tf.float32)
+    np.testing.assert_allclose(
+        run(activity),
+        _reference_currents_for_connectivity(
+            activity, master_weights, basis, indices, synapse_types, 2
+        ),
+    )
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize(
+    ("key", "values"),
+    [
+        ("incoming_pre_ids", [99] * 8),
+        ("incoming_edge_ids", [99] * 8),
+        ("incoming_types", [99] * 8),
+    ],
+)
+def test_fixed4_forward_ignores_malformed_incoming_indices(key, values):
+    indices = np.array(
+        [[post, pre] for post in range(2) for pre in (0, 1, 2, 0)],
+        dtype=np.int64,
+    )
+    synapse_types = np.arange(8, dtype=np.int64) % 2
+    base_connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        3,
+        2,
+        2,
+        build_fixed4_incoming=True,
+    )
+    master_weights = tf.Variable(tf.ones([8], tf.float32))
+    csr_weights = reorder_csr_values(master_weights, base_connectivity)
+    connectivity = csr_spike_ops.CsrConnectivity(
+        {**base_connectivity, key: tf.constant(values, tf.uint32)}
+    )
+    currents = fused_spike_currents(
+        tf.ones([32, 3], tf.float32),
+        master_weights,
+        csr_weights,
+        connectivity,
+        tf.ones([2, 4], tf.float32),
+        n_post=2,
+        compute_spike_gradient=False,
+        use_fixed4_forward=True,
+    )
+
+    np.testing.assert_array_equal(currents, 0.0)
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+def test_fixed4_forward_rejects_non_fixed4_connectivity():
+    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 3, 2, 2)
+
+    with pytest.raises(ValueError, match="exactly four incoming edges"):
+        fused_spike_currents(
+            tf.ones([32, 3], tf.float32),
+            tf.ones([4], tf.float32),
+            tf.ones([4], tf.float32),
+            connectivity,
+            tf.ones([2, 4], tf.float32),
+            n_post=2,
+            compute_spike_gradient=False,
+            use_fixed4_forward=True,
+        )
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")

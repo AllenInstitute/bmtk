@@ -514,10 +514,10 @@ def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
     if compute_dtype in (tf.float16, tf.float32) and variable_dtype == tf.float32:
         return None
     return (
-        'the fused operator requires float16 or float32 computation and '
-        'float32 variables; got '
-        f'compute_dtype={compute_dtype.name}, '
-        f'variable_dtype={variable_dtype.name}'
+        "the fused operator requires float16 or float32 computation and "
+        "float32 variables; got "
+        f"compute_dtype={compute_dtype.name}, "
+        f"variable_dtype={variable_dtype.name}"
     )
 
 
@@ -534,6 +534,14 @@ def _validate_pair_projection_option(value):
     if isinstance(value, (str, np.str_)) and value == "auto":
         return "auto"
     raise ValueError('use_pair_projection must be true, false, or "auto".')
+
+
+def _validate_fixed4_forward_option(value):
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        value = value.item()
+    if value is True or value is False:
+        return value
+    raise ValueError("use_fixed4_input_forward must be true or false.")
 
 
 def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
@@ -614,6 +622,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_pair_projection="auto",
         use_packed_sm120_backward="auto",
         use_packed_sm120_external_backward="auto",
+        use_fixed4_input_forward=False,
         batch_size=None,
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
@@ -626,6 +635,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_pair_projection = _validate_pair_projection_option(use_pair_projection)
         self._use_packed_sm120_backward = _validate_packed_sm120_option(
             use_packed_sm120_backward
+        )
+        self._use_fixed4_input_forward = _validate_fixed4_forward_option(
+            use_fixed4_input_forward
         )
         use_fused_cuda = _validate_fused_cuda_option(use_fused_cuda)
         fused_dtype_error = _fused_cuda_dtype_error(
@@ -1011,7 +1023,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                             self._use_packed_sm120_external_backward is not False
                             and input_trainable
                         ),
+                        build_fixed4_incoming=self._use_fixed4_input_forward,
                     )
+                    input_props["use_fixed4_forward"] = input_props[
+                        "fused_connectivity"
+                    ]["fixed4_incoming"]
                     input_props["use_packed_sm120_backward"] = (
                         self._use_packed_sm120_external_backward
                         if input_trainable
@@ -1027,18 +1043,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         trainable=False,
                         dtype=self.compute_dtype,
                     )
-                    input_props['csr_weight_values_compute'] = self._untracked_variable(
+                    input_props["csr_weight_values_compute"] = self._untracked_variable(
                         input_csr_weights
                     )
                 else:
-                    input_props['fused_connectivity'] = None
-                    input_props['csr_weight_values_compute'] = None
-                    input_props['pre_input_ind_table'] = make_pre_ind_table(
+                    input_props["fused_connectivity"] = None
+                    input_props["csr_weight_values_compute"] = None
+                    input_props["pre_input_ind_table"] = make_pre_ind_table(
                         input_indices,
                         n_source_neurons=input_dense_shape[1],
                     )
 
-            io.log_debug(f' > Added "{input_name}" input synapses: indices = {len(input_indices)}, trainble = {input_trainable}')
+            io.log_debug(
+                f' > Added "{input_name}" input synapses: indices = {len(input_indices)}, trainble = {input_trainable}'
+            )
             self.inputs_idx[idx+1] = end_indx
 
             # if input_name == 'bkg':
@@ -1230,6 +1248,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self._n_neurons,
                 compute_spike_gradient=False,
                 compute_weight_gradient=input_net["input_weight_values"].trainable,
+                use_fixed4_forward=input_net.get("use_fixed4_forward", False),
                 use_packed_sm120_backward=input_net.get(
                     "use_packed_sm120_backward", False
                 ),

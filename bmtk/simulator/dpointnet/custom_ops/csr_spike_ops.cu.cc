@@ -160,6 +160,47 @@ __global__ void CsrSpikeForwardGroupedBatch32Kernel(
 }
 
 template <typename T, typename Index>
+__global__ void CsrSpikeForwardFixed4Kernel(
+  int64_t count, int n_pre, int n_post, int64_t n_edges, int n_types,
+  const T* spikes, const T* weights,
+    const Index* incoming_pre_ids, const Index* incoming_edge_ids,
+    const Index* incoming_types, const T* basis, T* currents) {
+  for (int64_t index : GpuGridRangeX(count)) {
+    const int batch = static_cast<int>(index / n_post);
+    const int post = static_cast<int>(
+        index - static_cast<int64_t>(batch) * n_post);
+    float sums[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+#pragma unroll
+    for (int offset = 0; offset < 4; ++offset) {
+      const int64_t incoming = static_cast<int64_t>(post) * 4 + offset;
+      const int64_t pre = static_cast<int64_t>(incoming_pre_ids[incoming]);
+      const int64_t edge =
+          static_cast<int64_t>(incoming_edge_ids[incoming]);
+      const int64_t type = static_cast<int64_t>(incoming_types[incoming]);
+      if (pre < 0 || pre >= n_pre || edge < 0 || edge >= n_edges ||
+          type < 0 || type >= n_types) {
+        continue;
+      }
+      const float spike =
+          ToFloat(spikes[static_cast<int64_t>(batch) * n_pre + pre]);
+      if (spike <= 0.0f) {
+        continue;
+      }
+      const float weighted = spike * ToFloat(weights[edge]);
+#pragma unroll
+      for (int receptor = 0; receptor < 4; ++receptor) {
+        sums[receptor] +=
+            weighted * ToFloat(basis[type * 4 + receptor]);
+      }
+    }
+#pragma unroll
+    for (int receptor = 0; receptor < 4; ++receptor) {
+      currents[index * 4 + receptor] = FromFloat<T>(sums[receptor]);
+    }
+  }
+}
+
+template <typename T, typename Index>
 __global__ void CsrSpikeGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids, const T* weights,
@@ -657,6 +698,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
       context,
       context->GetAttr(
         "use_grouped_batch32_forward", &use_grouped_batch32_forward_));
+    OP_REQUIRES_OK(
+        context,
+        context->GetAttr("use_fixed4_forward", &use_fixed4_forward_));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -666,6 +710,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Tensor& basis = context->input(4);
     const Tensor& spike_gradient_scale = context->input(5);
     const Tensor& active_rows = context->input(6);
+    const Tensor& incoming_pre_ids = context->input(7);
+    const Tensor& incoming_edge_ids = context->input(8);
+    const Tensor& incoming_types = context->input(9);
     core::RefCountPtr<Var> metadata_variable;
     if (!LookupVariable<Index>(
             context, 2, "metadata", &metadata_variable)) {
@@ -678,6 +725,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     RequireMatrix(context, basis, "basis");
     RequireScalar(context, spike_gradient_scale, "spike_gradient_scale");
     RequireVector(context, active_rows, "active_rows");
+    RequireVector(context, incoming_pre_ids, "incoming_pre_ids");
+    RequireVector(context, incoming_edge_ids, "incoming_edge_ids");
+    RequireVector(context, incoming_types, "incoming_types");
     RequireVector(context, metadata, "metadata");
     if (!context->status().ok()) {
       return;
@@ -707,6 +757,22 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context,
         batch * n_pre <= std::numeric_limits<int>::max(),
         errors::InvalidArgument("Tensor size exceeds CUDA kernel index range."));
+    if (use_fixed4_forward_) {
+      OP_REQUIRES(
+        context, n_basis == 4,
+        errors::InvalidArgument(
+          "Fixed-four forward requires four synaptic bases."));
+      OP_REQUIRES(
+        context,
+          incoming_pre_ids.NumElements() == static_cast<int64_t>(4) * n_post_ &&
+            incoming_edge_ids.NumElements() ==
+              static_cast<int64_t>(4) * n_post_ &&
+            incoming_types.NumElements() ==
+              static_cast<int64_t>(4) * n_post_,
+        errors::InvalidArgument(
+          "Fixed-four forward requires exactly four incoming edges per "
+          "postsynaptic neuron."));
+    }
 
     const Index* metadata_values = metadata.flat<Index>().data();
     const Index* post_ids = metadata_values;
@@ -719,6 +785,23 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
             0, TensorShape({batch * n_post_, n_basis}), &currents));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     const int64_t output_count = currents->NumElements();
+    if (use_fixed4_forward_) {
+      const int64_t work_count = batch * n_post_;
+      constexpr int threads = 256;
+      OP_REQUIRES_OK(
+          context,
+          GpuLaunchKernel(
+              CsrSpikeForwardFixed4Kernel<T, Index>,
+              BlockCountFor(work_count, threads, device), threads, 0,
+              device.stream(), work_count, static_cast<int>(n_pre), n_post_,
+              n_edges_, static_cast<int>(basis.dim_size(0)),
+              spikes.flat<T>().data(), weights.flat<T>().data(),
+              incoming_pre_ids.flat<Index>().data(),
+              incoming_edge_ids.flat<Index>().data(),
+              incoming_types.flat<Index>().data(), basis.flat<T>().data(),
+              currents->flat<T>().data()));
+      return;
+    }
     constexpr int zero_threads = 256;
     OP_REQUIRES_OK(
         context,
@@ -764,6 +847,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
   int64_t n_edges_;
   int64_t n_pairs_;
   bool use_grouped_batch32_forward_;
+  bool use_fixed4_forward_;
 };
 
 template <typename T, typename Index>
