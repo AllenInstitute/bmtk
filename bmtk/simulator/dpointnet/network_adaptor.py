@@ -39,9 +39,9 @@ class NetworkAdaptor:
         self.network_type = network_type
         self.componets_dir = None
 
-        # For "input" networks, they must either support one type of input, ie "spikes" or 
+        # For "input" networks, they must either support one type of input, ie "spikes" or
         # "current", or "na" (for unknown). Each input network can support multiple training
-        # and predictions inputs but only of the same type.  
+        # and predictions inputs but only of the same type.
         self._input_type = None
         self._input_options = {}
         self._source_tf_ids = None
@@ -50,15 +50,15 @@ class NetworkAdaptor:
         self._target_populations = set()
         self._source_populations = set()
         self.options = options
-        
+
     @property
     def population_name(self):
         return self.name
-    
+
     @property
     def n_nodes(self):
         raise NotImplementedError()
-    
+
     @property
     def input_type(self):
         if self._input_type is None:
@@ -70,7 +70,7 @@ class NetworkAdaptor:
                 return 'spikes'
         else:
             return self._input_type
-        
+
     @input_type.setter
     def input_type(self, _input_type):
         assert(_input_type in ['na', 'spikes', 'current'])
@@ -95,20 +95,24 @@ class NetworkAdaptor:
     @property
     def source_tf_ids(self):
         return self._source_tf_ids
-    
+
     @property
     def target_tf_ids(self):
         return self._target_tf_ids
-    
+
     @property
     def source_node_ids(self):
-         tf2id_map = TFIDMap().tf2bmtk_id_map(populations=self._source_populations)
-         return tf2id_map.loc[self.source_tf_ids]
-    
+        tf2id_map = TFIDMap().tf2bmtk_id_map(populations=self._source_populations)
+        return tf2id_map.loc[self.source_tf_ids]
+
     @property
     def target_node_ids(self):
-         tf2id_map = TFIDMap().tf2bmtk_id_map(populations=self._target_populations)
-         return tf2id_map.loc[self.target_tf_ids]
+        tf2id_map = TFIDMap().tf2bmtk_id_map(populations=self._target_populations)
+        return tf2id_map.loc[self.target_tf_ids]
+
+    @property
+    def canonical_edge_order(self):
+        return getattr(self, "_canonical_edge_order", None)
 
     @property
     def connection_table(self):
@@ -123,7 +127,7 @@ class NetworkAdaptor:
             'target_population': trg_ids['population'].values,
             'edge_type_id': self._edge_type_ids
         })
-    
+
     def filter_ids(self, **query):
         raise NotImplementedError()
 
@@ -138,7 +142,7 @@ class NetworkAdaptor:
 
     def get_bmtk_ids(self, **filter):
         raise NotImplementedError()
-    
+
     def get_tf_ids(self, **filter):
         raise NotImplementedError()
 
@@ -158,7 +162,7 @@ class NetworkAdaptor:
 
         if networks_dict.keys() == {'networks'}:
             networks_dict = networks_dict['networks']
-        
+
         # These are network files that have been pre-processed in the (assumingly correct) layout and
         # stored as a pickle or npz file.
         for cached_dict in networks_dict.get('cached', []):
@@ -188,7 +192,7 @@ class NetworkAdaptor:
                 input_networks.append(net)
             else:
                 raise ValueError(f'Invalid "type" property value {network_type} in networks; valid options: "recurrent", "input"')
-            
+
         for nodes in networks_dict.get('nodes', []):
             if not nodes.get('enabled', True):
                 continue
@@ -202,7 +206,7 @@ class NetworkAdaptor:
             sonata_file = sonata.File(data_files=nodes['nodes_file'], data_type_files=nodes['node_types_file'])
             for node_pop in sonata_file.nodes.populations:
                 node_pop_name = node_pop.name
-                
+
                 # If "populations" attribute defined make sure node_population is included in the list.
                 if populations is not None and node_pop_name not in populations:
                     continue
@@ -243,26 +247,26 @@ class NetworkAdaptor:
         for edges in networks_dict.get('edges', []):
             if not edges.get('enabled', True):
                 continue
-            
+
             populations = edges.get('population', None)
             populations = [populations] if isinstance(populations, (bytes, str)) else populations
             sonata_file = sonata.File(data_files=edges['edges_file'], data_type_files=edges['edge_types_file'])
             for edge_pop in sonata_file.edges.populations:
                 edge_pop_name = edge_pop.name
-                
+
                 src_pop = edge_pop.source_population
                 trg_pop = edge_pop.target_population
                 if not (src_pop in names and trg_pop in names):
                     raise ValueError(f'Orphaned edges {edge_pop_name} ({edges["edges_file"]}) does not have corresponding target and sources'
                                      f'populations {src_pop} -> {trg_pop}. Skipping.')
-                
+
                 for net in rec_networks + input_networks:
                     if net.name == src_pop:
                         io.log_debug(f'Adding edges to {net.name}')
                         net.add_edges(edge_pop)
 
         return rec_networks, input_networks
-    
+
     @staticmethod
     def from_params(cache_file=None, network_type=None, network_name=None, file_format=None):
         rec_networks = []
@@ -278,7 +282,7 @@ class NetworkAdaptor:
 
             if network_type not in ['recurrent', 'input']:
                 raise ValueError(f'Invalid "type" property value {network_type} in networks; valid options: "recurrent", "input"')
-            
+
             net = CachedNetwork(
                 name=network_name, network_type=network_type, 
                 file_path=cache_file, file_format=file_format
@@ -289,7 +293,6 @@ class NetworkAdaptor:
                 input_networks.append(net)
 
         return rec_networks, input_networks
-
 
     def get_nodes_df(self):
         raise NotImplementedError()
@@ -428,7 +431,7 @@ class SONATANetwork(NetworkAdaptor):
         node_types_table = self._sonata_node_pop.types_table.to_dataframe()
         if 'dynamics_params' in node_types_table.columns:
             dyn_params_df = node_types_table.reset_index()[['node_type_id', 'model_type', 'dynamics_params']]
-            
+
             def set_path(r):
                 mt = r['model_type']
                 json_path = r['dynamics_params']
@@ -445,7 +448,7 @@ class SONATANetwork(NetworkAdaptor):
                 else:
                     params_dir = components_dirs['custom_neuron_models']
                 return (Path(params_dir) / r['dynamics_params']).as_posix()
-            
+
             def load_json(r):
                 with open(r['full_path'], 'r') as f:
                     data = json.load(f)
@@ -454,7 +457,7 @@ class SONATANetwork(NetworkAdaptor):
 
             dyn_params_df.loc[:, 'full_path'] = dyn_params_df.apply(set_path, axis=1)
             self._dynamics_params_lu = pd.DataFrame(dyn_params_df.apply(load_json, axis=1).tolist()).to_dict(orient='list')
-        
+
         # If required, update the "dynamics_params" path to include "synaptic_models_dir". eg pv2sst.json -> components/synanpatic_models/pv2sst.json
         # Wait until later to actual load the json files into memory, depending on the situation
         syn_models_dir = components_dirs.get('synaptic_models_dir', None)
@@ -472,7 +475,7 @@ class SONATANetwork(NetworkAdaptor):
                     if isinstance(dyn_params, str) and not Path(dyn_params).is_absolute():            
                         epop.types_table[etype_id]['dynamics_params'] = syn_models_path / dyn_params
 
-        # To suppor the V1 model, allow users to pass in basis_weights_file, a csv file with synaptic params.       
+        # To suppor the V1 model, allow users to pass in basis_weights_file, a csv file with synaptic params.
         basis_weights_file = components_dirs.get('basis_weights_file', None)
         if basis_weights_file:
             basis_weights_df = pd.read_csv(basis_weights_file)
@@ -490,7 +493,7 @@ class SONATANetwork(NetworkAdaptor):
             node_ids[self._sonata_node_pop.name].append(n.node_id)
 
         return node_ids
-    
+
     def get_tf_ids(self, **filter):
         bmtk2tf_id_map = TFIDMap().recurrent_bmtk_ids()
         node_ids_dict = self.get_bmtk_ids(**filter)
@@ -513,7 +516,7 @@ class SONATANetwork(NetworkAdaptor):
                 'param_idx': [],
                 'param_paths': []
             }
-            
+
             edge_types_table = edge_pop.types_table
             for etid in np.unique(edge_pop.type_ids):
                 dyn_params_path = edge_types_table[etid]['dynamics_params']
@@ -522,12 +525,12 @@ class SONATANetwork(NetworkAdaptor):
                 if dyn_params_idx is None:
                     with open(dyn_params_path, 'r') as f:
                         dyn_params_dict = json.load(f)
-                    
+
                     if self._basis_weights is not None:
                         basis_name = Path(dyn_params_path).stem
                         if basis_name in self._basis_weights:
                             dyn_params_dict['basis_weights'] = self._basis_weights[basis_name]
-                    
+
                     dyn_params_idx = len(ordered_dyn_param_dicts)
                     dynamic_params_idx_lu[dyn_params_path] = dyn_params_idx
                     ordered_dyn_param_dicts.append(dyn_params_dict)
@@ -565,7 +568,7 @@ class SONATANetwork(NetworkAdaptor):
         # if self._cache_file and Path(self._cache_file).exists():
         #     with open(self._cache_file, 'rb') as f:
         #         return pkl.load(f)
-        
+
         # dict = super().to_dict()
         n_nodes = len(self._sonata_node_pop.node_ids)
 
@@ -585,45 +588,60 @@ class SONATANetwork(NetworkAdaptor):
         delays = np.zeros(n_edges, dtype=np.float32)
         syn_ids = np.zeros(n_edges, dtype=np.uint8)
         syn_dyn_params, syn_dyn_parms_lu = self._synaptic_dyn_params()
-        
-        idx_beg, idx_end = 0, 0
+
+        population_offset = 0
         for edge_pop in self._sonata_edge_pops:
             et_table = edge_pop.types_table.to_dataframe()
-            idx_beg = idx_end
-            idx_end = idx_beg + len(edge_pop)
             src_pop = edge_pop.source_population 
             trg_pop = edge_pop.target_population
-            
-            idx_beg = 0
+
             for model_grp in edge_pop.groups:
-                idx_end = idx_beg + len(model_grp)
-                self._source_tf_ids[idx_beg:idx_end] = self.id_maps.bmtk2tf_id_map(src_pop)[model_grp.src_node_ids[()]] # bmtk2tf_id_map[model_grp.src_node_ids[()]]
-                self._target_tf_ids[idx_beg:idx_end] = self.id_maps.bmtk2tf_id_map(trg_pop)[model_grp.trg_node_ids[()]] # bmtk2tf_id_map[model_grp.trg_node_ids[()]]
-                self._edge_type_ids[idx_beg:idx_end] = model_grp.edge_type_ids
-                
+                rows, group_indices = self._edge_group_rows(edge_pop, model_grp)
+                destination = rows + population_offset
+                self._source_tf_ids[destination] = self.id_maps.bmtk2tf_id_map(src_pop)[
+                    model_grp.src_node_ids[()]
+                ]
+                self._target_tf_ids[destination] = self.id_maps.bmtk2tf_id_map(trg_pop)[
+                    model_grp.trg_node_ids[()]
+                ]
+                self._edge_type_ids[destination] = model_grp.edge_type_ids
+
                 if 'syn_weight' in model_grp.columns:
-                    weights[idx_beg:idx_end] = model_grp.get_values('syn_weight', all_rows=True)
+                    weights[destination] = model_grp.get_values(
+                        "syn_weight", all_rows=True
+                    )[group_indices]
                 elif 'syn_weight' in et_table.columns:
-                    weights[idx_beg:idx_end] = et_table.loc[model_grp.edge_type_ids]['syn_weight']
+                    weights[destination] = et_table.loc[model_grp.edge_type_ids][
+                        "syn_weight"
+                    ]
                 else:
                     raise Exception()
 
                 if 'delay' in model_grp.columns:
-                    delays[idx_beg:idx_end] = model_grp.get_values('delay', all_rows=True)
+                    delays[destination] = model_grp.get_values("delay", all_rows=True)[
+                        group_indices
+                    ]
                 elif 'delay' in et_table.columns:
-                    delays[idx_beg:idx_end] = et_table.loc[model_grp.edge_type_ids]['delay']
+                    delays[destination] = et_table.loc[model_grp.edge_type_ids]["delay"]
                 else:
                     raise Exception()
 
                 if 'dynamics_params' in model_grp.columns:
                     raise NotImplementedError()
                 elif 'dynamics_params' in et_table.columns:
-                    syn_ids[idx_beg:idx_end] = syn_dyn_parms_lu[edge_pop.name].loc[model_grp.edge_type_ids]['dyn_params_idx'].values
+                    syn_ids[destination] = (
+                        syn_dyn_parms_lu[edge_pop.name]
+                        .loc[model_grp.edge_type_ids]["dyn_params_idx"]
+                        .values
+                    )
                 else:
                     raise Exception()
+            population_offset += len(edge_pop)
 
         indices = np.column_stack((self._target_tf_ids, self._source_tf_ids))
         sort_order = lex_sort_order_np(indices)
+        self._canonical_edge_order = np.empty(len(sort_order), dtype=sort_order.dtype)
+        self._canonical_edge_order[sort_order] = np.arange(len(sort_order))
         indices = indices[sort_order]
         weights = weights[sort_order]
         delays = delays[sort_order]
@@ -664,11 +682,30 @@ class SONATANetwork(NetworkAdaptor):
 
         return rec_dict
 
+    @staticmethod
+    def _edge_group_rows(edge_pop, model_grp):
+        count, ranges = edge_pop.group_indicies(model_grp.group_id)
+        rows = (
+            np.concatenate(
+                [np.arange(start, stop, dtype=np.int64) for start, stop in ranges]
+            )
+            if count
+            else np.empty(0, dtype=np.int64)
+        )
+        group_indices = (
+            np.concatenate(
+                [edge_pop._group_index_ds[start:stop] for start, stop in ranges]
+            ).astype(np.int64, copy=False)
+            if count
+            else np.empty(0, dtype=np.int64)
+        )
+        return rows, group_indices
+
     def _build_input_dict(self):
         # if self._cache_file and Path(self._cache_file).exists():
         #     with open(self._cache_file, 'rb') as f:
         #         return pkl.load(f)
-        
+
         edge_pop = self._sonata_edge_pops[0]
         et_table = edge_pop.types_table.to_dataframe()
 
@@ -683,42 +720,55 @@ class SONATANetwork(NetworkAdaptor):
         delays = np.zeros(n_edges, dtype=np.float32)
         syn_ids = np.zeros(n_edges, dtype=np.uint8)
 
-        idx_beg, idx_end = 0, 0
+        population_offset = 0
         syn_dyn_params, syn_dyn_parms_lu = self._synaptic_dyn_params()
         for edge_pop in self._sonata_edge_pops:
             et_table = edge_pop.types_table.to_dataframe()
-            idx_beg = idx_end
-            idx_end = idx_beg + len(edge_pop)
             src_pop = edge_pop.source_population 
             trg_pop = edge_pop.target_population
-            
-            idx_beg = 0
+
             for model_grp in edge_pop.groups:
-                idx_end = idx_beg + len(model_grp)
-                self._source_tf_ids[idx_beg:idx_end] = self.id_maps.bmtk2tf_id_map(src_pop)[model_grp.src_node_ids[()]] # bmtk2tf_id_map[model_grp.src_node_ids[()]]
-                self._target_tf_ids[idx_beg:idx_end] = self.id_maps.bmtk2tf_id_map(trg_pop)[model_grp.trg_node_ids[()]] # bmtk2tf_id_map[model_grp.trg_node_ids[()]]
-                self._edge_type_ids[idx_beg:idx_end] = model_grp.edge_type_ids
+                rows, group_indices = self._edge_group_rows(edge_pop, model_grp)
+                destination = rows + population_offset
+                self._source_tf_ids[destination] = self.id_maps.bmtk2tf_id_map(src_pop)[
+                    model_grp.src_node_ids[()]
+                ]
+                self._target_tf_ids[destination] = self.id_maps.bmtk2tf_id_map(trg_pop)[
+                    model_grp.trg_node_ids[()]
+                ]
+                self._edge_type_ids[destination] = model_grp.edge_type_ids
 
                 if 'syn_weight' in model_grp.columns:
-                    weights[idx_beg:idx_end] = model_grp.get_values('syn_weight', all_rows=True)
+                    weights[destination] = model_grp.get_values(
+                        "syn_weight", all_rows=True
+                    )[group_indices]
                 elif 'syn_weight' in et_table.columns:
-                    weights[idx_beg:idx_end] = et_table.loc[model_grp.edge_type_ids]['syn_weight']
+                    weights[destination] = et_table.loc[model_grp.edge_type_ids][
+                        "syn_weight"
+                    ]
                 else:
                     raise Exception()
 
                 if 'delay' in model_grp.columns:
-                    delays[idx_beg:idx_end] = model_grp.get_values('delay', all_rows=True)
+                    delays[destination] = model_grp.get_values("delay", all_rows=True)[
+                        group_indices
+                    ]
                 elif 'delay' in et_table.columns:
-                    delays[idx_beg:idx_end] = et_table.loc[model_grp.edge_type_ids]['delay']
+                    delays[destination] = et_table.loc[model_grp.edge_type_ids]["delay"]
                 else:
                     raise Exception() 
 
                 if 'dynamics_params' in model_grp.columns:
                     raise NotImplementedError()
                 elif 'dynamics_params' in et_table.columns:
-                    syn_ids[idx_beg:idx_end] = syn_dyn_parms_lu[edge_pop.name].loc[model_grp.edge_type_ids]['dyn_params_idx'].values
+                    syn_ids[destination] = (
+                        syn_dyn_parms_lu[edge_pop.name]
+                        .loc[model_grp.edge_type_ids]["dyn_params_idx"]
+                        .values
+                    )
                 else:
                     raise Exception()
+            population_offset += len(edge_pop)
 
         node_params = self._sonata_node_pop.to_dataframe().to_dict('list')
         net_dict = {

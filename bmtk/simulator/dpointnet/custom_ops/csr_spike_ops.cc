@@ -61,6 +61,7 @@ REGISTER_OP("DpointnetCsrSpikeForward")
     .Attr("use_fixed4_forward: bool = false")
     .Attr("use_packed_sm120_backward: bool = false")
     .Attr("write_csr_weight_gradient: bool = false")
+    .Attr("use_small_batch_backward: bool = false")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       ShapeHandle spikes;
@@ -108,6 +109,7 @@ REGISTER_OP("DpointnetCsrSpikeGrad")
     .Attr("n_pairs: int >= 0")
     .Attr("use_packed_sm120_backward: bool = false")
     .Attr("write_csr_weight_gradient: bool = false")
+    .Attr("use_small_batch_backward: bool = false")
     .Output("spike_grad: T")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {

@@ -30,6 +30,49 @@ def _unpack_spikes(packed, width, dtype):
     return tf.ensure_shape(spikes, (packed.shape[0], width))
 
 
+class FullBPTTGradientRunner:
+    """Retain a full rollout tape and restore variable-gradient layout at its boundary."""
+
+    def __init__(self, core_model, variable_gradient_transform):
+        self.core_model = core_model
+        self.variable_gradient_transform = variable_gradient_transform
+
+    def __call__(self, inputs, initial_state):
+        @tf.custom_gradient
+        def rollout(*arguments):
+            differentiable_indices = tuple(
+                index
+                for index, value in enumerate(arguments)
+                if value.dtype.is_floating or value.dtype.is_complex
+            )
+            differentiable = tuple(arguments[index] for index in differentiable_indices)
+            with tf.GradientTape(persistent=True) as tape:
+                tape.watch(differentiable)
+                outputs = tuple(tf.nest.flatten(self.core_model(arguments)))
+
+            def grad(*output_gradients, variables=None):
+                variables = tuple(variables or ())
+                gradients = tape.gradient(
+                    outputs,
+                    differentiable + variables,
+                    output_gradients=output_gradients,
+                    unconnected_gradients=tf.UnconnectedGradients.ZERO,
+                )
+                argument_gradients = [None] * len(arguments)
+                for index, value in zip(differentiable_indices, gradients):
+                    argument_gradients[index] = value
+                variable_gradients = self.variable_gradient_transform(
+                    variables, gradients[len(differentiable) :]
+                )
+                if variables:
+                    return tuple(argument_gradients), list(variable_gradients)
+                return tuple(argument_gradients)
+
+            return outputs, grad
+
+        return rollout(inputs, *tuple(initial_state))
+
+
 class SegmentedRecomputeRunner:
     """Run an RNN in recomputed temporal chunks while preserving exact BPTT."""
 

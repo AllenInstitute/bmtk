@@ -257,7 +257,14 @@ def test_segmented_recompute_transforms_accumulated_variable_gradient_once():
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order():
+@pytest.mark.parametrize("batch_size", [5, 32])
+@pytest.mark.parametrize("checkpointing", [False, True])
+@pytest.mark.parametrize("small_batch", [False, True])
+def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order(
+    batch_size, checkpointing, small_batch
+):
+    if small_batch and batch_size == 32:
+        pytest.skip("Small-batch kernel supports 1..8")
     indices = np.array([[0, 0], [1, 0], [1, 2], [0, 1]], np.int64)
     synapse_types = np.array([0, 1, 0, 1], np.int64)
     connectivity = build_csr_connectivity(
@@ -288,7 +295,7 @@ def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order():
         def call(self, values):
             sequence, state = values
             csr_weights = reorder_csr_values(
-                tf.cast(self.master, tf.float16), connectivity
+                tf.stop_gradient(tf.cast(self.master, tf.float16)), connectivity
             )
             time_major = tf.transpose(sequence, [1, 0, 2])
             currents = tf.map_fn(
@@ -302,50 +309,60 @@ def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order():
                     compute_spike_gradient=True,
                     use_packed_sm120_backward="auto",
                     write_csr_weight_gradient=self.write_csr_gradient,
+                    use_small_batch_backward=small_batch and self.write_csr_gradient,
                 ),
                 time_major,
-                fn_output_signature=tf.TensorSpec([64, 4], tf.float16),
+                fn_output_signature=tf.TensorSpec([batch_size * 2, 4], tf.float16),
             )
-            currents = tf.reshape(currents, [-1, 32, 2, 4])
+            currents = tf.reshape(currents, [-1, batch_size, 2, 4])
             currents = tf.transpose(currents, [1, 0, 2, 3])
             return currents, currents * tf.constant(1.5, tf.float16), state
 
     def build_model(write_csr_gradient):
-        sequence = tf.keras.Input(batch_shape=(32, None, 3), dtype=tf.float16)
-        state = tf.keras.Input(batch_shape=(32, 1), dtype=tf.float16)
+        sequence = tf.keras.Input(batch_shape=(batch_size, None, 3), dtype=tf.float16)
+        state = tf.keras.Input(batch_shape=(batch_size, 1), dtype=tf.float16)
         layer = CurrentSequence(write_csr_gradient)
         return tf.keras.Model((sequence, state), layer((sequence, state))), layer
 
     canonical_model, canonical_layer = build_model(False)
     direct_model, direct_layer = build_model(True)
-    canonical_runner = training.SegmentedRecomputeRunner(canonical_model, 5, 2, 2)
+    canonical_runner = (
+        training.SegmentedRecomputeRunner(canonical_model, 5, 2, 2)
+        if checkpointing
+        else lambda values, states: canonical_model((values, *states))
+    )
     direct_cell = SimpleNamespace(
         recurrent_weight_values=direct_layer.master,
         recurrent_fused_connectivity=connectivity,
     )
-    direct_runner = training.SegmentedRecomputeRunner(
-        direct_model,
-        5,
-        2,
-        2,
-        variable_gradient_transform=lambda variables, gradients: (
-            GLIF3Cell.restore_segmented_variable_gradients(
-                direct_cell, variables, gradients
-            )
-        ),
+    transform = (
+        lambda variables, gradients: GLIF3Cell.restore_segmented_variable_gradients(
+            direct_cell, variables, gradients
+        )
     )
-    spike_values = np.zeros((32, 5, 3), np.float16)
+    direct_runner = (
+        training.SegmentedRecomputeRunner(
+            direct_model, 5, 2, 2, variable_gradient_transform=transform
+        )
+        if checkpointing
+        else training.FullBPTTGradientRunner(direct_model, transform)
+    )
+    spike_values = np.zeros((batch_size, 5, 3), np.float16)
     spike_values[::2, :, 0] = 1.0
     spike_values[1::3, 1::2, 1] = 2.0
     spike_values[2::5, 2:, 2] = 3.0
     sequence = tf.constant(spike_values)
-    state = tf.zeros([32, 1], tf.float16)
+    state = tf.zeros([batch_size, 1], tf.float16)
 
+    @tf.function
     def evaluate(runner, layer):
         with tf.GradientTape() as tape:
             outputs = runner(sequence, (state,))
             loss = tf.reduce_sum(outputs[0]) + tf.reduce_sum(
                 outputs[1] * tf.constant(0.25, tf.float16)
+            )
+            loss = tf.cast(loss, tf.float32) + tf.reduce_sum(
+                layer.master**2 * tf.constant([1.0, 3.0, 7.0, 11.0])
             )
         return outputs, tape.gradient(loss, layer.master)
 
@@ -355,18 +372,32 @@ def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order():
     for direct, canonical in zip(direct_outputs, canonical_outputs):
         np.testing.assert_array_equal(direct, canonical)
     np.testing.assert_array_equal(direct_gradient, canonical_gradient)
+    canonical_optimizer = ExponentiatedAdam(learning_rate=0.005)
+    direct_optimizer = ExponentiatedAdam(learning_rate=0.005)
+    canonical_optimizer.apply_gradients([(canonical_gradient, canonical_layer.master)])
+    direct_optimizer.apply_gradients([(direct_gradient, direct_layer.master)])
+    np.testing.assert_array_equal(direct_layer.master, canonical_layer.master)
+    for actual, expected in zip(
+        direct_optimizer.variables, canonical_optimizer.variables
+    ):
+        np.testing.assert_array_equal(actual, expected)
+    connectivity.close()
 
 
-def test_direct_csr_gradient_requires_gradient_checkpointing():
+def test_direct_csr_gradient_uses_full_tape_without_checkpointing():
     engine = object.__new__(training.TrainingEngine)
     engine.rnn = SimpleNamespace(
-        cell=SimpleNamespace(_use_direct_csr_recurrent_gradient=True)
+        cell=SimpleNamespace(
+            _use_direct_csr_recurrent_gradient=True,
+            restore_segmented_variable_gradients=lambda variables, gradients: gradients,
+        ),
+        extractor_model=object(),
     )
     engine.gradient_checkpointing = False
     engine._extractor_forward = None
 
-    with pytest.raises(ValueError, match="requires gradient_checkpointing=True"):
-        engine.prepare_gradient_checkpointing()
+    engine.prepare_gradient_checkpointing()
+    assert isinstance(engine._extractor_forward, training.FullBPTTGradientRunner)
 
 
 @pytest.mark.parametrize("width", [31, 32, 62])

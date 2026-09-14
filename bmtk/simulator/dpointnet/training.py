@@ -10,8 +10,7 @@ from .io_tools import io
 from .data_iterator import DataIterator
 from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
 from .learning_rules import LearningRuleObservations
-from .segmented_recompute import SegmentedRecomputeRunner
-
+from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
 
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
@@ -521,7 +520,7 @@ class TrainingEngine:
         retained. Internal Poisson progression is part of that state, so each
         chunk is replayed exactly during the backward pass.
         """
-        if self.gradient_checkpointing and self._extractor_forward is not None:
+        if self._extractor_forward is not None:
             if x.dtype == tf.bool:
                 x = tf.cast(x, self.rnn.dtype)
             self.rnn.cell.advance_noise_seed()
@@ -535,17 +534,22 @@ class TrainingEngine:
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
         )
-        if use_direct_csr_gradient and not self.gradient_checkpointing:
-            raise ValueError(
-                "use_direct_csr_recurrent_gradient=True requires "
-                "gradient_checkpointing=True."
-            )
-        if not self.gradient_checkpointing or self._extractor_forward is not None:
+        if self._extractor_forward is not None:
+            return
+        if not self.gradient_checkpointing and not use_direct_csr_gradient:
             return
         if self.rnn.extractor_model is None:
             raise ValueError(
                 "Build rnn.extractor_model before preparing gradient checkpointing."
             )
+        if not self.gradient_checkpointing:
+            self._extractor_forward = FullBPTTGradientRunner(
+                self.rnn.extractor_model, cell.restore_segmented_variable_gradients
+            )
+            io.log_info(
+                "Full BPTT with one canonical recurrent-gradient restore enabled."
+            )
+            return
         self._extractor_forward = SegmentedRecomputeRunner(
             self.rnn.extractor_model,
             sequence_length=self.adjusted_seq_len,

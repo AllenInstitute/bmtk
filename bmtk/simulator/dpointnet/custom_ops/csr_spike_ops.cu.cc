@@ -106,7 +106,7 @@ __global__ void CsrSpikeForwardKernel(
 
 template <typename T, typename Index>
 __global__ void CsrSpikeForwardGroupedBatch32Kernel(
-    int64_t n_active_rows, int64_t n_pre, int n_post,
+  int64_t n_active_rows, int64_t n_pre, int n_post, int batch_size,
     const T* spikes, const int64_t* active_rows, const Index* post_ids,
     const T* weights, const Index* synapse_types, const T* basis,
     const Index* row_splits, T* currents) {
@@ -118,6 +118,7 @@ __global__ void CsrSpikeForwardGroupedBatch32Kernel(
   __shared__ uint32 batch_mask;
   if (threadIdx.x < 32) {
     const bool active =
+      threadIdx.x < batch_size &&
       ToFloat(spikes[static_cast<int64_t>(threadIdx.x) * n_pre + pre]) >
       0.0f;
     const uint32 mask = __ballot_sync(0xffffffff, active);
@@ -221,7 +222,9 @@ __global__ void CsrSpikeGradKernel(
     const T* current_grad, const Index* post_ids, const T* weights,
     const Index* synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids, T* spike_grad,
-    float* weight_grad, const T* spike_gradient_scale) {
+    float* weight_grad, const T* spike_gradient_scale,
+    bool write_csr_weight_gradient, const float* projected,
+    const Index* pair_ids, int batch_size) {
   __shared__ float partial_gradients[128];
   const int index = blockIdx.x;
   if (index >= count) {
@@ -241,15 +244,20 @@ __global__ void CsrSpikeGradKernel(
         (static_cast<int64_t>(batch) * n_post + post) * n_basis;
     const int basis_base = synapse_type * n_basis;
     float edge_gradient = 0.0f;
-    for (int receptor = 0; receptor < n_basis; ++receptor) {
-      edge_gradient +=
-          ToFloat(current_grad[gradient_base + receptor]) *
-          ToFloat(basis[basis_base + receptor]);
+    if (projected != nullptr) {
+      edge_gradient = projected[static_cast<int64_t>(pair_ids[edge]) * batch_size + batch];
+    } else {
+      for (int receptor = 0; receptor < n_basis; ++receptor) {
+        edge_gradient +=
+            ToFloat(current_grad[gradient_base + receptor]) *
+            ToFloat(basis[basis_base + receptor]);
+      }
     }
     pre_gradient += edge_gradient * ToFloat(weights[edge]);
     if (spike > 0.0f) {
       GpuAtomicAdd(
-          weight_grad + static_cast<int64_t>(edge_ids[edge]),
+          weight_grad + (write_csr_weight_gradient
+                             ? edge : static_cast<int64_t>(edge_ids[edge])),
           edge_gradient * spike);
     }
   }
@@ -265,6 +273,73 @@ __global__ void CsrSpikeGradKernel(
   if (threadIdx.x == 0) {
     spike_grad[index] = FromFloat<T>(
         partial_gradients[0] * ToFloat(*spike_gradient_scale));
+  }
+}
+
+template <typename T, typename Index>
+__global__ void CsrSpikeGradSmallBatchKernel(
+    int batch_size, int n_pre, int n_post, int n_basis, const T* spikes,
+    const T* current_grad, const Index* post_ids, const T* weights,
+    const Index* synapse_types, const T* basis, const Index* row_splits,
+    const Index* edge_ids, T* spike_grad, float* weight_grad,
+    const T* spike_gradient_scale, bool write_csr_weight_gradient,
+    const float* projected, const Index* pair_ids) {
+  const int pre = blockIdx.x;
+  if (pre >= n_pre) return;
+  float pre_gradients[8] = {};
+  float spike_values[8];
+  for (int sample = 0; sample < batch_size; ++sample) {
+    spike_values[sample] = ToFloat(spikes[static_cast<int64_t>(sample) * n_pre + pre]);
+  }
+  for (int64_t edge = static_cast<int64_t>(row_splits[pre]) + threadIdx.x;
+       edge < static_cast<int64_t>(row_splits[pre + 1]); edge += blockDim.x) {
+    const int post = static_cast<int>(post_ids[edge]);
+    const int type = static_cast<int>(synapse_types[edge]);
+    const float weight = ToFloat(weights[edge]);
+    float weight_gradient = 0.0f;
+    for (int sample = 0; sample < batch_size; ++sample) {
+      const int64_t base = (static_cast<int64_t>(sample) * n_post + post) * n_basis;
+      float projection = 0.0f;
+      if (projected != nullptr) {
+        projection = projected[static_cast<int64_t>(pair_ids[edge]) * batch_size + sample];
+      } else {
+        for (int receptor = 0; receptor < n_basis; ++receptor) {
+          projection += ToFloat(current_grad[base + receptor]) * ToFloat(basis[type * n_basis + receptor]);
+        }
+      }
+      pre_gradients[sample] += projection * weight;
+      if (spike_values[sample] > 0.0f) weight_gradient += projection * spike_values[sample];
+    }
+    weight_grad[write_csr_weight_gradient ? edge : static_cast<int64_t>(edge_ids[edge])] = weight_gradient;
+  }
+  __shared__ float partial[128];
+  for (int sample = 0; sample < batch_size; ++sample) {
+    partial[threadIdx.x] = pre_gradients[sample];
+    __syncthreads();
+    for (int offset = blockDim.x / 2; offset > 0; offset /= 2) {
+      if (threadIdx.x < offset) partial[threadIdx.x] += partial[threadIdx.x + offset];
+      __syncthreads();
+    }
+    if (threadIdx.x == 0) spike_grad[static_cast<int64_t>(sample) * n_pre + pre] = FromFloat<T>(partial[0] * ToFloat(*spike_gradient_scale));
+    __syncthreads();
+  }
+}
+
+template <typename T, typename Index>
+__global__ void PairProjectionGeneralKernel(
+    int64_t count, int batch_size, int n_post, int n_basis,
+    const T* current_grad, const T* basis, const Index* pair_posts,
+    const Index* pair_types, float* projected) {
+  for (int64_t index : GpuGridRangeX(count)) {
+    const int sample = static_cast<int>(index % batch_size);
+    const int64_t pair = index / batch_size;
+    const int64_t base = (static_cast<int64_t>(sample) * n_post + pair_posts[pair]) * n_basis;
+    const int64_t basis_base = static_cast<int64_t>(pair_types[pair]) * n_basis;
+    float value = 0.0f;
+    for (int receptor = 0; receptor < n_basis; ++receptor) {
+      value += ToFloat(current_grad[base + receptor]) * ToFloat(basis[basis_base + receptor]);
+    }
+    projected[index] = value;
   }
 }
 
@@ -907,9 +982,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
 
     if (use_grouped_batch32_forward_) {
       OP_REQUIRES(
-          context, batch == 32 && n_basis == 4,
+          context, batch >= 1 && batch <= 32 && n_basis == 4,
           errors::InvalidArgument(
-              "Grouped forward requires runtime batch 32 and four "
+              "Grouped forward requires runtime batch 1..32 and four "
               "synaptic bases."));
       const int64_t n_active_rows = active_rows.NumElements();
       if (n_active_rows > 0) {
@@ -918,7 +993,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
             GpuLaunchKernel(
                 CsrSpikeForwardGroupedBatch32Kernel<T, Index>,
                 static_cast<int>(n_active_rows), 128, 0, device.stream(),
-                n_active_rows, n_pre, n_post_, spikes.flat<T>().data(),
+                n_active_rows, n_pre, n_post_, static_cast<int>(batch), spikes.flat<T>().data(),
                 active_rows.flat<int64_t>().data(), post_ids,
                 weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
                 row_splits, currents->flat<T>().data()));
@@ -952,6 +1027,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(context, context->GetAttr("use_small_batch_backward", &use_small_batch_backward_));
     OP_REQUIRES_OK(
         context,
         context->GetAttr(
@@ -1028,12 +1104,6 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           "SM86 or newer."));
       }
     }
-      OP_REQUIRES(
-        context,
-        !write_csr_weight_gradient_ || use_packed_sm120_backward_,
-        errors::InvalidArgument(
-          "CSR-ordered gradients require packed recurrent backward."));
-
     const Index* metadata_values = metadata.flat<Index>().data();
     const Index* post_ids = metadata_values;
     const Index* synapse_types = metadata_values + n_edges_;
@@ -1051,7 +1121,34 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         context,
         context->allocate_output(1, weights.shape(), &weight_grad));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
-    if (batch == 32 && n_basis == 4 && n_pairs_ > 0) {
+    Tensor general_projected;
+    const float* general_projection = nullptr;
+    if (n_pairs_ > 0 && (use_small_batch_backward_ || batch != 32 || n_basis != 4 ||
+              (write_csr_weight_gradient_ && !use_packed_sm120_backward_))) {
+      const int64_t count = n_pairs_ * batch;
+      OP_REQUIRES_OK(context, context->allocate_temp(DT_FLOAT, TensorShape({count}), &general_projected));
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+        PairProjectionGeneralKernel<T, Index>, BlockCountFor(count, 256, device), 256, 0,
+        device.stream(), count, static_cast<int>(batch), n_post_, static_cast<int>(n_basis),
+        current_grad.flat<T>().data(), basis.flat<T>().data(), pair_posts, pair_types,
+        general_projected.flat<float>().data()));
+      general_projection = general_projected.flat<float>().data();
+    }
+    if (use_small_batch_backward_) {
+      OP_REQUIRES(context, batch >= 1 && batch <= 8,
+                  errors::InvalidArgument("Small-batch backward requires batch size 1..8."));
+      if (n_pre > 0) {
+        OP_REQUIRES_OK(context, GpuLaunchKernel(
+            CsrSpikeGradSmallBatchKernel<T, Index>, static_cast<int>(n_pre), 128, 0,
+            device.stream(), static_cast<int>(batch), static_cast<int>(n_pre), n_post_,
+            static_cast<int>(n_basis), spikes.flat<T>().data(), current_grad.flat<T>().data(),
+            post_ids, weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
+            row_splits, edge_ids, spike_grad->flat<T>().data(), weight_grad->flat<float>().data(),
+            spike_gradient_scale.flat<T>().data(), write_csr_weight_gradient_,
+            general_projection, pair_ids));
+      }
+    } else if (batch == 32 && n_basis == 4 && n_pairs_ > 0 &&
+      (!write_csr_weight_gradient_ || use_packed_sm120_backward_)) {
       Tensor projected;
       const int64_t projected_count = n_pairs_ * 32;
       OP_REQUIRES_OK(
@@ -1146,7 +1243,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           basis.flat<T>().data(), row_splits, edge_ids,
           spike_grad->flat<T>().data(),
           weight_grad->flat<float>().data(),
-          spike_gradient_scale.flat<T>().data()));
+          spike_gradient_scale.flat<T>().data(), write_csr_weight_gradient_,
+          general_projection, pair_ids, static_cast<int>(batch)));
     }
   }
 
@@ -1156,6 +1254,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   int64_t n_pairs_;
   bool use_packed_sm120_backward_;
   bool write_csr_weight_gradient_;
+  bool use_small_batch_backward_;
 };
 
 template <typename T, typename Index>

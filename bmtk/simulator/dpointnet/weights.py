@@ -7,6 +7,8 @@ from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 class ModelWeights:
+    preserves_canonical_edge_order = True
+
     def __init__(self, rnn, cell, trainable_only=False, deep_copy=True):
         self.rnn = rnn
         self.cell = cell
@@ -17,7 +19,7 @@ class ModelWeights:
             self._networks = {ModelWeights.parse_name(w.name) for w in self.cell.trainable_weights}
         else:
             self._networks = ['<recurrent>'] + self.rnn.inputs_populations
-        
+
         self._network_weights = {}
         for name in self._networks:
             model_vals = cell.recurrent_weight_values if name == '<recurrent>' else self.cell.inputs[name]['input_weight_values']
@@ -38,7 +40,7 @@ class ModelWeights:
     def parse_name(var_name):
         if ':' in var_name:
             var_name = var_name.split(':')[0]
-        
+
         if var_name == 'sparse_recurrent_weights':
             return '<recurrent>'
         else:
@@ -59,6 +61,9 @@ class ModelWeights:
                 export_factor = self.cell.inputs[netname]['export_factor']
             netweights_np = netweights.numpy() if hasattr(netweights, 'numpy') else netweights
             conn_table_df['syn_weight'] = np.asarray(netweights_np, dtype=np.float32) * export_factor
+            order = netadaptor.canonical_edge_order
+            if order is not None:
+                conn_table_df = conn_table_df.iloc[order].reset_index(drop=True)
 
             if ret_df is None:
                 ret_df = conn_table_df
@@ -77,8 +82,7 @@ class ModelWeights:
             with h5py.File(h5_path, 'a') as h5_out:
                 add_hdf5_magic(h5_out)
                 add_hdf5_version(h5_out)
-                
-                
+
                 if grp_name in h5_out:
                     if overwrite:
                         del h5_out[grp_name]

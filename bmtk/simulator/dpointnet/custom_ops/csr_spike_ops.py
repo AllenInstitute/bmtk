@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
+from tensorflow.python.ops import handle_data_util
 
 _LIBRARY_PATH = Path(__file__).with_name("_csr_spike_ops.so")
 _ARCHITECTURE_PATH = Path(__file__).with_name("_csr_spike_ops.archs")
@@ -217,6 +218,12 @@ def _create_metadata_resource(metadata, index_dtype):
         container=_RESOURCE_CONTAINER,
         shared_name=resource_name,
     )
+    handle_data_util.set_handle_data(
+        metadata_handle,
+        handle_data_util.create_handle_data(
+            tf.TensorShape(metadata.shape), index_dtype
+        ),
+    )
     tf.raw_ops.AssignVariableOp(
         resource=metadata_handle,
         value=tf.constant(metadata, dtype=index_dtype),
@@ -398,6 +405,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
             write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
+            use_small_batch_backward=op.get_attr("use_small_batch_backward"),
         )
         if not compute_weight_gradient:
             weight_grad = None
@@ -447,6 +455,8 @@ def fused_spike_currents(
     use_fixed4_forward=False,
     initial_currents=None,
     write_csr_weight_gradient=False,
+    use_small_batch_backward=False,
+    use_active_row_forward=False,
 ):
     if _OPS is None:
         raise RuntimeError(
@@ -495,11 +505,23 @@ def fused_spike_currents(
     use_packed_sm120_backward = _resolve_packed_sm120_backward(
         use_packed_sm120_backward, spikes, connectivity, basis
     )
-    if write_csr_weight_gradient and not use_packed_sm120_backward:
+    if write_csr_weight_gradient and not compute_spike_gradient:
         raise ValueError(
-            "write_csr_weight_gradient=True requires packed recurrent backward."
+            "write_csr_weight_gradient=True requires recurrent spike gradients."
         )
-    use_grouped_batch32_forward = spikes.shape[0] == 32 and basis.shape[1] == 4
+    if use_small_batch_backward:
+        if not compute_spike_gradient or spikes.shape[0] not in range(1, 9):
+            raise ValueError(
+                "Small-batch backward requires recurrent spike gradients and batch size 1..8."
+            )
+    if use_active_row_forward:
+        if spikes.shape[0] not in range(1, 33) or basis.shape[1] != 4:
+            raise ValueError(
+                "Active-row forward requires batch size 1..32 and four basis columns."
+            )
+    use_grouped_batch32_forward = (
+        use_active_row_forward or spikes.shape[0] == 32
+    ) and basis.shape[1] == 4
     if use_grouped_batch32_forward:
         active_rows = tf.cast(
             tf.where(tf.reduce_any(spikes > 0, axis=0))[:, 0],
@@ -542,4 +564,5 @@ def fused_spike_currents(
         use_fixed4_forward=use_fixed4_forward,
         use_packed_sm120_backward=use_packed_sm120_backward,
         write_csr_weight_gradient=write_csr_weight_gradient,
+        use_small_batch_backward=use_small_batch_backward,
     )

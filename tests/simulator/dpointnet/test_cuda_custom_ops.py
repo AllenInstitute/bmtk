@@ -140,6 +140,151 @@ def _reference_currents(spikes, master_weights, basis):
     )
 
 
+@pytest.mark.parametrize("batch_size", [1, 5, 32])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("small_batch", [False, True])
+@pytest.mark.parametrize("pair_projection", [False, True])
+def test_general_direct_csr_gradient_matches_reference(
+    batch_size, dtype, small_batch, pair_projection
+):
+    if small_batch and batch_size == 32:
+        pytest.skip("Small-batch kernel is restricted to 1..8")
+    if not fused_cuda_available():
+        pytest.skip("Fused CUDA operators unavailable")
+    connectivity = build_csr_connectivity(
+        INDICES,
+        SYNAPSE_TYPES,
+        n_source_neurons=3,
+        n_target_neurons=2,
+        n_synapse_types=2,
+        build_compact_pairs=pair_projection,
+    )
+    try:
+        spikes = tf.Variable(np.tile([[1.0, 0.0, 1.0]], (batch_size, 1)), dtype=dtype)
+        master = tf.Variable([0.5, -0.25, 0.75, 0.125], dtype=tf.float32)
+        basis = tf.constant(
+            [[1.0, 0.5, 0.25, 0.125], [0.5, 0.25, 0.125, 1.0]], dtype=dtype
+        )
+        with tf.GradientTape() as tape:
+            currents = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                2,
+                compute_spike_gradient=True,
+                use_packed_sm120_backward=False,
+                write_csr_weight_gradient=True,
+                use_small_batch_backward=small_batch,
+            )
+            loss = tf.reduce_sum(currents)
+        spike_gradient, csr_gradient = tape.gradient(loss, (spikes, master))
+        with tf.GradientTape() as tape:
+            expected = _reference_currents(spikes, master, basis)
+            expected_loss = tf.reduce_sum(expected)
+        expected_spikes, expected_weights = tape.gradient(
+            expected_loss, (spikes, master)
+        )
+        np.testing.assert_array_equal(currents.numpy(), expected.numpy())
+        np.testing.assert_array_equal(spike_gradient.numpy(), expected_spikes.numpy())
+        np.testing.assert_array_equal(
+            restore_csr_values(csr_gradient, connectivity).numpy(),
+            expected_weights.numpy(),
+        )
+    finally:
+        connectivity.close()
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch_size", [1, 2, 5, 8])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+@pytest.mark.parametrize("write_csr", [False, True])
+@pytest.mark.parametrize("pair_projection", [False, True])
+def test_small_batch_backward_matches_general_with_empty_rows(
+    batch_size, dtype, write_csr, pair_projection
+):
+    connectivity = build_csr_connectivity(
+        INDICES, SYNAPSE_TYPES, 5, 2, 2, build_compact_pairs=pair_projection
+    )
+    rng = np.random.default_rng(41)
+    spikes = tf.Variable(rng.integers(0, 4, size=(batch_size, 5)), dtype=dtype)
+    master = tf.Variable([1.0, -2.0, 3.0, -4.0], dtype=tf.float32)
+    basis = tf.constant([[1.0, 0.5, 0.25], [0.25, 2.0, 0.75]], dtype=dtype)
+    upstream = tf.constant(rng.normal(size=(batch_size * 2, 3)), dtype=dtype)
+
+    def evaluate(small):
+        with tf.GradientTape() as tape:
+            currents = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                2,
+                compute_spike_gradient=True,
+                spike_gradient_scale=0.5,
+                use_packed_sm120_backward=False,
+                write_csr_weight_gradient=write_csr,
+                use_small_batch_backward=small,
+            )
+            loss = tf.reduce_sum(currents * upstream)
+        return currents, tape.gradient(loss, (spikes, master))
+
+    try:
+        expected, expected_gradients = evaluate(False)
+        actual, actual_gradients = evaluate(True)
+        tolerance = 2e-2 if dtype == tf.float16 else 1e-5
+        np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
+        for actual_gradient, expected_gradient in zip(
+            actual_gradients, expected_gradients
+        ):
+            np.testing.assert_allclose(
+                actual_gradient, expected_gradient, rtol=tolerance, atol=tolerance
+            )
+        np.testing.assert_array_equal(actual_gradients[0][:, 3:], 0)
+    finally:
+        connectivity.close()
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch_size", [1, 5, 8, 16, 32])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_active_row_forward_handles_sparse_and_empty_samples(batch_size, dtype):
+    connectivity = build_csr_connectivity(INDICES, SYNAPSE_TYPES, 5, 2, 2)
+    master = tf.Variable([1.0, -2.0, 3.0, 4.0], dtype=tf.float32)
+    basis = tf.constant([[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]], dtype=dtype)
+    try:
+        for active in (False, True):
+            values = np.zeros((batch_size, 5), dtype=np.float32)
+            if active:
+                values[::2, 0] = 2
+                values[-1, 2] = 1
+            spikes = tf.Variable(values, dtype=dtype)
+            with tf.GradientTape() as tape:
+                output = fused_spike_currents(
+                    spikes,
+                    master,
+                    reorder_csr_values(tf.cast(master, dtype), connectivity),
+                    connectivity,
+                    basis,
+                    2,
+                    True,
+                    use_active_row_forward=True,
+                )
+                loss = tf.reduce_sum(output)
+            gradients = tape.gradient(loss, (spikes, master))
+            with tf.GradientTape() as tape:
+                reference = _reference_currents(spikes, master, basis)
+                loss = tf.reduce_sum(reference)
+            expected_gradients = tape.gradient(loss, (spikes, master))
+            np.testing.assert_array_equal(output, reference)
+            for actual, expected in zip(gradients, expected_gradients):
+                np.testing.assert_array_equal(actual, expected)
+    finally:
+        connectivity.close()
+
+
 def _reference_dense_state(
     prev_z,
     voltage,
@@ -513,6 +658,15 @@ def test_pair_projection_policy_resolution(
     )
 
 
+@pytest.mark.parametrize("batch_size", [1, 5, 8, 16, 32, 64])
+@pytest.mark.parametrize("basis_width", [1, 3, 4, 8])
+def test_explicit_pair_projection_is_batch_and_basis_generic(batch_size, basis_width):
+    assert _resolve_pair_projection(True, True, batch_size, basis_width)
+    assert _resolve_pair_projection("auto", True, batch_size, basis_width) == (
+        batch_size == 32 and basis_width == 4
+    )
+
+
 @pytest.mark.parametrize(
     ("option", "available", "n_syn_basis", "pseudo_gauss", "expected"),
     [
@@ -546,8 +700,8 @@ def test_forced_fused_state_rejects_incompatible_model(monkeypatch):
     ("fused_cuda", "batch_size", "n_syn_basis", "message"),
     [
         (False, 32, 4, "fused CUDA"),
-        (True, 5, 4, "batch_size is 5"),
-        (True, 32, 5, "basis has 5 columns"),
+        (True, 0, 4, "batch_size must be positive"),
+        (True, 32, 0, "basis must have positive width"),
     ],
 )
 def test_forced_pair_projection_rejects_incompatible_models(
@@ -845,21 +999,6 @@ def test_pair_projected_batch32_matches_forward_and_gradients(
         [batch_size * 2, 4],
     ) / tf.cast(batch_size * 2 * 4, dtype)
 
-    if write_csr_gradient and dtype == tf.float32:
-        with pytest.raises(ValueError, match="requires packed recurrent backward"):
-            fused_spike_currents(
-                spikes,
-                master_weights,
-                csr_weights,
-                connectivity,
-                basis,
-                n_post=2,
-                compute_spike_gradient=True,
-                use_packed_sm120_backward=packed_option,
-                write_csr_weight_gradient=True,
-            )
-        return
-
     with tf.GradientTape() as fused_tape:
         fused = fused_spike_currents(
             spikes,
@@ -898,13 +1037,13 @@ def test_pair_projected_batch32_matches_forward_and_gradients(
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_direct_csr_gradient_rejects_nonpacked_backward(monkeypatch):
+def test_direct_csr_gradient_rejects_input_weight_only_backward(monkeypatch):
     monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
     )
 
-    with pytest.raises(ValueError, match="requires packed recurrent backward"):
+    with pytest.raises(ValueError, match="requires recurrent spike gradients"):
         fused_spike_currents(
             tf.ones([32, 3], tf.float32),
             tf.ones([4], tf.float32),
@@ -912,7 +1051,7 @@ def test_direct_csr_gradient_rejects_nonpacked_backward(monkeypatch):
             connectivity,
             tf.ones([2, 4], tf.float32),
             n_post=2,
-            compute_spike_gradient=True,
+            compute_spike_gradient=False,
             use_packed_sm120_backward=False,
             write_csr_weight_gradient=True,
         )

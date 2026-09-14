@@ -598,16 +598,18 @@ def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
     incompatibilities = []
     if not fused_cuda:
         incompatibilities.append("fused CUDA currents are disabled or unavailable")
-    if batch_size != 32:
-        incompatibilities.append(f"batch_size is {batch_size}, not 32")
-    if n_syn_basis != 4:
-        incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")
+    if batch_size is None or batch_size < 1:
+        incompatibilities.append("batch_size must be positive and known")
+    if n_syn_basis < 1:
+        incompatibilities.append("the synaptic basis must have positive width")
     if option is True and incompatibilities:
         raise ValueError(
             "use_pair_projection=True is incompatible with this model: "
             + "; ".join(incompatibilities)
         )
-    return option is not False and not incompatibilities
+    return not incompatibilities and (
+        option is True or (option == "auto" and batch_size == 32 and n_syn_basis == 4)
+    )
 
 
 def _resolve_fused_state(option, n_syn_basis, pseudo_gauss):
@@ -674,6 +676,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_fixed4_input_forward=False,
         use_fused_current_accumulation=False,
         use_direct_csr_recurrent_gradient=False,
+        use_small_batch_recurrent_backward=False,
+        use_active_row_forward=False,
         batch_size=None,
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
@@ -682,6 +686,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
     ):
         super().__init__()
 
+        if (
+            use_small_batch_recurrent_backward is not True
+            and use_small_batch_recurrent_backward is not False
+        ):
+            raise ValueError(
+                "use_small_batch_recurrent_backward must be true or false."
+            )
+        self._use_small_batch_recurrent_backward = use_small_batch_recurrent_backward
+        if use_active_row_forward is not True and use_active_row_forward is not False:
+            raise ValueError("use_active_row_forward must be true or false.")
+        self._use_active_row_forward = use_active_row_forward
         self.__seq_idx = 0
         use_pair_projection = _validate_pair_projection_option(use_pair_projection)
         self._use_packed_sm120_backward = _validate_packed_sm120_option(
@@ -717,6 +732,18 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if self._use_direct_csr_recurrent_gradient and not self._use_fused_cuda:
             raise ValueError(
                 "use_direct_csr_recurrent_gradient=True requires fused CUDA currents."
+            )
+        if use_small_batch_recurrent_backward and (
+            not self._use_fused_cuda or batch_size not in range(1, 9)
+        ):
+            raise ValueError(
+                "Small-batch recurrent backward requires fused CUDA and batch size 1..8."
+            )
+        if use_active_row_forward and (
+            not self._use_fused_cuda or batch_size not in range(1, 33)
+        ):
+            raise ValueError(
+                "Active-row forward requires fused CUDA and batch size 1..32."
             )
         if use_fused_cuda == "auto" and not self._use_fused_cuda:
             unavailable_reason = fused_dtype_error or cuda_op_status()
@@ -900,25 +927,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
             batch_size,
             self._n_syn_basis,
         )
-        if self._use_direct_csr_recurrent_gradient:
-            packed_model_eligible = _resolve_packed_sm120_model_option(
-                "auto",
-                self._use_fused_cuda,
-                self.compute_dtype,
-                batch_size,
-                self._n_syn_basis,
-            )
-            if (
-                self._use_packed_sm120_backward is False
-                or not self._use_pair_projection
-                or packed_model_eligible is False
-            ):
-                raise ValueError(
-                    "use_direct_csr_recurrent_gradient=True requires an eligible "
-                    "packed recurrent backward configuration: fused CUDA, SM86+, "
-                    "float16 compute, batch size 32, four basis columns, and pair "
-                    "projection."
-                )
         self._use_packed_sm120_external_backward = _resolve_packed_sm120_model_option(
             use_packed_sm120_external_backward,
             self._use_fused_cuda,
@@ -1319,6 +1327,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 spike_gradient_scale=self._recurrent_dampening,
                 use_packed_sm120_backward=self._use_packed_sm120_backward,
                 write_csr_weight_gradient=(self._use_direct_csr_recurrent_gradient),
+                use_small_batch_backward=self._use_small_batch_recurrent_backward,
+                use_active_row_forward=self._use_active_row_forward,
             )
         return calculate_synaptic_currents(
             rec_z_buf,
@@ -1397,6 +1407,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 compute_weight_gradient=input_net["input_weight_values"].trainable,
                 use_fixed4_forward=input_net.get("use_fixed4_forward", False),
                 initial_currents=initial_currents,
+                use_active_row_forward=self._use_active_row_forward,
                 use_packed_sm120_backward=input_net.get(
                     "use_packed_sm120_backward", False
                 ),

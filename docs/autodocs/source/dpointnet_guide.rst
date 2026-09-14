@@ -62,7 +62,9 @@ Recurrent backward-kernel selection is controlled separately by ``use_pair_proje
 
 * ``"auto"`` (default) selects the pair-projected kernel when fused CUDA is active, the configured batch size
   is 32, and the synaptic basis has four columns. Other configurations use the general fused backward kernel.
-* ``true`` requires the pair-projected kernel and raises a configuration error unless those requirements hold.
+* ``true`` explicitly enables pair projection for any positive configured batch size and basis width with
+  fused CUDA. Shapes outside the batch-32 specialization use a general projection kernel and the general
+  backward reduction. This opt-in path does not require SM86 or packed backward.
 * ``false`` always uses the general fused backward kernel and avoids compact-pair metadata construction.
 
 For example:
@@ -97,6 +99,103 @@ For batch 32 with four basis columns, fused recurrent and spike-input forward pa
 active batch samples into a 32-bit mask and launch one CUDA block per active source row. This avoids launching
 one block for every batch/source combination when biological spike tensors are sparse; other shapes retain the
 general forward kernel.
+
+Set ``use_active_row_forward=true`` to opt into that source-row compaction for batch sizes 1 through 32
+with four basis columns. The mask reads only actual samples; it does not pad the physical batch or discard
+simulations. The default remains ``false`` (the existing automatic batch-32 behavior is unchanged).
+Half-precision scatter addition order and rounding differ from the general forward path, so numerical
+and task-level validation is required; bitwise spike-trajectory identity is not promised.
+
+Set ``use_small_batch_recurrent_backward=true`` to opt into a batch-1-through-8 recurrent backward kernel.
+One block traverses each presynaptic row, reduces sample contributions locally, and writes each FP32
+weight gradient once instead of atomically combining separate sample blocks. It supports general basis
+widths and can be combined independently with explicit pair projection and CSR gradient output. It is
+disabled by default: correct small-tensor behavior does not guarantee better full-network performance.
+
+Set ``use_direct_csr_recurrent_gradient=true`` to accumulate dynamics weight gradients in contiguous CSR
+order, then restore the existing master-variable order once at the rollout boundary. This now supports
+general fused backward kernels, float16/float32, and general batch/basis sizes; it requires individually
+trainable recurrent edges but not packed backward or SM86. Segmented BPTT uses its existing final
+gradient transform. Full BPTT uses a retained tape without recomputing the forward rollout. Only the
+rollout's gradients are transformed: outer weight-regularizer gradients remain in master-variable order
+and are combined after restoration. Optimizer variables, slots, and constraints retain their ordering.
+
+These paths are independent opt-ins, not a change to batch composition, learning rate, loss definitions,
+sequential/parallel update semantics, or stopping criteria. On a short tuned V1 batch-5 full-BPTT series
+benchmark (RTX 3090, 500 steps, all nine paper losses), active-row forwarding plus pair projection
+measured 5.40 s per two-update step versus 7.41--7.52 s baseline. Direct CSR alone was approximately
+neutral (7.44 s) and used more memory; small-batch backward was slower (10.98 s, or 8.49 s with direct
+CSR). These are short-run results, not full-training convergence or other-architecture qualification.
+
+Activating the measured batch-5 speedup
+-------------------------------------
+
+Merge the following settings into an existing paper training configuration, retaining its inputs,
+losses, initialization and callbacks. This is an opt-in execution profile, not a new learning-rate
+or stopping policy. At batch 5, ``use_pair_projection="auto"`` does **not** enable projection;
+use the JSON boolean ``true`` explicitly, together with ``use_active_row_forward=true``.
+
+.. code-block:: json
+
+  {
+    "run": {
+      "batch_size": 5,
+      "seq_len": 500,
+      "dt": 1.0,
+      "dtype": "float16"
+    },
+    "rnn_cell_params": {
+      "use_fused_cuda": true,
+      "use_fused_state": true,
+      "use_active_row_forward": true,
+      "use_pair_projection": true,
+      "use_packed_sm120_backward": false,
+      "use_packed_sm120_external_backward": false,
+      "use_small_batch_recurrent_backward": false,
+      "use_direct_csr_recurrent_gradient": false,
+      "use_fixed4_input_forward": false,
+      "use_fused_current_accumulation": false,
+      "track_voltage_penalty": false,
+      "return_voltage_sequences": true
+    },
+    "training": {
+      "training_approach": "series",
+      "n_epochs": 75,
+      "steps_per_epoch": 25,
+      "gradient_checkpointing": false,
+      "pack_spike_checkpoints": false,
+      "optimizer": {"name": "exp_adam", "epsilon": 1e-11},
+      "learning_rate": {"schedule": "none", "learning_rate": 0.005}
+    }
+  }
+
+If individual training parameters specify ``batch_size``, keep each at 5 as well. With evoked
+and spontaneous parameters, series mode still performs two sequential optimizer updates per
+outer step: 3,750 updates over 75 x 25 steps. There is no batch padding or joint-condition update.
+Keep offline voltage loss in both conditions (``online=false`` or omit ``online``).
+
+Rebuild the CUDA operators from the updated checkout in the same environment used to train.
+For the measured RTX 3090 configuration:
+
+::
+
+  $ DPOINTNET_CUDA_ARCHS="86" python -m bmtk.simulator.dpointnet.custom_ops.build
+  $ python -c "import bmtk; print(bmtk.__file__)"
+
+Choose the architecture for the actual GPU, and verify that the printed import path is the intended
+checkout. Existing installations do not pick up an uninstalled source checkout automatically.
+The packed-kernel flags above are disabled because batch 5 cannot use those specializations.
+General direct CSR and the experimental small-batch reduction are also disabled because they did
+not improve this full-network benchmark. Library defaults remain unchanged; an unmodified paper
+configuration will not automatically enable the two new opt-ins. A 27--28% reduction in the measured
+training-step time is not a measured 27--28% reduction in complete 75-epoch job time. Validate the
+long-run behavior and hardware of interest before adopting this profile for production.
+
+SONATA weight export restores the source edge-row order after runtime recurrent sorting. Interleaved
+edge groups use ``edge_group_index`` to align properties with population rows, and multiple edge
+populations retain separate input offsets. Physical weight export factors are applied before restoring
+row order. The exporter still writes its existing single weight group; this is not a byte-for-byte copy
+of every input HDF5 attribute, group structure, or index dataset.
 
 Set ``use_fixed4_input_forward=true`` to select a fixed-four gather forward for input populations with exactly
 four incoming edges per postsynaptic neuron. One thread owns each ``(batch, post)`` output and writes all four
@@ -322,7 +421,13 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - Accumulate recurrent and fused spike-input currents through one additive CUDA buffer. Requires fused CUDA currents; current-type inputs retain the TensorFlow addition path.
                   - False
                 * - use_direct_csr_recurrent_gradient
-                  - Accumulate packed recurrent weight gradients in CSR order and restore canonical SONATA order once after segmented exact BPTT. Requires gradient checkpointing, individually trainable recurrent edges, fused CUDA, SM86 or newer, float16 compute, batch 32, four basis columns, and pair projection.
+                  - Accumulate recurrent gradients in CSR order and restore master-variable order at the full or segmented BPTT boundary. Requires individually trainable recurrent edges and fused CUDA; packed kernels are optional.
+                  - False
+                * - use_small_batch_recurrent_backward
+                  - Experimental local batch reduction for batch sizes 1 through 8 with fused CUDA; independent of pair projection and gradient layout.
+                  - False
+                * - use_active_row_forward
+                  - Opt into active-source-row forwarding for batch sizes 1 through 32 with four basis columns and fused CUDA. Does not pad or change the training batch.
                   - False
                 * - track_voltage_penalty
                   - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.
