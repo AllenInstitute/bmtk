@@ -150,7 +150,8 @@ def build_csr_connectivity(
         synapse_types,
         n_source_neurons,
         n_target_neurons,
-        n_synapse_types):
+    n_synapse_types,
+    build_compact_pairs=False):
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
     for dimension, name in (
@@ -213,9 +214,28 @@ def build_csr_connectivity(
         sorted_synapse_types = synapse_types[edge_ids].astype(
             numpy_index_dtype, copy=False
         )
-        metadata = np.concatenate(
-            (post_ids, sorted_synapse_types, row_splits, edge_ids)
-        )
+        metadata_parts = [
+            post_ids,
+            sorted_synapse_types,
+            row_splits,
+            edge_ids,
+        ]
+        n_pairs = 0
+        if build_compact_pairs and post_ids.size:
+            pairs, pair_ids = np.unique(
+                np.column_stack((post_ids, sorted_synapse_types)),
+                axis=0,
+                return_inverse=True,
+            )
+            metadata_parts.extend(
+                (
+                    pair_ids.astype(numpy_index_dtype, copy=False),
+                    pairs[:, 0].astype(numpy_index_dtype, copy=False),
+                    pairs[:, 1].astype(numpy_index_dtype, copy=False),
+                )
+            )
+            n_pairs = int(pairs.shape[0])
+        metadata = np.concatenate(metadata_parts)
         metadata_handle = _create_metadata_resource(
             metadata, index_dtype
         )
@@ -226,6 +246,7 @@ def build_csr_connectivity(
             'n_sources': int(n_source_neurons),
             'n_post': int(n_target_neurons),
             'n_synapse_types': int(n_synapse_types),
+            'n_pairs': n_pairs,
         })
 
 
@@ -237,14 +258,16 @@ def reorder_csr_values(values, connectivity):
         connectivity['metadata_handle'],
         Tindex=tf.dtypes.as_dtype(connectivity['index_dtype']),
         n_edges=connectivity['n_edges'],
+        n_sources=connectivity['n_sources'],
+        n_pairs=connectivity['n_pairs'],
     )
 
 
-@ops.RegisterGradient('DpointnetCsrSpikeForward')
+@ops.RegisterGradient("DpointnetCsrSpikeForward")
 def _fused_spike_currents_gradient(op, current_grad):
-    compute_spike_gradient = op.get_attr('compute_spike_gradient')
-    n_post = op.get_attr('n_post')
-    index_dtype = op.get_attr('Tindex')
+    compute_spike_gradient = op.get_attr("compute_spike_gradient")
+    n_post = op.get_attr("n_post")
+    index_dtype = op.get_attr("Tindex")
     if compute_spike_gradient:
         spike_grad, weight_grad = _OPS.dpointnet_csr_spike_grad(
             op.inputs[0],
@@ -252,9 +275,11 @@ def _fused_spike_currents_gradient(op, current_grad):
             op.inputs[2],
             op.inputs[3],
             op.inputs[4],
+            op.inputs[5],
             Tindex=index_dtype,
             n_post=n_post,
-            n_edges=op.get_attr('n_edges'),
+            n_edges=op.get_attr("n_edges"),
+            n_pairs=op.get_attr("n_pairs"),
         )
     else:
         spike_grad = None
@@ -265,7 +290,8 @@ def _fused_spike_currents_gradient(op, current_grad):
             op.inputs[4],
             Tindex=index_dtype,
             n_post=n_post,
-            n_edges=op.get_attr('n_edges'),
+            n_edges=op.get_attr("n_edges"),
+            n_pairs=op.get_attr("n_pairs"),
         )
     return (
         spike_grad,
@@ -273,58 +299,69 @@ def _fused_spike_currents_gradient(op, current_grad):
         None,
         None,
         None,
+        None,
     )
 
 
 def fused_spike_currents(
-        spikes,
-        master_weights,
-        csr_weights,
-        connectivity,
-        basis,
-        n_post,
-        compute_spike_gradient):
+    spikes,
+    master_weights,
+    csr_weights,
+    connectivity,
+    basis,
+    n_post,
+    compute_spike_gradient,
+    spike_gradient_scale=1.0,
+):
     if _OPS is None:
-        raise RuntimeError(f'Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}')
+        raise RuntimeError(
+            f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
+        )
     if spikes.dtype not in (tf.float16, tf.float32):
         raise TypeError(
-            f'Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}.'
+            f"Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}."
         )
     if csr_weights.dtype != spikes.dtype or basis.dtype != spikes.dtype:
-        raise TypeError('spikes, csr_weights, and basis must have the same dtype.')
+        raise TypeError("spikes, csr_weights, and basis must have the same dtype.")
     if master_weights.shape.rank != 1 or csr_weights.shape.rank != 1:
-        raise ValueError('master_weights and csr_weights must be rank 1.')
-    n_edges = connectivity['n_edges']
-    if (master_weights.shape[0] is not None
-            and master_weights.shape[0] != n_edges):
+        raise ValueError("master_weights and csr_weights must be rank 1.")
+    spike_gradient_scale = tf.convert_to_tensor(
+        spike_gradient_scale, dtype=spikes.dtype
+    )
+    if spike_gradient_scale.shape.rank != 0:
+        raise ValueError("spike_gradient_scale must be a scalar.")
+    n_edges = connectivity["n_edges"]
+    if master_weights.shape[0] is not None and master_weights.shape[0] != n_edges:
         raise ValueError(
-            f'master_weights has {master_weights.shape[0]} values; '
-            f'connectivity has {n_edges} edges.'
+            f"master_weights has {master_weights.shape[0]} values; "
+            f"connectivity has {n_edges} edges."
         )
     if csr_weights.shape[0] is not None and csr_weights.shape[0] != n_edges:
         raise ValueError(
-            f'csr_weights has {csr_weights.shape[0]} values; '
-            f'connectivity has {n_edges} edges.'
+            f"csr_weights has {csr_weights.shape[0]} values; "
+            f"connectivity has {n_edges} edges."
         )
 
-    if connectivity['n_post'] != n_post:
+    if connectivity["n_post"] != n_post:
         raise ValueError(
             f'Connectivity targets {connectivity["n_post"]} neurons, got n_post={n_post}.'
         )
-    if connectivity['n_synapse_types'] != basis.shape[0]:
+    if connectivity["n_synapse_types"] != basis.shape[0]:
         raise ValueError(
-            'Connectivity synapse types do not match the basis table: '
+            "Connectivity synapse types do not match the basis table: "
             f'{connectivity["n_synapse_types"]} != {basis.shape[0]}.'
         )
 
     return _OPS.dpointnet_csr_spike_forward(
         spikes,
         master_weights,
-        connectivity['metadata_handle'],
+        connectivity["metadata_handle"],
         csr_weights,
         basis,
-        Tindex=tf.dtypes.as_dtype(connectivity['index_dtype']),
+        spike_gradient_scale,
+        Tindex=tf.dtypes.as_dtype(connectivity["index_dtype"]),
         n_post=n_post,
-        n_edges=connectivity['n_edges'],
+        n_edges=connectivity["n_edges"],
+        n_pairs=connectivity["n_pairs"],
         compute_spike_gradient=compute_spike_gradient,
     )

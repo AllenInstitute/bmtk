@@ -115,17 +115,25 @@ def spike_function(v_scaled, dampening_factor):
     return tf.identity(z_, name="spike_function"), grad
 
 
-
 @tf.custom_gradient
-def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weight_values_compute,
-                                dense_shape, synaptic_basis_weights, syn_ids, pre_ind_table):
-    
+def calculate_synaptic_currents(
+    rec_z_buf,
+    synapse_indices,
+    weight_values,
+    weight_values_compute,
+    dense_shape,
+    synaptic_basis_weights,
+    syn_ids,
+    pre_ind_table,
+    dampening_factor,
+):
     """
     Optimized synaptic current calculation with memory-efficient gradients for RSNN timestep iteration.
 
     Mathematical formulation:
     - Forward: I[b,post,r] = sum_pre(spike[b,pre] * W[post,pre] * basis[type[post,pre], r])
-    - Grad w.r.t spike: dL/dspike[b,pre] = sum_post sum_r(dL/dI[b,post,r] * W[post,pre] * basis[type,r])
+        - Grad w.r.t spike: dL/dspike[b,pre] = dampening_factor
+            * sum_post sum_r(dL/dI[b,post,r] * W[post,pre] * basis[type,r])
     - Grad w.r.t W: dL/dW[post,pre] = sum_b sum_r(dL/dI[b,post,r] * spike[b,pre] * basis[type,r])
 
     Key optimizations:
@@ -144,12 +152,20 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
     # tf.where() returns int64 by default (GPU optimized for this operation)
     non_zero_indices = tf.where(rec_z_buf > 0)  # [num_spikes, 2], int64
     batch_indices = non_zero_indices[:, 0]  # int64
-    pre_neuron_indices = non_zero_indices[:, 1]  # keep int64 for RaggedTensor gather (CPU-optimized)
+    pre_neuron_indices = non_zero_indices[
+        :, 1
+    ]  # keep int64 for RaggedTensor gather (CPU-optimized)
 
     # Retrieve connections and weights for active presynaptic neurons
     # This uses pre_ind_table (RaggedTensor), which benefits from int64 on CPU
-    new_indices, new_weights, new_syn_ids, post_in_degree, all_synaptic_inds = get_new_inds_table(
-        synapse_indices, weight_values_compute, syn_ids, pre_neuron_indices, pre_ind_table
+    new_indices, new_weights, new_syn_ids, post_in_degree, all_synaptic_inds = (
+        get_new_inds_table(
+            synapse_indices,
+            weight_values_compute,
+            syn_ids,
+            pre_neuron_indices,
+            pre_ind_table,
+        )
     )
     # new_syn_ids = tf.cast(new_syn_ids, dtype=tf.int32)  # int32 to reduce VRAM since its reused in backward pass
 
@@ -157,9 +173,13 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
 
     # Build segment IDs for unsorted_segment_sum using int32 for the GPU kernel.
     batch_indices_per_connection = tf.repeat(batch_indices, post_in_degree)  # int64
-    post_neuron_indices = new_indices[:, 0]  # keep as int64 for compatibility, will be cast in segment_ids calculation
+    post_neuron_indices = new_indices[
+        :, 0
+    ]  # keep as int64 for compatibility, will be cast in segment_ids calculation
     num_segments = batch_size * n_post_neurons  # int64
-    segment_ids = batch_indices_per_connection * n_post_neurons + post_neuron_indices  # int64
+    segment_ids = (
+        batch_indices_per_connection * n_post_neurons + post_neuron_indices
+    )  # int64
     segment_ids = tf.cast(segment_ids, dtype=tf.int32)
     num_segments = tf.cast(num_segments, dtype=tf.int32)
 
@@ -168,13 +188,19 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
     # basis_factors = tf.cast(
     #     tf.gather(synaptic_basis_weights, new_syn_ids, axis=0), compute_dtype
     # )  # [n_active, n_basis], compute_dtype
-    basis_factors = tf.gather(synaptic_basis_weights, new_syn_ids, axis=0)  # [n_active, n_basis]
-    new_syn_ids = tf.cast(new_syn_ids, dtype=tf.int32)  # int32 to reduce VRAM since its reused in backward pass
+    basis_factors = tf.gather(
+        synaptic_basis_weights, new_syn_ids, axis=0
+    )  # [n_active, n_basis]
+    new_syn_ids = tf.cast(
+        new_syn_ids, dtype=tf.int32
+    )  # int32 to reduce VRAM since its reused in backward pass
     # Mixed precision: cast gathered subsets to compute_dtype (float16) AFTER gather.
     # This avoids creating a temporary float16 copy of the full weight table (~23M elements)
     # and only casts the ~1-2M active connections — 10-20x less cast work and no extra VRAM.
     new_weights = tf.cast(new_weights, compute_dtype)
-    weighted_basis = new_weights[:, tf.newaxis] * basis_factors  # [n_active, n_basis], compute_dtype
+    weighted_basis = (
+        new_weights[:, tf.newaxis] * basis_factors
+    )  # [n_active, n_basis], compute_dtype
     # weighted_basis = new_weights[:, tf.newaxis] * basis_factors  # [n_active, n_basis], compute_dtype --- IGNORE ---
 
     # if per_type_training:
@@ -203,20 +229,27 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
 
         def per_receptor_accum(r_id, acc):
             dy_r = tf.reshape(dy[:, r_id], [batch_size, n_post_neurons_g])
-            recurrent_weights_factors = tf.gather(synaptic_basis_weights[:, r_id], syn_ids, axis=0)
+            recurrent_weights_factors = tf.gather(
+                synaptic_basis_weights[:, r_id], syn_ids, axis=0
+            )
             weights_syn_receptors = weight_values_compute * recurrent_weights_factors
-            sparse_w_rec = tf.sparse.SparseTensor(synapse_indices, weights_syn_receptors, dense_shape)
-            de_dv_rid = tf.sparse.sparse_dense_matmul(dy_r, sparse_w_rec, adjoint_a=False)
+            sparse_w_rec = tf.sparse.SparseTensor(
+                synapse_indices, weights_syn_receptors, dense_shape
+            )
+            de_dv_rid = tf.sparse.sparse_dense_matmul(
+                dy_r, sparse_w_rec, adjoint_a=False
+            )
 
             return r_id + 1, acc + de_dv_rid
 
         init_acc = tf.zeros((batch_size, n_pre_neurons_g), dtype=compute_dtype)
-        _, de_dv= tf.while_loop(
+        _, de_dv = tf.while_loop(
             lambda r_id, _: r_id < n_syn_basis,
             per_receptor_accum,
             [tf.constant(0, dtype=tf.int32), init_acc],
             parallel_iterations=1,
         )
+        de_dv *= tf.cast(dampening_factor, de_dv.dtype)
 
         # # Extract the gradient for this receptor type (shape: [batch_size, n_post_neurons])
         # r_id = 0
@@ -228,11 +261,6 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
         # sparse_w_rec = tf.sparse.SparseTensor(synapse_indices, weights_syn_receptors, dense_shape)
         # de_dv_rid = tf.sparse.sparse_dense_matmul(dy_r, sparse_w_rec, adjoint_a=False)
         # de_dv = tf.cast(de_dv_rid, dtype=rec_z_buf.dtype)
-
-        # IMPORTANT: The gradient should reflect the same dampening that was applied
-        # to rec_z_buf in the forward pass. However, we don't have access to the
-        # dampening factor here, so the dampening must be applied BEFORE calling
-        # this function, not within it.
 
         # =================================================================
         # GRADIENT W.R.T. WEIGHTS
@@ -246,14 +274,16 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
         # Compute weight gradients in master-weight dtype (typically float32) to avoid
         # quantizing dW in mixed precision before optimizer update.
         # basis_factors_grad = tf.cast(basis_factors_grad, weight_values.dtype)
-        de_dweight_values_connection = tf.einsum('cr,cr->c', dnew_weights, basis_factors_grad)
+        de_dweight_values_connection = tf.einsum(
+            "cr,cr->c", dnew_weights, basis_factors_grad
+        )
         # de_dweight_values_connection = tf.reduce_sum(dnew_weights * basis_factors_grad, axis=1)  # [n_active], compute_dtype
         # Accumulate to original synapse positions
         # Instead of tensor_scatter_nd_add, use unsorted_segment_sum:
         de_dweight_values = tf.math.unsorted_segment_sum(
             data=de_dweight_values_connection,
             segment_ids=all_synaptic_inds,
-            num_segments=tf.shape(weight_values)[0]
+            num_segments=tf.shape(weight_values)[0],
         )
         de_dweight_values = tf.cast(de_dweight_values, dtype=weight_values.dtype)
 
@@ -266,15 +296,16 @@ def calculate_synaptic_currents(rec_z_buf, synapse_indices, weight_values, weigh
         # )
 
         return [
-            de_dv,              # Gradient w.r.t rec_z_buf (compute_dtype)
-            None,               # synapse_indices (constant)
+            de_dv,  # Gradient w.r.t rec_z_buf (compute_dtype)
+            None,  # synapse_indices (constant)
             de_dweight_values,  # Gradient w.r.t weight_values (float32, matches master weights)
-            None,               # weight_values_compute (non-trainable shadow copy)
-            None,               # dense_shape[0] (constant)
-            None,               # dense_shape[1] (constant)
-            None,               # synaptic_basis_weights (constant)
-            None,               # syn_ids (constant)
-            None                # pre_ind_table (constant)
+            None,  # weight_values_compute (non-trainable shadow copy)
+            None,  # dense_shape[0] (constant)
+            None,  # dense_shape[1] (constant)
+            None,  # synaptic_basis_weights (constant)
+            None,  # syn_ids (constant)
+            None,  # pre_ind_table (constant)
+            None,  # dampening_factor (constant)
         ]
 
     return i_rec_flat, grad
@@ -417,7 +448,80 @@ def straight_through_dampen(x, dampening):
     return x * (tf_one - dampening) + tf.stop_gradient(x * dampening)
 
 
+@tf.custom_gradient
+def _range_voltage_penalty_mean(voltage, inverse_n_neurons):
+    centered = voltage - tf.cast(0.5, voltage.dtype)
+    outside = tf.nn.relu(tf.abs(centered) - tf.cast(0.5, voltage.dtype))
+    mean_penalty = (
+        tf.reduce_sum(tf.cast(tf.square(outside), tf.float32), axis=1)
+        * inverse_n_neurons
+    )
+    mean_penalty = tf.cast(mean_penalty, voltage.dtype)
+
+    def grad(dy):
+        factor = tf.cast(2.0, voltage.dtype) * outside * tf.sign(centered)
+        reduction = dy[:, None] * tf.cast(inverse_n_neurons, voltage.dtype)
+        return reduction * factor, None
+
+    return mean_penalty, grad
+
+
+@tf.custom_gradient
+def _threshold_voltage_penalty_mean(voltage, inverse_n_neurons):
+    offset = voltage - tf.cast(1.0, voltage.dtype)
+    mean_penalty = (
+        tf.reduce_sum(tf.cast(tf.square(offset), tf.float32), axis=1)
+        * inverse_n_neurons
+    )
+    mean_penalty = tf.cast(mean_penalty, voltage.dtype)
+
+    def grad(dy):
+        factor = tf.cast(2.0, voltage.dtype) * offset
+        reduction = dy[:, None] * tf.cast(inverse_n_neurons, voltage.dtype)
+        return reduction * factor, None
+
+    return mean_penalty, grad
+
+
+def voltage_penalty_mean_step(voltage, n_neurons, penalty_mode="range"):
+    """Return one timestep's neuron-mean voltage penalty per sample."""
+    inverse_n_neurons = tf.math.reciprocal(tf.cast(n_neurons, tf.float32))
+    if penalty_mode == "range":
+        return _range_voltage_penalty_mean(voltage, inverse_n_neurons)
+    if penalty_mode == "threshold":
+        return _threshold_voltage_penalty_mean(voltage, inverse_n_neurons)
+    raise ValueError("penalty_mode must be 'range' or 'threshold'.")
+
+
 def _validate_fused_cuda_option(value):
+    if isinstance(value, np.ndarray) and value.ndim == 0:
+        value = value.item()
+    if value is True or value is False:
+        return value
+    if isinstance(value, (bytes, np.bytes_)):
+        try:
+            value = value.decode("utf-8")
+        except UnicodeDecodeError:
+            pass
+    if isinstance(value, (str, np.str_)) and value == "auto":
+        return "auto"
+    raise ValueError('use_fused_cuda must be true, false, or "auto".')
+
+
+def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
+    compute_dtype = tf.as_dtype(compute_dtype)
+    variable_dtype = tf.as_dtype(variable_dtype)
+    if compute_dtype in (tf.float16, tf.float32) and variable_dtype == tf.float32:
+        return None
+    return (
+        'the fused operator requires float16 or float32 computation and '
+        'float32 variables; got '
+        f'compute_dtype={compute_dtype.name}, '
+        f'variable_dtype={variable_dtype.name}'
+    )
+
+
+def _validate_pair_projection_option(value):
     if isinstance(value, np.ndarray) and value.ndim == 0:
         value = value.item()
     if value is True or value is False:
@@ -429,23 +533,26 @@ def _validate_fused_cuda_option(value):
             pass
     if isinstance(value, (str, np.str_)) and value == 'auto':
         return 'auto'
-    raise ValueError('use_fused_cuda must be true, false, or "auto".')
+    raise ValueError('use_pair_projection must be true, false, or "auto".')
 
 
-def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
-    compute_dtype = tf.as_dtype(compute_dtype)
-    variable_dtype = tf.as_dtype(variable_dtype)
-    if (compute_dtype in (tf.float16, tf.float32)
-            and variable_dtype == tf.float32):
-        return None
-    return (
-        'the fused operator requires float16 or float32 computation and '
-        'float32 variables; got '
-        f'compute_dtype={compute_dtype.name}, '
-        f'variable_dtype={variable_dtype.name}'
-    )
-
-
+def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
+    option = _validate_pair_projection_option(option)
+    incompatibilities = []
+    if not fused_cuda:
+        incompatibilities.append('fused CUDA currents are disabled or unavailable')
+    if batch_size != 32:
+        incompatibilities.append(f'batch_size is {batch_size}, not 32')
+    if n_syn_basis != 4:
+        incompatibilities.append(
+            f'the synaptic basis has {n_syn_basis} columns, not 4'
+        )
+    if option is True and incompatibilities:
+        raise ValueError(
+            'use_pair_projection=True is incompatible with this model: '
+            + '; '.join(incompatibilities)
+        )
+    return option is not False and not incompatibilities
 
 
 class GLIF3Cell(tf.keras.layers.Layer):
@@ -463,36 +570,41 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def _untracked_variable(self, variable):
         return variable
 
-
     def __init__(
-            self, 
-            glif_network,
-            inputs,
-            dt=1.0,
-            gauss_std=0.5,
-            dampening_factor=0.3,
-            recurrent_dampening_factor=0.5,
-            voltage_gradient_dampening=0.5,
-            # input_weight_scale=1.0,
-            recurrent_weight_scale=1.0,
-            lr_scale=1.0,
-            max_delay=5,
-            # bkg_firing_rate=250,
-            pseudo_gauss=False,
-            train_recurrent=True,
-            train_recurrent_per_type=True,
-            # train_input=False,
-            # train_noise=True,
-            noise_seed=0,
-            hard_reset=False,
-            tau_basis=None,
-            synaptic_basis_weights=None,
-            use_fused_cuda=False,
-            # current_input=False,
-        ):
+        self,
+        glif_network,
+        inputs,
+        dt=1.0,
+        gauss_std=0.5,
+        dampening_factor=0.3,
+        recurrent_dampening_factor=0.5,
+        voltage_gradient_dampening=0.5,
+        # input_weight_scale=1.0,
+        recurrent_weight_scale=1.0,
+        lr_scale=1.0,
+        max_delay=5,
+        # bkg_firing_rate=250,
+        pseudo_gauss=False,
+        train_recurrent=True,
+        train_recurrent_per_type=True,
+        # train_input=False,
+        # train_noise=True,
+        noise_seed=0,
+        hard_reset=False,
+        tau_basis=None,
+        synaptic_basis_weights=None,
+        use_fused_cuda=False,
+        use_pair_projection="auto",
+        batch_size=None,
+        track_voltage_penalty=False,
+        voltage_penalty_mode="range",
+        return_voltage_sequences=True,
+        # current_input=False,
+    ):
         super().__init__()
 
         self.__seq_idx = 0
+        use_pair_projection = _validate_pair_projection_option(use_pair_projection)
         use_fused_cuda = _validate_fused_cuda_option(use_fused_cuda)
         fused_dtype_error = _fused_cuda_dtype_error(
             self.compute_dtype, self.variable_dtype
@@ -501,17 +613,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if use_fused_cuda is True and not fused_available:
             unavailable_reason = fused_dtype_error or cuda_op_status()
             raise RuntimeError(
-                'use_fused_cuda=True but the fused DPointNet CUDA operator '
-                f'is unavailable: {unavailable_reason}'
+                "use_fused_cuda=True but the fused DPointNet CUDA operator "
+                f"is unavailable: {unavailable_reason}"
             )
         self._use_fused_cuda = fused_available and (
-            use_fused_cuda is True or use_fused_cuda == 'auto'
+            use_fused_cuda is True or use_fused_cuda == "auto"
         )
-        if use_fused_cuda == 'auto' and not self._use_fused_cuda:
+        if use_fused_cuda == "auto" and not self._use_fused_cuda:
             unavailable_reason = fused_dtype_error or cuda_op_status()
             io.log_warning(
-                'DPointNet fused CUDA currents are unavailable; using the '
-                f'TensorFlow fallback. Status: {unavailable_reason}'
+                "DPointNet fused CUDA currents are unavailable; using the "
+                f"TensorFlow fallback. Status: {unavailable_reason}"
             )
         elif self._use_fused_cuda:
             io.log_info(f'DPointNet fused CUDA currents enabled ({cuda_op_status()}).')
@@ -519,24 +631,37 @@ class GLIF3Cell(tf.keras.layers.Layer):
         _node_params = dict(glif_network['node_params'])
 
         voltage_scale = _node_params['V_th'] - _node_params['E_L']
-        
+
         ## TODO: Don't update the dictionary, just make adjusted_asc_amps a variable
         _node_params["asc_amps"] = (_node_params["asc_amps"] / voltage_scale[..., None])
 
         self._node_type_ids = np.array(glif_network['node_type_ids'])
         self._dt = tf.constant(dt, self.compute_dtype)
-        self._recurrent_dampening = tf.constant(recurrent_dampening_factor, self.compute_dtype)
+        self._recurrent_dampening = tf.constant(
+            recurrent_dampening_factor, self.compute_dtype
+        )
         self._dampening_factor = tf.constant(dampening_factor, self.compute_dtype)
-        self._voltage_gradient_dampening = tf.constant(voltage_gradient_dampening, self.compute_dtype)
+        self._voltage_gradient_dampening = tf.constant(
+            voltage_gradient_dampening, self.compute_dtype
+        )
         self._pseudo_gauss = pseudo_gauss
         self._lr_scale = tf.constant(lr_scale, dtype=self.compute_dtype)
 
-        ## TODO: noise_seed and noise_stream variables don't appear to be be changed, try making them constant
-        self.noise_seed = tf.Variable(int(noise_seed), trainable=False, dtype=tf.int64, name='noise_seed')
+        self._noise_seed_base = tf.constant(int(noise_seed), dtype=tf.int64)
+        self.noise_seed = tf.Variable(
+            int(noise_seed), trainable=False, dtype=tf.int64, name="noise_seed"
+        )
         self.noise_stream = tf.Variable(0, trainable=False, dtype=tf.int64)
-        # noise_step tracks the global timestep counter across all epochs; never reset so background noise varies by epoch
-        self.noise_step = tf.Variable(0, trainable=False, dtype=tf.int32, name='noise_step')
         self._hard_reset = hard_reset
+        if voltage_penalty_mode not in ("range", "threshold"):
+            raise ValueError("voltage_penalty_mode must be 'range' or 'threshold'.")
+        self._track_voltage_penalty = bool(track_voltage_penalty)
+        self._voltage_penalty_mode = voltage_penalty_mode
+        self._return_voltage_sequences = bool(return_voltage_sequences)
+        if not self._return_voltage_sequences and not self._track_voltage_penalty:
+            raise ValueError(
+                "Disabling voltage sequences requires track_voltage_penalty=True."
+            )
         # self._current_input = current_input
         self._n_neurons = int(glif_network["n_nodes"])
         self._gauss_std = tf.constant(gauss_std, self.compute_dtype)
@@ -554,7 +679,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             tau_basis = np.load(tau_path)
         elif isinstance(tau_basis, (list, tuple)):
             tau_basis = np.array(tau_basis)
-        
+
         self._n_syn_basis = tau_basis.size
         syn_decay_np = np.exp(-dt / tau_basis)
         syn_decay_np = np.tile(syn_decay_np, self._n_neurons)
@@ -568,7 +693,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.max_delay = int(np.round(network_max_delay))
         else:
             self.max_delay = int(np.round(np.min([network_max_delay, max_delay])))
-        
 
         # Gather the neuron parameters for every neuron
         t_ref_per_neuron = _node_params["t_ref"][self._node_type_ids]
@@ -581,7 +705,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         else:
             self._refractory_state_dtype = tf.int8
         self.t_ref_steps = tf.constant(t_ref_steps, dtype=self._refractory_state_dtype)
-        
+
         self.asc_amps = tf.Variable(
             tf.cast(tf.gather(_node_params['asc_amps'], indices=self._node_type_ids), self.compute_dtype),
             trainable=False,
@@ -601,7 +725,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         #     )
 
         # self.asc_amps_2 = _f(_node_params['asc_amps'], trainable=False)
-        
+
         _k = tf.cast(_node_params['k'], self.compute_dtype)
         _k = tf.gather(_k, self._node_type_ids)
         _k = tf.math.log(_k /(1.0 - _k))
@@ -640,8 +764,25 @@ class GLIF3Cell(tf.keras.layers.Layer):
             _synaptic_basis_weights = np.array(synaptic_basis_weights)
         else:
             raise NotImplementedError()
-        
+
         self.synaptic_basis_weights = tf.constant(_synaptic_basis_weights, dtype=self.compute_dtype)
+        self._use_pair_projection = _resolve_pair_projection(
+            use_pair_projection,
+            self._use_fused_cuda,
+            batch_size,
+            self._n_syn_basis,
+        )
+        if self._use_pair_projection:
+            io.log_info(
+                'DPointNet pair-projected recurrent backward enabled '
+                f'(use_pair_projection={use_pair_projection!r}).'
+            )
+        elif self._use_fused_cuda:
+            io.log_info(
+                'DPointNet general recurrent backward selected '
+                f'(use_pair_projection={use_pair_projection!r}, '
+                f'batch_size={batch_size}, n_syn_basis={self._n_syn_basis}).'
+            )
 
         # TODO: Allow option to not have recurrent connectivity (eg. in case only want to train feedforward network)
         ### Network recurrent connectivity ###
@@ -659,7 +800,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
         delays = np.round(np.clip(delays, dt, self.max_delay)/dt).astype(np.int32) # Use the maximum delay to clip the synaptic delays
         indices[:, 1] = indices[:, 1] + self._n_neurons * (delays - 1) # Introduce the delays in the presynaptic neuron indices
 
-
         # the first column (presynaptic neuron) has size n_neurons and the second column (postsynaptic neuron) has size max_delay*n_neurons
         self.recurrent_dense_shape = dense_shape[0], self.max_delay * dense_shape[1]
 
@@ -672,6 +812,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self.recurrent_dense_shape[1],
                 self._n_neurons,
                 self.synaptic_basis_weights.shape[0],
+                build_compact_pairs=self._use_pair_projection,
             )
             self.pre_ind_table = None
         else:
@@ -679,7 +820,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.pre_ind_table = make_pre_ind_table(
                 indices, n_source_neurons=self.recurrent_dense_shape[1]
             )
-        
+
         recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
 
         if train_recurrent:
@@ -811,6 +952,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         input_dense_shape[1],
                         self._n_neurons,
                         self.synaptic_basis_weights.shape[0],
+                        build_compact_pairs=False,
                     )
                     input_props['pre_input_ind_table'] = None
                     input_csr_weights = tf.Variable(
@@ -967,6 +1109,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self.synaptic_basis_weights,
                 self._n_neurons,
                 compute_spike_gradient=True,
+                spike_gradient_scale=self._recurrent_dampening,
             )
         return calculate_synaptic_currents(
             rec_z_buf,
@@ -976,7 +1119,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.recurrent_dense_shape,
             self.synaptic_basis_weights,
             self.syn_ids,
-            self.pre_ind_table
+            self.pre_ind_table,
+            self._recurrent_dampening,
         )
 
     def calculate_input_current_from_firing_probabilities(self, x_t, input_net):
@@ -1033,7 +1177,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
         new_psc = psc * self.syn_decay + self._dt * self.syn_decay * psc_rise
         return new_psc, new_psc_rise
 
-
     def _dense_update_impl(self, batch_size, prev_z, v, r, asc, psc_rise, psc, rec_inputs):
         # new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
         # new_psc_rise = psc_rise * self.syn_decay + rec_inputs * self.psc_initial
@@ -1070,9 +1213,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         new_r = tf.stop_gradient(
             tf.maximum(
                 r + prev_spike * t_ref_steps - tf.cast(1, refractory_dtype),
-                tf.cast(0, refractory_dtype)
+                tf.cast(0, refractory_dtype),
             )
-        ) # prevent gradients from flowing through the refractory state
+        )  # prevent gradients from flowing through the refractory state
 
         if self._hard_reset:
             # Here we keep the voltage at the reset value during the refractory period
@@ -1084,8 +1227,16 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # new_v_state = tf.cast(new_v, self.compute_dtype)
         return new_v, new_r, new_asc, new_psc_rise, new_psc
 
-    def calculate_noise_current(self, batch_size, input_net):
-        step_seed = tf.cast(self.noise_step, tf.int32)
+    def advance_noise_seed(self):
+        """Select a fresh logical-rollout stream outside recomputed chunks."""
+        stream_id = self.noise_stream.assign_add(tf.constant(1, dtype=tf.int64))
+        self.noise_seed.assign(self._noise_seed_base + stream_id)
+
+    def reset_voltage_penalty_state(self, state):
+        return tuple(state)
+
+    def calculate_noise_current(self, batch_size, noise_step, input_net):
+        step_seed = tf.cast(noise_step[0], tf.int32)
         base_seed = tf.cast(self.noise_seed, tf.int32)
         replica_context = tf.distribute.get_replica_context()
         if replica_context is None:
@@ -1097,14 +1248,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
             axis=0,
         )
         poisson_shape = tf.stack(
-            [tf.cast(batch_size, tf.int32), tf.cast(input_net['input_dense_shape'][1], tf.int32)],
+            [
+                tf.cast(batch_size, tf.int32),
+                tf.cast(input_net["input_dense_shape"][1], tf.int32),
+            ],
             axis=0,
         )
         rest_of_brain = tf.random.stateless_poisson(
             shape=poisson_shape,
             seed=noise_seed,
             # lam=self.bkg_spike_prob,
-            lam=input_net['spike_prob'],
+            lam=input_net["spike_prob"],
             dtype=tf.int32,
         )
         return self.calculate_input_current_from_spikes(rest_of_brain, input_net)
@@ -1114,27 +1268,36 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
         batch_size = tf.cast(tf.shape(inputs)[0], dtype=tf.int64)
 
-        z_buf, v, r, asc, psc_rise, psc = states
-        prev_z = z_buf[:, :self._n_neurons]
+        z_buf, v, r, asc, psc_rise, psc, noise_step = states
+        prev_z = z_buf[:, : self._n_neurons]
 
-        rec_z_buf = straight_through_dampen(z_buf, 1.0 - self._recurrent_dampening)
-        i_rec = self.calculate_i_rec_with_custom_grad(rec_z_buf)
+        i_rec = self.calculate_i_rec_with_custom_grad(z_buf)
 
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
-            if input_net['input_type'] in ('poisson_spikes_internal', 'noisy_current'):
-                extern_currents.append(self.calculate_noise_current(batch_size, input_net))
+            if input_net["input_type"] in ("poisson_spikes_internal", "noisy_current"):
+                extern_currents.append(
+                    self.calculate_noise_current(batch_size, noise_step, input_net)
+                )
                 continue
 
-            input_spikes = inputs[:, self.inputs_idx[idx]:self.inputs_idx[idx+1]]
-            if input_net['input_type'] == 'current':
-                extern_currents.append(self.calculate_input_current_from_firing_probabilities(input_spikes, input_net))
+            input_spikes = inputs[:, self.inputs_idx[idx] : self.inputs_idx[idx + 1]]
+            if input_net["input_type"] == "current":
+                extern_currents.append(
+                    self.calculate_input_current_from_firing_probabilities(
+                        input_spikes, input_net
+                    )
+                )
             else:
-                extern_currents.append(self.calculate_input_current_from_spikes(input_spikes, input_net))
+                extern_currents.append(
+                    self.calculate_input_current_from_spikes(input_spikes, input_net)
+                )
 
         rec_inputs = i_rec + tf.add_n(extern_currents)
         # Reshape i_rec_flat back to [batch_size, num_neurons]
-        rec_inputs = tf.reshape(rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis])
+        rec_inputs = tf.reshape(
+            rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis]
+        )
         # Scale with the learning rate
         rec_inputs = rec_inputs * self._lr_scale
 
@@ -1155,28 +1318,48 @@ class GLIF3Cell(tf.keras.layers.Layer):
         new_z = tf.where(refractory_active, tf.zeros_like(new_z), new_z)
 
         # Add current spikes to the buffer
-        new_z_buf = tf.concat([new_z, z_buf[:, :-self._n_neurons]], axis=1)  # Shift buffer
+        new_z_buf = tf.concat(
+            [new_z, z_buf[:, : -self._n_neurons]], axis=1
+        )  # Shift buffer
 
-        outputs = tf.concat([new_z, new_v], axis=-1)
-        # Increment persistent noise_step counter (never reset across epochs)
-        self.noise_step.assign_add(1)
-        new_state = (new_z_buf, new_v, new_r, new_asc, new_psc_rise, new_psc)
+        if self._return_voltage_sequences:
+            outputs = tf.concat([new_z, new_v], axis=-1)
+        else:
+            voltage_penalty = voltage_penalty_mean_step(
+                new_v, self._n_neurons, self._voltage_penalty_mode
+            )
+            outputs = tf.concat([new_z, voltage_penalty[:, None]], axis=-1)
+        new_state = (
+            new_z_buf,
+            new_v,
+            new_r,
+            new_asc,
+            new_psc_rise,
+            new_psc,
+            noise_step + 1,
+        )
         return outputs, new_state
 
     @property
     def output_size(self):
-        return self._n_neurons * 2
+        return (
+            self._n_neurons * 2
+            if self._return_voltage_sequences
+            else self._n_neurons + 1
+        )
 
     @property
     def state_size(self):
-        return (
-            self._n_neurons * self.max_delay,     # z buffer
-            self._n_neurons,                      # v
-            self._n_neurons,                      # r
-            self._n_neurons * 2,                  # asc
+        state_size = (
+            self._n_neurons * self.max_delay,  # z buffer
+            self._n_neurons,  # v
+            self._n_neurons,  # r
+            self._n_neurons * 2,  # asc
             self._n_neurons * self._n_syn_basis,  # psc rise
             self._n_neurons * self._n_syn_basis,  # psc
+            tf.TensorShape([]),  # noise timestep
         )
+        return state_size
 
     def zero_state(self, batch_size, dtype, with_names=False):
         z0_buf = tf.zeros((batch_size, self._n_neurons * self.max_delay), dtype)
@@ -1185,8 +1368,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
         asc = tf.zeros((batch_size, self._n_neurons * 2), dtype)
         psc_rise0 = tf.zeros((batch_size, self._n_neurons * self._n_syn_basis), dtype)
         psc0 = tf.zeros((batch_size, self._n_neurons * self._n_syn_basis), dtype)
-
+        noise_step0 = tf.zeros((batch_size,), dtype=tf.int32)
+        state = (z0_buf, v0, r0, asc, psc_rise0, psc0, noise_step0)
+        state_names = (
+            "z0_buf",
+            "v0",
+            "r0",
+            "asc",
+            "psc_rise0",
+            "psc0",
+            "noise_step0",
+        )
         if with_names:
-            return (z0_buf, v0, r0, asc, psc_rise0, psc0), ('z0_buf', 'v0', 'r0', 'asc', 'psc_rise0', 'psc0')
-        else:
-            return z0_buf, v0, r0, asc, psc_rise0, psc0
+            return state, state_names
+        return state

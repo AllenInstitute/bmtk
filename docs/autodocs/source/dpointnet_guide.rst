@@ -57,6 +57,34 @@ The operator requires exactly one visible GPU. Set ``use_fused_cuda`` to ``true`
 require the operator, or to ``"auto"`` to use it when available and otherwise fall back to TensorFlow. The
 default is ``false``. Rebuild the operator after changing TensorFlow or CUDA installations.
 
+Recurrent backward-kernel selection is controlled separately by ``use_pair_projection``:
+
+* ``"auto"`` (default) selects the pair-projected kernel when fused CUDA is active, the configured batch size
+  is 32, and the synaptic basis has four columns. Other configurations use the general fused backward kernel.
+* ``true`` requires the pair-projected kernel and raises a configuration error unless those requirements hold.
+* ``false`` always uses the general fused backward kernel and avoids compact-pair metadata construction.
+
+For example:
+
+::
+
+  "rnn_cell_params": {
+    "use_fused_cuda": "auto",
+    "use_pair_projection": "auto"
+  }
+
+The pair-projected kernel computes each distinct postsynaptic-neuron/synapse-type basis projection once and
+reuses it across recurrent edges. It only changes the recurrent backward pass; inference and learning rules
+that do not differentiate through the recurrent dynamics do not benefit. Master weights and checkpoints remain
+in canonical edge order.
+
+The optimization exchanges startup time and a small amount of persistent GPU memory for faster batch-32 BPTT.
+Measured examples include a 55.7% update-time reduction on a 66,658-neuron network on A100-PCIE-40GB and a 37.9%
+reduction on a 19,570-neuron network on RTX 3090. The corresponding peak-memory increases were 0.54% and 0.09%.
+These measurements are hardware- and topology-dependent; benchmark representative training before forcing the
+pair kernel. Small-batch specializations were tested but regressed the complete networks, so ``"auto"`` does not
+select pair projection below batch 32.
+
 
 Overview
 ========
@@ -195,13 +223,13 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - 0.5
                 * - dampening_factor
-                  - 
+                  - Scale applied to the spike surrogate derivative.
                   - 0.3
                 * - recurrent_dampening_factor
-                  - 
+                  - Retained recurrent temporal-gradient multiplier. ``0.0`` blocks this gradient and ``1.0`` leaves it undampened.
                   - 0.5
                 * - voltage_gradient_dampening
-                  - 
+                  - Retained multiplier for the membrane-voltage self-loop gradient. Synaptic-current gradients are not scaled.
                   - 0.5
                 * - recurrent_weight_scale
                   - 
@@ -236,6 +264,18 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - use_fused_cuda
                   - Use the optional fused CUDA synaptic-current operator. ``True`` requires it; ``"auto"`` falls back to TensorFlow when unavailable.
                   - False
+                * - use_pair_projection
+                  - Select the recurrent CUDA backward kernel. ``"auto"`` uses pair projection for batch 32 with four basis columns; ``True`` requires it; ``False`` forces the general kernel.
+                  - "auto"
+                * - track_voltage_penalty
+                  - Accumulate a compact neuron-mean voltage penalty at each timestep. Enable only with an online ``VoltageRegularization`` loss.
+                  - False
+                * - voltage_penalty_mode
+                  - Compact voltage penalty: ``"range"`` penalizes voltages outside the normalized range [0, 1], while ``"threshold"`` penalizes distance from threshold.
+                  - "range"
+                * - return_voltage_sequences
+                  - Return neuron-resolved voltage sequences. Setting this to ``False`` requires ``track_voltage_penalty=True``.
+                  - True
 
 
 Setting the Network Model
@@ -445,6 +485,85 @@ Training Options
 
 Training hyper-parameters
 -------------------------
+
+The default training path remains full-sequence BPTT with neuron-resolved voltage
+outputs. The performance and memory options below are conservative so existing
+configurations retain their previous behavior:
+
+.. list-table:: Training and output options
+   :header-rows: 1
+
+   * - option
+     - default
+     - description
+   * - ``gradient_checkpointing``
+     - ``False``
+     - Enable segmented exact BPTT recomputation.
+   * - ``gradient_checkpoint_chunk_size``
+     - ``25``
+     - Number of timesteps per recomputed chunk when checkpointing is enabled.
+   * - ``regenerate_initial_state_each_epoch``
+     - ``True``
+     - Generate fresh configured initial state at each epoch boundary. Set to ``False`` to reuse the initial state across epochs.
+   * - ``learning_rule``
+     - ``"bptt"``
+     - Select standard BPTT or a registered local learning rule.
+
+Segmented exact BPTT retains recurrent state only at temporal chunk boundaries
+and recomputes each chunk during the backward pass. Internal Poisson timestep
+progression is explicit recurrent state, so recomputation uses the same
+stateless random draws as the original forward pass.
+
+.. code:: json
+
+    {
+      "training": {
+        "gradient_checkpointing": true,
+        "gradient_checkpoint_chunk_size": 25
+      }
+    }
+
+``gradient_checkpoint_chunk_size`` must be between 1 and the configured sequence
+length. Smaller chunks reduce activation memory but increase recomputation
+overhead. The default is 25 timesteps; checkpointing remains disabled unless
+explicitly requested.
+
+Compact online voltage regularization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Full voltage sequences have shape ``[batch, time, neurons]`` and can dominate
+output-gradient memory. If no analysis or learning rule needs neuron-resolved
+voltages, DPointNet can instead emit one pre-aggregated penalty value per sample
+and timestep:
+
+.. code:: json
+
+    {
+      "rnn_cell_params": {
+        "track_voltage_penalty": true,
+        "voltage_penalty_mode": "range",
+        "return_voltage_sequences": false
+      },
+      "training": {
+        "parameters": [
+          {
+            "loss_functions": {
+              "voltage": {
+                "module": "VoltageRegularization",
+                "penalty_mode": "range",
+                "online": true
+              }
+            }
+          }
+        ]
+      }
+    }
+
+The cell and loss ``penalty_mode`` values must match. Online mode supports
+``"range"`` and ``"threshold"`` penalties and does not support a core mask.
+The defaults are ``online=False``, ``track_voltage_penalty=False``, and
+``return_voltage_sequences=True``. Keep those defaults when another consumer,
+including a local learning rule, requires full voltages.
 
 Callbacks
 ---------

@@ -1,0 +1,104 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$ASSET_DIR": "$BASE_DIR/../dpointnet_all2all",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$NETWORK_DIR": "$ASSET_DIR/network",
+    "$MODELS_DIR": "$ASSET_DIR/components"
+  },
+  "target_simulator": "RNN",
+  "run": {
+    "seq_len": 100,
+    "dt": 1.0,
+    "batch_size": 4,
+    "default_seed": 3000,
+    "dtype": "float32"
+  },
+  "rnn_cell_params": {
+    "cell_model": "GLIF3Cell",
+    "dampening_factor": 1.0,
+    "recurrent_dampening_factor": 0.5,
+    "voltage_gradient_dampening": 0.5,
+    "recurrent_weight_scale": 1.0,
+    "lr_scale": 1.0,
+    "max_delay": 5,
+    "hard_reset": false,
+    "tau_basis": [0.7579732, 1.60809441, 3.41168742, 7.23813909]
+  },
+  "inputs": {
+    "poisson_inputs": {
+      "node_set": "virts",
+      "input": "spikes",
+      "module": "poisson_spikes",
+      "firing_rate": 10.0,
+      "seed": 1234
+    }
+  },
+  "initial_state": {
+    "module": "zero_state"
+  },
+  "training": {
+    "n_epochs": 2,
+    "steps_per_epoch": 4,
+    "training_approach": "single",
+    "learning_rate": 0.01,
+    "optimizer": {
+      "name": "sgd"
+    },
+    "initial_state": {
+      "module": "zero_state"
+    },
+    "callbacks": {
+      "class": "Callbacks",
+      "verbose": "quiet",
+      "callbacks_dir": "$OUTPUT_DIR/callbacks"
+    },
+    "parameters": [
+      {
+        "name": "default",
+        "inputs": ["poisson_inputs"],
+        "loss_functions": {
+          "target_rate": {
+            "module": "TargetFiringRate",
+            "firing_rate": 20.0
+          },
+          "voltage_regularizer": {
+            "module": "VoltageRegularization",
+            "voltage_cost": 0.25,
+            "penalty_mode": "range"
+          }
+        }
+      }
+    ]
+  },
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "log_level": "INFO"
+  },
+  "components": {
+    "point_neuron_models_dir": "$MODELS_DIR/cell_models",
+    "synaptic_models_dir": "$MODELS_DIR/synaptic_models"
+  },
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/glifs_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/glifs_node_types.csv"
+      },
+      {
+        "nodes_file": "$NETWORK_DIR/virts_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/virts_node_types.csv"
+      }
+    ],
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/glifs_glifs_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/glifs_glifs_edge_types.csv"
+      },
+      {
+        "edges_file": "$NETWORK_DIR/virts_glifs_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/virts_glifs_edge_types.csv"
+      }
+    ]
+  }
+}
