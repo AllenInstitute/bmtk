@@ -34,20 +34,22 @@ or without a gpu:
 GLIF dynamics and explicit state
 -------------------------------
 
-``GLIF3Cell`` defaults to ``dynamics_mode="nest"``. This mode uses NEST-compatible
-refractory timing, time-averaged adaptation current, spike-boundary adaptation
-reset, and exact alpha-current-to-voltage integration. SONATA initial voltage,
-adaptation state and recurrent/external delays are honored. Times are converted
-through NEST's 0.001-ms ticks and then rounded upward to simulation steps; ``dt``
-must be a positive multiple of 0.001 ms and external delays must be at least one
-step. Reported spikes and voltage samples use end-of-step timestamps.
+``GLIF3Cell`` defaults to ``dynamics_mode="legacy"`` to preserve existing
+trajectories and checkpoints. Set ``dynamics_mode="nest"`` explicitly to use
+NEST-compatible refractory timing, time-averaged adaptation current,
+spike-boundary adaptation reset, and exact alpha-current-to-voltage integration.
+In NEST mode, SONATA initial voltage, adaptation state and recurrent/external
+delays are honored. Times are converted through NEST's 0.001-ms ticks and then
+rounded upward to simulation steps; ``dt`` must be a positive multiple of 0.001
+ms and external delays must be at least one step. Reported spikes and voltage
+samples use end-of-step timestamps.
 
-Omitting ``hard_reset`` selects hard reset in NEST mode. Training can explicitly
+Omitting ``hard_reset`` selects soft reset in default legacy mode and hard reset
+in explicit NEST mode. Training can explicitly
 select ``hard_reset=false`` to retain subtractive soft reset and surrogate
 gradients while keeping the same timestep, precision and other forward settings
 as inference. This changes historical trajectories and learned weights; it is not
-an execution-only optimization. Explicit ``dynamics_mode="legacy"`` preserves
-the historical update path and defaults to soft reset.
+an execution-only optimization.
 
 NEST mode uses ``ExplicitStateRNN`` to preserve scalar integer noise counters and
 external delay history in symbolic Keras models and across chunks. Supply complete

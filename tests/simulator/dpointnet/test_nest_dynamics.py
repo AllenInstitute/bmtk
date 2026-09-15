@@ -63,16 +63,27 @@ def make_cell(
     if internal_noise:
         inputs["drive"]["input_type"] = "poisson_spikes_internal"
         inputs["drive"]["options"]["firing_rate"] = 250.0
+    cell_options = {}
+    if mode is not None:
+        cell_options["dynamics_mode"] = mode
     return GLIF3Cell(
         network,
         inputs,
         dt=dt,
         tau_basis=[2.0],
-        dynamics_mode=mode,
         hard_reset=hard_reset,
         train_recurrent_per_type=False,
         use_fused_cuda=use_fused_cuda,
+        **cell_options,
     )
+
+
+def test_default_dynamics_mode_preserves_legacy_behavior():
+    cell = make_cell(mode=None, hard_reset=None)
+
+    assert cell.dynamics_mode == "legacy"
+    assert cell._hard_reset is False
+    assert len(cell.zero_state(1, tf.float32)) == 7
 
 
 def test_full_cell_delays_and_input_gradient():
@@ -218,6 +229,7 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
                     copy.deepcopy(inputs),
                     dt=dt,
                     tau_basis=[2.0, 6.0, 10.0, 20.0],
+                    dynamics_mode="nest",
                     hard_reset=hard_reset,
                     use_fused_cuda=fused,
                     use_fused_state=False,

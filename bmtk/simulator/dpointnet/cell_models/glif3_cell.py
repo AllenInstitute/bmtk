@@ -695,7 +695,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
         return_voltage_sequences=True,
-        dynamics_mode="nest",
+        dynamics_mode="legacy",
         # current_input=False,
     ):
         super().__init__()
