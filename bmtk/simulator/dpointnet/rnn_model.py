@@ -406,7 +406,20 @@ class RNN:
                 initial_state_holder = None
                 rnn_initial_state = self.zero_state
 
-            rnn = tf.keras.layers.RNN(self._cell, return_sequences=True, return_state=return_state, name='rsnn')
+            from .cell_models.state_rnn import ExplicitStateRNN
+
+            rnn_class = (
+                ExplicitStateRNN
+                if isinstance(self._cell, GLIF3Cell)
+                and self._cell.dynamics_mode == "nest"
+                else tf.keras.layers.RNN
+            )
+            rnn = rnn_class(
+                self._cell,
+                return_sequences=True,
+                return_state=return_state,
+                name="rsnn",
+            )
             # Keep the cell's provided state dtypes instead of letting Keras autocast them to the
             # compute dtype. Matches the reference (V1_GLIF_model create_model).
             rnn._autocast = False
@@ -568,7 +581,7 @@ class RNN:
             else:
                 full_inputs = rnn_inputs
                 state_inputs = []
-            state_rnn = tf.keras.layers.RNN(
+            state_rnn = type(self.rsnn_layer)(
                 self.rsnn_layer.cell,
                 return_sequences=False,
                 return_state=True,
@@ -653,7 +666,8 @@ class RNN:
             seq_len=result_seq_len,
             dt=self.dt,
             batch_size=result_batch_size,
-            extractor_results=out
+            extractor_results=out,
+            time_offset_steps=getattr(self.cell, "spike_time_offset_steps", 0),
         )
         return extractor_results
 

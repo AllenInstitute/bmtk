@@ -31,6 +31,57 @@ or without a gpu:
 
     $ pip install tensorflow
 
+GLIF dynamics and explicit state
+-------------------------------
+
+``GLIF3Cell`` defaults to ``dynamics_mode="nest"``. This mode uses NEST-compatible
+refractory timing, time-averaged adaptation current, spike-boundary adaptation
+reset, and exact alpha-current-to-voltage integration. SONATA initial voltage,
+adaptation state and recurrent/external delays are honored. Times are converted
+through NEST's 0.001-ms ticks and then rounded upward to simulation steps; ``dt``
+must be a positive multiple of 0.001 ms and external delays must be at least one
+step. Reported spikes and voltage samples use end-of-step timestamps.
+
+Omitting ``hard_reset`` selects hard reset in NEST mode. Training can explicitly
+select ``hard_reset=false`` to retain subtractive soft reset and surrogate
+gradients while keeping the same timestep, precision and other forward settings
+as inference. This changes historical trajectories and learned weights; it is not
+an execution-only optimization. Explicit ``dynamics_mode="legacy"`` preserves
+the historical update path and defaults to soft reset.
+
+NEST mode uses ``ExplicitStateRNN`` to preserve scalar integer noise counters and
+external delay history in symbolic Keras models and across chunks. Supply complete
+initial state from ``cell.zero_state``; cached state without required delay history
+is rejected. The wrapper supports explicit state, not Keras ``stateful=true``.
+
+The legacy fused state operator cannot implement these updates: NEST mode rejects
+``use_fused_state=true`` and keeps ``"auto"`` on TensorFlow state updates. Fused
+current projection is independent and remains available. Exact integration of a
+fitted alpha basis does not make that basis identical to the source synapse model;
+validate synaptic approximation, precision and network-level behavior separately.
+
+CUDA and fallback regression agreement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``tests/simulator/dpointnet/test_nest_dynamics.py`` compares fixed-input CPU,
+GPU TensorFlow fallback and fused CUDA rollouts, including both reset modes,
+float32/mixed float16, 1/0.25-ms steps, low/strong drive, gradients and chunk state.
+A separate check compares seeded internal Poisson histories exactly. The bounded
+fixture requires equal per-neuron spike counts, spike-time differences of at most
+one step, and exact noise counters/external delay histories. When spike times are
+identical, continuous states and gradients must satisfy rtol/atol 1e-5 (float32)
+or 2e-2 (float16). If jitter occurs, unshifted numerical errors are reported in
+JUnit properties but pointwise continuous-state/gradient parity is not asserted.
+Existing individual kernel tolerances remain unchanged.
+
+This is not bitwise equality: the tested lower-drive float16/0.25-ms cases can
+shift a spike by one step, producing a large instantaneous voltage difference
+at reset. All tested 1-ms cases matched spike times, but that is not a full-network
+or cross-architecture guarantee. Run with ``--junitxml=REPORT.xml`` to retain
+per-case timing, spike jitter, state errors, gradient errors and whether continuous
+parity was checked. Setting ``CUDA_VISIBLE_DEVICES=''`` tests CPU-only support;
+CUDA-specific comparisons then skip rather than falsely reporting a CUDA pass.
+
 Optional fused CUDA operator
 ----------------------------
 
@@ -145,6 +196,7 @@ use the JSON boolean ``true`` explicitly, together with ``use_active_row_forward
       "dtype": "float16"
     },
     "rnn_cell_params": {
+      "dynamics_mode": "legacy",
       "use_fused_cuda": true,
       "use_fused_state": true,
       "use_active_row_forward": true,

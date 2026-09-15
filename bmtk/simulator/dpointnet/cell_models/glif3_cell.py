@@ -3,6 +3,12 @@ import tensorflow as tf
 import numpy as np
 import pickle as pkl
 from pathlib import Path
+from .nest_dynamics import (
+    integration_coefficients,
+    active_update,
+    spike_reset,
+    time_steps,
+)
 from bmtk.simulator.dpointnet.io_tools import io
 from bmtk.simulator.dpointnet.custom_ops import (
     build_csr_connectivity,
@@ -630,6 +636,8 @@ def _resolve_fused_state(option, n_syn_basis, pseudo_gauss):
 
 
 class GLIF3Cell(tf.keras.layers.Layer):
+    noise_state_index = 6
+
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
         initial_value = np.asarray(initial_value)
         kwargs = {
@@ -670,7 +678,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # train_input=False,
         # train_noise=True,
         noise_seed=0,
-        hard_reset=False,
+        hard_reset=None,
         tau_basis=None,
         synaptic_basis_weights=None,
         use_fused_cuda=False,
@@ -687,9 +695,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
         track_voltage_penalty=False,
         voltage_penalty_mode="range",
         return_voltage_sequences=True,
+        dynamics_mode="nest",
         # current_input=False,
     ):
         super().__init__()
+
+        if dynamics_mode not in ("nest", "legacy"):
+            raise ValueError("dynamics_mode must be 'nest' or 'legacy'")
+        self.dynamics_mode = dynamics_mode
+        self.spike_time_offset_steps = int(dynamics_mode == "nest")
+        if not np.isfinite(dt) or dt <= 0:
+            raise ValueError("dt must be finite and positive")
+        if hard_reset is None:
+            hard_reset = dynamics_mode == "nest"
+        if dynamics_mode == "nest" and use_fused_state is True:
+            raise ValueError(
+                "NEST dynamics require use_fused_state=False or 'auto'; the legacy fused state kernel is not compatible"
+            )
 
         if (
             use_small_batch_recurrent_backward is not True
@@ -825,15 +847,25 @@ class GLIF3Cell(tf.keras.layers.Layer):
             psc_initial_np[None, :], dtype=self.compute_dtype
         )  # expand the dimension for processing different receptor types
 
-        network_max_delay = np.max(glif_network["synapses"]["delays"])
+        network_max_delay = np.max(glif_network["synapses"]["delays"], initial=dt)
         if max_delay is None or max_delay <= 0:
             self.max_delay = int(np.round(network_max_delay))
         else:
             self.max_delay = int(np.round(np.min([network_max_delay, max_delay])))
+        self._delay_limit_ms = self.max_delay
+        if dynamics_mode == "nest":
+            self._delay_limit_ms = float(
+                network_max_delay
+                if max_delay is None or max_delay <= 0
+                else min(network_max_delay, max_delay)
+            )
+            self.max_delay = max(1, int(time_steps(self._delay_limit_ms, dt)))
 
         # Gather the neuron parameters for every neuron
         t_ref_per_neuron = _node_params["t_ref"][self._node_type_ids]
         t_ref_steps = np.ceil(t_ref_per_neuron / dt).astype(np.int16)
+        if dynamics_mode == "nest":
+            t_ref_steps = time_steps(t_ref_per_neuron, dt).astype(np.int16)
         t_ref_steps = np.maximum(t_ref_steps, 1)
         max_ref_steps = int(np.max(t_ref_steps))
         if max_ref_steps > 127:
@@ -892,6 +924,55 @@ class GLIF3Cell(tf.keras.layers.Layer):
             dtype=self.compute_dtype,
         )
 
+        if dynamics_mode == "nest":
+            _, _, psc_voltage, rise_voltage = integration_coefficients(
+                dt, _node_params["C_m"], _node_params["g"], tau_basis
+            )
+            self.psc_voltage = tf.constant(
+                psc_voltage[self._node_type_ids], dtype=self.compute_dtype
+            )
+            self.rise_voltage = tf.constant(
+                rise_voltage[self._node_type_ids], dtype=self.compute_dtype
+            )
+            rates = np.asarray(_node_params["k"])[self._node_type_ids]
+            if not np.isfinite(rates).all() or (rates <= 0).any():
+                raise ValueError(
+                    "NEST adaptation decay rates must be finite and positive"
+                )
+            self.asc_decay = tf.constant(np.exp(-dt * rates), dtype=self.compute_dtype)
+            self.asc_mean = tf.constant(
+                -np.expm1(-dt * rates) / (dt * rates), dtype=self.compute_dtype
+            )
+            self.asc_refractory_decay = tf.constant(
+                np.asarray(_node_params.get("asc_r", np.ones_like(_node_params["k"])))[
+                    self._node_type_ids
+                ]
+                * np.exp(-rates * t_ref_per_neuron[:, None]),
+                dtype=self.compute_dtype,
+            )
+            reset = (
+                np.asarray(_node_params["V_reset"]) - _node_params["E_L"]
+            ) / voltage_scale
+            self.v_reset = tf.constant(
+                reset[self._node_type_ids], dtype=self.compute_dtype
+            )
+            initial = (
+                np.asarray(_node_params.get("V_m", _node_params["E_L"]))
+                - _node_params["E_L"]
+            ) / voltage_scale
+            self.initial_voltage = tf.constant(
+                initial[self._node_type_ids], dtype=self.compute_dtype
+            )
+            initial_asc = (
+                np.asarray(
+                    _node_params.get("asc_init", np.zeros_like(_node_params["k"]))
+                )
+                / voltage_scale[:, None]
+            )
+            self.initial_asc = tf.constant(
+                initial_asc[self._node_type_ids].reshape(-1), dtype=self.compute_dtype
+            )
+
         ## TODO: This shouldn't be stored in a separate pickle.
         # path = os.path.join(glif_network["data_dir"], 'tf_data', 'syn_id_to_syn_weights_dict.pkl')
         # path = 'GLIF_network/tf_data/syn_id_to_syn_weights_dict.pkl'
@@ -918,7 +999,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.synaptic_basis_weights = tf.constant(
             _synaptic_basis_weights, dtype=self.compute_dtype
         )
-        self._use_fused_state = _resolve_fused_state(
+        self._use_fused_state = dynamics_mode == "legacy" and _resolve_fused_state(
             use_fused_state, self._n_syn_basis, self._pseudo_gauss
         )
         if self._use_fused_state:
@@ -970,9 +1051,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             * lr_scale
             / recurrent_weight_scale
         ).astype(np.float32)
-        delays = np.round(np.clip(delays, dt, self.max_delay) / dt).astype(
+        delays = np.round(np.clip(delays, dt, self._delay_limit_ms) / dt).astype(
             np.int32
         )  # Use the maximum delay to clip the synaptic delays
+        if dynamics_mode == "nest":
+            delays = time_steps(
+                np.clip(glif_network["synapses"]["delays"], dt, self._delay_limit_ms),
+                dt,
+            )
         indices[:, 1] = indices[:, 1] + self._n_neurons * (
             delays - 1
         )  # Introduce the delays in the presynaptic neuron indices
@@ -1076,6 +1162,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # TODO: Inputs needs to be a list since order is extremely important
         self.inputs_idx = np.zeros(len(inputs) + 1, dtype=int)
         self.inputs = {}
+        self._input_history_size = 0
 
         for idx, (input_name, input_network) in enumerate(inputs.items()):
             # TODO: Use a named tuple instead of dict
@@ -1084,8 +1171,24 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_dense_shape = (self._n_neurons, n_input_nodes)
 
             input_props["input_dim"] = n_input_nodes
+            input_indices = np.array(input_network["indices"], dtype=np.int64)
+            input_props["history_start"] = self._input_history_size
+            if dynamics_mode == "nest":
+                input_delays = np.asarray(input_network["delays"], dtype=float)
+                if not np.isfinite(input_delays).all() or (input_delays < dt).any():
+                    raise ValueError(
+                        "NEST input delays must be finite and at least one timestep"
+                    )
+                input_steps = time_steps(input_delays, dt)
+                history_steps = int(input_steps.max(initial=1)) - 1
+                input_indices[:, 1] += n_input_nodes * (input_steps - 1)
+                input_dense_shape = (
+                    self._n_neurons,
+                    n_input_nodes * (history_steps + 1),
+                )
+                self._input_history_size += n_input_nodes * history_steps
+            input_props["history_stop"] = self._input_history_size
             input_props["input_dense_shape"] = input_dense_shape
-            input_indices = np.array(input_network["indices"])
             input_weights = np.array(input_network["weights"])
             input_syn_ids = np.array(input_network["syn_ids"])
             input_weights = (
@@ -1508,6 +1611,16 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def calculate_noise_current(
         self, batch_size, noise_step, input_net, initial_currents=None
     ):
+        rest_of_brain = GLIF3Cell.sample_noise_spikes(
+            self, batch_size, noise_step, input_net
+        )
+        if initial_currents is None:
+            return self.calculate_input_current_from_spikes(rest_of_brain, input_net)
+        return self.calculate_input_current_from_spikes(
+            rest_of_brain, input_net, initial_currents=initial_currents
+        )
+
+    def sample_noise_spikes(self, batch_size, noise_step, input_net):
         step_seed = tf.cast(noise_step[0], tf.int32)
         base_seed = tf.cast(self.noise_seed, tf.int32)
         replica_context = tf.distribute.get_replica_context()
@@ -1522,7 +1635,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
         poisson_shape = tf.stack(
             [
                 tf.cast(batch_size, tf.int32),
-                tf.cast(input_net["input_dense_shape"][1], tf.int32),
+                tf.cast(
+                    input_net.get("input_dim", input_net["input_dense_shape"][1]),
+                    tf.int32,
+                ),
             ],
             axis=0,
         )
@@ -1533,18 +1649,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
             lam=input_net["spike_prob"],
             dtype=tf.int32,
         )
-        if initial_currents is None:
-            return self.calculate_input_current_from_spikes(rest_of_brain, input_net)
-        return self.calculate_input_current_from_spikes(
-            rest_of_brain, input_net, initial_currents=initial_currents
-        )
+        return rest_of_brain
 
     def call(self, inputs, states):
         # lgn_inputs = inputs[:, :self.input_dim]
 
         batch_size = tf.cast(tf.shape(inputs)[0], dtype=tf.int64)
 
-        z_buf, v, r, asc, psc_rise, psc, noise_step = states
+        expected_states = 8 if self._input_history_size else 7
+        if len(states) != expected_states:
+            raise ValueError(
+                f"Expected {expected_states} states including external delay history, got {len(states)}"
+            )
+        z_buf, v, r, asc, psc_rise, psc, noise_step = states[:7]
+        new_input_history = []
         prev_z = z_buf[:, : self._n_neurons]
 
         i_rec = self.calculate_i_rec_with_custom_grad(z_buf)
@@ -1552,7 +1670,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
         rec_inputs = i_rec
         extern_currents = []
         for idx, input_net in enumerate(self.inputs.values()):
-            if input_net["input_type"] in ("poisson_spikes_internal", "noisy_current"):
+            if self.dynamics_mode == "legacy" and input_net["input_type"] in (
+                "poisson_spikes_internal",
+                "noisy_current",
+            ):
                 if self._use_fused_current_accumulation:
                     rec_inputs = self.calculate_noise_current(
                         batch_size,
@@ -1567,6 +1688,33 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 continue
 
             input_spikes = inputs[:, self.inputs_idx[idx] : self.inputs_idx[idx + 1]]
+            if self.dynamics_mode == "nest":
+                if input_net["input_type"] in (
+                    "poisson_spikes_internal",
+                    "noisy_current",
+                ):
+                    input_spikes = self.sample_noise_spikes(
+                        batch_size, noise_step, input_net
+                    )
+                input_spikes = tf.cast(input_spikes, self.compute_dtype)
+                history_start, history_stop = (
+                    input_net["history_start"],
+                    input_net["history_stop"],
+                )
+                if history_stop > history_start:
+                    input_spikes = tf.concat(
+                        [
+                            input_spikes,
+                            tf.cast(
+                                states[7][:, history_start:history_stop],
+                                self.compute_dtype,
+                            ),
+                        ],
+                        axis=1,
+                    )
+                    new_input_history.append(
+                        input_spikes[:, : history_stop - history_start]
+                    )
             if input_net["input_type"] == "current":
                 extern_currents.append(
                     self.calculate_input_current_from_firing_probabilities(
@@ -1596,7 +1744,43 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Scale with the learning rate
         rec_inputs = rec_inputs * self._lr_scale
 
-        if self._use_fused_state:
+        if self.dynamics_mode == "nest":
+            new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
+            new_v, new_r, adaptation, active = active_update(
+                straight_through_dampen(v, self._voltage_gradient_dampening),
+                r,
+                tf.reshape(asc, [batch_size, self._n_neurons, 2]),
+                tf.reshape(psc, [batch_size, self._n_neurons, self._n_syn_basis]),
+                tf.reshape(psc_rise, [batch_size, self._n_neurons, self._n_syn_basis]),
+                decay=self.decay,
+                current_factor=self.current_factor,
+                asc_decay=self.asc_decay,
+                asc_mean=self.asc_mean,
+                psc_voltage=self.psc_voltage,
+                rise_voltage=self.rise_voltage,
+                reset_voltage=self.v_reset,
+                hard_reset=self._hard_reset,
+            )
+            new_z = (
+                spike_gauss(new_v - self.v_th, self._gauss_std, self._dampening_factor)
+                if self._pseudo_gauss
+                else spike_function(new_v - self.v_th, self._dampening_factor)
+            )
+            new_z = tf.where(active, new_z, tf.zeros_like(new_z))
+            new_v, new_r, adaptation = spike_reset(
+                new_v,
+                new_r,
+                adaptation,
+                new_z,
+                reset_voltage=self.v_reset,
+                refractory_steps=self.t_ref_steps,
+                asc_amplitudes=self.asc_amps,
+                asc_refractory_decay=self.asc_refractory_decay,
+                hard_reset=self._hard_reset,
+            )
+            new_asc = tf.reshape(adaptation, [batch_size, self._n_neurons * 2])
+            new_z_buf = tf.concat([new_z, z_buf[:, : -self._n_neurons]], axis=1)
+        elif self._use_fused_state:
             new_v, new_r, new_asc, new_psc_rise, new_psc = fused_dense_state(
                 prev_z,
                 v,
@@ -1654,6 +1838,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             new_psc,
             noise_step + 1,
         )
+        if self._input_history_size:
+            new_state = new_state + (tf.concat(new_input_history, axis=1),)
         return outputs, new_state
 
     @property
@@ -1675,6 +1861,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self._n_neurons * self._n_syn_basis,  # psc
             tf.TensorShape([]),  # noise timestep
         )
+        if getattr(self, "_input_history_size", 0):
+            state_size = state_size + (self._input_history_size,)
         return state_size
 
     def zero_state(self, batch_size, dtype, with_names=False):
@@ -1682,6 +1870,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
         v0 = tf.zeros((batch_size, self._n_neurons), dtype)
         r0 = tf.zeros((batch_size, self._n_neurons), self._refractory_state_dtype)
         asc = tf.zeros((batch_size, self._n_neurons * 2), dtype)
+        if getattr(self, "dynamics_mode", "legacy") == "nest":
+            v0 = v0 + tf.cast(self.initial_voltage, dtype)
+            asc = asc + tf.cast(self.initial_asc, dtype)
         psc_rise0 = tf.zeros((batch_size, self._n_neurons * self._n_syn_basis), dtype)
         psc0 = tf.zeros((batch_size, self._n_neurons * self._n_syn_basis), dtype)
         noise_step0 = tf.zeros((batch_size,), dtype=tf.int32)
@@ -1695,6 +1886,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
             "psc0",
             "noise_step0",
         )
+        if getattr(self, "_input_history_size", 0):
+            state = state + (tf.zeros((batch_size, self._input_history_size), dtype),)
+            state_names = state_names + ("input_history0",)
         if with_names:
             return state, state_names
         return state
