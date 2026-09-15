@@ -15,8 +15,18 @@ from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
     calculate_synaptic_currents,
     make_pre_ind_table,
 )
+from bmtk.simulator.dpointnet.custom_ops import (
+    build_csr_connectivity,
+    fused_cuda_available,
+    fused_spike_currents,
+    reorder_csr_values,
+)
 from bmtk.simulator.dpointnet.network_adaptor import lex_sort_order_np
 from bmtk.simulator.dpointnet.rnn_model import RNN
+from bmtk.simulator.dpointnet.segmented_recompute import (
+    _pack_spikes,
+    _unpack_spikes,
+)
 from bmtk.simulator.dpointnet.optimizers import (
     ExponentiatedAdam,
     LinearWarmupCosineDecay,
@@ -196,6 +206,326 @@ def test_segmented_recompute_matches_full_outputs_states_and_gradients():
         np.testing.assert_allclose(segmented, full, rtol=2e-6, atol=2e-6)
 
 
+def test_segmented_recompute_transforms_accumulated_variable_gradient_once():
+    inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
+    cell = tf.keras.layers.SimpleRNNCell(
+        1,
+        activation="tanh",
+        use_bias=False,
+        kernel_initializer=tf.keras.initializers.Constant(0.7),
+        recurrent_initializer=tf.keras.initializers.Constant(0.4),
+    )
+    sequence, final_state = tf.keras.layers.RNN(
+        cell, return_sequences=True, return_state=True
+    )(inputs, initial_state=[initial_state])
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (sequence, sequence * tf.constant(1.5), final_state),
+    )
+    transform_calls = []
+
+    def double_variable_gradients(variables, gradients):
+        transform_calls.append(tuple(variable.name for variable in variables))
+        return tuple(2.0 * gradient for gradient in gradients)
+
+    runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        variable_gradient_transform=double_variable_gradients,
+    )
+    values = tf.constant(np.linspace(-0.5, 0.8, 14, dtype=np.float32).reshape(2, 7, 1))
+    state = tf.constant([[0.2], [-0.1]], tf.float32)
+
+    with tf.GradientTape() as tape:
+        output = core_model((values, state))
+        reference_loss = tf.add_n([tf.reduce_sum(value) for value in output])
+    reference_gradients = tape.gradient(reference_loss, core_model.trainable_variables)
+
+    with tf.GradientTape() as tape:
+        output = runner(values, (state,))
+        transformed_loss = tf.add_n([tf.reduce_sum(value) for value in output])
+    transformed_gradients = tape.gradient(
+        transformed_loss, core_model.trainable_variables
+    )
+
+    assert len(transform_calls) == 1
+    for transformed, reference in zip(transformed_gradients, reference_gradients):
+        np.testing.assert_allclose(transformed, 2.0 * reference, rtol=2e-6, atol=2e-6)
+
+
+def test_full_bptt_skips_variable_transform_without_captured_variables():
+    inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (inputs * 2.0, initial_state * 3.0),
+    )
+    transform_calls = []
+
+    def transform(variables, gradients):
+        transform_calls.append((variables, gradients))
+        raise AssertionError("Transform must not run without captured variables.")
+
+    runner = training.FullBPTTGradientRunner(core_model, transform)
+    values = tf.Variable(np.ones((2, 3, 1), np.float32))
+    state = tf.Variable(np.ones((2, 1), np.float32))
+
+    with tf.GradientTape() as tape:
+        output, final_state = runner(values, (state,))
+        loss = tf.reduce_sum(output) + tf.reduce_sum(final_state)
+    value_gradient, state_gradient = tape.gradient(loss, (values, state))
+
+    assert transform_calls == []
+    np.testing.assert_array_equal(value_gradient, 2.0)
+    np.testing.assert_array_equal(state_gradient, 3.0)
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch_size", [5, 32])
+@pytest.mark.parametrize("checkpointing", [False, True])
+@pytest.mark.parametrize("small_batch", [False, True])
+def test_segmented_direct_csr_recurrent_gradient_matches_canonical_order(
+    batch_size, checkpointing, small_batch
+):
+    if small_batch and batch_size == 32:
+        pytest.skip("Small-batch kernel supports 1..8")
+    indices = np.array([[0, 0], [1, 0], [1, 2], [0, 1]], np.int64)
+    synapse_types = np.array([0, 1, 0, 1], np.int64)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        3,
+        2,
+        2,
+        build_compact_pairs=True,
+    )
+    basis = tf.constant(
+        [[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]],
+        tf.float16,
+    )
+
+    class CurrentSequence(tf.keras.layers.Layer):
+        def __init__(self, write_csr_gradient):
+            super().__init__(dtype="mixed_float16")
+            self.write_csr_gradient = write_csr_gradient
+            self.master = self.add_weight(
+                name="recurrent_master",
+                shape=(4,),
+                dtype=tf.float32,
+                initializer=tf.keras.initializers.Constant([1.0, 2.0, 3.0, 4.0]),
+                autocast=False,
+            )
+
+        def call(self, values):
+            sequence, state = values
+            csr_weights = reorder_csr_values(
+                tf.stop_gradient(tf.cast(self.master, tf.float16)), connectivity
+            )
+            time_major = tf.transpose(sequence, [1, 0, 2])
+            currents = tf.map_fn(
+                lambda spikes: fused_spike_currents(
+                    spikes,
+                    self.master,
+                    csr_weights,
+                    connectivity,
+                    basis,
+                    n_post=2,
+                    compute_spike_gradient=True,
+                    use_packed_sm120_backward="auto",
+                    write_csr_weight_gradient=self.write_csr_gradient,
+                    use_small_batch_backward=small_batch and self.write_csr_gradient,
+                ),
+                time_major,
+                fn_output_signature=tf.TensorSpec([batch_size * 2, 4], tf.float16),
+            )
+            currents = tf.reshape(currents, [-1, batch_size, 2, 4])
+            currents = tf.transpose(currents, [1, 0, 2, 3])
+            return currents, currents * tf.constant(1.5, tf.float16), state
+
+    def build_model(write_csr_gradient):
+        sequence = tf.keras.Input(batch_shape=(batch_size, None, 3), dtype=tf.float16)
+        state = tf.keras.Input(batch_shape=(batch_size, 1), dtype=tf.float16)
+        layer = CurrentSequence(write_csr_gradient)
+        return tf.keras.Model((sequence, state), layer((sequence, state))), layer
+
+    canonical_model, canonical_layer = build_model(False)
+    direct_model, direct_layer = build_model(True)
+    canonical_runner = (
+        training.SegmentedRecomputeRunner(canonical_model, 5, 2, 2)
+        if checkpointing
+        else lambda values, states: canonical_model((values, *states))
+    )
+    direct_cell = SimpleNamespace(
+        recurrent_weight_values=direct_layer.master,
+        recurrent_fused_connectivity=connectivity,
+    )
+    transform = (
+        lambda variables, gradients: GLIF3Cell.restore_segmented_variable_gradients(
+            direct_cell, variables, gradients
+        )
+    )
+    direct_runner = (
+        training.SegmentedRecomputeRunner(
+            direct_model, 5, 2, 2, variable_gradient_transform=transform
+        )
+        if checkpointing
+        else training.FullBPTTGradientRunner(direct_model, transform)
+    )
+    spike_values = np.zeros((batch_size, 5, 3), np.float16)
+    spike_values[::2, :, 0] = 1.0
+    spike_values[1::3, 1::2, 1] = 2.0
+    spike_values[2::5, 2:, 2] = 3.0
+    sequence = tf.constant(spike_values)
+    state = tf.zeros([batch_size, 1], tf.float16)
+
+    @tf.function
+    def evaluate(runner, layer):
+        with tf.GradientTape() as tape:
+            outputs = runner(sequence, (state,))
+            loss = tf.reduce_sum(outputs[0]) + tf.reduce_sum(
+                outputs[1] * tf.constant(0.25, tf.float16)
+            )
+            loss = tf.cast(loss, tf.float32) + tf.reduce_sum(
+                layer.master**2 * tf.constant([1.0, 3.0, 7.0, 11.0])
+            )
+        return outputs, tape.gradient(loss, layer.master)
+
+    canonical_outputs, canonical_gradient = evaluate(canonical_runner, canonical_layer)
+    direct_outputs, direct_gradient = evaluate(direct_runner, direct_layer)
+
+    for direct, canonical in zip(direct_outputs, canonical_outputs):
+        np.testing.assert_array_equal(direct, canonical)
+    np.testing.assert_array_equal(direct_gradient, canonical_gradient)
+    canonical_optimizer = ExponentiatedAdam(learning_rate=0.005)
+    direct_optimizer = ExponentiatedAdam(learning_rate=0.005)
+    canonical_optimizer.apply_gradients([(canonical_gradient, canonical_layer.master)])
+    direct_optimizer.apply_gradients([(direct_gradient, direct_layer.master)])
+    np.testing.assert_array_equal(direct_layer.master, canonical_layer.master)
+    for actual, expected in zip(
+        direct_optimizer.variables, canonical_optimizer.variables
+    ):
+        np.testing.assert_array_equal(actual, expected)
+    connectivity.close()
+
+
+def test_direct_csr_gradient_uses_full_tape_without_checkpointing():
+    engine = object.__new__(training.TrainingEngine)
+    engine.rnn = SimpleNamespace(
+        cell=SimpleNamespace(
+            _use_direct_csr_recurrent_gradient=True,
+            restore_segmented_variable_gradients=lambda variables, gradients: gradients,
+        ),
+        extractor_model=object(),
+    )
+    engine.gradient_checkpointing = False
+    engine._extractor_forward = None
+
+    engine.prepare_gradient_checkpointing()
+    assert isinstance(engine._extractor_forward, training.FullBPTTGradientRunner)
+
+
+@pytest.mark.parametrize("width", [31, 32, 62])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_spike_checkpoint_pack_roundtrip(width, dtype):
+    rng = np.random.default_rng(29)
+    patterns = (
+        np.zeros((3, width), dtype=np.float32),
+        np.ones((3, width), dtype=np.float32),
+        rng.integers(0, 2, size=(3, width)).astype(np.float32),
+    )
+
+    for pattern in patterns:
+        spikes = tf.cast(pattern, dtype)
+        packed = _pack_spikes(spikes)
+        restored = _unpack_spikes(packed, width, dtype)
+
+        assert packed.dtype == tf.int32
+        assert packed.shape == (3, (width + 30) // 31)
+        np.testing.assert_array_equal(restored, spikes)
+
+
+def test_spike_checkpoint_pack_treats_nonzero_values_as_spikes():
+    values = tf.constant([[-2.0, 0.0, 0.5, 1.0]], tf.float32)
+
+    restored = _unpack_spikes(_pack_spikes(values), 4, tf.float32)
+
+    np.testing.assert_array_equal(restored, [[1.0, 0.0, 1.0, 1.0]])
+
+
+def test_packed_segmented_recompute_matches_unpacked_outputs_and_gradients():
+    @tf.custom_gradient
+    def binary_straight_through(values):
+        spikes = tf.cast(values > 0.0, values.dtype)
+
+        def grad(upstream):
+            return upstream
+
+        return spikes, grad
+
+    inputs = tf.keras.layers.Input(shape=(None, 3), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(35,), dtype=tf.float32)
+    cell = tf.keras.layers.SimpleRNNCell(
+        35,
+        activation=binary_straight_through,
+        use_bias=False,
+        kernel_initializer=tf.keras.initializers.Constant(0.1),
+        recurrent_initializer=tf.keras.initializers.Constant(0.02),
+    )
+    sequence, final_state = tf.keras.layers.RNN(
+        cell, return_sequences=True, return_state=True
+    )(inputs, initial_state=[initial_state])
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (sequence, sequence * tf.constant(1.5), final_state),
+    )
+    unpacked_runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        differentiate_inputs=True,
+    )
+    packed_runner = training.SegmentedRecomputeRunner(
+        core_model,
+        sequence_length=7,
+        chunk_size=3,
+        n_sequence_outputs=2,
+        differentiate_inputs=True,
+        pack_spike_checkpoints=True,
+    )
+    input_values = (
+        np.random.default_rng(31).uniform(-0.2, 0.2, size=(2, 7, 3)).astype(np.float32)
+    )
+    state_values = np.zeros((2, 35), dtype=np.float32)
+    state_values[:, ::3] = 1.0
+
+    def evaluate(runner):
+        values = tf.Variable(input_values)
+        state = tf.Variable(state_values)
+        with tf.GradientTape() as tape:
+            outputs = runner(values, (state,))
+            loss = (
+                tf.reduce_sum(outputs[0] * 0.25)
+                + tf.reduce_sum(outputs[1] * 0.5)
+                + tf.reduce_sum(outputs[2] * 0.75)
+            )
+        gradients = tape.gradient(
+            loss, (values, state, *core_model.trainable_variables)
+        )
+        return outputs, gradients
+
+    unpacked_outputs, unpacked_gradients = evaluate(unpacked_runner)
+    packed_outputs, packed_gradients = evaluate(packed_runner)
+
+    for packed, unpacked in zip(packed_outputs, unpacked_outputs):
+        np.testing.assert_array_equal(packed, unpacked)
+    for packed, unpacked in zip(packed_gradients, unpacked_gradients):
+        np.testing.assert_allclose(packed, unpacked, rtol=1e-6, atol=1e-6)
+
+
 def test_training_engine_validates_checkpoint_chunk_size():
     engine = training.TrainingEngine(
         rnn=SimpleNamespace(),
@@ -205,6 +535,15 @@ def test_training_engine_validates_checkpoint_chunk_size():
         gradient_checkpoint_chunk_size=17,
     )
     assert engine.gradient_checkpoint_chunk_size == 17
+    assert engine.pack_spike_checkpoints is False
+
+    packed_engine = training.TrainingEngine(
+        rnn=SimpleNamespace(),
+        n_epochs=1,
+        steps_per_epoch=1,
+        pack_spike_checkpoints=True,
+    )
+    assert packed_engine.pack_spike_checkpoints is True
 
     with pytest.raises(ValueError, match="chunk_size must be positive"):
         training.TrainingEngine(

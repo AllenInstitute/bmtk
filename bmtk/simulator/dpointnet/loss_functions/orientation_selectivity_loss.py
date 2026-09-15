@@ -44,7 +44,7 @@ class OrientationSelectivityLoss:
             self._layer_info = layer_info  # needed for neuropixels_fr method
             # the layer_info should be a dictionary that contains
             # the cell id of the corresponding layer.
-            # the keys should be something like "EXC_L23" or "PV_L5"   
+            # the keys should be something like "EXC_L23" or "PV_L5"
 
         elif self._method == "crowd_osi":
             self._min_rates_threshold = tf.constant(0.0005, dtype=self._dtype)
@@ -79,11 +79,15 @@ class OrientationSelectivityLoss:
             post_delay=self._post_delay,
             trim=trim,
         )
-        leading_axes = tf.range(tf.maximum(tf.rank(spikes) - 1, 0))
-        evoked_rates = tf.cast(tf.reduce_mean(spikes, axis=leading_axes), tf.float32)
-        v1_ema = normalizers['v1_ema']
+        duration = spikes.shape[1]
+        if duration is None:
+            raise ValueError("Orientation loss requires a static sequence length.")
+        rates = loss_utils.temporal_sum(spikes, dtype=tf.float32) / tf.cast(
+            duration, tf.float32
+        )
+        evoked_rates = tf.reduce_mean(rates, axis=0)
+        v1_ema = normalizers["v1_ema"]
         v1_ema.assign(self._ema_decay * v1_ema + (1.0 - self._ema_decay) * evoked_rates)
-    
 
     def calculate_delta_angle(self, stim_angle, tuning_angle):
         # angle unit is degrees.
@@ -122,7 +126,7 @@ class OrientationSelectivityLoss:
             print(f"> Using custom neuropixels data file for OSI/DSI loss: {neuropixels_data_path}")
         features_to_load = ['ecephys_unit_id', 'cell_type', 'OSI', 'DSI', "Ave_Rate(Hz)", "max_mean_rate(Hz)"]
         osi_dsi_df = pd.read_csv(neuropixels_data_path, index_col=0, sep=" ", usecols=features_to_load).dropna(how='all')
-        
+
         nonresponding = osi_dsi_df["max_mean_rate(Hz)"] < 0.5
         osi_dsi_df.loc[nonresponding, "OSI"] = np.nan
         osi_dsi_df.loc[nonresponding, "DSI"] = np.nan
@@ -180,42 +184,52 @@ class OrientationSelectivityLoss:
             osi_cost=self._osi_cost,
         )
         setattr(self, f'{attr_prefix}node_type_ids', selection['node_type_ids'])
-        setattr(self, f'{attr_prefix}_n_node_types', selection['n_node_types'])
-        setattr(self, f'{attr_prefix}osi_target_values', selection['osi_target_values'])
-        setattr(self, f'{attr_prefix}dsi_target_values', selection['dsi_target_values'])
-        setattr(self, f'{attr_prefix}cell_type_count', selection['cell_type_count'])
+        setattr(self, f"{attr_prefix}_n_node_types", selection["n_node_types"])
+        setattr(self, f"{attr_prefix}osi_target_values", selection["osi_target_values"])
+        setattr(self, f"{attr_prefix}dsi_target_values", selection["dsi_target_values"])
+        setattr(self, f"{attr_prefix}cell_type_count", selection["cell_type_count"])
 
-    def crowd_spikes_loss(self, spikes, angle):
+    def crowd_spikes_loss(self, mean_spikes, angle):
         # I need to access the tuning angle. of all the neurons.
         angle = tf.cast(angle, self._dtype)
 
         if self._core_mask is not None:
-            spikes = tf.boolean_mask(spikes, self._core_mask, axis=2)
-            
+            mean_spikes = tf.boolean_mask(mean_spikes, self._core_mask, axis=1)
+
         delta_angle = self.calculate_delta_angle(angle, self._tuning_angles)
         # sum spikes in _z, and multiply with delta_angle.
-        mean_spikes = tf.reduce_mean(spikes, axis=[1]) 
         mean_angle = mean_spikes * delta_angle
         # Here, the expected value with random firing to subtract
         # (this prevents the osi loss to drive the firing rates to go to zero.)
         expected_sum_angle = tf.reduce_mean(mean_spikes) * 45
-        
-        angle_loss = tf.reduce_mean(tf.abs(mean_angle)) - expected_sum_angle * self._subtraction_ratio
-        
+
+        angle_loss = (
+            tf.reduce_mean(tf.abs(mean_angle))
+            - expected_sum_angle * self._subtraction_ratio
+        )
+
         return angle_loss * self._osi_cost
-    
-    @tf.function(jit_compile=True)
-    def _compute_osi_dsi_core(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
-        """Core of crowd_osi: cos weighting + per-(batch,type) segment means.
-
-        """
-        return self._compute_osi_dsi_impl(rates, radians_delta_angle, batch_size, node_type_ids, n_node_types)
 
     @tf.function(jit_compile=True)
-    def _compute_osi_dsi_annulus_core(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
-        return self._compute_osi_dsi_impl(rates, radians_delta_angle, batch_size, node_type_ids, n_node_types)
+    def _compute_osi_dsi_core(
+        self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types
+    ):
+        """Core of crowd_osi: cos weighting + per-(batch,type) segment means."""
+        return self._compute_osi_dsi_impl(
+            rates, radians_delta_angle, batch_size, node_type_ids, n_node_types
+        )
 
-    def _compute_osi_dsi_impl(self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types):
+    @tf.function(jit_compile=True)
+    def _compute_osi_dsi_annulus_core(
+        self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types
+    ):
+        return self._compute_osi_dsi_impl(
+            rates, radians_delta_angle, batch_size, node_type_ids, n_node_types
+        )
+
+    def _compute_osi_dsi_impl(
+        self, rates, radians_delta_angle, batch_size, node_type_ids, n_node_types
+    ):
         weighted_osi_cos_responses = rates * tf.math.cos(2.0 * radians_delta_angle)
         weighted_dsi_cos_responses = rates * tf.math.cos(radians_delta_angle)
 
@@ -229,33 +243,46 @@ class OrientationSelectivityLoss:
 
         num_segments = batch_size * n_node_types
 
-        approximated_denominator = tf.math.unsorted_segment_mean(data_flat_rates, segment_ids_flat, num_segments=num_segments)
-        approximated_denominator = tf.reshape(approximated_denominator, [batch_size, n_node_types])
+        approximated_denominator = tf.math.unsorted_segment_mean(
+            data_flat_rates, segment_ids_flat, num_segments=num_segments
+        )
+        approximated_denominator = tf.reshape(
+            approximated_denominator, [batch_size, n_node_types]
+        )
         approximated_denominator = tf.maximum(approximated_denominator, 0.0005)
 
-        osi_numerator = tf.math.unsorted_segment_mean(data_flat_weighted_osi, segment_ids_flat, num_segments=num_segments)
+        osi_numerator = tf.math.unsorted_segment_mean(
+            data_flat_weighted_osi, segment_ids_flat, num_segments=num_segments
+        )
         osi_numerator = tf.reshape(osi_numerator, [batch_size, n_node_types])
 
-        dsi_numerator = tf.math.unsorted_segment_mean(data_flat_weighted_dsi, segment_ids_flat, num_segments=num_segments)
+        dsi_numerator = tf.math.unsorted_segment_mean(
+            data_flat_weighted_dsi, segment_ids_flat, num_segments=num_segments
+        )
         dsi_numerator = tf.reshape(dsi_numerator, [batch_size, n_node_types])
 
-        osi_approx_type = tf.reduce_mean(osi_numerator / approximated_denominator, axis=0)
-        dsi_approx_type = tf.reduce_mean(dsi_numerator / approximated_denominator, axis=0)
+        osi_approx_type = tf.reduce_mean(
+            osi_numerator / approximated_denominator, axis=0
+        )
+        dsi_approx_type = tf.reduce_mean(
+            dsi_numerator / approximated_denominator, axis=0
+        )
         return osi_approx_type, dsi_approx_type
 
-    def _crowd_osi_loss_for_selection(self, spikes, angle, normalizer, batch_size_hint, selection, core_fn):
-        delta_angle = angle[:, tf.newaxis] - selection['tuning_angles'][tf.newaxis, :]
+    def _crowd_osi_loss_for_selection(
+        self, rates, angle, normalizer, batch_size_hint, selection, core_fn
+    ):
+        delta_angle = angle[:, tf.newaxis] - selection["tuning_angles"][tf.newaxis, :]
         radians_delta_angle = delta_angle * (self._tf_pi / 180)
 
-        rates = tf.reduce_mean(spikes, axis=1)
         rates = tf.cast(rates, self._dtype)
-        if selection['mask'] is not None:
-            rates = tf.boolean_mask(rates, selection['mask'], axis=1)
-            rates.set_shape([None, selection['node_type_ids'].shape[0]])
+        if selection["mask"] is not None:
+            rates = tf.boolean_mask(rates, selection["mask"], axis=1)
+            rates.set_shape([None, selection["node_type_ids"].shape[0]])
 
         if normalizer is not None:
-            if selection['mask'] is not None:
-                normalizer = tf.boolean_mask(normalizer, selection['mask'], axis=0)
+            if selection["mask"] is not None:
+                normalizer = tf.boolean_mask(normalizer, selection["mask"], axis=0)
             normalizer = tf.maximum(normalizer, self._min_rates_threshold)
             rates = rates / normalizer
 
@@ -263,56 +290,66 @@ class OrientationSelectivityLoss:
         # A Python-int batch_size_hint creates a concrete shape in the XLA graph
         # that causes CUDA_ERROR_GRAPH_EXEC_UPDATE_FAILURE if it ever varies.
         batch_size = tf.shape(rates)[0]
-        if os.environ.get('DPOINTNET_OSI_DEBUG'):
+        if os.environ.get("DPOINTNET_OSI_DEBUG"):
             tf.print(
-                'DPOINTNET_OSI_DEBUG',
-                'selection_width=', tf.shape(rates)[1],
-                'rates_static=', rates.shape,
-                'delta_static=', radians_delta_angle.shape,
-                'batch_size=', batch_size,
-                'node_type_ids_static=', selection['node_type_ids'].shape,
-                'n_node_types=', selection['n_node_types'],
-                'normalizer_is_none=', normalizer is None,
-                'core_fn=', getattr(core_fn, '__name__', 'unknown'),
+                "DPOINTNET_OSI_DEBUG",
+                "selection_width=",
+                tf.shape(rates)[1],
+                "rates_static=",
+                rates.shape,
+                "delta_static=",
+                radians_delta_angle.shape,
+                "batch_size=",
+                batch_size,
+                "node_type_ids_static=",
+                selection["node_type_ids"].shape,
+                "n_node_types=",
+                selection["n_node_types"],
+                "normalizer_is_none=",
+                normalizer is None,
+                "core_fn=",
+                getattr(core_fn, "__name__", "unknown"),
                 summarize=-1,
             )
         osi_approx_type, dsi_approx_type = core_fn(
             rates,
             radians_delta_angle,
             batch_size,
-            selection['node_type_ids'],
-            selection['n_node_types'],
+            selection["node_type_ids"],
+            selection["n_node_types"],
         )
 
-        osi_loss_type = tf.math.square(osi_approx_type - selection['osi_target_values'])
-        dsi_loss_type = tf.math.square(dsi_approx_type - selection['dsi_target_values'])
-        numerator = tf.reduce_sum((osi_loss_type + dsi_loss_type) * selection['cell_type_count'])
-        denominator = tf.reduce_sum(selection['cell_type_count'])
-        return (numerator / denominator) * selection['osi_cost']
+        osi_loss_type = tf.math.square(osi_approx_type - selection["osi_target_values"])
+        dsi_loss_type = tf.math.square(dsi_approx_type - selection["dsi_target_values"])
+        numerator = tf.reduce_sum(
+            (osi_loss_type + dsi_loss_type) * selection["cell_type_count"]
+        )
+        denominator = tf.reduce_sum(selection["cell_type_count"])
+        return (numerator / denominator) * selection["osi_cost"]
 
-    def crowd_osi_loss(self, spikes, angle, normalizer=None, batch_size_hint=None):
+    def crowd_osi_loss(self, rates, angle, normalizer=None, batch_size_hint=None):
         # Ensure angle is [batch_size] and cast to correct dtype
         angle = tf.cast(tf.reshape(angle, [-1]), self._dtype)  # [batch_size]
         loss = self._crowd_osi_loss_for_selection(
-            spikes,
+            rates,
             angle,
             normalizer,
             batch_size_hint,
             {
-                'mask': self._core_mask,
-                'tuning_angles': self._tuning_angles,
-                'node_type_ids': self.node_type_ids,
-                'n_node_types': self._n_node_types,
-                'osi_target_values': self.osi_target_values,
-                'dsi_target_values': self.dsi_target_values,
-                'cell_type_count': self.cell_type_count,
-                'osi_cost': tf.constant(self._osi_cost, dtype=self._dtype),
+                "mask": self._core_mask,
+                "tuning_angles": self._tuning_angles,
+                "node_type_ids": self.node_type_ids,
+                "n_node_types": self._n_node_types,
+                "osi_target_values": self.osi_target_values,
+                "dsi_target_values": self.dsi_target_values,
+                "cell_type_count": self.cell_type_count,
+                "osi_cost": tf.constant(self._osi_cost, dtype=self._dtype),
             },
             self._compute_osi_dsi_core,
         )
         if self._annulus_crowd_osi is not None:
             loss += self._crowd_osi_loss_for_selection(
-                spikes,
+                rates,
                 angle,
                 normalizer,
                 batch_size_hint,
@@ -344,7 +381,9 @@ class OrientationSelectivityLoss:
                 return sig['orientation']
         return None
 
-    def __call__(self, spikes, voltages=None, model_state=None, y=None, trim=True, **kwargs):
+    def __call__(
+        self, spikes, voltages=None, model_state=None, y=None, trim=True, **kwargs
+    ):
         # OSI/DSI is an evoked-only loss; it needs the drifting-gratings orientation from `y`.
         # If absent (e.g. a spontaneous parameter set), contribute nothing.
         angle = self._extract_orientation(y)
@@ -354,25 +393,35 @@ class OrientationSelectivityLoss:
         # Keep spikes in the compute dtype (fp16 under mixed precision); only the small reduced
         # rate tensors are upcast to fp32 below. Casting the full [batch, seq, n_neurons] spikes
         # tensor here previously allocated ~1 GiB of fp32 transients per call.
-        spikes = loss_utils.spike_trimming(spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim)
+        spikes = loss_utils.spike_trimming(
+            spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+        )
 
-        normalizer = kwargs.get('normalizer')
+        if self._method in ("crowd_osi", "crowd_spikes"):
+            duration = spikes.shape[1]
+            if duration is None:
+                raise ValueError("Orientation loss requires a static sequence length.")
+            rates = loss_utils.temporal_sum(spikes, dtype=self._dtype) / tf.cast(
+                duration, self._dtype
+            )
+
+        normalizer = kwargs.get("normalizer")
         if normalizer is None and self._use_ema_normalizer:
-            normalizers = kwargs.get('normalizers')
+            normalizers = kwargs.get("normalizers")
             if normalizers is not None:
-                normalizer = normalizers.get('v1_ema')
+                normalizer = normalizers.get("v1_ema")
         if normalizer is not None:
             normalizer = tf.cast(normalizer, self._dtype)
 
         if self._method == "crowd_osi":
             loss = self.crowd_osi_loss(
-                spikes,
+                rates,
                 angle,
                 normalizer=normalizer,
-                batch_size_hint=kwargs.get('batch_size_hint'),
+                batch_size_hint=kwargs.get("batch_size_hint"),
             )
         elif self._method == "crowd_spikes":
-            loss = self.crowd_spikes_loss(spikes, angle)
+            loss = self.crowd_spikes_loss(rates, angle)
         elif self._method == "neuropixels_fr":
             loss = self.neuropixels_fr_loss(spikes, angle)
         else:

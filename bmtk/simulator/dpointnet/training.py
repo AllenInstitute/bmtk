@@ -10,8 +10,7 @@ from .io_tools import io
 from .data_iterator import DataIterator
 from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
 from .learning_rules import LearningRuleObservations
-from .segmented_recompute import SegmentedRecomputeRunner
-
+from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
 
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
@@ -140,6 +139,7 @@ class TrainingEngine:
         self.gradient_checkpoint_chunk_size = int(
             kwargs.get("gradient_checkpoint_chunk_size", 25)
         )
+        self.pack_spike_checkpoints = bool(kwargs.get("pack_spike_checkpoints", False))
         if self.gradient_checkpoint_chunk_size < 1:
             raise ValueError("gradient_checkpoint_chunk_size must be positive.")
         self.regenerate_initial_state_each_epoch = kwargs.get(
@@ -520,7 +520,7 @@ class TrainingEngine:
         retained. Internal Poisson progression is part of that state, so each
         chunk is replayed exactly during the backward pass.
         """
-        if self.gradient_checkpointing and self._extractor_forward is not None:
+        if self._extractor_forward is not None:
             if x.dtype == tf.bool:
                 x = tf.cast(x, self.rnn.dtype)
             self.rnn.cell.advance_noise_seed()
@@ -530,23 +530,44 @@ class TrainingEngine:
         return self.rnn.run_extractor(x, init_state)
 
     def prepare_gradient_checkpointing(self):
-        if not self.gradient_checkpointing or self._extractor_forward is not None:
+        cell = getattr(self.rnn, "cell", None)
+        use_direct_csr_gradient = getattr(
+            cell, "_use_direct_csr_recurrent_gradient", False
+        )
+        if self._extractor_forward is not None:
+            return
+        if not self.gradient_checkpointing and not use_direct_csr_gradient:
             return
         if self.rnn.extractor_model is None:
             raise ValueError(
                 "Build rnn.extractor_model before preparing gradient checkpointing."
             )
+        if not self.gradient_checkpointing:
+            self._extractor_forward = FullBPTTGradientRunner(
+                self.rnn.extractor_model, cell.restore_segmented_variable_gradients
+            )
+            io.log_info(
+                "Full BPTT with one canonical recurrent-gradient restore enabled."
+            )
+            return
         self._extractor_forward = SegmentedRecomputeRunner(
             self.rnn.extractor_model,
             sequence_length=self.adjusted_seq_len,
             chunk_size=self.gradient_checkpoint_chunk_size,
             n_sequence_outputs=2,
             differentiate_inputs=False,
+            pack_spike_checkpoints=self.pack_spike_checkpoints,
+            variable_gradient_transform=(
+                cell.restore_segmented_variable_gradients
+                if use_direct_csr_gradient
+                else None
+            ),
         )
         io.log_info(
             "Segmented exact BPTT enabled: "
             f"{self._extractor_forward.n_chunks} chunks, "
-            f"chunk_size={self.gradient_checkpoint_chunk_size}."
+            f"chunk_size={self.gradient_checkpoint_chunk_size}, "
+            f"pack_spike_checkpoints={self.pack_spike_checkpoints}."
         )
 
     @staticmethod

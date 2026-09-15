@@ -1,6 +1,77 @@
 import tensorflow as tf
 from tensorflow.python.eager import record
 
+_PACKED_SPIKES_PER_WORD = 31
+
+
+def _pack_spikes(spikes):
+    """Pack a rank-two spike state, treating every nonzero value as one."""
+    width = spikes.shape[-1]
+    if spikes.shape.rank != 2 or width is None:
+        raise ValueError(
+            "Packed spike checkpoints require a rank-two state with a static width."
+        )
+    padding = (-width) % _PACKED_SPIKES_PER_WORD
+    bits = tf.cast(tf.not_equal(spikes, tf.zeros((), spikes.dtype)), tf.int32)
+    if padding:
+        bits = tf.pad(bits, ((0, 0), (0, padding)))
+    bits = tf.reshape(bits, (tf.shape(bits)[0], -1, _PACKED_SPIKES_PER_WORD))
+    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=tf.int32)
+    return tf.reduce_sum(tf.bitwise.left_shift(bits, shifts), axis=-1)
+
+
+def _unpack_spikes(packed, width, dtype):
+    """Restore binary spike values from positive int32 words."""
+    shifts = tf.range(_PACKED_SPIKES_PER_WORD, dtype=tf.int32)
+    bits = tf.bitwise.bitwise_and(
+        tf.bitwise.right_shift(packed[..., tf.newaxis], shifts), 1
+    )
+    spikes = tf.cast(tf.reshape(bits, (tf.shape(packed)[0], -1))[:, :width], dtype)
+    return tf.ensure_shape(spikes, (packed.shape[0], width))
+
+
+class FullBPTTGradientRunner:
+    """Retain a full rollout tape and restore variable-gradient layout at its boundary."""
+
+    def __init__(self, core_model, variable_gradient_transform):
+        self.core_model = core_model
+        self.variable_gradient_transform = variable_gradient_transform
+
+    def __call__(self, inputs, initial_state):
+        @tf.custom_gradient
+        def rollout(*arguments):
+            differentiable_indices = tuple(
+                index
+                for index, value in enumerate(arguments)
+                if value.dtype.is_floating or value.dtype.is_complex
+            )
+            differentiable = tuple(arguments[index] for index in differentiable_indices)
+            with tf.GradientTape(persistent=True) as tape:
+                tape.watch(differentiable)
+                outputs = tuple(tf.nest.flatten(self.core_model(arguments)))
+
+            def grad(*output_gradients, variables=None):
+                variables = tuple(variables or ())
+                gradients = tape.gradient(
+                    outputs,
+                    differentiable + variables,
+                    output_gradients=output_gradients,
+                    unconnected_gradients=tf.UnconnectedGradients.ZERO,
+                )
+                argument_gradients = [None] * len(arguments)
+                for index, value in zip(differentiable_indices, gradients):
+                    argument_gradients[index] = value
+                if not variables:
+                    return tuple(argument_gradients)
+                variable_gradients = self.variable_gradient_transform(
+                    variables, gradients[len(differentiable) :]
+                )
+                return tuple(argument_gradients), list(variable_gradients)
+
+            return outputs, grad
+
+        return rollout(inputs, *tuple(initial_state))
+
 
 class SegmentedRecomputeRunner:
     """Run an RNN in recomputed temporal chunks while preserving exact BPTT."""
@@ -12,12 +83,16 @@ class SegmentedRecomputeRunner:
         chunk_size,
         n_sequence_outputs,
         differentiate_inputs=False,
+        pack_spike_checkpoints=False,
+        variable_gradient_transform=None,
     ):
         self.core_model = core_model
         self.sequence_length = int(sequence_length)
         self.chunk_size = int(chunk_size)
         self.n_sequence_outputs = int(n_sequence_outputs)
         self.differentiate_inputs = bool(differentiate_inputs)
+        self.pack_spike_checkpoints = bool(pack_spike_checkpoints)
+        self.variable_gradient_transform = variable_gradient_transform
         if self.sequence_length <= 0:
             raise ValueError("sequence_length must be positive.")
         if not 1 <= self.chunk_size <= self.sequence_length:
@@ -82,14 +157,30 @@ class SegmentedRecomputeRunner:
             for spec in self.sequence_specs
         )
         state_arrays = tuple(
-            tf.TensorArray(dtype=value.dtype, size=self.n_chunks, clear_after_read=True)
-            for value in initial_state
+            tf.TensorArray(
+                dtype=(
+                    tf.int32
+                    if self.pack_spike_checkpoints and index == 0
+                    else value.dtype
+                ),
+                size=self.n_chunks,
+                clear_after_read=True,
+            )
+            for index, value in enumerate(initial_state)
         )
 
         def run_full_chunk(chunk_index, arrays, states, history):
             chunk = self._slice_chunk(inputs, chunk_index, self.chunk_size, time_check)
             history = tuple(
-                array.write(chunk_index, value) for array, value in zip(history, states)
+                array.write(
+                    chunk_index,
+                    (
+                        _pack_spikes(value)
+                        if self.pack_spike_checkpoints and index == 0
+                        else value
+                    ),
+                )
+                for index, (array, value) in enumerate(zip(history, states))
             )
             flat_outputs = self._run_chunk(chunk, *states)
             chunk_sequences = flat_outputs[: self.n_sequence_outputs]
@@ -117,8 +208,15 @@ class SegmentedRecomputeRunner:
         if self.remainder_size:
             remainder_index = tf.constant(self.n_full_chunks)
             state_arrays = tuple(
-                array.write(remainder_index, value)
-                for array, value in zip(state_arrays, state)
+                array.write(
+                    remainder_index,
+                    (
+                        _pack_spikes(value)
+                        if self.pack_spike_checkpoints and index == 0
+                        else value
+                    ),
+                )
+                for index, (array, value) in enumerate(zip(state_arrays, state))
             )
             chunk = self._slice_chunk(
                 inputs, remainder_index, self.remainder_size, time_check
@@ -161,7 +259,7 @@ class SegmentedRecomputeRunner:
             if inputs_are_differentiable
             else ()
         )
-        state_dtypes = tuple(array.dtype for array in state_arrays)
+        state_dtypes = tuple(value.dtype for value in final_state)
         state_cotangents = tuple(
             (
                 (
@@ -188,6 +286,17 @@ class SegmentedRecomputeRunner:
             start = chunk_index * self.chunk_size
             chunk = self._slice_chunk(inputs, chunk_index, chunk_length)
             boundary_state = tuple(array.read(chunk_index) for array in state_arrays)
+            if self.pack_spike_checkpoints:
+                spike_width = final_state[0].shape[-1]
+                if spike_width is None:
+                    raise ValueError(
+                        "Packed spike checkpoints require a static spike-state width."
+                    )
+                boundary_state = (
+                    _unpack_spikes(
+                        boundary_state[0], spike_width, final_state[0].dtype
+                    ),
+                ) + boundary_state[1:]
             differentiable_state_indices = tuple(
                 index
                 for index, value in enumerate(boundary_state)
@@ -313,6 +422,10 @@ class SegmentedRecomputeRunner:
             gradient if dtype.is_floating or dtype.is_complex else None
             for gradient, dtype in zip(state_cotangents, state_dtypes)
         )
+        if self.variable_gradient_transform is not None:
+            variable_gradients = tuple(
+                self.variable_gradient_transform(variables, variable_gradients)
+            )
         return input_gradient, initial_state_gradients, variable_gradients
 
     def __call__(self, inputs, initial_state):

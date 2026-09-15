@@ -1021,16 +1021,19 @@ class RNN:
         # if init_states:
         #     network.parse_initial_states_from_config(init_states)
 
-        train_dict = config.get('training', None)
-        if train_dict:                        
-            n_epochs = train_dict['n_epochs']
-            steps_per_epoch = train_dict['steps_per_epoch']
-            training_approach = train_dict.get('training_approach', None)
-            gradient_checkpointing = train_dict.get('gradient_checkpointing', False)
+        train_dict = config.get("training", None)
+        if train_dict:
+            n_epochs = train_dict["n_epochs"]
+            steps_per_epoch = train_dict["steps_per_epoch"]
+            training_approach = train_dict.get("training_approach", None)
+            gradient_checkpointing = train_dict.get("gradient_checkpointing", False)
             gradient_checkpoint_chunk_size = train_dict.get(
-                'gradient_checkpoint_chunk_size', 25
+                "gradient_checkpoint_chunk_size", 25
             )
-            regenerate_initial_state_each_epoch = train_dict.get('regenerate_initial_state_each_epoch', True)
+            pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", False)
+            regenerate_initial_state_each_epoch = train_dict.get(
+                "regenerate_initial_state_each_epoch", True
+            )
             training_engine = network.set_training(
                 rnn=network,
                 n_epochs=n_epochs,
@@ -1038,7 +1041,8 @@ class RNN:
                 training_approach=training_approach,
                 gradient_checkpointing=gradient_checkpointing,
                 gradient_checkpoint_chunk_size=gradient_checkpoint_chunk_size,
-                regenerate_initial_state_each_epoch=regenerate_initial_state_each_epoch
+                pack_spike_checkpoints=pack_spike_checkpoints,
+                regenerate_initial_state_each_epoch=regenerate_initial_state_each_epoch,
             )
 
             learning_rate = train_dict['learning_rate']
