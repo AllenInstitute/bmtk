@@ -44,9 +44,25 @@ rounded upward to simulation steps; ``dt`` must be a positive multiple of 0.001
 ms and external delays must be at least one step. Reported spikes and voltage
 samples use end-of-step timestamps.
 
+Enable NEST-compatible dynamics explicitly in ``rnn_cell_params``:
+
+.. code-block:: json
+
+  {
+    "rnn_cell_params": {
+      "dynamics_mode": "nest",
+      "hard_reset": true,
+      "use_fused_cuda": "auto",
+      "use_fused_state": false
+    }
+  }
+
+``hard_reset`` is shown explicitly to make the trajectory semantics visible; it
+may be omitted when the NEST-mode default of ``true`` is intended.
+
 Omitting ``hard_reset`` selects soft reset in default legacy mode and hard reset
-in explicit NEST mode. Training can explicitly
-select ``hard_reset=false`` to retain subtractive soft reset and surrogate
+in explicit NEST mode. Set ``hard_reset=false`` in NEST-mode training to retain
+subtractive soft reset and surrogate
 gradients while keeping the same timestep, precision and other forward settings
 as inference. This changes historical trajectories and learned weights; it is not
 an execution-only optimization.
@@ -438,6 +454,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - pseudo_gauss
                   - 
                   - False
+                * - dynamics_mode
+                  - Select ``"legacy"`` for the historical DPointNet update equations or ``"nest"`` for NEST-compatible timing, integration, delays, state, and timestamps.
+                  - "legacy"
                 * - train_recurrent
                   - 
                   - True
@@ -448,8 +467,8 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - 0
                 * - hard_reset
-                  - 
-                  - False
+                  - Reset voltage to ``V_reset`` after a spike when true; use subtractive soft reset when false. If omitted, defaults to ``False`` in legacy mode and ``True`` in NEST mode.
+                  - Mode-dependent
                 * - tau_basis
                   - 
                   - <None>
