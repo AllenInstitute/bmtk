@@ -632,15 +632,20 @@ def _resolve_fused_state(option, n_syn_basis, pseudo_gauss):
 class GLIF3Cell(tf.keras.layers.Layer):
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
         initial_value = np.asarray(initial_value)
-        return self.add_weight(
-            name=name,
-            shape=initial_value.shape,
-            dtype=dtype,
-            initializer=tf.keras.initializers.Constant(initial_value),
-            trainable=trainable,
-            autocast=False,
-            constraint=constraint,
-        )
+        kwargs = {
+            "name": name,
+            "shape": initial_value.shape,
+            "dtype": dtype,
+            "initializer": tf.keras.initializers.Constant(initial_value),
+            "trainable": trainable,
+            "constraint": constraint,
+        }
+        try:
+            return self.add_weight(autocast=False, **kwargs)
+        except TypeError as exc:
+            if "autocast" not in str(exc):
+                raise
+            return self.add_weight(experimental_autocast=False, **kwargs)
 
     def _untracked_variable(self, variable):
         return variable

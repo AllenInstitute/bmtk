@@ -76,6 +76,42 @@ def test_tracked_master_weight_stays_fp32_inside_mixed_precision_call():
         tf.keras.mixed_precision.set_global_policy(old_policy)
 
 
+def test_tracked_master_weight_supports_keras2_autocast_keyword():
+    old_policy = tf.keras.mixed_precision.global_policy()
+    tf.keras.mixed_precision.set_global_policy("mixed_float16")
+
+    class Probe(tf.keras.layers.Layer):
+        _tracked_weight = GLIF3Cell._tracked_weight
+
+        def add_weight(self, *args, **kwargs):
+            if "autocast" in kwargs:
+                raise TypeError(("Unknown keyword argument:", "autocast"))
+            self.experimental_autocast = kwargs.pop("experimental_autocast")
+            return super().add_weight(*args, autocast=False, **kwargs)
+
+        def build(self, _input_shape):
+            self.master = self._tracked_weight(
+                np.ones(3, np.float32), "master", True, tf.float32
+            )
+
+        def call(self, _inputs):
+            return tf.convert_to_tensor(self.master)
+
+    try:
+        probe = Probe()
+        with tf.GradientTape() as tape:
+            value = probe(tf.ones([1], tf.float16))
+            loss = tf.reduce_sum(value)
+        gradient = tape.gradient(loss, probe.master)
+
+        assert probe.experimental_autocast is False
+        assert probe.master.dtype == "float32"
+        assert value.dtype == tf.float32
+        assert gradient.dtype == tf.float32
+    finally:
+        tf.keras.mixed_precision.set_global_policy(old_policy)
+
+
 @pytest.mark.parametrize("value", [True, False])
 def test_fixed4_forward_option_accepts_booleans(value):
     assert _validate_fixed4_forward_option(value) is value
