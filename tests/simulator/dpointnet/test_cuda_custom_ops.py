@@ -13,6 +13,7 @@ from bmtk.simulator.dpointnet.custom_ops import (
     restore_csr_values,
 )
 from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops
+from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _csr_index_dtype,
     _resolve_packed_sm120_backward,
@@ -550,6 +551,34 @@ def test_packed_sm120_option_accepts_auto_and_booleans(value):
 def test_packed_sm120_option_rejects_lookalikes(value):
     with pytest.raises(ValueError, match="use_packed_sm120_backward"):
         _validate_packed_sm120_option(value)
+
+
+def test_packed_external_option_error_names_external_option():
+    with pytest.raises(ValueError, match="use_packed_sm120_external_backward"):
+        _validate_packed_sm120_option("yes", "use_packed_sm120_external_backward")
+
+
+def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch):
+    calls = []
+
+    def compatibility_error(sm_architectures, ptx_architecture, architecture_path):
+        calls.append((sm_architectures, ptx_architecture, architecture_path))
+        return None
+
+    monkeypatch.setattr(glif_state_ops, "_OPS", object())
+    monkeypatch.setattr(glif_state_ops, "_SM_ARCHITECTURES", (86, 120))
+    monkeypatch.setattr(glif_state_ops, "_PTX_ARCHITECTURE", 120)
+    monkeypatch.setattr(glif_state_ops, "_gpu_compatibility_error", compatibility_error)
+
+    assert glif_state_ops.fused_glif_state_available()
+    assert calls == [
+        (
+            (86, 120),
+            120,
+            glif_state_ops._ARCHITECTURE_PATH,
+        )
+    ]
+    assert glif_state_ops._ARCHITECTURE_PATH.name == "_glif_state_ops.archs"
 
 
 def test_packed_sm120_auto_uses_fallback_on_sm80(monkeypatch):

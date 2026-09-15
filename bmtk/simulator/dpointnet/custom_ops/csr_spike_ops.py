@@ -17,11 +17,11 @@ _RESOURCE_COUNTER = itertools.count()
 _RESOURCE_CONTAINER = "bmtk_dpointnet_csr"
 
 
-def _read_built_architectures():
-    if not _ARCHITECTURE_PATH.exists():
+def _read_built_architectures(architecture_path=_ARCHITECTURE_PATH):
+    if not architecture_path.exists():
         return (), None
     values = {}
-    for line in _ARCHITECTURE_PATH.read_text().splitlines():
+    for line in architecture_path.read_text().splitlines():
         key, separator, value = line.partition("=")
         if separator:
             values[key] = value
@@ -33,24 +33,36 @@ def _read_built_architectures():
 _SM_ARCHITECTURES, _PTX_ARCHITECTURE = _read_built_architectures()
 
 
-def _gpu_compatibility_error():
+def _gpu_compatibility_error(
+    sm_architectures=None,
+    ptx_architecture=None,
+    architecture_path=None,
+):
+    if architecture_path is None:
+        architecture_path = _ARCHITECTURE_PATH
+        if sm_architectures is None:
+            sm_architectures = _SM_ARCHITECTURES
+        if ptx_architecture is None:
+            ptx_architecture = _PTX_ARCHITECTURE
+    elif sm_architectures is None:
+        sm_architectures = ()
     visible_gpus = tf.config.get_visible_devices("GPU")
     if len(visible_gpus) != 1:
         return f"fused CUDA requires exactly one visible GPU; found {len(visible_gpus)}"
-    if not _SM_ARCHITECTURES and _PTX_ARCHITECTURE is None:
-        return f"build architecture metadata is missing at {_ARCHITECTURE_PATH}"
+    if not sm_architectures and ptx_architecture is None:
+        return f"build architecture metadata is missing at {architecture_path}"
     details = tf.config.experimental.get_device_details(visible_gpus[0])
     capability = details.get("compute_capability")
     if capability is None:
         return f"compute capability is unavailable for {visible_gpus[0].name}"
     architecture = int(capability[0]) * 10 + int(capability[1])
-    if architecture in _SM_ARCHITECTURES:
+    if architecture in sm_architectures:
         return None
-    if _PTX_ARCHITECTURE is not None and architecture >= _PTX_ARCHITECTURE:
+    if ptx_architecture is not None and architecture >= ptx_architecture:
         return None
     return (
         f"GPU compute capability sm_{architecture} is incompatible with "
-        f"sm targets {_SM_ARCHITECTURES} and compute_{_PTX_ARCHITECTURE} PTX"
+        f"sm targets {sm_architectures} and compute_{ptx_architecture} PTX"
     )
 
 
@@ -86,7 +98,7 @@ def _environment_flag(name):
     return value in ("1", "true", "yes", "on")
 
 
-def _validate_packed_sm120_option(value):
+def _validate_packed_sm120_option(value, option_name="use_packed_sm120_backward"):
     if isinstance(value, np.ndarray) and value.ndim == 0:
         value = value.item()
     if value is True or value is False:
@@ -98,7 +110,7 @@ def _validate_packed_sm120_option(value):
             pass
     if isinstance(value, (str, np.str_)) and value == "auto":
         return "auto"
-    raise ValueError('use_packed_sm120_backward must be true, false, or "auto".')
+    raise ValueError(f'{option_name} must be true, false, or "auto".')
 
 
 def _gpu_compute_architecture():
@@ -145,7 +157,7 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
 def _resolve_packed_sm120_model_option(
     option, fused_cuda, compute_dtype, batch_size, basis_width
 ):
-    option = _validate_packed_sm120_option(option)
+    option = _validate_packed_sm120_option(option, "use_packed_sm120_external_backward")
     incompatibilities = []
     if not fused_cuda:
         incompatibilities.append("fused CUDA currents are disabled or unavailable")

@@ -61,12 +61,12 @@ class FullBPTTGradientRunner:
                 argument_gradients = [None] * len(arguments)
                 for index, value in zip(differentiable_indices, gradients):
                     argument_gradients[index] = value
+                if not variables:
+                    return tuple(argument_gradients)
                 variable_gradients = self.variable_gradient_transform(
                     variables, gradients[len(differentiable) :]
                 )
-                if variables:
-                    return tuple(argument_gradients), list(variable_gradients)
-                return tuple(argument_gradients)
+                return tuple(argument_gradients), list(variable_gradients)
 
             return outputs, grad
 

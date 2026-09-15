@@ -256,6 +256,33 @@ def test_segmented_recompute_transforms_accumulated_variable_gradient_once():
         np.testing.assert_allclose(transformed, 2.0 * reference, rtol=2e-6, atol=2e-6)
 
 
+def test_full_bptt_skips_variable_transform_without_captured_variables():
+    inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
+    core_model = tf.keras.Model(
+        (inputs, initial_state),
+        (inputs * 2.0, initial_state * 3.0),
+    )
+    transform_calls = []
+
+    def transform(variables, gradients):
+        transform_calls.append((variables, gradients))
+        raise AssertionError("Transform must not run without captured variables.")
+
+    runner = training.FullBPTTGradientRunner(core_model, transform)
+    values = tf.Variable(np.ones((2, 3, 1), np.float32))
+    state = tf.Variable(np.ones((2, 1), np.float32))
+
+    with tf.GradientTape() as tape:
+        output, final_state = runner(values, (state,))
+        loss = tf.reduce_sum(output) + tf.reduce_sum(final_state)
+    value_gradient, state_gradient = tape.gradient(loss, (values, state))
+
+    assert transform_calls == []
+    np.testing.assert_array_equal(value_gradient, 2.0)
+    np.testing.assert_array_equal(state_gradient, 3.0)
+
+
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
 @pytest.mark.parametrize("batch_size", [5, 32])
 @pytest.mark.parametrize("checkpointing", [False, True])

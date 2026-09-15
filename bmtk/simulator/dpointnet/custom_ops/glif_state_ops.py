@@ -3,15 +3,25 @@ from pathlib import Path
 
 import tensorflow as tf
 
-from .csr_spike_ops import _gpu_compatibility_error
+from .csr_spike_ops import _gpu_compatibility_error, _read_built_architectures
 
 _LIBRARY_PATH = Path(__file__).with_name("_glif_state_ops.so")
+_ARCHITECTURE_PATH = Path(__file__).with_name("_glif_state_ops.archs")
+_SM_ARCHITECTURES, _PTX_ARCHITECTURE = _read_built_architectures(_ARCHITECTURE_PATH)
 _OPS = None
 _LOAD_ERROR = None
 
 
 def _environment_flag(name):
     return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _glif_gpu_compatibility_error():
+    return _gpu_compatibility_error(
+        _SM_ARCHITECTURES,
+        _PTX_ARCHITECTURE,
+        _ARCHITECTURE_PATH,
+    )
 
 
 if not _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
@@ -30,7 +40,7 @@ def glif_state_op_status():
     if _environment_flag("BMTK_DPOINTNET_DISABLE_FUSED_CUDA"):
         return "disabled by BMTK_DPOINTNET_DISABLE_FUSED_CUDA"
     if _OPS is not None:
-        compatibility_error = _gpu_compatibility_error()
+        compatibility_error = _glif_gpu_compatibility_error()
         if compatibility_error is not None:
             return f"loaded, but {compatibility_error}"
         return f"loaded from {_LIBRARY_PATH}"
@@ -38,7 +48,7 @@ def glif_state_op_status():
 
 
 def fused_glif_state_available():
-    return _OPS is not None and _gpu_compatibility_error() is None
+    return _OPS is not None and _glif_gpu_compatibility_error() is None
 
 
 def _gradient_like(gradient, output):
