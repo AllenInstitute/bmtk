@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 import pytest
 
@@ -87,7 +89,12 @@ def test_tracked_master_weight_supports_keras2_autocast_keyword():
             if "autocast" in kwargs:
                 raise TypeError(("Unknown keyword argument:", "autocast"))
             self.experimental_autocast = kwargs.pop("experimental_autocast")
-            return super().add_weight(*args, autocast=False, **kwargs)
+            runtime_keyword = (
+                "autocast"
+                if "autocast" in inspect.signature(super().add_weight).parameters
+                else "experimental_autocast"
+            )
+            return super().add_weight(*args, **{runtime_keyword: False}, **kwargs)
 
         def build(self, _input_shape):
             self.master = self._tracked_weight(
