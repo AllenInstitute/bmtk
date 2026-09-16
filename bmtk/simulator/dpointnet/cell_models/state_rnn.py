@@ -1,3 +1,5 @@
+import inspect
+
 import tensorflow as tf
 
 
@@ -7,14 +9,42 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
             raise ValueError(
                 "ExplicitStateRNN requires explicit state, not stateful=True"
             )
+        if isinstance(sequences, (list, tuple)):
+            sequences, *initial_state = sequences
+        if isinstance(mask, (list, tuple)):
+            mask = mask[0]
         if initial_state is None:
             initial_state = self.cell.zero_state(
-                tf.shape(sequences)[0], self.compute_dtype
+                tf.shape(sequences)[1 if getattr(self, "time_major", False) else 0],
+                self.compute_dtype,
             )
         states = [tf.convert_to_tensor(value) for value in initial_state]
-        last, sequence, states = self.inner_loop(
-            sequences, states, mask, training=training
-        )
+        if hasattr(self, "inner_loop"):
+            last, sequence, states = self.inner_loop(
+                sequences, states, mask, training=training
+            )
+        else:
+            cell_kwargs = (
+                {"training": training}
+                if "training" in inspect.signature(self.cell.call).parameters
+                else {}
+            )
+
+            def step(inputs, states):
+                return self.cell(inputs, states, **cell_kwargs)
+
+            last, sequence, states = tf.keras.backend.rnn(
+                step,
+                sequences,
+                states,
+                go_backwards=self.go_backwards,
+                mask=mask,
+                unroll=self.unroll,
+                input_length=sequences.shape[0 if self.time_major else 1],
+                time_major=self.time_major,
+                zero_output_for_mask=self.zero_output_for_mask,
+                return_all_outputs=self.return_sequences,
+            )
         output = sequence if self.return_sequences else last
         return (output, *states) if self.return_state else output
 

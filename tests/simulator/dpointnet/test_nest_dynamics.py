@@ -1,6 +1,7 @@
 import copy
 import gc
 import time
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -15,16 +16,7 @@ from bmtk.simulator.dpointnet.cell_models.nest_dynamics import (
 )
 
 
-def make_cell(
-    dt=1.0,
-    delay=1.0,
-    hard_reset=True,
-    mode="nest",
-    internal_noise=False,
-    use_fused_cuda=False,
-):
-    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
-
+def make_network_inputs(delay=1.0, internal_noise=False):
     nodes = {
         "C_m": np.array([100.0]),
         "g": np.array([10.0]),
@@ -63,6 +55,20 @@ def make_cell(
     if internal_noise:
         inputs["drive"]["input_type"] = "poisson_spikes_internal"
         inputs["drive"]["options"]["firing_rate"] = 250.0
+    return network, inputs
+
+
+def make_cell(
+    dt=1.0,
+    delay=1.0,
+    hard_reset=True,
+    mode="nest",
+    internal_noise=False,
+    use_fused_cuda=False,
+):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs = make_network_inputs(delay, internal_noise)
     cell_options = {}
     if mode is not None:
         cell_options["dynamics_mode"] = mode
@@ -76,6 +82,46 @@ def make_cell(
         use_fused_cuda=use_fused_cuda,
         **cell_options,
     )
+
+
+@pytest.mark.parametrize(
+    "build_mode", ["configured_training", "explicit_training", "inference"]
+)
+@pytest.mark.parametrize("mode", ["nest", "legacy"])
+def test_rnn_build_resolves_reset_for_training_and_inference(build_mode, mode):
+    from bmtk.simulator.dpointnet.rnn_model import RNN
+
+    network, inputs = make_network_inputs()
+    rnn = RNN(
+        seq_len=4,
+        batch_size=1,
+        cell_params={"dynamics_mode": mode, "tau_basis": [2.0]},
+    )
+    rnn._recurrent_networks["test"] = SimpleNamespace(
+        to_dict=lambda: copy.deepcopy(network)
+    )
+    rnn._input_networks["drive"] = SimpleNamespace(
+        name="drive", n_spiking_nodes=1, to_dict=lambda: copy.deepcopy(inputs["drive"])
+    )
+    if build_mode == "configured_training":
+        engine = rnn.set_training(rnn=rnn, n_epochs=1, steps_per_epoch=1)
+        engine.add_parameters("test", batch_size=1, seq_len=4)
+    try:
+        if build_mode == "explicit_training":
+            rnn.build(training=True)
+        else:
+            rnn.build()
+        expected_hard_reset = mode == "nest" and build_mode == "inference"
+        assert rnn.cell._hard_reset is expected_hard_reset
+        assert "hard_reset" not in rnn.cell_params
+        if expected_hard_reset:
+            with pytest.raises(ValueError, match="already built with hard reset"):
+                rnn._prepare_training_model()
+        else:
+            rnn._prepare_training_model()
+            assert rnn.cell._hard_reset is False
+    finally:
+        rnn.cleanup()
 
 
 def test_default_dynamics_mode_preserves_legacy_behavior():
@@ -146,6 +192,69 @@ def test_cell_rnn_chunk_continuation_and_soft_reset_training():
     )
     for expected, actual in zip(full[1:], second[1:]):
         np.testing.assert_allclose(expected, actual, atol=1e-7)
+
+
+@pytest.mark.parametrize("return_sequences", [False, True])
+@pytest.mark.parametrize("return_state", [False, True])
+@pytest.mark.parametrize("unroll,explicit_state", [(False, True), (True, False)])
+def test_explicit_rnn_matches_direct_cell_values_and_gradients(
+    return_sequences, return_state, unroll, explicit_state
+):
+    from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+
+    cell = make_cell(delay=3.0, hard_reset=False)
+    layer = ExplicitStateRNN(
+        cell,
+        return_sequences=return_sequences,
+        return_state=return_state,
+        unroll=unroll,
+    )
+    layer._autocast = False
+    values = tf.constant([[[2.0], [0.0], [1.0], [0.0], [0.0], [3.0], [0.0], [0.0]]])
+    initial = cell.zero_state(1, tf.float32)
+    variables = [
+        values,
+        cell.recurrent_weight_values,
+        cell.inputs["drive"]["input_weight_values"],
+    ]
+    with tf.GradientTape() as tape:
+        tape.watch(values)
+        actual = layer(values, initial_state=initial if explicit_state else None)
+        actual_output = actual[0] if return_state else actual
+        loss = tf.reduce_sum(actual_output[..., 1])
+    actual_gradients = tape.gradient(loss, variables)
+
+    with tf.GradientTape() as tape:
+        tape.watch(values)
+        reference_state = initial
+        reference_outputs = []
+        for inputs in tf.unstack(values, axis=1):
+            output, reference_state = cell(inputs, reference_state)
+            reference_outputs.append(output)
+        reference_output = (
+            tf.stack(reference_outputs, axis=1)
+            if return_sequences
+            else reference_outputs[-1]
+        )
+        reference_loss = tf.reduce_sum(reference_output[..., 1])
+    reference_gradients = tape.gradient(reference_loss, variables)
+
+    np.testing.assert_allclose(actual_output, reference_output, rtol=1e-5, atol=1e-7)
+    if return_state:
+        for actual_state, expected_state in zip(actual[1:], reference_state):
+            assert actual_state.dtype == expected_state.dtype
+            np.testing.assert_allclose(
+                actual_state, expected_state, rtol=1e-5, atol=1e-7
+            )
+    assert actual_gradients[0] is None and reference_gradients[0] is None
+    for actual_gradient, expected_gradient in zip(
+        actual_gradients[1:], reference_gradients[1:]
+    ):
+        assert actual_gradient is not None and expected_gradient is not None
+        np.testing.assert_allclose(
+            actual_gradient, expected_gradient, rtol=1e-5, atol=1e-7
+        )
+    assert np.any(actual_gradients[-1].numpy() != 0)
 
 
 def test_fused_legacy_state_cannot_be_selected_for_nest_mode():

@@ -35,8 +35,11 @@ GLIF dynamics and explicit state
 -------------------------------
 
 ``GLIF3Cell`` defaults to ``dynamics_mode="legacy"`` to preserve existing
-trajectories and checkpoints. Set ``dynamics_mode="nest"`` explicitly to use
-NEST-compatible refractory timing, time-averaged adaptation current,
+trajectories and checkpoints. Legacy remains the throughput-oriented starting
+point. NEST is currently an opt-in compatibility mode for NEST-aligned dynamics
+and validation, not a change to the default or a performance optimization.
+Set ``dynamics_mode="nest"`` explicitly to use NEST-compatible refractory timing,
+time-averaged adaptation current,
 spike-boundary adaptation reset, and exact alpha-current-to-voltage integration.
 In NEST mode, SONATA initial voltage, adaptation state and recurrent/external
 delays are honored. Times are converted through NEST's 0.001-ms ticks and then
@@ -44,7 +47,7 @@ rounded upward to simulation steps; ``dt`` must be a positive multiple of 0.001
 ms and external delays must be at least one step. Reported spikes and voltage
 samples use end-of-step timestamps.
 
-Enable NEST-compatible dynamics explicitly in ``rnn_cell_params``:
+For inference-only NEST execution, use these ``rnn_cell_params``:
 
 .. code-block:: json
 
@@ -57,26 +60,76 @@ Enable NEST-compatible dynamics explicitly in ``rnn_cell_params``:
     }
   }
 
-``hard_reset`` is shown explicitly to make the trajectory semantics visible; it
-may be omitted when the NEST-mode default of ``true`` is intended.
+For opt-in NEST training, set ``hard_reset=false`` or omit it. An RNN with configured training,
+or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
+soft reset before constructing the cell. Explicit ``hard_reset=true`` raises a
+``ValueError`` in DPointNet training, including legacy-mode training. This check
+also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
 
-Omitting ``hard_reset`` selects soft reset in default legacy mode and hard reset
-in explicit NEST mode. Set ``hard_reset=false`` in NEST-mode training to retain
-subtractive soft reset and surrogate
-gradients while keeping the same timestep, precision and other forward settings
-as inference. This changes historical trajectories and learned weights; it is not
-an execution-only optimization.
+.. code-block:: json
+
+  {
+    "rnn_cell_params": {
+      "dynamics_mode": "nest",
+      "hard_reset": false,
+      "use_fused_cuda": true,
+      "use_fused_state": false
+    }
+  }
+
+Build the CUDA operators before running this training example. Soft reset retains
+the direct voltage-state gradient through spikes. Hard reset cuts that path at
+spikes and during refractory clamping; the spike surrogate still supplies some
+gradients but does not restore the lost path. This safeguard does not claim that
+hard-reset training is mathematically impossible or that soft reset solves all
+long-horizon credit-assignment problems.
+
+Inference-only construction and direct ``GLIF3Cell`` construction retain the
+mode-dependent default: hard reset in NEST and soft reset in legacy. Direct cell
+users writing their own ``GradientTape`` loops must select soft reset explicitly;
+an arbitrary external tape cannot be detected by the RNN training guard.
+
+A prebuilt hard-reset model is rejected for training even if its config dictionary
+is subsequently changed. Build a separate soft-reset training model and transfer
+weights explicitly instead of mutating a traced graph. Conversely, inference and
+validation on a trained model keep its soft reset. For hard-reset evaluation,
+create a separate inference-only model with the learned weights and report the
+reset setting. Switching reset modes changes forward dynamics, not merely
+gradients; evaluate that mismatch before drawing scientific conclusions.
 
 NEST mode uses ``ExplicitStateRNN`` to preserve scalar integer noise counters and
 external delay history in symbolic Keras models and across chunks. Supply complete
 initial state from ``cell.zero_state``; cached state without required delay history
 is rejected. The wrapper supports explicit state, not Keras ``stateful=true``.
+Keras 2 symbolic calls pack the sequence and initial states into one input list;
+the wrapper unpacks them and uses the backend recurrent loop. Keras 3 retains its
+native ``inner_loop``. Both paths preserve integer counters and floating state.
 
 The legacy fused state operator cannot implement these updates: NEST mode rejects
 ``use_fused_state=true`` and keeps ``"auto"`` on TensorFlow state updates. Fused
 current projection is independent and remains available. Exact integration of a
 fitted alpha basis does not make that basis identical to the source synapse model;
 validate synaptic approximation, precision and network-level behavior separately.
+
+Performance qualification
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A 2026-09-16 RTX 3090 benchmark measured median training updates of 4.38 s for
+legacy fused state, 5.93 s for legacy TensorFlow state, and 8.66 s for NEST
+TensorFlow state. All retained fused CUDA currents. The workload used 66,658
+neurons, FP16 compute, effective batch 32 (parallel 16+16), 500 timesteps, nine
+paper losses, soft reset, exact chunk-25 BPTT, and compact online voltage loss.
+Each run excluded three warmups and timed 20 synchronized updates with matched
+inputs, source, and ``TF_GPU_ALLOCATOR=cuda_malloc_async`` under TensorFlow 2.21.
+
+NEST took about twice the legacy fused-state time; disabling fused state alone
+increased legacy time by 35%. The remaining difference also includes changed
+activity and state/output handling. Default BFC allocation failed in NEST
+backward on this 24 GiB GPU; the async allocator completed without reducing batch
+size or changing losses. This is a workload-specific feasibility result, not a
+universal allocator recommendation. These short soft-reset updates do not
+establish convergence, hard-reset inference speed, or full-network NEST parity.
+Choose dynamics for the scientific protocol and do not silently switch modes.
 
 CUDA and fallback regression agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -467,8 +520,8 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - 0
                 * - hard_reset
-                  - Reset voltage to ``V_reset`` after a spike when true; use subtractive soft reset when false. If omitted, defaults to ``False`` in legacy mode and ``True`` in NEST mode.
-                  - Mode-dependent
+                  - Reset voltage to ``V_reset`` after a spike when true; use subtractive soft reset when false. Training resolves omitted or null to ``False`` and rejects explicit ``True``. Inference-only and direct-cell defaults are ``False`` in legacy and ``True`` in NEST; existing models retain their built reset setting.
+                  - False for training; otherwise mode-dependent
                 * - tau_basis
                   - 
                   - <None>

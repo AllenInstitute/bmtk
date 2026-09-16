@@ -302,6 +302,9 @@ class TrainingEngine:
 
     @property
     def step_train_function(self):
+        prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
+        if prepare_training_model is not None:
+            prepare_training_model()
         if self._training_fnc is None:
             if not self.learning_rule.uses_bptt:
                 if self.n_parameters != 1:
@@ -530,6 +533,9 @@ class TrainingEngine:
         return self.rnn.run_extractor(x, init_state)
 
     def prepare_gradient_checkpointing(self):
+        prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
+        if prepare_training_model is not None:
+            prepare_training_model()
         cell = getattr(self.rnn, "cell", None)
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
@@ -971,6 +977,9 @@ class TrainingEngine:
         raise last_err
 
     def train(self):
+        prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
+        if prepare_training_model is not None:
+            prepare_training_model()
         input_generators = []
         input_batch_sizes = []
         input_seq_lens = []
