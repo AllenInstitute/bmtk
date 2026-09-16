@@ -104,6 +104,23 @@ class CachedInitState:
         init_state = self._load_fn(selected_file, rnn)
         expected_state = rnn.cell.zero_state(batch_size=rnn.batch_size, dtype=rnn.dtype)
         if len(init_state) == len(expected_state) - 1:
+            if len(init_state) > 6 and tf.as_dtype(init_state[6].dtype).is_integer:
+                raise ValueError(
+                    "Cached state is missing external delay history, not the noise step"
+                )
             batch_size = tf.shape(init_state[0])[0]
-            init_state = tuple(init_state) + (tf.zeros((batch_size,), dtype=tf.int32),)
+            init_state = (
+                tuple(init_state[:6])
+                + (tf.zeros((batch_size,), dtype=tf.int32),)
+                + tuple(init_state[6:])
+            )
+        if len(init_state) != len(expected_state):
+            raise ValueError(
+                "Cached state does not match the selected dynamics state layout"
+            )
+        for actual, expected in zip(init_state, expected_state):
+            if tuple(actual.shape) != tuple(expected.shape):
+                raise ValueError(
+                    "Cached state shape does not match the selected dynamics"
+                )
         return init_state

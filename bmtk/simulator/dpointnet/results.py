@@ -24,8 +24,8 @@ class _SpikesResults:
 
     def to_dataframe(self):
         batch_num, spike_steps, tf_ids = np.nonzero(self._spikes_tables)
-        timestamps = spike_steps*self.parent.dt
-        
+        timestamps = (spike_steps + self.parent.time_offset_steps) * self.parent.dt
+
         tf2bmtk_id_map = TFIDMap().tf2bmtk_id_map()
         return pd.DataFrame({
             'batch_num': batch_num,
@@ -39,7 +39,7 @@ class _SpikesResults:
 
     def to_pickle(self, file_path, split_batches=False, ):
         raise NotImplementedError()
-    
+
     def to_npz(self, file_path):
         raise NotImplementedError()
 
@@ -114,7 +114,7 @@ class _SpikesResults:
                 batch_nums = spikes_df['batch_num'].unique()
             elif isinstance(batch_nums, (int, np.number)):
                 batch_nums = [batch_nums]
-            
+
             n_batches = len(batch_nums)
             fig, axes = _SpikesResults.make_subplot(n_batches, max_rows=max_rows)
             for bnum, batch_df in spikes_df.groupby('batch_num'):
@@ -122,15 +122,15 @@ class _SpikesResults:
                     continue
                 else:         
                     r, c, ax = next(axes)
-                    
+
                     ax.scatter(batch_df['timestamps'], batch_df['node_ids'])
                     ax.set_title(f'batch {bnum}')
-                    
+
                     if c == 1:
                         ax.set_ylabel('node id')
                     if r == min(max_rows, n_batches) - 1:
                         ax.set_xlabel('timestamps (ms)')
-        
+
             plt.tight_layout()
 
         if show:
@@ -141,7 +141,7 @@ class _SpikesResults:
     @staticmethod
     def make_subplot(n_batches, max_rows=5):
         import matplotlib.pyplot as plt
-       
+
         n_rows = min(n_batches, max_rows)
         n_cols = int(np.ceil(n_batches/max_rows))
         fig, axes = plt.subplots(n_rows, n_cols)
@@ -157,7 +157,6 @@ class _SpikesResults:
         else:
             for r in range(n_rows):
                 yield r, 1, axes[r]
-
 
 
 class _ModelState:
@@ -190,7 +189,7 @@ class _VoltageResults:
 
                 pop_grp = h5.create_group(grp_name)
                 node_idxs = pop_df.index.values
-                
+
                 if self.parent.batch_size == 1:
                     batch_data_paths = [(0, 'data')]
                 elif batch_num is not None:
@@ -204,11 +203,19 @@ class _VoltageResults:
 
                 mapping_grp = pop_grp.create_group('mapping')
                 mapping_grp.create_dataset('node_id', data=pop_df['node_id'])
-                mapping_grp.create_dataset('time', data=[0.0, self.parent.seq_len*self.parent.dt, self.parent.dt])
+                mapping_grp.create_dataset(
+                    "time",
+                    data=[
+                        self.parent.time_offset_steps * self.parent.dt,
+                        (self.parent.seq_len + self.parent.time_offset_steps)
+                        * self.parent.dt,
+                        self.parent.dt,
+                    ],
+                )
                 mapping_grp.create_dataset('index_pointer', data=np.arange(len(node_idxs), dtype='int'))
                 mapping_grp.create_dataset('element_ids', data=np.zeros(len(node_idxs), dtype='int')) 
                 mapping_grp.create_dataset('element_pos', data=np.zeros(len(node_idxs), dtype='int')) 
-                
+
     def to_sonata(self, file_path, split_batches=False, overwrite=True):
         if split_batches:
             ext = ''.join(Path(file_path).suffixes)
@@ -217,16 +224,18 @@ class _VoltageResults:
                 self.__to_sonata_helper(batched_file_path, batch_num=batch_num, overwrite=overwrite)
 
         else:
-             self.__to_sonata_helper(file_path, overwrite=overwrite)
+            self.__to_sonata_helper(file_path, overwrite=overwrite)
 
     def to_pickle(self, file_path, split_batches=False, overwrite=True):
         raise NotImplementedError()
 
 
 class RNNExtractorResults:
-    def __init__(self, seq_len, dt, batch_size, extractor_results):
+
+    def __init__(self, seq_len, dt, batch_size, extractor_results, time_offset_steps=0):
         self.seq_len = seq_len
         self.dt = dt
+        self.time_offset_steps = time_offset_steps
         self.batch_size = batch_size
         # bmtk_ids = TFIDMap().recurrent_bmtk_ids()
 
@@ -240,7 +249,7 @@ class RNNExtractorResults:
         if self._spikes is None:
             self._spikes = _SpikesResults(self, self._extractor_results[0][0])
         return self._spikes
-    
+
     @property
     def voltages(self):
         if self._voltages is None:

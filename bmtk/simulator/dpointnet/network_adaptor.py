@@ -675,6 +675,17 @@ class SONATANetwork(NetworkAdaptor):
             }
         }
 
+        for name, default in (
+            ("V_m", rec_dict["node_params"]["E_L"]),
+            ("asc_init", np.zeros_like(rec_dict["node_params"]["k"])),
+            ("asc_r", np.ones_like(rec_dict["node_params"]["k"])),
+        ):
+            rec_dict["node_params"][name] = (
+                np.asarray(self._dynamics_params_lu[name], dtype=np.float32)
+                if name in self._dynamics_params_lu
+                else default
+            )
+
         if self._cache_file and not Path(self._cache_file).exists():
             Path(self._cache_file).parent.mkdir(exist_ok=True, parents=True)
             with open(self._cache_file, 'wb') as f:

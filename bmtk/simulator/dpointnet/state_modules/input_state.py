@@ -15,6 +15,10 @@ def _complete_noise_state(state_out, initial_state, sequence_length):
             f"State-only rollout returned {len(state_out)} states; "
             f"expected {len(initial_state)}."
         )
+    if len(state_out) > 6 and tf.as_dtype(state_out[6].dtype).is_integer:
+        raise ValueError(
+            "Rollout is missing external delay history, not the noise step"
+        )
     noise_step = initial_state[6] + tf.cast(sequence_length, tf.int32)
     return state_out[:6] + (noise_step,) + state_out[6:]
 

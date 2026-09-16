@@ -324,7 +324,48 @@ class RNN:
     def add_input(self, name, mod):
         self._input_generators_mods[name] = mod
 
-    def build(self, rebuild=False, seq_len=None, dtype=tf.float32, use_dummy_state_input=False, use_state_input=True, n_output=2, return_state=True, batch_size=None, **kwargs):
+    def _resolve_cell_params(self, training=False, check_built=True):
+        cell_params = {} if self.cell_params is None else dict(self.cell_params)
+        if training and issubclass(self.cell_cls, GLIF3Cell):
+            if cell_params.get("hard_reset"):
+                raise ValueError(
+                    "GLIF training requires hard_reset=False. Hard reset blocks the "
+                    "voltage-state gradient at spikes and during refractory clamping; "
+                    "the spike surrogate does not restore that path. Set "
+                    "rnn_cell_params.hard_reset=False or omit it for training."
+                )
+            if check_built and self._model_built and self._cell._hard_reset:
+                raise ValueError(
+                    "Cannot train a model already built with hard reset. Build a "
+                    "separate soft-reset training model and transfer weights explicitly; "
+                    "changing cell_params does not change an existing traced graph."
+                )
+            cell_params["hard_reset"] = False
+        return cell_params
+
+    def _prepare_training_model(self):
+        self._resolve_cell_params(training=True)
+        if not self._model_built:
+            self.build(training=True)
+
+    def build(
+        self,
+        rebuild=False,
+        seq_len=None,
+        dtype=tf.float32,
+        use_dummy_state_input=False,
+        use_state_input=True,
+        n_output=2,
+        return_state=True,
+        batch_size=None,
+        training=None,
+        **kwargs,
+    ):
+        if training is None:
+            training = self.training_engine is not None
+        cell_params = self._resolve_cell_params(
+            training=training, check_built=not rebuild
+        )
         if self._model_built and not rebuild:
             io.log_debug('Model already built. Skipping.')
             return
@@ -389,7 +430,6 @@ class RNN:
         # what makes the loop-invariant connectivity-variable reads be hoisted out of the RNN
         # while_loop instead of stacked per timestep (the cause of full-network OOM). Mirrors
         # the reference V1_GLIF_model, which builds create_model() within strategy.scope().
-        cell_params = {} if self.cell_params is None else dict(self.cell_params)
         if issubclass(self.cell_cls, GLIF3Cell):
             cell_params.setdefault('batch_size', _batch_size)
         with self.strategy.scope():
@@ -406,7 +446,20 @@ class RNN:
                 initial_state_holder = None
                 rnn_initial_state = self.zero_state
 
-            rnn = tf.keras.layers.RNN(self._cell, return_sequences=True, return_state=return_state, name='rsnn')
+            from .cell_models.state_rnn import ExplicitStateRNN
+
+            rnn_class = (
+                ExplicitStateRNN
+                if isinstance(self._cell, GLIF3Cell)
+                and self._cell.dynamics_mode == "nest"
+                else tf.keras.layers.RNN
+            )
+            rnn = rnn_class(
+                self._cell,
+                return_sequences=True,
+                return_state=return_state,
+                name="rsnn",
+            )
             # Keep the cell's provided state dtypes instead of letting Keras autocast them to the
             # compute dtype. Matches the reference (V1_GLIF_model create_model).
             rnn._autocast = False
@@ -568,7 +621,7 @@ class RNN:
             else:
                 full_inputs = rnn_inputs
                 state_inputs = []
-            state_rnn = tf.keras.layers.RNN(
+            state_rnn = type(self.rsnn_layer)(
                 self.rsnn_layer.cell,
                 return_sequences=False,
                 return_state=True,
@@ -653,7 +706,8 @@ class RNN:
             seq_len=result_seq_len,
             dt=self.dt,
             batch_size=result_batch_size,
-            extractor_results=out
+            extractor_results=out,
+            time_offset_steps=getattr(self.cell, "spike_time_offset_steps", 0),
         )
         return extractor_results
 
@@ -666,13 +720,15 @@ class RNN:
                 close_fused_cuda()
 
     def train(self, training_engine=None):
-        if self.extractor_model is None:
-            with self.strategy.scope():
-                self.extractor_model = self._build_extractor_model()
-
         training_engine = training_engine or self.training_engine
         if training_engine is None:
             io.log_debug('No training condition has been set, skipping training.')
+            return
+        self._prepare_training_model()
+
+        if self.extractor_model is None:
+            with self.strategy.scope():
+                self.extractor_model = self._build_extractor_model()
 
         ## Build the optimizer (in strategy scope so its slot variables are created correctly)
         with self.strategy.scope():

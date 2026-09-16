@@ -37,6 +37,96 @@ from bmtk.simulator.dpointnet.state_modules.cached_states import CachedInitState
 from bmtk.simulator.dpointnet.state_modules.input_state import _complete_noise_state
 
 
+@pytest.mark.parametrize("mode", ["nest", "legacy"])
+@pytest.mark.parametrize(
+    "reset_options", [{}, {"hard_reset": None}, {"hard_reset": False}]
+)
+def test_training_resolves_soft_reset_without_changing_inference_params(
+    mode, reset_options
+):
+    rnn = RNN(cell_params={"dynamics_mode": mode, **reset_options})
+    original = dict(rnn.cell_params)
+
+    assert rnn._resolve_cell_params(training=True)["hard_reset"] is False
+    assert rnn._resolve_cell_params(training=False) == original
+    assert rnn.cell_params == original
+
+
+@pytest.mark.parametrize("mode", ["nest", "legacy"])
+def test_training_build_rejects_explicit_hard_reset_before_loading_network(mode):
+    rnn = RNN(cell_params={"dynamics_mode": mode, "hard_reset": True})
+    rnn.set_training(rnn=rnn, n_epochs=1, steps_per_epoch=1)
+
+    with pytest.raises(ValueError, match="GLIF training requires hard_reset=False"):
+        rnn.build()
+    assert rnn._model_built is False
+    assert rnn._resolve_cell_params(training=False)["hard_reset"] is True
+
+
+def test_training_rejects_prebuilt_hard_reset_even_when_option_is_changed():
+    rnn = RNN(cell_params={"dynamics_mode": "nest", "hard_reset": False})
+    rnn._model_built = True
+    rnn._cell = SimpleNamespace(_hard_reset=True)
+
+    with pytest.raises(ValueError, match="already built with hard reset"):
+        rnn.build(training=True)
+    assert rnn._cell._hard_reset is True
+
+
+def test_training_reset_resolution_leaves_other_cell_classes_unchanged():
+    rnn = RNN(cell_cls=tf.keras.layers.SimpleRNNCell, cell_params={"hard_reset": True})
+
+    assert rnn._resolve_cell_params(training=True) == {"hard_reset": True}
+
+
+@pytest.mark.parametrize("entry_point", ["rnn", "engine", "step", "checkpointing"])
+@pytest.mark.parametrize("prebuilt", [False, True])
+def test_training_entry_points_reject_hard_reset(entry_point, prebuilt):
+    rnn = RNN(cell_params={"dynamics_mode": "nest"})
+    if prebuilt:
+        rnn._model_built = True
+        rnn._cell = SimpleNamespace(_hard_reset=True)
+    else:
+        rnn.cell_params["hard_reset"] = True
+    engine = training.TrainingEngine(rnn, n_epochs=1, steps_per_epoch=1)
+    engine._training_fnc = lambda: None
+
+    with pytest.raises(ValueError, match="hard.reset"):
+        if entry_point == "rnn":
+            rnn.train(engine)
+        elif entry_point == "engine":
+            engine.train()
+        elif entry_point == "checkpointing":
+            engine.prepare_gradient_checkpointing()
+        else:
+            engine.step_train_function
+
+
+def test_training_prepares_unbuilt_model_without_mutating_config(monkeypatch):
+    rnn = RNN(cell_params={"dynamics_mode": "nest"})
+    build_calls = []
+
+    def build(**kwargs):
+        build_calls.append(kwargs)
+        rnn._cell = SimpleNamespace(_hard_reset=False)
+        rnn._model_built = True
+
+    monkeypatch.setattr(rnn, "build", build)
+    rnn._prepare_training_model()
+    rnn._prepare_training_model()
+
+    assert build_calls == [{"training": True}]
+    assert rnn.cell_params == {"dynamics_mode": "nest"}
+
+
+def test_train_without_engine_does_not_build_inference_model():
+    rnn = RNN(cell_params={"dynamics_mode": "nest"})
+
+    rnn.train()
+
+    assert rnn._model_built is False
+
+
 def test_dpointnet_import_preserves_default_tensorflow_allocator():
     environment = os.environ.copy()
     environment.pop("TF_GPU_ALLOCATOR", None)
@@ -762,7 +852,9 @@ def test_rnn_wraps_float16_optimizer_with_loss_scaling():
         def train(self):
             self.trained = True
 
-    rnn = object.__new__(RNN)
+    rnn = RNN()
+    rnn._model_built = True
+    rnn._cell = SimpleNamespace(_hard_reset=False)
     rnn.extractor_model = object()
     rnn.strategy = tf.distribute.get_strategy()
     rnn.dtype = tf.float16

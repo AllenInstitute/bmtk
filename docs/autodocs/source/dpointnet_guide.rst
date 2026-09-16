@@ -31,6 +31,128 @@ or without a gpu:
 
     $ pip install tensorflow
 
+GLIF dynamics and explicit state
+-------------------------------
+
+``GLIF3Cell`` defaults to ``dynamics_mode="legacy"`` to preserve existing
+trajectories and checkpoints. Legacy remains the throughput-oriented starting
+point. NEST is currently an opt-in compatibility mode for NEST-aligned dynamics
+and validation, not a change to the default or a performance optimization.
+Set ``dynamics_mode="nest"`` explicitly to use NEST-compatible refractory timing,
+time-averaged adaptation current,
+spike-boundary adaptation reset, and exact alpha-current-to-voltage integration.
+In NEST mode, SONATA initial voltage, adaptation state and recurrent/external
+delays are honored. Times are converted through NEST's 0.001-ms ticks and then
+rounded upward to simulation steps; ``dt`` must be a positive multiple of 0.001
+ms and external delays must be at least one step. Reported spikes and voltage
+samples use end-of-step timestamps.
+
+For inference-only NEST execution, use these ``rnn_cell_params``:
+
+.. code-block:: json
+
+  {
+    "rnn_cell_params": {
+      "dynamics_mode": "nest",
+      "hard_reset": true,
+      "use_fused_cuda": "auto",
+      "use_fused_state": false
+    }
+  }
+
+For opt-in NEST training, set ``hard_reset=false`` or omit it. An RNN with configured training,
+or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
+soft reset before constructing the cell. Explicit ``hard_reset=true`` raises a
+``ValueError`` in DPointNet training, including legacy-mode training. This check
+also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
+
+.. code-block:: json
+
+  {
+    "rnn_cell_params": {
+      "dynamics_mode": "nest",
+      "hard_reset": false,
+      "use_fused_cuda": true,
+      "use_fused_state": false
+    }
+  }
+
+Build the CUDA operators before running this training example. Soft reset retains
+the direct voltage-state gradient through spikes. Hard reset cuts that path at
+spikes and during refractory clamping; the spike surrogate still supplies some
+gradients but does not restore the lost path. This safeguard does not claim that
+hard-reset training is mathematically impossible or that soft reset solves all
+long-horizon credit-assignment problems.
+
+Inference-only construction and direct ``GLIF3Cell`` construction retain the
+mode-dependent default: hard reset in NEST and soft reset in legacy. Direct cell
+users writing their own ``GradientTape`` loops must select soft reset explicitly;
+an arbitrary external tape cannot be detected by the RNN training guard.
+
+A prebuilt hard-reset model is rejected for training even if its config dictionary
+is subsequently changed. Build a separate soft-reset training model and transfer
+weights explicitly instead of mutating a traced graph. Conversely, inference and
+validation on a trained model keep its soft reset. For hard-reset evaluation,
+create a separate inference-only model with the learned weights and report the
+reset setting. Switching reset modes changes forward dynamics, not merely
+gradients; evaluate that mismatch before drawing scientific conclusions.
+
+NEST mode uses ``ExplicitStateRNN`` to preserve scalar integer noise counters and
+external delay history in symbolic Keras models and across chunks. Supply complete
+initial state from ``cell.zero_state``; cached state without required delay history
+is rejected. The wrapper supports explicit state, not Keras ``stateful=true``.
+Keras 2 symbolic calls pack the sequence and initial states into one input list;
+the wrapper unpacks them and uses the backend recurrent loop. Keras 3 retains its
+native ``inner_loop``. Both paths preserve integer counters and floating state.
+
+The legacy fused state operator cannot implement these updates: NEST mode rejects
+``use_fused_state=true`` and keeps ``"auto"`` on TensorFlow state updates. Fused
+current projection is independent and remains available. Exact integration of a
+fitted alpha basis does not make that basis identical to the source synapse model;
+validate synaptic approximation, precision and network-level behavior separately.
+
+Performance qualification
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A 2026-09-16 RTX 3090 benchmark measured median training updates of 4.38 s for
+legacy fused state, 5.93 s for legacy TensorFlow state, and 8.66 s for NEST
+TensorFlow state. All retained fused CUDA currents. The workload used 66,658
+neurons, FP16 compute, effective batch 32 (parallel 16+16), 500 timesteps, nine
+paper losses, soft reset, exact chunk-25 BPTT, and compact online voltage loss.
+Each run excluded three warmups and timed 20 synchronized updates with matched
+inputs, source, and ``TF_GPU_ALLOCATOR=cuda_malloc_async`` under TensorFlow 2.21.
+
+NEST took about twice the legacy fused-state time; disabling fused state alone
+increased legacy time by 35%. The remaining difference also includes changed
+activity and state/output handling. Default BFC allocation failed in NEST
+backward on this 24 GiB GPU; the async allocator completed without reducing batch
+size or changing losses. This is a workload-specific feasibility result, not a
+universal allocator recommendation. These short soft-reset updates do not
+establish convergence, hard-reset inference speed, or full-network NEST parity.
+Choose dynamics for the scientific protocol and do not silently switch modes.
+
+CUDA and fallback regression agreement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``tests/simulator/dpointnet/test_nest_dynamics.py`` compares fixed-input CPU,
+GPU TensorFlow fallback and fused CUDA rollouts, including both reset modes,
+float32/mixed float16, 1/0.25-ms steps, low/strong drive, gradients and chunk state.
+A separate check compares seeded internal Poisson histories exactly. The bounded
+fixture requires equal per-neuron spike counts, spike-time differences of at most
+one step, and exact noise counters/external delay histories. When spike times are
+identical, continuous states and gradients must satisfy rtol/atol 1e-5 (float32)
+or 2e-2 (float16). If jitter occurs, unshifted numerical errors are reported in
+JUnit properties but pointwise continuous-state/gradient parity is not asserted.
+Existing individual kernel tolerances remain unchanged.
+
+This is not bitwise equality: the tested lower-drive float16/0.25-ms cases can
+shift a spike by one step, producing a large instantaneous voltage difference
+at reset. All tested 1-ms cases matched spike times, but that is not a full-network
+or cross-architecture guarantee. Run with ``--junitxml=REPORT.xml`` to retain
+per-case timing, spike jitter, state errors, gradient errors and whether continuous
+parity was checked. Setting ``CUDA_VISIBLE_DEVICES=''`` tests CPU-only support;
+CUDA-specific comparisons then skip rather than falsely reporting a CUDA pass.
+
 Optional fused CUDA operator
 ----------------------------
 
@@ -145,6 +267,7 @@ use the JSON boolean ``true`` explicitly, together with ``use_active_row_forward
       "dtype": "float16"
     },
     "rnn_cell_params": {
+      "dynamics_mode": "legacy",
       "use_fused_cuda": true,
       "use_fused_state": true,
       "use_active_row_forward": true,
@@ -384,6 +507,9 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                 * - pseudo_gauss
                   - 
                   - False
+                * - dynamics_mode
+                  - Select ``"legacy"`` for the historical DPointNet update equations or ``"nest"`` for NEST-compatible timing, integration, delays, state, and timestamps.
+                  - "legacy"
                 * - train_recurrent
                   - 
                   - True
@@ -394,8 +520,8 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - 0
                 * - hard_reset
-                  - 
-                  - False
+                  - Reset voltage to ``V_reset`` after a spike when true; use subtractive soft reset when false. Training resolves omitted or null to ``False`` and rejects explicit ``True``. Inference-only and direct-cell defaults are ``False`` in legacy and ``True`` in NEST; existing models retain their built reset setting.
+                  - False for training; otherwise mode-dependent
                 * - tau_basis
                   - 
                   - <None>
