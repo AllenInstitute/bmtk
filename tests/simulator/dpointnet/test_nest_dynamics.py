@@ -16,6 +16,254 @@ from bmtk.simulator.dpointnet.cell_models.nest_dynamics import (
 )
 
 
+@pytest.mark.parametrize("dtype", [tf.float32, tf.float16])
+@pytest.mark.parametrize("refractory_dtype", [tf.int8, tf.int16])
+@pytest.mark.parametrize("hard_reset", [False, True])
+@pytest.mark.parametrize(
+    "batch,dampening,loss_outputs",
+    [(3, 0.25, None), (32, -0.2, (0, 6)), (1, 1.2, (1,))],
+)
+def test_fused_nest_state_matches_reference_values_and_gradients(
+    dtype, refractory_dtype, hard_reset, batch, dampening, loss_outputs
+):
+    from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
+        fused_nest_state,
+        fused_nest_state_available,
+    )
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
+        spike_function,
+        straight_through_dampen,
+    )
+
+    if not fused_nest_state_available():
+        pytest.skip("Fused NEST state operator is unavailable")
+    rng = np.random.default_rng(813)
+    neurons = 5
+    long_refractory = 300 if refractory_dtype == tf.int16 else 4
+
+    def constant(shape, low, high):
+        return tf.constant(rng.uniform(low, high, shape), dtype)
+
+    parameters = dict(
+        syn_decay=constant((neurons, 4), 0.7, 0.9),
+        psc_initial=constant((neurons, 4), 0.2, 0.4),
+        asc_decay=constant((neurons, 2), 0.7, 0.9),
+        asc_amps=constant((neurons, 2), -0.2, 0.0),
+        decay=constant((neurons,), 0.8, 0.95),
+        current_factor=constant((neurons,), 0.05, 0.1),
+        asc_mean=constant((neurons, 2), 0.8, 0.95),
+        asc_refractory_decay=constant((neurons, 2), 0.5, 0.8),
+        psc_voltage=constant((neurons, 4), 0.02, 0.06),
+        rise_voltage=constant((neurons, 4), 0.01, 0.03),
+        t_ref_steps=tf.constant([2, 3, long_refractory, 2, 3], refractory_dtype),
+        dt=tf.cast(0.5, dtype),
+        v_reset=constant((neurons,), -0.2, 0.2),
+        v_th=tf.cast(1.0, dtype),
+        dampening=tf.cast(0.3, dtype),
+        voltage_gradient_dampening=tf.cast(dampening, dtype),
+        hard_reset=hard_reset,
+    )
+    refractory = tf.constant([[0, long_refractory, 0, 2, 0]] * batch, refractory_dtype)
+    values = [
+        tf.constant([[0.4, 1.4, 1.4, 0.8, 1.0]] * batch, dtype),
+        constant((batch, neurons * 2), -0.1, 0.1),
+        constant((batch, neurons * 4), -0.2, 0.3),
+        constant((batch, neurons * 4), -0.2, 0.3),
+        constant((batch, neurons * 4), -0.2, 0.3),
+        tf.cast(rng.integers(0, 2, (batch, neurons * 3)), dtype),
+    ]
+
+    def reference(voltage, adaptation, rise, psc, currents, history):
+        new_rise = (
+            tf.reshape(rise, (batch, neurons, 4)) * parameters["syn_decay"]
+            + tf.reshape(currents, (batch, neurons, 4)) * parameters["psc_initial"]
+        )
+        new_psc = tf.reshape(psc, (batch, neurons, 4)) * parameters[
+            "syn_decay"
+        ] + parameters["dt"] * parameters["syn_decay"] * tf.reshape(
+            rise, (batch, neurons, 4)
+        )
+        voltage, remaining, adaptation, active = active_update(
+            straight_through_dampen(voltage, parameters["voltage_gradient_dampening"]),
+            refractory,
+            tf.reshape(adaptation, (batch, neurons, 2)),
+            tf.reshape(psc, (batch, neurons, 4)),
+            tf.reshape(rise, (batch, neurons, 4)),
+            **{
+                key: parameters[key]
+                for key in (
+                    "decay",
+                    "current_factor",
+                    "asc_decay",
+                    "asc_mean",
+                    "psc_voltage",
+                    "rise_voltage",
+                    "hard_reset",
+                )
+            },
+            reset_voltage=parameters["v_reset"],
+        )
+        spikes = spike_function(voltage - parameters["v_th"], parameters["dampening"])
+        spikes = tf.where(active, spikes, tf.zeros_like(spikes))
+        voltage, remaining, adaptation = spike_reset(
+            voltage,
+            remaining,
+            adaptation,
+            spikes,
+            reset_voltage=parameters["v_reset"],
+            refractory_steps=parameters["t_ref_steps"],
+            asc_amplitudes=parameters["asc_amps"],
+            asc_refractory_decay=parameters["asc_refractory_decay"],
+            hard_reset=hard_reset,
+        )
+        return (
+            spikes,
+            voltage,
+            remaining,
+            tf.reshape(adaptation, (batch, neurons * 2)),
+            tf.reshape(new_rise, (batch, neurons * 4)),
+            tf.reshape(new_psc, (batch, neurons * 4)),
+            tf.concat([spikes, history[:, :-neurons]], axis=1),
+        )
+
+    def evaluate(fused):
+        with tf.GradientTape() as tape:
+            tape.watch(values)
+            if fused:
+                outputs = fused_nest_state(
+                    values[0], refractory, *values[1:], **parameters
+                )
+            else:
+                outputs = reference(*values)
+            loss = tf.add_n(
+                [
+                    tf.reduce_sum(tf.square(tf.cast(output, tf.float32)))
+                    * (index + 1)
+                    / 16
+                    for index, output in enumerate(outputs)
+                    if output.dtype.is_floating
+                    and (loss_outputs is None or index in loss_outputs)
+                ]
+            )
+        return outputs, tape.gradient(
+            loss, values, unconnected_gradients=tf.UnconnectedGradients.ZERO
+        )
+
+    with tf.device("/GPU:0"):
+        expected, expected_gradients = tf.function(lambda: evaluate(False))()
+        fused_function = tf.function(lambda: evaluate(True)).get_concrete_function()
+        actual, gradients = fused_function()
+    backward_ops = [
+        operation
+        for operation in fused_function.graph.get_operations()
+        if operation.type == "DpointnetNestStateBackward"
+    ]
+    assert len(backward_ops) == 1
+    backward_mask = backward_ops[0].inputs[1]
+    assert backward_mask.op.type == "Cast"
+    assert backward_mask.op.inputs[0].dtype == dtype
+    assert backward_mask.dtype == refractory_dtype
+    tolerance = 3e-3 if dtype == tf.float16 else 1e-6
+    for observed, reference_value in zip(actual, expected):
+        assert observed.dtype == reference_value.dtype
+        np.testing.assert_allclose(
+            observed, reference_value, rtol=tolerance, atol=tolerance
+        )
+    np.testing.assert_array_equal(actual[0], expected[0])
+    np.testing.assert_array_equal(actual[2], expected[2])
+    np.testing.assert_array_equal(actual[-1], expected[-1])
+    assert np.any(expected[0].numpy() != 0)
+    for observed, reference_value in zip(gradients, expected_gradients):
+        assert observed is not None and reference_value is not None
+        np.testing.assert_allclose(
+            observed, reference_value, rtol=tolerance, atol=tolerance
+        )
+
+
+@pytest.mark.parametrize("backward", [False, True])
+@pytest.mark.parametrize("input_index", range(10))
+def test_nest_state_op_rejects_malformed_shapes(backward, input_index):
+    from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
+
+    if not glif_state_ops.fused_nest_state_available():
+        pytest.skip("Fused NEST state operator is unavailable")
+    shapes = (
+        [(2, 3), (2, 3), (3, 28), (), (), (2, 3), (2, 3), (2, 6), (2, 12), (2, 12)]
+        if backward
+        else [(2, 3), (2, 3), (2, 6), (2, 12), (2, 12), (2, 12), (3, 28), (3,), (), ()]
+    )
+    arguments = [
+        tf.zeros(
+            shape,
+            tf.int16 if index == 1 or (not backward and index == 7) else tf.float32,
+        )
+        for index, shape in enumerate(shapes)
+    ]
+    arguments[input_index] = tf.zeros((2,), arguments[input_index].dtype)
+    operator = (
+        glif_state_ops._OPS.dpointnet_nest_state_backward
+        if backward
+        else glif_state_ops._OPS.dpointnet_nest_state_forward
+    )
+    with tf.device("/GPU:0"), pytest.raises(
+        (ValueError, tf.errors.InvalidArgumentError)
+    ):
+        operator(*arguments)
+
+
+@pytest.mark.parametrize("backward", [False, True])
+@pytest.mark.parametrize("history_shape", [(2, 0), (1, 4), (2, 3), (8,)])
+def test_nest_spike_history_rejects_malformed_shapes(backward, history_shape):
+    from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
+
+    if not glif_state_ops.fused_nest_state_available():
+        pytest.skip("Fused NEST state operator is unavailable")
+    with tf.device("/GPU:0"), pytest.raises(
+        (ValueError, tf.errors.InvalidArgumentError)
+    ):
+        voltage = tf.zeros((2, 2))
+        refractory = tf.zeros((2, 2), tf.bool)
+        history = tf.zeros(history_shape)
+        if backward:
+            glif_state_ops._OPS.dpointnet_spike_shift_backward(
+                voltage, refractory, voltage, history, tf.constant(0.3)
+            )
+        else:
+            glif_state_ops._OPS.dpointnet_spike_shift(voltage, refractory, history)
+
+
+def test_nest_state_availability_rejects_stale_library(monkeypatch):
+    from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
+
+    monkeypatch.setattr(glif_state_ops, "fused_glif_state_available", lambda: True)
+    monkeypatch.setattr(glif_state_ops, "_OPS", SimpleNamespace())
+    assert not glif_state_ops.fused_nest_state_available()
+    with pytest.raises(RuntimeError, match="rebuilt CUDA operators"):
+        glif_state_ops.fused_nest_state(
+            *([None] * 7),
+            **dict.fromkeys(
+                [
+                    "syn_decay",
+                    "psc_initial",
+                    "asc_decay",
+                    "asc_amps",
+                    "decay",
+                    "current_factor",
+                    "asc_mean",
+                    "asc_refractory_decay",
+                    "psc_voltage",
+                    "rise_voltage",
+                    "t_ref_steps",
+                    "dt",
+                    "v_reset",
+                    "v_th",
+                    "dampening",
+                    "voltage_gradient_dampening",
+                ]
+            ),
+        )
+
+
 def make_network_inputs(delay=1.0, internal_noise=False):
     nodes = {
         "C_m": np.array([100.0]),
@@ -257,11 +505,123 @@ def test_explicit_rnn_matches_direct_cell_values_and_gradients(
     assert np.any(actual_gradients[-1].numpy() != 0)
 
 
-def test_fused_legacy_state_cannot_be_selected_for_nest_mode():
-    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+@pytest.mark.parametrize("policy", ["float32", "mixed_float16"])
+@pytest.mark.parametrize("return_sequences", [False, True])
+@pytest.mark.parametrize("return_state", [False, True])
+@pytest.mark.parametrize("unroll", [False, True])
+def test_nest_compact_outputs_preserve_mixed_precision(
+    policy, return_sequences, return_state, unroll
+):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import (
+        voltage_penalty_mean_step,
+    )
+    from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+    from bmtk.simulator.dpointnet.rnn_model import RNN
 
-    with pytest.raises(ValueError, match="legacy fused state"):
-        GLIF3Cell({}, {}, dynamics_mode="nest", use_fused_state=True)
+    old_policy = tf.keras.mixed_precision.global_policy()
+    try:
+        tf.keras.mixed_precision.set_global_policy(policy)
+        cell = make_cell(delay=3.0, hard_reset=False)
+        values = tf.constant(
+            [[[400.0], [0.0], [200.0], [0.0], [0.0], [600.0], [0.0], [0.0]]],
+            cell.compute_dtype,
+        )
+        initial = cell.zero_state(1, cell.compute_dtype)
+        targets = [
+            cell.recurrent_weight_values,
+            cell.inputs["drive"]["input_weight_values"],
+        ]
+        with tf.GradientTape() as tape:
+            state = initial
+            packed = []
+            for inputs in tf.unstack(values, axis=1):
+                output, state = cell(inputs, state)
+                penalty = voltage_penalty_mean_step(output[..., 1:], 1)
+                packed.append(
+                    tf.concat(
+                        [tf.cast(output[..., :1], tf.float32), penalty[:, None]],
+                        axis=-1,
+                    )
+                )
+            reference = tf.stack(packed, axis=1) if return_sequences else packed[-1]
+            reference_loss = 0.7 * tf.reduce_sum(
+                reference[..., :1]
+            ) + 1.3 * tf.reduce_sum(reference[..., 1])
+        expected_gradients = tape.gradient(reference_loss, targets)
+
+        cell._track_voltage_penalty = True
+        cell._return_voltage_sequences = False
+        layer = ExplicitStateRNN(
+            cell,
+            return_sequences=return_sequences,
+            return_state=return_state,
+            unroll=unroll,
+        )
+        layer._autocast = False
+        symbolic = tf.keras.Input(shape=(8, 1), dtype=values.dtype)
+        layer_outputs = layer(symbolic)
+        model = tf.keras.Model(symbolic, layer_outputs)
+        rnn = RNN()
+        rnn._cell = cell
+        split_outputs, split_states = rnn._split_rnn_layer_output(layer_outputs)
+        assert len(split_outputs) == 2
+        assert len(split_states) == (len(initial) if return_state else 0)
+        extracted_outputs, extracted_states = rnn._split_rnn_layer_output(layer.output)
+        assert len(extracted_outputs) == 2
+        assert len(extracted_states) == len(split_states)
+        for actual_spec, expected_spec in zip(
+            extracted_outputs + extracted_states, split_outputs + split_states
+        ):
+            assert actual_spec.shape == expected_spec.shape
+            assert actual_spec.dtype == expected_spec.dtype
+        with tf.GradientTape() as tape:
+            actual = model(values)
+            outputs = actual[0] if return_state else actual
+            assert isinstance(outputs, (tuple, list)) and len(outputs) == 2
+            spikes, penalty = outputs
+            assert spikes.dtype == values.dtype and penalty.dtype == tf.float32
+            loss = 0.7 * tf.reduce_sum(
+                tf.cast(spikes, tf.float32)
+            ) + 1.3 * tf.reduce_sum(penalty)
+        gradients = tape.gradient(loss, targets)
+        np.testing.assert_array_equal(spikes, reference[..., :1])
+        np.testing.assert_array_equal(penalty, reference[..., 1])
+        assert np.count_nonzero(tf.stack(packed)[..., 0]) > 0
+        assert np.max(tf.stack(packed)[..., 1]) > 0
+        for actual_gradient, expected_gradient in zip(gradients, expected_gradients):
+            assert actual_gradient is not None and expected_gradient is not None
+            np.testing.assert_allclose(
+                actual_gradient, expected_gradient, rtol=1e-5, atol=1e-7
+            )
+        if return_state:
+            for actual_state, expected_state in zip(actual[1:], state):
+                assert actual_state.dtype == expected_state.dtype
+                np.testing.assert_array_equal(actual_state, expected_state)
+        assert model.outputs[0].dtype == values.dtype.name
+        assert model.outputs[1].dtype == "float32"
+    finally:
+        tf.keras.mixed_precision.set_global_policy(old_policy)
+
+
+@pytest.mark.parametrize("available", [False, True])
+def test_nest_fused_state_selection_and_unsupported_models(monkeypatch, available):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import _resolve_fused_state
+
+    monkeypatch.setattr(
+        "bmtk.simulator.dpointnet.cell_models.glif3_cell.fused_nest_state_available",
+        lambda: available,
+    )
+    assert _resolve_fused_state(False, 4, False, "nest") is False
+    assert _resolve_fused_state("auto", 4, False, "nest") is available
+    if available:
+        assert _resolve_fused_state(True, 4, False, "nest") is True
+    else:
+        with pytest.raises(ValueError, match="rebuild CUDA"):
+            _resolve_fused_state(True, 4, False, "nest")
+    for basis, gaussian in ((1, False), (4, True)):
+        assert _resolve_fused_state("auto", basis, gaussian, "nest") is False
+        with pytest.raises(ValueError, match="incompatible"):
+            _resolve_fused_state(True, basis, gaussian, "nest")
 
 
 @pytest.mark.parametrize("dt", [1.0, 0.25])
@@ -326,10 +686,11 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
     tolerance = 2e-2 if policy == "mixed_float16" else 1e-5
     try:
         tf.keras.mixed_precision.set_global_policy(policy)
-        for label, device, fused in (
-            ("cpu", "/CPU:0", False),
-            ("gpu_fallback", "/GPU:0", False),
-            ("cuda", "/GPU:0", True),
+        for label, device, fused, fused_state in (
+            ("cpu", "/CPU:0", False, False),
+            ("gpu_fallback", "/GPU:0", False, False),
+            ("cuda", "/GPU:0", True, False),
+            ("cuda_state", "/GPU:0", True, True),
         ):
             started = time.perf_counter()
             with tf.device(device):
@@ -341,11 +702,12 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
                     dynamics_mode="nest",
                     hard_reset=hard_reset,
                     use_fused_cuda=fused,
-                    use_fused_state=False,
+                    use_fused_state=fused_state,
                     train_recurrent_per_type=False,
                     batch_size=batch_size,
                 )
                 assert cell._use_fused_cuda is fused
+                assert cell._use_fused_state is fused_state
                 layer = ExplicitStateRNN(cell, return_sequences=True, return_state=True)
                 layer._autocast = False
                 sequence = tf.constant(values, dtype=cell.compute_dtype)
@@ -402,6 +764,13 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
             cell.close_fused_cuda()
             del rollout, layer, cell
             gc.collect()
+        for actual, expected in zip(results["cuda_state"][0], results["cuda"][0]):
+            np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
+        np.testing.assert_array_equal(
+            results["cuda_state"][0][0][..., :3], results["cuda"][0][0][..., :3]
+        )
+        for actual, expected in zip(results["cuda_state"][1], results["cuda"][1]):
+            np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
         expected_outputs, expected_gradients = results["cpu"]
         for label in ("gpu_fallback", "cuda"):
             outputs, gradients = results[label]
@@ -462,6 +831,121 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
                     np.testing.assert_allclose(
                         actual, expected, rtol=tolerance, atol=tolerance
                     )
+    finally:
+        tf.keras.mixed_precision.set_global_policy(old_policy)
+
+
+@pytest.mark.parametrize("policy", ["float32", "mixed_float16"])
+def test_nest_fused_state_checkpointed_poisson_replay(policy):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+    from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+    from bmtk.simulator.dpointnet.custom_ops import fused_nest_state_available
+    from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
+
+    if not fused_nest_state_available():
+        pytest.skip("Fused NEST state operator is unavailable")
+    old_policy = tf.keras.mixed_precision.global_policy()
+    results = []
+    try:
+        tf.keras.mixed_precision.set_global_policy(policy)
+        for fused in (False, True):
+            with tf.device("/GPU:0"):
+                network, inputs = make_network_inputs(delay=3.0, internal_noise=True)
+                network["synapses"]["dynamics_params"]["basis_weights"] = [
+                    [1, 0.3, 0.1, 0.05]
+                ]
+                network["synapses"]["weights"][:] = 40
+                inputs["drive"]["weights"][:] = 1200
+                inputs["drive"]["options"]["firing_rate"] = 1000
+                cell = GLIF3Cell(
+                    network,
+                    inputs,
+                    dt=0.25,
+                    tau_basis=[2, 6, 10, 20],
+                    dynamics_mode="nest",
+                    hard_reset=False,
+                    batch_size=32,
+                    train_recurrent_per_type=False,
+                    use_fused_cuda=True,
+                    use_fused_state=fused,
+                    return_voltage_sequences=False,
+                    track_voltage_penalty=True,
+                )
+                initial = list(cell.zero_state(32, cell.compute_dtype))
+                initial[6] = tf.fill((32,), 4095)
+                sequence = tf.zeros((32, 31, 0), cell.compute_dtype)
+                sequence_input = tf.keras.Input(shape=(None, 0), dtype=sequence.dtype)
+                state_inputs = [
+                    tf.keras.Input(shape=value.shape[1:], dtype=value.dtype)
+                    for value in initial
+                ]
+                layer = ExplicitStateRNN(cell, return_sequences=True, return_state=True)
+                layer._autocast = False
+                layer_outputs = layer(sequence_input, initial_state=state_inputs)
+                core = tf.keras.Model(
+                    [sequence_input, *state_inputs],
+                    [*layer_outputs[0], *layer_outputs[1:]],
+                )
+                runner = SegmentedRecomputeRunner(
+                    core,
+                    sequence_length=31,
+                    chunk_size=7,
+                    n_sequence_outputs=2,
+                    pack_spike_checkpoints=True,
+                )
+                floating = [value for value in initial if value.dtype.is_floating]
+                targets = [
+                    *floating,
+                    cell.recurrent_weight_values,
+                    cell.inputs["drive"]["input_weight_values"],
+                ]
+
+                def evaluate(segmented):
+                    with tf.GradientTape() as tape:
+                        tape.watch(floating)
+                        outputs = (
+                            runner(sequence, initial)
+                            if segmented
+                            else core([sequence, *initial])
+                        )
+                        loss = 0.5 * (
+                            tf.reduce_mean(tf.cast(outputs[0], tf.float32))
+                            + tf.reduce_mean(outputs[1])
+                        ) + tf.reduce_mean(tf.cast(outputs[3], tf.float32))
+                    return outputs, tape.gradient(loss, targets)
+
+                full, full_gradients = tf.function(lambda: evaluate(False))()
+                replay, replay_gradients = tf.function(lambda: evaluate(True))()
+                assert full[0].dtype == sequence.dtype
+                assert full[1].dtype == tf.float32
+                assert np.count_nonzero(full[0][..., 0]) > 0
+                assert np.max(full[-1]) > 1
+                np.testing.assert_array_equal(full[8], np.full(32, 4095 + 31))
+                for actual, expected in zip(replay, full):
+                    np.testing.assert_array_equal(actual, expected)
+                tolerance = 3e-3 if policy == "mixed_float16" else 1e-5
+                for actual, expected in zip(replay_gradients, full_gradients):
+                    assert actual is not None and expected is not None
+                    np.testing.assert_allclose(
+                        actual, expected, rtol=tolerance, atol=tolerance
+                    )
+                for gradient in full_gradients[-2:]:
+                    assert np.isfinite(gradient).all() and np.any(gradient != 0)
+                results.append(
+                    (
+                        [value.numpy() for value in full],
+                        [value.numpy() for value in full_gradients],
+                    )
+                )
+                cell.close_fused_cuda()
+        np.testing.assert_array_equal(
+            results[1][0][0][..., 0], results[0][0][0][..., 0]
+        )
+        np.testing.assert_array_equal(results[1][0][-1], results[0][0][-1])
+        for actual, expected in zip(
+            tf.nest.flatten(results[1]), tf.nest.flatten(results[0])
+        ):
+            np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
     finally:
         tf.keras.mixed_precision.set_global_policy(old_policy)
 

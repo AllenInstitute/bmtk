@@ -542,6 +542,13 @@ class RNN:
         return state_outputs
 
     def _split_rnn_layer_output(self, rnn_layer_output):
+        if (
+            getattr(self._cell, "dynamics_mode", None) == "nest"
+            and not self._cell._return_voltage_sequences
+            and isinstance(rnn_layer_output, (list, tuple))
+            and not isinstance(rnn_layer_output[0], (list, tuple))
+        ):
+            return list(rnn_layer_output[:2]), list(rnn_layer_output[2:])
         if isinstance(rnn_layer_output, (list, tuple)):
             sequence_output = rnn_layer_output[0]
             state_output = rnn_layer_output[1:]
@@ -566,10 +573,11 @@ class RNN:
             and output_rank >= 3
             and output_shape[-1] == n_neurons + 1
         ):
-            return [
-                sequence_output[..., :n_neurons],
-                sequence_output[..., n_neurons],
-            ], list(state_output)
+            spikes, penalty = tf.keras.layers.Lambda(
+                lambda value: tf.split(value, [n_neurons, 1], axis=-1),
+                dtype=sequence_output.dtype,
+            )(sequence_output)
+            return [spikes, penalty[..., 0]], list(state_output)
         if (
             n_neurons is not None
             and output_rank is not None

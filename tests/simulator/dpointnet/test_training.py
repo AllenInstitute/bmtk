@@ -127,6 +127,47 @@ def test_train_without_engine_does_not_build_inference_model():
     assert rnn._model_built is False
 
 
+@pytest.mark.parametrize("policy", ["float32", "mixed_float16"])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_compact_output_split_preserves_values_gradients_and_dtype(policy, dtype):
+    previous_policy = tf.keras.mixed_precision.global_policy()
+    tf.keras.mixed_precision.set_global_policy(policy)
+    try:
+        rnn = RNN()
+        rnn._cell = SimpleNamespace(
+            _n_neurons=3, _track_voltage_penalty=True, _return_voltage_sequences=False
+        )
+        symbolic = tf.keras.Input(shape=(None, 4), dtype=dtype)
+        outputs, states = rnn._split_rnn_layer_output((symbolic,))
+        assert states == []
+        model = tf.keras.Model(symbolic, outputs)
+        values = tf.reshape(tf.range(24, dtype=tf.float32), (2, 3, 4))
+        values = tf.cast(values / 8, dtype)
+
+        @tf.function
+        def run(values):
+            with tf.GradientTape() as tape:
+                tape.watch(values)
+                spikes, penalty = model(values)
+                loss = tf.reduce_sum(spikes * spikes) + 3 * tf.reduce_sum(penalty)
+            return spikes, penalty, tape.gradient(loss, values)
+
+        spikes, penalty, gradient = run(values)
+        assert spikes.dtype == penalty.dtype == dtype
+        np.testing.assert_array_equal(spikes, values[..., :3])
+        np.testing.assert_array_equal(penalty, values[..., 3])
+        with tf.GradientTape() as tape:
+            tape.watch(values)
+            loss = tf.reduce_sum(values[..., :3] ** 2) + 3 * tf.reduce_sum(
+                values[..., 3]
+            )
+        np.testing.assert_array_equal(gradient, tape.gradient(loss, values))
+        operations = run.get_concrete_function(values).graph.get_operations()
+        assert any(operation.type == "SplitV" for operation in operations)
+    finally:
+        tf.keras.mixed_precision.set_global_policy(previous_policy)
+
+
 def test_dpointnet_import_preserves_default_tensorflow_allocator():
     environment = os.environ.copy()
     environment.pop("TF_GPU_ALLOCATOR", None)

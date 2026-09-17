@@ -105,14 +105,63 @@ Keras 2 symbolic calls pack the sequence and initial states into one input list;
 the wrapper unpacks them and uses the backend recurrent loop. Keras 3 retains its
 native ``inner_loop``. Both paths preserve integer counters and floating state.
 
-The legacy fused state operator cannot implement these updates: NEST mode rejects
-``use_fused_state=true`` and keeps ``"auto"`` on TensorFlow state updates. Fused
-current projection is independent and remains available. Exact integration of a
-fitted alpha basis does not make that basis identical to the source synapse model;
-validate synaptic approximation, precision and network-level behavior separately.
+With ``return_voltage_sequences=false``, NEST compact cell output is a pair:
+compute-dtype spikes and the FP32 per-sample voltage penalty. The loop stores
+these separately, avoiding a large FP32 spike sequence merely to hold the penalty.
+The extractor retains its two-sequence-output interface and complete state.
+Full-voltage and legacy output formats are unchanged. Explicit ``unroll=true``
+uses internal FP32 packing for Keras compatibility before returning the typed
+pair; the memory reduction applies to normal looped execution.
+
+NEST has a separate CUDA state forward/backward operator selected by
+``use_fused_state=true``. Rebuild the CUDA operators before enabling it. It requires
+four synaptic bases, the triangular surrogate, FP32 or FP16 compute, and int8 or
+int16 refractory state. ``"auto"`` enables it only when compatible operators are
+available; ``false`` remains the default and retains TensorFlow state updates.
+The legacy state kernel is never used for NEST. Fused current projection is independent.
+
+The NEST kernel preserves alpha-current voltage integration, adaptation hold/reset,
+hard/soft reset ordering, pre-reset spike surrogates, and delayed spike history.
+Gradients cover floating state, currents and history; neuron coefficients remain
+nontrainable. External delay history and Poisson counters remain in the cell wrapper.
+Backward saves a compute-dtype 0/1 refractory mask to avoid CPU integer TensorList
+transfers, restoring the integer dtype before the kernel. Forward refractory
+counts and checkpoint state are unchanged. Coefficients are packed at execution
+time so assignment and checkpoint restoration do not leave stale values.
+The kernel rounds intermediate operations in compute dtype and uses the voltage-sum
+association observed in optimized TensorFlow graphs. Floating-point results are not
+guaranteed bitwise across eager/graph execution, optimizer settings or TensorFlow
+versions; validate threshold-sensitive trajectories for the intended configuration.
+
+Exact integration of a fitted alpha basis does not make that basis identical to the
+source synapse model; validate synaptic approximation, precision and network-level
+behavior separately. The historical timings below predate the NEST state kernel.
 
 Performance qualification
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The latest 2026-09-17 separate-output follow-up on the workload below measured
+NEST at 4.55 s/update and 10.60 GiB timed peak, versus matched legacy at 4.36 s
+and 10.61 GiB, using default TensorFlow memory optimization. This is about 4.4%
+more time and effectively equal allocation. The private ``NO_MEM_OPT`` override
+measured NEST at 4.59 s with the same peak and has no demonstrated benefit on
+this graph. All use ``cuda_malloc_async``; default BFC was not retested. Three
+warmups and 20 synchronized samples per run, matched source/binaries/inputs,
+and no convergence or other-GPU guarantee. The earlier timings below used
+combined FP32 compact outputs and are retained as historical measurements.
+
+A 2026-09-17 optimized-kernel follow-up on the workload below measured NEST at
+4.80 s/update versus a fresh matched legacy control at 4.41 s (8.7% slower), with
+15.57 versus 10.61 GiB timed peak allocation. Both used a benchmark-only private
+TensorFlow ``NO_MEM_OPT`` override, not a library default. With default TensorFlow
+memory optimization, NEST measured 6.63 s and 17.12 GiB. Each run excluded three
+warmups and timed 20 updates with matching source/binary provenance and inputs.
+Saving a floating backward mask eliminated repeated integer TensorList transfers;
+native rounded FP16 instructions alone did not demonstrate whole-update speedup.
+NEST retains FP32 compact outputs and heterogeneous state, whereas ordinary Keras
+RNN casts legacy outputs/state to compute dtype. The remaining memory gap is not
+fully attributed. Do not treat diagnostic performance as ordinary-default speed
+or silently reduce NEST penalty precision. These changes remain opt-in.
 
 A 2026-09-16 RTX 3090 benchmark measured median training updates of 4.38 s for
 legacy fused state, 5.93 s for legacy TensorFlow state, and 8.66 s for NEST
