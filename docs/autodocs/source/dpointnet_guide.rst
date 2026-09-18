@@ -38,6 +38,24 @@ GLIF dynamics and explicit state
 trajectories and checkpoints. Legacy remains the throughput-oriented starting
 point. NEST is currently an opt-in compatibility mode for NEST-aligned dynamics
 and validation, not a change to the default or a performance optimization.
+
+.. warning::
+
+  **NEST training is experimental and is not recommended for use.** Use
+  ``dynamics_mode="legacy"`` for training, including reproduction of the V1
+  paper protocol. Canonical 75-epoch V1 runs with soft-reset NEST failed to fit
+  excitatory firing rates. Matched early-training controls reproduce this
+  suppression with both TensorFlow and fused NEST state updates, while legacy
+  controls improve. Soft reset, passing gradient/replay tests and faster
+  execution do not establish successful training or resolve this failure.
+
+  Use NEST mode for inference or compatibility evaluation only after validating
+  the intended network, reset mode, stimulus and population-level outputs.
+  Legacy-trained weights can be evaluated in a separate NEST model, but a
+  dynamics/reset change is not guaranteed to preserve trajectories or fitted
+  observables. NEST training remains available for controlled method research;
+  its presence in the API is not an endorsement for scientific training runs.
+
 Set ``dynamics_mode="nest"`` explicitly to use NEST-compatible refractory timing,
 time-averaged adaptation current,
 spike-boundary adaptation reset, and exact alpha-current-to-voltage integration.
@@ -60,8 +78,9 @@ For inference-only NEST execution, use these ``rnn_cell_params``:
     }
   }
 
-For opt-in NEST training, set ``hard_reset=false`` or omit it. An RNN with configured training,
-or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
+For controlled research into experimental NEST training only (not a recommended
+training recipe), set ``hard_reset=false`` or omit it. An RNN with configured
+training, or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
 soft reset before constructing the cell. Explicit ``hard_reset=true`` raises a
 ``ValueError`` in DPointNet training, including legacy-mode training. This check
 also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
@@ -77,7 +96,8 @@ also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
     }
   }
 
-Build the CUDA operators before running this training example. Soft reset retains
+The configuration above is a research-only example, not a validated NEST training
+recipe. Build the CUDA operators before using it. Soft reset retains
 the direct voltage-state gradient through spikes. Hard reset cuts that path at
 spikes and during refractory clamping; the spike surrogate still supplies some
 gradients but does not restore the lost path. This safeguard does not claim that
@@ -139,6 +159,12 @@ behavior separately. The historical timings below predate the NEST state kernel.
 
 Performance qualification
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The training-step measurements below qualify execution cost only. **NEST training
+is experimental and is not recommended for use**, irrespective of these speed or
+memory improvements. The convergence limitation above remains unresolved; this
+implementation does not change the training recipe or silently substitute legacy
+integration/gradients to make NEST training succeed.
 
 The latest 2026-09-17 separate-output follow-up on the workload below measured
 NEST at 4.55 s/update and 10.60 GiB timed peak, versus matched legacy at 4.36 s
@@ -557,7 +583,7 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - False
                 * - dynamics_mode
-                  - Select ``"legacy"`` for the historical DPointNet update equations or ``"nest"`` for NEST-compatible timing, integration, delays, state, and timestamps.
+                  - Select ``"legacy"`` for recommended training or ``"nest"`` for separately validated compatibility inference/evaluation. NEST training is experimental and is not recommended for use. NEST changes timing, integration, delays, state, and timestamps.
                   - "legacy"
                 * - train_recurrent
                   - 
