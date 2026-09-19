@@ -620,9 +620,19 @@ def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
     )
 
 
-def _resolve_fused_state(option, n_syn_basis, pseudo_gauss, dynamics_mode="legacy"):
+def _resolve_fused_state(
+    option,
+    n_syn_basis,
+    pseudo_gauss,
+    dynamics_mode="legacy",
+    compute_dtype=tf.float32,
+    variable_dtype=tf.float32,
+):
     option = _validate_fused_cuda_option(option)
     incompatibilities = []
+    dtype_error = _fused_cuda_dtype_error(compute_dtype, variable_dtype)
+    if dtype_error is not None:
+        incompatibilities.append(dtype_error)
     available = (
         fused_nest_state_available()
         if dynamics_mode == "nest"
@@ -1005,7 +1015,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
             _synaptic_basis_weights, dtype=self.compute_dtype
         )
         self._use_fused_state = _resolve_fused_state(
-            use_fused_state, self._n_syn_basis, self._pseudo_gauss, dynamics_mode
+            use_fused_state,
+            self._n_syn_basis,
+            self._pseudo_gauss,
+            dynamics_mode,
+            compute_dtype=self.compute_dtype,
+            variable_dtype=self.variable_dtype,
         )
         if self._use_fused_state:
             io.log_info(

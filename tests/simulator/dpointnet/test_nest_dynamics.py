@@ -624,6 +624,56 @@ def test_nest_fused_state_selection_and_unsupported_models(monkeypatch, availabl
             _resolve_fused_state(True, basis, gaussian, "nest")
 
 
+@pytest.mark.parametrize("mode", ["legacy", "nest"])
+@pytest.mark.parametrize(
+    "policy", ["float32", "mixed_float16", "mixed_bfloat16", "float64"]
+)
+@pytest.mark.parametrize("option", [False, "auto", True])
+def test_fused_state_selection_respects_cell_dtype(monkeypatch, mode, policy, option):
+    from bmtk.simulator.dpointnet.cell_models import glif3_cell
+
+    monkeypatch.setattr(glif3_cell, "fused_glif_state_available", lambda: True)
+    monkeypatch.setattr(glif3_cell, "fused_nest_state_available", lambda: True)
+    previous_policy = tf.keras.mixed_precision.global_policy()
+    cell = None
+    try:
+        tf.keras.mixed_precision.set_global_policy(policy)
+        network, inputs = make_network_inputs()
+        network["synapses"]["dynamics_params"]["basis_weights"] = [[1, 0.3, 0.1, 0.05]]
+        supported = policy in ("float32", "mixed_float16")
+        options = dict(
+            tau_basis=[2, 6, 10, 20],
+            dynamics_mode=mode,
+            hard_reset=False,
+            use_fused_cuda=False,
+            use_fused_state=option,
+            train_recurrent_per_type=False,
+        )
+        if option is True and not supported:
+            with pytest.raises(
+                ValueError, match="use_fused_state=True.*compute_dtype="
+            ):
+                glif3_cell.GLIF3Cell(network, inputs, **options)
+            return
+        cell = glif3_cell.GLIF3Cell(network, inputs, **options)
+        assert cell._use_fused_state is (supported and option is not False)
+        if not supported:
+            state = cell.zero_state(1, cell.compute_dtype)
+            sequence = tf.zeros((1, 1), cell.compute_dtype)
+            function = tf.function(cell.call).get_concrete_function(sequence, state)
+            output, final_state = function(sequence, state)
+            assert output.dtype == tf.as_dtype(cell.compute_dtype)
+            assert final_state[1].dtype == output.dtype
+            assert not any(
+                operation.type.startswith("Dpointnet")
+                for operation in function.graph.get_operations()
+            )
+    finally:
+        if cell is not None:
+            cell.close_fused_cuda()
+        tf.keras.mixed_precision.set_global_policy(previous_policy)
+
+
 @pytest.mark.parametrize("dt", [1.0, 0.25])
 @pytest.mark.parametrize("policy", ["float32", "mixed_float16"])
 @pytest.mark.parametrize("hard_reset,batch_size", [(True, 1), (False, 5)])

@@ -135,9 +135,13 @@ pair; the memory reduction applies to normal looped execution.
 
 NEST has a separate CUDA state forward/backward operator selected by
 ``use_fused_state=true``. Rebuild the CUDA operators before enabling it. It requires
-four synaptic bases, the triangular surrogate, FP32 or FP16 compute, and int8 or
-int16 refractory state. ``"auto"`` enables it only when compatible operators are
-available; ``false`` remains the default and retains TensorFlow state updates.
+four synaptic bases, the triangular surrogate, FP32 or FP16 compute with FP32
+variables, and int8 or int16 refractory state. For both NEST and legacy state
+dispatch, ``"auto"`` falls back to TensorFlow for unsupported dtype policies
+(such as ``mixed_bfloat16`` or ``float64``), even if the CUDA library is loaded.
+Explicit ``true`` rejects an incompatible policy during cell construction with
+the compute and variable dtypes in the error. ``false`` remains the default and
+retains TensorFlow state updates.
 The legacy state kernel is never used for NEST. Fused current projection is independent.
 
 The NEST kernel preserves alpha-current voltage integration, adaptation hold/reset,
