@@ -3,6 +3,64 @@
 
 using namespace tensorflow;
 
+REGISTER_OP("DpointnetNestStateForward")
+    .Attr("T: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("hard_reset: bool = false")
+    .Input("v: T")
+    .Input("r: R")
+    .Input("asc: T")
+    .Input("psc_rise: T")
+    .Input("psc: T")
+    .Input("currents: T")
+    .Input("coefficients: T")
+    .Input("t_ref: R")
+    .Input("dt: T")
+    .Input("v_th: T")
+    .Output("threshold_voltage: T")
+    .Output("new_v: T")
+    .Output("new_r: R")
+    .Output("new_asc: T")
+    .Output("new_rise: T")
+    .Output("new_psc: T")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      shape_inference::ShapeHandle voltage;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &voltage));
+      context->set_output(0, voltage);
+      for (int output = 1; output < 6; ++output) {
+        context->set_output(output, context->input(output - 1));
+      }
+      return OkStatus();
+    });
+
+REGISTER_OP("DpointnetNestStateBackward")
+    .Attr("T: {half, float}")
+    .Attr("R: {int8, int16}")
+    .Attr("hard_reset: bool = false")
+    .Input("threshold_voltage: T")
+    .Input("r: R")
+    .Input("coefficients: T")
+    .Input("dt: T")
+    .Input("voltage_gradient_retention: T")
+    .Input("grad_threshold: T")
+    .Input("grad_v: T")
+    .Input("grad_asc: T")
+    .Input("grad_rise: T")
+    .Input("grad_psc: T")
+    .Output("v_grad: T")
+    .Output("asc_grad: T")
+    .Output("rise_grad: T")
+    .Output("psc_grad: T")
+    .Output("currents_grad: T")
+    .SetShapeFn([](shape_inference::InferenceContext* context) {
+      context->set_output(0, context->input(0));
+      context->set_output(1, context->input(7));
+      context->set_output(2, context->input(8));
+      context->set_output(3, context->input(9));
+      context->set_output(4, context->input(8));
+      return OkStatus();
+    });
+
 REGISTER_OP("DpointnetGlifStateForward")
     .Attr("T: {half, float}")
     .Attr("R: {int8, int16}")

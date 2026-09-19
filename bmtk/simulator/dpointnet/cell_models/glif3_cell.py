@@ -16,6 +16,8 @@ from bmtk.simulator.dpointnet.custom_ops import (
     fused_dense_state,
     fused_cuda_available,
     fused_glif_state_available,
+    fused_nest_state,
+    fused_nest_state_available,
     fused_spike_shift,
     fused_spike_currents,
     glif_state_op_status,
@@ -618,11 +620,29 @@ def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
     )
 
 
-def _resolve_fused_state(option, n_syn_basis, pseudo_gauss):
+def _resolve_fused_state(
+    option,
+    n_syn_basis,
+    pseudo_gauss,
+    dynamics_mode="legacy",
+    compute_dtype=tf.float32,
+    variable_dtype=tf.float32,
+):
     option = _validate_fused_cuda_option(option)
     incompatibilities = []
-    if not fused_glif_state_available():
-        incompatibilities.append(glif_state_op_status())
+    dtype_error = _fused_cuda_dtype_error(compute_dtype, variable_dtype)
+    if dtype_error is not None:
+        incompatibilities.append(dtype_error)
+    available = (
+        fused_nest_state_available()
+        if dynamics_mode == "nest"
+        else fused_glif_state_available()
+    )
+    if not available:
+        incompatibilities.append(
+            f"{dynamics_mode} state operator unavailable; rebuild CUDA operators: "
+            + glif_state_op_status()
+        )
     if n_syn_basis != 4:
         incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")
     if pseudo_gauss:
@@ -708,11 +728,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
             raise ValueError("dt must be finite and positive")
         if hard_reset is None:
             hard_reset = dynamics_mode == "nest"
-        if dynamics_mode == "nest" and use_fused_state is True:
-            raise ValueError(
-                "NEST dynamics require use_fused_state=False or 'auto'; the legacy fused state kernel is not compatible"
-            )
-
         if (
             use_small_batch_recurrent_backward is not True
             and use_small_batch_recurrent_backward is not False
@@ -999,12 +1014,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.synaptic_basis_weights = tf.constant(
             _synaptic_basis_weights, dtype=self.compute_dtype
         )
-        self._use_fused_state = dynamics_mode == "legacy" and _resolve_fused_state(
-            use_fused_state, self._n_syn_basis, self._pseudo_gauss
+        self._use_fused_state = _resolve_fused_state(
+            use_fused_state,
+            self._n_syn_basis,
+            self._pseudo_gauss,
+            dynamics_mode,
+            compute_dtype=self.compute_dtype,
+            variable_dtype=self.variable_dtype,
         )
         if self._use_fused_state:
             io.log_info(
-                "DPointNet fused GLIF state transition enabled "
+                f"DPointNet fused {dynamics_mode} state transition enabled "
                 f"(use_fused_state={use_fused_state!r})."
             )
         self._use_pair_projection = _resolve_pair_projection(
@@ -1744,7 +1764,36 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Scale with the learning rate
         rec_inputs = rec_inputs * self._lr_scale
 
-        if self.dynamics_mode == "nest":
+        if self.dynamics_mode == "nest" and self._use_fused_state:
+            new_z, new_v, new_r, new_asc, new_psc_rise, new_psc, new_z_buf = (
+                fused_nest_state(
+                    v,
+                    r,
+                    asc,
+                    psc_rise,
+                    psc,
+                    rec_inputs,
+                    z_buf,
+                    syn_decay=self.syn_decay,
+                    psc_initial=self.psc_initial,
+                    asc_decay=self.asc_decay,
+                    asc_amps=self.asc_amps,
+                    decay=self.decay,
+                    current_factor=self.current_factor,
+                    asc_mean=self.asc_mean,
+                    asc_refractory_decay=self.asc_refractory_decay,
+                    psc_voltage=self.psc_voltage,
+                    rise_voltage=self.rise_voltage,
+                    t_ref_steps=self.t_ref_steps,
+                    dt=self._dt,
+                    v_reset=self.v_reset,
+                    v_th=self.v_th,
+                    dampening=self._dampening_factor,
+                    voltage_gradient_dampening=self._voltage_gradient_dampening,
+                    hard_reset=self._hard_reset,
+                )
+            )
+        elif self.dynamics_mode == "nest":
             new_psc, new_psc_rise = self.update_psc(psc, psc_rise, rec_inputs)
             new_v, new_r, adaptation, active = active_update(
                 straight_through_dampen(v, self._voltage_gradient_dampening),
@@ -1826,8 +1875,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
             voltage_penalty = voltage_penalty_mean_step(
                 new_v, self._n_neurons, self._voltage_penalty_mode
             )
-            outputs = tf.concat(
-                [tf.cast(new_z, tf.float32), voltage_penalty[:, None]], axis=-1
+            outputs = (
+                (new_z, voltage_penalty)
+                if self.dynamics_mode == "nest"
+                else tf.concat(
+                    [tf.cast(new_z, tf.float32), voltage_penalty[:, None]], axis=-1
+                )
             )
         new_state = (
             new_z_buf,
@@ -1844,6 +1897,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
 
     @property
     def output_size(self):
+        if self.dynamics_mode == "nest" and not self._return_voltage_sequences:
+            return (tf.TensorShape([self._n_neurons]), tf.TensorShape([]))
         return (
             self._n_neurons * 2
             if self._return_voltage_sequences

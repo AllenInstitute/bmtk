@@ -9,6 +9,8 @@ from .csr_spike_ops import (
 from .glif_state_ops import (
     fused_dense_state,
     fused_glif_state_available,
+    fused_nest_state,
+    fused_nest_state_available,
     fused_spike_shift,
     glif_state_op_status,
 )
@@ -19,6 +21,8 @@ __all__ = [
     "fused_dense_state",
     "fused_cuda_available",
     "fused_glif_state_available",
+    "fused_nest_state",
+    "fused_nest_state_available",
     "fused_spike_shift",
     "fused_spike_currents",
     "glif_state_op_status",

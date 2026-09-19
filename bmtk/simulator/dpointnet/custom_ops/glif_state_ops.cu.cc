@@ -18,6 +18,204 @@ __device__ __forceinline__ T FromFloat(float value) {
   return static_cast<T>(value);
 }
 
+template <typename T>
+__device__ __forceinline__ T NestAdd(T left, T right) {
+  return FromFloat<T>(__fadd_rn(ToFloat(left), ToFloat(right)));
+}
+
+template <typename T>
+__device__ __forceinline__ T NestMul(T left, T right) {
+  return FromFloat<T>(__fmul_rn(ToFloat(left), ToFloat(right)));
+}
+
+template <>
+__device__ __forceinline__ Eigen::half NestAdd(Eigen::half left, Eigen::half right) {
+  return Eigen::half(__hadd_rn(static_cast<__half>(left), static_cast<__half>(right)));
+}
+
+template <>
+__device__ __forceinline__ Eigen::half NestMul(Eigen::half left, Eigen::half right) {
+  return Eigen::half(__hmul_rn(static_cast<__half>(left), static_cast<__half>(right)));
+}
+
+template <typename T, typename R>
+__global__ void NestForwardKernel(
+    int64 count, int neurons, const T* voltage, const R* refractory,
+    const T* asc, const T* rise, const T* psc, const T* currents,
+    const T* coefficients, const R* t_ref, const T* dt, const T* v_th,
+    bool hard_reset, T* threshold, T* new_v, R* new_r, T* new_asc,
+    T* new_rise, T* new_psc) {
+  GPU_1D_KERNEL_LOOP(index, count) {
+    const int neuron = index % neurons;
+    const T* params = coefficients + neuron * 28;
+    const bool active = refractory[index] <= 0;
+    const T mean_asc = NestAdd(NestMul(asc[index * 2], params[14]),
+                               NestMul(asc[index * 2 + 1], params[15]));
+    T contributions[4];
+    #pragma unroll
+    for (int basis = 0; basis < 4; ++basis) {
+      const int64 offset = index * 4 + basis;
+      contributions[basis] = NestAdd(NestMul(psc[offset], params[18 + basis]),
+                                      NestMul(rise[offset], params[22 + basis]));
+      new_rise[offset] = NestAdd(NestMul(rise[offset], params[basis]),
+                                  NestMul(currents[offset], params[4 + basis]));
+      new_psc[offset] = NestAdd(NestMul(psc[offset], params[basis]),
+                                 NestMul(NestMul(*dt, params[basis]), rise[offset]));
+    }
+    const T integrated = NestAdd(NestAdd(contributions[0], contributions[1]),
+                                   NestAdd(contributions[2], contributions[3]));
+    const T retained = NestAdd(FromFloat<T>(1.0f), FromFloat<T>(-ToFloat(params[27])));
+    const T dampened_voltage = NestAdd(NestMul(voltage[index], retained),
+                       NestMul(voltage[index], params[27]));
+    const T candidate = NestAdd(
+        NestMul(params[12], dampened_voltage),
+        NestAdd(NestMul(params[13], mean_asc), integrated));
+    const T before_reset = hard_reset && !active ? params[26] : candidate;
+    const T threshold_value = NestAdd(before_reset, FromFloat<T>(-ToFloat(*v_th)));
+    const bool fired = active && ToFloat(threshold_value) > 0.0f;
+    threshold[index] = threshold_value;
+    new_v[index] = hard_reset
+        ? (fired ? params[26] : before_reset)
+        : NestAdd(before_reset, FromFloat<T>(-ToFloat(NestMul(
+            FromFloat<T>(fired ? 1.0f : 0.0f),
+            NestAdd(FromFloat<T>(1.0f), FromFloat<T>(-ToFloat(params[26])))))));
+    new_r[index] = fired ? t_ref[neuron]
+                        : static_cast<R>(max(static_cast<int>(refractory[index]) - 1, 0));
+    #pragma unroll
+    for (int component = 0; component < 2; ++component) {
+      T adaptation = asc[index * 2 + component];
+      if (active) adaptation = NestMul(adaptation, params[8 + component]);
+      new_asc[index * 2 + component] = fired
+          ? NestAdd(params[10 + component], NestMul(adaptation, params[16 + component]))
+          : adaptation;
+    }
+  }
+}
+
+template <typename T, typename R>
+__global__ void NestBackwardKernel(
+    int64 count, int neurons, const T* threshold, const R* refractory,
+    const T* coefficients, const T* dt, const T* retention,
+    const T* grad_threshold, const T* grad_v, const T* grad_asc,
+    const T* grad_rise, const T* grad_psc, bool hard_reset,
+    T* voltage_grad, T* asc_grad, T* rise_grad, T* psc_grad, T* currents_grad) {
+  GPU_1D_KERNEL_LOOP(index, count) {
+    const T* params = coefficients + (index % neurons) * 28;
+    const bool active = refractory[index] <= 0;
+    const bool fired = active && ToFloat(threshold[index]) > 0.0f;
+    T candidate_grad = NestAdd(grad_threshold[index],
+        hard_reset && fired ? FromFloat<T>(0.0f) : grad_v[index]);
+    if (hard_reset && !active) candidate_grad = FromFloat<T>(0.0f);
+    voltage_grad[index] = NestMul(NestMul(candidate_grad, params[12]), *retention);
+    const T mean_grad = NestMul(candidate_grad, params[13]);
+    #pragma unroll
+    for (int component = 0; component < 2; ++component) {
+      T adaptation_grad = grad_asc[index * 2 + component];
+      if (fired) adaptation_grad = NestMul(adaptation_grad, params[16 + component]);
+      if (active) adaptation_grad = NestMul(adaptation_grad, params[8 + component]);
+      asc_grad[index * 2 + component] = NestAdd(
+          adaptation_grad, NestMul(mean_grad, params[14 + component]));
+    }
+    #pragma unroll
+    for (int basis = 0; basis < 4; ++basis) {
+      const int64 offset = index * 4 + basis;
+      rise_grad[offset] = NestAdd(
+          NestAdd(NestMul(grad_rise[offset], params[basis]),
+                  NestMul(grad_psc[offset], NestMul(*dt, params[basis]))),
+          NestMul(candidate_grad, params[22 + basis]));
+      psc_grad[offset] = NestAdd(NestMul(grad_psc[offset], params[basis]),
+                                  NestMul(candidate_grad, params[18 + basis]));
+      currents_grad[offset] = NestMul(grad_rise[offset], params[4 + basis]);
+    }
+  }
+}
+
+template <typename T, typename R, bool Backward>
+class NestStateOp : public OpKernel {
+ public:
+  explicit NestStateOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("hard_reset", &hard_reset_));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    const Tensor& voltage = context->input(0);
+    OP_REQUIRES(context, voltage.dims() == 2 && voltage.dim_size(1) > 0,
+                errors::InvalidArgument("NEST voltage must have shape [batch, neurons]"));
+    const int64 batch = voltage.dim_size(0);
+    const int neurons = voltage.dim_size(1);
+    const TensorShape asc_shape({batch, neurons * 2LL});
+    const TensorShape psc_shape({batch, neurons * 4LL});
+    const int coefficient_index = Backward ? 2 : 6;
+    OP_REQUIRES(context, context->input(1).shape() == voltage.shape(),
+                errors::InvalidArgument("NEST refractory shape differs from voltage"));
+    OP_REQUIRES(context, context->input(coefficient_index).shape() == TensorShape({neurons, 28}),
+          errors::InvalidArgument("NEST coefficients must have shape [neurons, 28]"));
+    if (Backward) {
+      OP_REQUIRES(context,
+          context->input(3).NumElements() == 1 && context->input(4).NumElements() == 1 &&
+          context->input(5).shape() == voltage.shape() && context->input(6).shape() == voltage.shape() &&
+          context->input(7).shape() == asc_shape && context->input(8).shape() == psc_shape &&
+          context->input(9).shape() == psc_shape,
+          errors::InvalidArgument("Invalid NEST backward tensor shapes"));
+    } else {
+      OP_REQUIRES(context,
+          context->input(2).shape() == asc_shape && context->input(3).shape() == psc_shape &&
+          context->input(4).shape() == psc_shape && context->input(5).shape() == psc_shape &&
+          context->input(7).shape() == TensorShape({neurons}) &&
+          context->input(8).NumElements() == 1 && context->input(9).NumElements() == 1,
+          errors::InvalidArgument("Invalid NEST forward tensor shapes; four bases are required"));
+    }
+    Tensor* outputs[6];
+    const TensorShape shapes[6] = {
+        voltage.shape(), Backward ? asc_shape : voltage.shape(),
+        Backward ? psc_shape : voltage.shape(),
+        Backward ? psc_shape : asc_shape, psc_shape, psc_shape};
+    for (int output = 0; output < (Backward ? 5 : 6); ++output) {
+      OP_REQUIRES_OK(context, context->allocate_output(output, shapes[output], &outputs[output]));
+    }
+    if (voltage.NumElements() == 0) return;
+    auto& device = context->eigen_device<GPUDevice>();
+    auto config = GetGpuLaunchConfig(voltage.NumElements(), device);
+    if (Backward) {
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+          NestBackwardKernel<T, R>, config.block_count, config.thread_per_block, 0,
+          device.stream(), voltage.NumElements(), neurons, voltage.flat<T>().data(),
+          context->input(1).flat<R>().data(), context->input(2).flat<T>().data(),
+          context->input(3).flat<T>().data(), context->input(4).flat<T>().data(),
+          context->input(5).flat<T>().data(), context->input(6).flat<T>().data(),
+          context->input(7).flat<T>().data(), context->input(8).flat<T>().data(),
+          context->input(9).flat<T>().data(), hard_reset_,
+          outputs[0]->flat<T>().data(), outputs[1]->flat<T>().data(),
+          outputs[2]->flat<T>().data(), outputs[3]->flat<T>().data(), outputs[4]->flat<T>().data()));
+    } else {
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+          NestForwardKernel<T, R>, config.block_count, config.thread_per_block, 0,
+          device.stream(), voltage.NumElements(), neurons, voltage.flat<T>().data(),
+          context->input(1).flat<R>().data(), context->input(2).flat<T>().data(),
+          context->input(3).flat<T>().data(), context->input(4).flat<T>().data(),
+          context->input(5).flat<T>().data(), context->input(6).flat<T>().data(),
+          context->input(7).flat<R>().data(), context->input(8).flat<T>().data(),
+          context->input(9).flat<T>().data(), hard_reset_, outputs[0]->flat<T>().data(),
+          outputs[1]->flat<T>().data(), outputs[2]->flat<R>().data(),
+          outputs[3]->flat<T>().data(), outputs[4]->flat<T>().data(), outputs[5]->flat<T>().data()));
+    }
+  }
+
+ private:
+  bool hard_reset_;
+};
+
+#define REGISTER_NEST(T, R) \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateForward").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R"), NestStateOp<T, R, false>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateBackward").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R"), NestStateOp<T, R, true>);
+REGISTER_NEST(float, int8)
+REGISTER_NEST(float, int16)
+REGISTER_NEST(Eigen::half, int8)
+REGISTER_NEST(Eigen::half, int16)
+#undef REGISTER_NEST
+
 template <typename T, typename R, int Basis>
 __global__ void StateForwardKernel(
     int64 count, int neurons, const T* z, const T* v, const R* r,
@@ -256,16 +454,21 @@ class SpikeForwardOp : public OpKernel {
     const Tensor& voltage = context->input(0);
     const Tensor& refractory = context->input(1);
     const Tensor& history = context->input(2);
+    OP_REQUIRES(context, voltage.dims() == 2 && history.dims() == 2,
+          errors::InvalidArgument("voltage and history must have rank two"));
     OP_REQUIRES(context, voltage.shape() == refractory.shape(),
                 errors::InvalidArgument("voltage and refractory shapes differ"));
     const int64 neurons = voltage.dim_size(1);
     const int64 width = history.dim_size(1);
-    OP_REQUIRES(context, neurons > 0 && width % neurons == 0,
+    OP_REQUIRES(context, voltage.dim_size(0) == history.dim_size(0),
+          errors::InvalidArgument("voltage and history batch sizes differ"));
+    OP_REQUIRES(context, neurons > 0 && width > 0 && width % neurons == 0,
                 errors::InvalidArgument("history width must be a positive multiple of neurons"));
     Tensor* spikes;
     Tensor* new_history;
     OP_REQUIRES_OK(context, context->allocate_output(0, voltage.shape(), &spikes));
     OP_REQUIRES_OK(context, context->allocate_output(1, history.shape(), &new_history));
+    if (voltage.NumElements() == 0) return;
     auto& device = context->eigen_device<GPUDevice>();
     auto config = GetGpuLaunchConfig(history.NumElements(), device);
     OP_REQUIRES_OK(context, GpuLaunchKernel(
@@ -288,12 +491,24 @@ class SpikeBackwardOp : public OpKernel {
     const Tensor& spike_grad = context->input(2);
     const Tensor& history_grad = context->input(3);
     const Tensor& dampening = context->input(4);
+    OP_REQUIRES(context, voltage.dims() == 2 && history_grad.dims() == 2,
+          errors::InvalidArgument("voltage and history gradient must have rank two"));
+    OP_REQUIRES(context,
+          voltage.shape() == refractory.shape() && voltage.shape() == spike_grad.shape(),
+          errors::InvalidArgument("voltage, refractory and spike gradient shapes differ"));
+    const int64 neurons = voltage.dim_size(1);
+    const int64 width = history_grad.dim_size(1);
+    OP_REQUIRES(context, voltage.dim_size(0) == history_grad.dim_size(0),
+          errors::InvalidArgument("voltage and history gradient batch sizes differ"));
+    OP_REQUIRES(context, neurons > 0 && width > 0 && width % neurons == 0,
+          errors::InvalidArgument("history width must be a positive multiple of neurons"));
+    OP_REQUIRES(context, dampening.NumElements() == 1,
+          errors::InvalidArgument("dampening must contain one value"));
     Tensor* voltage_grad;
     Tensor* old_history_grad;
     OP_REQUIRES_OK(context, context->allocate_output(0, voltage.shape(), &voltage_grad));
     OP_REQUIRES_OK(context, context->allocate_output(1, history_grad.shape(), &old_history_grad));
-    const int64 neurons = voltage.dim_size(1);
-    const int64 width = history_grad.dim_size(1);
+    if (voltage.NumElements() == 0) return;
     auto& device = context->eigen_device<GPUDevice>();
     auto config = GetGpuLaunchConfig(history_grad.NumElements(), device);
     OP_REQUIRES_OK(context, GpuLaunchKernel(

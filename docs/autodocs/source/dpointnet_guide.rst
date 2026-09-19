@@ -38,6 +38,24 @@ GLIF dynamics and explicit state
 trajectories and checkpoints. Legacy remains the throughput-oriented starting
 point. NEST is currently an opt-in compatibility mode for NEST-aligned dynamics
 and validation, not a change to the default or a performance optimization.
+
+.. warning::
+
+  **NEST training is experimental and is not recommended for use.** Use
+  ``dynamics_mode="legacy"`` for training, including reproduction of the V1
+  paper protocol. Canonical 75-epoch V1 runs with soft-reset NEST failed to fit
+  excitatory firing rates. Matched early-training controls reproduce this
+  suppression with both TensorFlow and fused NEST state updates, while legacy
+  controls improve. Soft reset, passing gradient/replay tests and faster
+  execution do not establish successful training or resolve this failure.
+
+  Use NEST mode for inference or compatibility evaluation only after validating
+  the intended network, reset mode, stimulus and population-level outputs.
+  Legacy-trained weights can be evaluated in a separate NEST model, but a
+  dynamics/reset change is not guaranteed to preserve trajectories or fitted
+  observables. NEST training remains available for controlled method research;
+  its presence in the API is not an endorsement for scientific training runs.
+
 Set ``dynamics_mode="nest"`` explicitly to use NEST-compatible refractory timing,
 time-averaged adaptation current,
 spike-boundary adaptation reset, and exact alpha-current-to-voltage integration.
@@ -60,8 +78,9 @@ For inference-only NEST execution, use these ``rnn_cell_params``:
     }
   }
 
-For opt-in NEST training, set ``hard_reset=false`` or omit it. An RNN with configured training,
-or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
+For controlled research into experimental NEST training only (not a recommended
+training recipe), set ``hard_reset=false`` or omit it. An RNN with configured
+training, or built with ``rnn.build(training=True)``, resolves omitted or ``null`` reset to
 soft reset before constructing the cell. Explicit ``hard_reset=true`` raises a
 ``ValueError`` in DPointNet training, including legacy-mode training. This check
 also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
@@ -77,7 +96,8 @@ also applies to direct ``TrainingEngine`` execution and checkpoint preparation.
     }
   }
 
-Build the CUDA operators before running this training example. Soft reset retains
+The configuration above is a research-only example, not a validated NEST training
+recipe. Build the CUDA operators before using it. Soft reset retains
 the direct voltage-state gradient through spikes. Hard reset cuts that path at
 spikes and during refractory clamping; the spike surrogate still supplies some
 gradients but does not restore the lost path. This safeguard does not claim that
@@ -105,14 +125,73 @@ Keras 2 symbolic calls pack the sequence and initial states into one input list;
 the wrapper unpacks them and uses the backend recurrent loop. Keras 3 retains its
 native ``inner_loop``. Both paths preserve integer counters and floating state.
 
-The legacy fused state operator cannot implement these updates: NEST mode rejects
-``use_fused_state=true`` and keeps ``"auto"`` on TensorFlow state updates. Fused
-current projection is independent and remains available. Exact integration of a
-fitted alpha basis does not make that basis identical to the source synapse model;
-validate synaptic approximation, precision and network-level behavior separately.
+With ``return_voltage_sequences=false``, NEST compact cell output is a pair:
+compute-dtype spikes and the FP32 per-sample voltage penalty. The loop stores
+these separately, avoiding a large FP32 spike sequence merely to hold the penalty.
+The extractor retains its two-sequence-output interface and complete state.
+Full-voltage and legacy output formats are unchanged. Explicit ``unroll=true``
+uses internal FP32 packing for Keras compatibility before returning the typed
+pair; the memory reduction applies to normal looped execution.
+
+NEST has a separate CUDA state forward/backward operator selected by
+``use_fused_state=true``. Rebuild the CUDA operators before enabling it. It requires
+four synaptic bases, the triangular surrogate, FP32 or FP16 compute with FP32
+variables, and int8 or int16 refractory state. For both NEST and legacy state
+dispatch, ``"auto"`` falls back to TensorFlow for unsupported dtype policies
+(such as ``mixed_bfloat16`` or ``float64``), even if the CUDA library is loaded.
+Explicit ``true`` rejects an incompatible policy during cell construction with
+the compute and variable dtypes in the error. ``false`` remains the default and
+retains TensorFlow state updates.
+The legacy state kernel is never used for NEST. Fused current projection is independent.
+
+The NEST kernel preserves alpha-current voltage integration, adaptation hold/reset,
+hard/soft reset ordering, pre-reset spike surrogates, and delayed spike history.
+Gradients cover floating state, currents and history; neuron coefficients remain
+nontrainable. External delay history and Poisson counters remain in the cell wrapper.
+Backward saves a compute-dtype 0/1 refractory mask to avoid CPU integer TensorList
+transfers, restoring the integer dtype before the kernel. Forward refractory
+counts and checkpoint state are unchanged. Coefficients are packed at execution
+time so assignment and checkpoint restoration do not leave stale values.
+The kernel rounds intermediate operations in compute dtype and uses the voltage-sum
+association observed in optimized TensorFlow graphs. Floating-point results are not
+guaranteed bitwise across eager/graph execution, optimizer settings or TensorFlow
+versions; validate threshold-sensitive trajectories for the intended configuration.
+
+Exact integration of a fitted alpha basis does not make that basis identical to the
+source synapse model; validate synaptic approximation, precision and network-level
+behavior separately. The historical timings below predate the NEST state kernel.
 
 Performance qualification
 ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The training-step measurements below qualify execution cost only. **NEST training
+is experimental and is not recommended for use**, irrespective of these speed or
+memory improvements. The convergence limitation above remains unresolved; this
+implementation does not change the training recipe or silently substitute legacy
+integration/gradients to make NEST training succeed.
+
+The latest 2026-09-17 separate-output follow-up on the workload below measured
+NEST at 4.55 s/update and 10.60 GiB timed peak, versus matched legacy at 4.36 s
+and 10.61 GiB, using default TensorFlow memory optimization. This is about 4.4%
+more time and effectively equal allocation. The private ``NO_MEM_OPT`` override
+measured NEST at 4.59 s with the same peak and has no demonstrated benefit on
+this graph. All use ``cuda_malloc_async``; default BFC was not retested. Three
+warmups and 20 synchronized samples per run, matched source/binaries/inputs,
+and no convergence or other-GPU guarantee. The earlier timings below used
+combined FP32 compact outputs and are retained as historical measurements.
+
+A 2026-09-17 optimized-kernel follow-up on the workload below measured NEST at
+4.80 s/update versus a fresh matched legacy control at 4.41 s (8.7% slower), with
+15.57 versus 10.61 GiB timed peak allocation. Both used a benchmark-only private
+TensorFlow ``NO_MEM_OPT`` override, not a library default. With default TensorFlow
+memory optimization, NEST measured 6.63 s and 17.12 GiB. Each run excluded three
+warmups and timed 20 updates with matching source/binary provenance and inputs.
+Saving a floating backward mask eliminated repeated integer TensorList transfers;
+native rounded FP16 instructions alone did not demonstrate whole-update speedup.
+NEST retains FP32 compact outputs and heterogeneous state, whereas ordinary Keras
+RNN casts legacy outputs/state to compute dtype. The remaining memory gap is not
+fully attributed. Do not treat diagnostic performance as ordinary-default speed
+or silently reduce NEST penalty precision. These changes remain opt-in.
 
 A 2026-09-16 RTX 3090 benchmark measured median training updates of 4.38 s for
 legacy fused state, 5.93 s for legacy TensorFlow state, and 8.66 s for NEST
@@ -508,7 +587,7 @@ the `GLIF point-neuron models <https://brain-map.org/our-research/computational-
                   - 
                   - False
                 * - dynamics_mode
-                  - Select ``"legacy"`` for the historical DPointNet update equations or ``"nest"`` for NEST-compatible timing, integration, delays, state, and timestamps.
+                  - Select ``"legacy"`` for recommended training or ``"nest"`` for separately validated compatibility inference/evaluation. NEST training is experimental and is not recommended for use. NEST changes timing, integration, delays, state, and timestamps.
                   - "legacy"
                 * - train_recurrent
                   - 
