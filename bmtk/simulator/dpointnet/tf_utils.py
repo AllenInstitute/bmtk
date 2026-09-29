@@ -10,6 +10,9 @@ from .io_tools import io
 def enable_gpu_memory_growth():
     gpus = tf.config.list_physical_devices('GPU')
     for gpu in gpus:
+        if tf.config.get_logical_device_configuration(gpu):
+            io.log_info(f'Preserving explicit TensorFlow logical-device memory configuration for {gpu.name}.')
+            continue
         try:
             tf.config.experimental.set_memory_growth(gpu, True)
         except RuntimeError as exc:

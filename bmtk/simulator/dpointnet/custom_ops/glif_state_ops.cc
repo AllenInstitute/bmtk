@@ -3,16 +3,46 @@
 
 using namespace tensorflow;
 
+namespace {
+// Internal experiment only: AoS [neurons, 28] remains the default. SoA [28,
+// neurons] changes addresses, not coefficient values or neuron/state ordering.
+// Callers must supply the matching layout to both forward and backward.
+Status NestCoefficientShape(shape_inference::InferenceContext* context,
+                            int coefficient_index) {
+  string layout;
+  DataType dtype;
+  TF_RETURN_IF_ERROR(context->GetAttr("coefficients_layout", &layout));
+  TF_RETURN_IF_ERROR(context->GetAttr("T", &dtype));
+  if (layout == "soa" && dtype != DT_FLOAT) {
+    return errors::InvalidArgument("NEST SoA coefficients require FP32 voltage/ASC");
+  }
+  shape_inference::ShapeHandle voltage, coefficients;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &voltage));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(coefficient_index), 2,
+                                      &coefficients));
+  shape_inference::DimensionHandle dimension;
+  TF_RETURN_IF_ERROR(context->WithValue(
+      context->Dim(coefficients, layout == "soa" ? 0 : 1), 28, &dimension));
+  TF_RETURN_IF_ERROR(context->Merge(
+      context->Dim(coefficients, layout == "soa" ? 1 : 0),
+      context->Dim(voltage, 1), &dimension));
+  return OkStatus();
+}
+}  // namespace
+
 REGISTER_OP("DpointnetNestStateForward")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
     .Attr("hard_reset: bool = false")
+    .Attr("emit_pre_reset_voltage: bool = false")
+    .Attr("coefficients_layout: {'aos', 'soa'} = 'aos'")
     .Input("v: T")
     .Input("r: R")
     .Input("asc: T")
-    .Input("psc_rise: T")
-    .Input("psc: T")
-    .Input("currents: T")
+    .Input("psc_rise: S")
+    .Input("psc: S")
+    .Input("currents: S")
     .Input("coefficients: T")
     .Input("t_ref: R")
     .Input("dt: T")
@@ -21,9 +51,10 @@ REGISTER_OP("DpointnetNestStateForward")
     .Output("new_v: T")
     .Output("new_r: R")
     .Output("new_asc: T")
-    .Output("new_rise: T")
-    .Output("new_psc: T")
+    .Output("new_rise: S")
+    .Output("new_psc: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestCoefficientShape(context, 6));
       shape_inference::ShapeHandle voltage;
       TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &voltage));
       context->set_output(0, voltage);
@@ -35,8 +66,10 @@ REGISTER_OP("DpointnetNestStateForward")
 
 REGISTER_OP("DpointnetNestStateBackward")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
     .Attr("hard_reset: bool = false")
+    .Attr("coefficients_layout: {'aos', 'soa'} = 'aos'")
     .Input("threshold_voltage: T")
     .Input("r: R")
     .Input("coefficients: T")
@@ -45,14 +78,15 @@ REGISTER_OP("DpointnetNestStateBackward")
     .Input("grad_threshold: T")
     .Input("grad_v: T")
     .Input("grad_asc: T")
-    .Input("grad_rise: T")
-    .Input("grad_psc: T")
+    .Input("grad_rise: S")
+    .Input("grad_psc: S")
     .Output("v_grad: T")
     .Output("asc_grad: T")
-    .Output("rise_grad: T")
-    .Output("psc_grad: T")
-    .Output("currents_grad: T")
+    .Output("rise_grad: S")
+    .Output("psc_grad: S")
+    .Output("currents_grad: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
+      TF_RETURN_IF_ERROR(NestCoefficientShape(context, 2));
       context->set_output(0, context->input(0));
       context->set_output(1, context->input(7));
       context->set_output(2, context->input(8));
@@ -63,15 +97,16 @@ REGISTER_OP("DpointnetNestStateBackward")
 
 REGISTER_OP("DpointnetGlifStateForward")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
     .Attr("hard_reset: bool = false")
-    .Input("prev_z: T")
+    .Input("prev_z: S")
     .Input("v: T")
     .Input("r: R")
     .Input("asc: T")
-    .Input("psc_rise: T")
-    .Input("psc: T")
-    .Input("rec_inputs: T")
+    .Input("psc_rise: S")
+    .Input("psc: S")
+    .Input("rec_inputs: S")
     .Input("syn_decay: T")
     .Input("psc_initial: T")
     .Input("asc_decay: T")
@@ -84,8 +119,8 @@ REGISTER_OP("DpointnetGlifStateForward")
     .Output("new_v: T")
     .Output("new_r: R")
     .Output("new_asc: T")
-    .Output("new_psc_rise: T")
-    .Output("new_psc: T")
+    .Output("new_psc_rise: S")
+    .Output("new_psc: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
       context->set_output(0, context->input(1));
       context->set_output(1, context->input(2));
@@ -97,9 +132,12 @@ REGISTER_OP("DpointnetGlifStateForward")
 
 REGISTER_OP("DpointnetGlifStateBackward")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
     .Attr("hard_reset: bool = false")
-    .Input("prev_z: T")
+    .Attr("detach_reset: bool = true")
+    .Attr("detach_asc_reset: bool = true")
+    .Input("prev_z: S")
     .Input("r: R")
     .Input("syn_decay: T")
     .Input("psc_initial: T")
@@ -112,14 +150,14 @@ REGISTER_OP("DpointnetGlifStateBackward")
     .Input("voltage_gradient_retention: T")
     .Input("grad_v: T")
     .Input("grad_asc: T")
-    .Input("grad_psc_rise: T")
-    .Input("grad_psc: T")
-    .Output("prev_z_grad: T")
+    .Input("grad_psc_rise: S")
+    .Input("grad_psc: S")
+    .Output("prev_z_grad: S")
     .Output("v_grad: T")
     .Output("asc_grad: T")
-    .Output("psc_rise_grad: T")
-    .Output("psc_grad: T")
-    .Output("rec_inputs_grad: T")
+    .Output("psc_rise_grad: S")
+    .Output("psc_grad: S")
+    .Output("rec_inputs_grad: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
       context->set_output(0, context->input(0));
       context->set_output(1, context->input(11));
@@ -132,11 +170,12 @@ REGISTER_OP("DpointnetGlifStateBackward")
 
 REGISTER_OP("DpointnetSpikeShift")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
     .Input("voltage: T")
     .Input("refractory: bool")
-    .Input("history: T")
-    .Output("spikes: T")
-    .Output("new_history: T")
+    .Input("history: S")
+    .Output("spikes: S")
+    .Output("new_history: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
       shape_inference::ShapeHandle voltage;
       shape_inference::ShapeHandle refractory;
@@ -150,15 +189,18 @@ REGISTER_OP("DpointnetSpikeShift")
       return OkStatus();
     });
 
-REGISTER_OP("DpointnetSpikeShiftBackward")
+REGISTER_OP("DpointnetSpikeShiftBackwardV2")
     .Attr("T: {half, float}")
+    .Attr("S: {half, float}")
+    .Attr("pseudo_gauss: bool = false")
     .Input("voltage: T")
     .Input("refractory: bool")
-    .Input("spike_grad: T")
-    .Input("history_grad: T")
+    .Input("spike_grad: S")
+    .Input("history_grad: S")
     .Input("dampening: T")
+    .Input("gauss_std: T")
     .Output("voltage_grad: T")
-    .Output("old_history_grad: T")
+    .Output("old_history_grad: S")
     .SetShapeFn([](shape_inference::InferenceContext* context) {
       context->set_output(0, context->input(0));
       context->set_output(1, context->input(3));

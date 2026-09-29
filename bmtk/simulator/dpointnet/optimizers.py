@@ -1,4 +1,6 @@
 import inspect
+from collections.abc import Mapping
+from numbers import Real
 
 import tensorflow as tf
 import math
@@ -77,31 +79,51 @@ def prepare_local_gradients_for_optimizer(optimizer, gradients):
 
 
 def create_optimizer(optimizer, learning_rate, optimizer_params=None):
+    """Build a configured optimizer, clipping physical (unscaled) gradients.
+
+    ``name`` is the training-config selector, not the Keras instance name.
+    Configure clipping here on the inner optimizer, before loss-scale wrapping.
+    """
+    if optimizer_params is None:
+        optimizer_params = {}
+    if not isinstance(optimizer_params, Mapping):
+        raise TypeError('optimizer_params must be a mapping.')
     if isinstance(optimizer, tf.keras.optimizers.Optimizer):
+        if optimizer_params:
+            raise ValueError('optimizer_params cannot configure an optimizer instance.')
         return optimizer
 
-    _optimizer = None
-    optimizer_params = optimizer_params or {}
-    if optimizer == 'adam':
-        _optimizer = tf.keras.optimizers.Adam(
-            learning_rate=learning_rate,
-            epsilon=optimizer_params.get('epsilon', 1.0e-11),
-        )
-    elif optimizer == 'exp_adam':
-        _optimizer = ExponentiatedAdam(
-            learning_rate=learning_rate,
-            epsilon=optimizer_params.get('epsilon', 1.0e-11),
-        )
-    elif optimizer == 'sgd':
-        _optimizer = tf.keras.optimizers.SGD(
-            learning_rate=learning_rate,
-            momentum=optimizer_params.get('momentum', 0.0),
-            nesterov=optimizer_params.get('nesterov', False),
-        )
-    else:
+    factories = {
+        'adam': (tf.keras.optimizers.Adam, {'epsilon': 1.0e-11}),
+        'exp_adam': (ExponentiatedAdam, {'epsilon': 1.0e-11}),
+        'sgd': (tf.keras.optimizers.SGD, {'momentum': 0.0, 'nesterov': False}),
+    }
+    if optimizer not in factories:
         raise ValueError(f'Invalid optimizer: {optimizer}')
-    
-    return _optimizer
+    optimizer_cls, params = factories[optimizer]
+    clipping_modes = ('clipnorm', 'clipvalue', 'global_clipnorm')
+    unsupported = set(optimizer_params) - set(params) - set(clipping_modes) - {'name'}
+    if unsupported:
+        raise ValueError(
+            f'Unsupported optimizer_params for {optimizer}: '
+            + ', '.join(sorted(str(key) for key in unsupported))
+        )
+    if 'name' in optimizer_params and optimizer_params['name'] != optimizer:
+        raise ValueError('optimizer_params name must match the optimizer selector.')
+
+    enabled_clipping = []
+    for key in clipping_modes:
+        value = optimizer_params.get(key)
+        if value is not None:
+            if (isinstance(value, bool) or not isinstance(value, Real)
+                    or not math.isfinite(value) or value <= 0):
+                raise ValueError(f'{key} must be a finite positive number or None.')
+            enabled_clipping.append(key)
+    if len(enabled_clipping) > 1:
+        raise ValueError('Only one of clipnorm, clipvalue, global_clipnorm may be set.')
+
+    params.update({key: value for key, value in optimizer_params.items() if key != 'name'})
+    return optimizer_cls(learning_rate=learning_rate, **params)
 
 
 class LinearWarmupCosineDecay(tf.keras.optimizers.schedules.LearningRateSchedule):

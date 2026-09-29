@@ -68,7 +68,12 @@ def _gpu_compatibility_error(
 
 def _destroy_metadata_resource(handle):
     try:
-        tf.raw_ops.DestroyResourceOp(resource=handle, ignore_lookup_error=True)
+        if tf.is_symbolic_tensor(handle):
+            tf.raw_ops.DestroyResourceOp(resource=handle, ignore_lookup_error=True)
+        else:
+            # Garbage collection can run while an unrelated function is tracing.
+            with tf.init_scope():
+                tf.raw_ops.DestroyResourceOp(resource=handle, ignore_lookup_error=True)
     except (tf.errors.OpError, RuntimeError):
         pass
 
@@ -453,6 +458,90 @@ def _fused_spike_currents_gradient(op, current_grad):
     )
 
 
+def fused_recurrent_accumulation_available():
+    return (
+        _OPS is not None
+        and hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate")
+        and (_gpu_compute_architecture() or 0) >= 86
+    )
+
+
+def fused_recurrent_weight_carry(
+    spikes,
+    weight_carrier,
+    csr_weights,
+    connectivity,
+    basis,
+    n_post,
+    spike_gradient_scale,
+):
+    """VJP-only currents with a differentiable identity weight carrier.
+
+    The carrier's cotangent is the true loop-carried CSR weight accumulator.
+    It is passed into the producer, not added to a materialized step gradient.
+    """
+    if _OPS is None or not hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate"):
+        raise RuntimeError("Rebuild CUDA operators for fused recurrent accumulation.")
+    if any(
+        value.dtype != tf.float32
+        for value in (spikes, weight_carrier, csr_weights, basis)
+    ):
+        raise ValueError("Fused recurrent accumulation requires FP32 operands.")
+
+    @tf.custom_gradient
+    def project(z, carrier, weights, coefficients, scale):
+        currents = fused_spike_currents(
+            z,
+            carrier,
+            weights,
+            connectivity,
+            coefficients,
+            n_post,
+            compute_spike_gradient=True,
+            spike_gradient_scale=scale,
+            use_packed_sm120_backward=False,
+            write_csr_weight_gradient=True,
+            vjp_only=True,
+        )
+        # Reuse this FuncGraph's capture; recapturing the eager handle in grad
+        # breaks TensorFlow's nested while-gradient resource mapping.
+        metadata = (
+            connectivity["metadata_handle"]
+            if tf.executing_eagerly()
+            else currents.op.inputs[2]
+        )
+
+        def grad(dcurrents, dcarrier):
+            if dcarrier is None:
+                dcarrier = tf.zeros_like(carrier)
+            if dcurrents is None:
+                dcurrents = tf.zeros_like(currents)
+            dz, accumulated = _OPS.dpointnet_csr_spike_grad_accumulate(
+                z,
+                dcurrents,
+                metadata,
+                weights,
+                coefficients,
+                scale,
+                dcarrier,
+                Tindex=tf.as_dtype(connectivity["index_dtype"]),
+                n_post=n_post,
+                n_edges=connectivity["n_edges"],
+                n_pairs=connectivity["n_pairs"],
+            )
+            return dz, accumulated, None, None, None
+
+        return (currents, tf.identity(carrier)), grad
+
+    return project(
+        spikes,
+        weight_carrier,
+        csr_weights,
+        basis,
+        tf.cast(spike_gradient_scale, tf.float32),
+    )
+
+
 def fused_spike_currents(
     spikes,
     master_weights,
@@ -469,7 +558,13 @@ def fused_spike_currents(
     write_csr_weight_gradient=False,
     use_small_batch_backward=False,
     use_active_row_forward=False,
+    vjp_only=False,
 ):
+    """Project currents, or supply only their registered VJP for recorded replay.
+
+    The internal ``vjp_only`` mode returns zeros and must only be used under
+    saved-primal substitution; it does not approximate the forward simulation.
+    """
     if _OPS is None:
         raise RuntimeError(
             f"Fused DPointNet CUDA operator is unavailable: {cuda_op_status()}"
@@ -478,6 +573,8 @@ def fused_spike_currents(
         raise TypeError(
             f"Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}."
         )
+    if vjp_only and (spikes.dtype != tf.float32 or initial_currents is not None):
+        raise ValueError("VJP-only projection requires FP32 operands and no initial currents.")
     if csr_weights.dtype != spikes.dtype or basis.dtype != spikes.dtype:
         raise TypeError("spikes, csr_weights, and basis must have the same dtype.")
     if master_weights.shape.rank != 1 or csr_weights.shape.rank != 1:
@@ -534,7 +631,7 @@ def fused_spike_currents(
     use_grouped_batch32_forward = (
         use_active_row_forward or spikes.shape[0] == 32
     ) and basis.shape[1] == 4
-    if use_grouped_batch32_forward:
+    if use_grouped_batch32_forward and not vjp_only:
         active_rows = tf.cast(
             tf.where(tf.reduce_any(spikes > 0, axis=0))[:, 0],
             tf.int64,
@@ -577,4 +674,5 @@ def fused_spike_currents(
         use_packed_sm120_backward=use_packed_sm120_backward,
         write_csr_weight_gradient=write_csr_weight_gradient,
         use_small_batch_backward=use_small_batch_backward,
+        vjp_only=vjp_only,
     )

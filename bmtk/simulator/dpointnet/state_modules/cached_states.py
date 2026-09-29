@@ -47,12 +47,14 @@ class CachedInitState:
         npz_data = np.load(file_path)
 
         state_vals = []
-        _, state_names = rnn.cell.zero_state(
+        zero_state, state_names = rnn.cell.zero_state(
             batch_size=rnn.batch_size, dtype=rnn.dtype, with_names=True
         )
-        for name in state_names:
+        for name, zero in zip(state_names, zero_state):
             if name == "noise_step0" and name not in npz_data:
                 state_vals.append(np.zeros((rnn.batch_size,), dtype=np.int32))
+            elif name == "online_voltage_penalty0" and name not in npz_data:
+                state_vals.append(np.zeros(zero.shape, dtype=np.float32))
             else:
                 state_vals.append(npz_data[name])
 
@@ -103,6 +105,13 @@ class CachedInitState:
 
         init_state = self._load_fn(selected_file, rnn)
         expected_state = rnn.cell.zero_state(batch_size=rnn.batch_size, dtype=rnn.dtype)
+        append_penalty = (
+            bool(getattr(rnn.cell, "_online_voltage_losses", ()))
+            and len(init_state) < len(expected_state)
+        )
+        penalty_state = expected_state[-1] if append_penalty else None
+        if append_penalty:
+            expected_state = expected_state[:-1]
         if len(init_state) == len(expected_state) - 1:
             if len(init_state) > 6 and tf.as_dtype(init_state[6].dtype).is_integer:
                 raise ValueError(
@@ -123,4 +132,6 @@ class CachedInitState:
                 raise ValueError(
                     "Cached state shape does not match the selected dynamics"
                 )
+        if append_penalty:
+            init_state = tuple(init_state) + (penalty_state,)
         return init_state

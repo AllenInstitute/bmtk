@@ -58,7 +58,7 @@ def active_update(
     rise_voltage,
     reset_voltage,
     hard_reset,
-    direct_current=0.0
+    direct_current=0.0,
 ):
     active = refractory <= 0
     mean_adaptation = tf.reduce_sum(adaptation * asc_mean, axis=-1)
@@ -73,6 +73,23 @@ def active_update(
     return voltage, remaining, adaptation, active
 
 
+@tf.custom_gradient
+def _event_select(before, after, event, sensitivity):
+    """Keep the Boolean forward map, with its explicitly chosen event Jacobian."""
+    fired = event > 0
+    result = tf.where(fired, after, before)
+
+    def grad(dy):
+        return (
+            tf.where(fired, tf.zeros_like(dy), dy),
+            tf.where(fired, dy, tf.zeros_like(dy)),
+            dy * sensitivity,
+            None,
+        )
+
+    return result, grad
+
+
 def spike_reset(
     voltage,
     refractory,
@@ -83,18 +100,30 @@ def spike_reset(
     refractory_steps,
     asc_amplitudes,
     asc_refractory_decay,
-    hard_reset
+    hard_reset,
+    detach_reset=True,
+    detach_asc_reset=True,
 ):
     fired = tf.stop_gradient(spikes) > 0
+    reset_event = tf.stop_gradient(spikes) if detach_reset else spikes
     voltage = (
-        tf.where(fired, reset_voltage, voltage)
+        _event_select(
+            voltage,
+            tf.broadcast_to(reset_voltage, tf.shape(voltage)),
+            reset_event,
+            reset_voltage - voltage,
+        )
         if hard_reset
-        else voltage - tf.stop_gradient(spikes) * (1 - reset_voltage)
+        else voltage - reset_event * (1 - reset_voltage)
     )
     refractory = tf.where(
         fired, tf.cast(refractory_steps, refractory.dtype), refractory
     )
-    adaptation = tf.where(
-        fired[..., None], asc_amplitudes + adaptation * asc_refractory_decay, adaptation
+    asc_event = tf.stop_gradient(spikes) if detach_asc_reset else spikes
+    adaptation = _event_select(
+        adaptation,
+        asc_amplitudes + adaptation * asc_refractory_decay,
+        tf.broadcast_to(asc_event[..., None], tf.shape(adaptation)),
+        asc_amplitudes + (asc_refractory_decay - 1) * adaptation,
     )
     return voltage, refractory, adaptation

@@ -19,12 +19,14 @@ from bmtk.simulator.dpointnet.cell_models.nest_dynamics import (
 @pytest.mark.parametrize("dtype", [tf.float32, tf.float16])
 @pytest.mark.parametrize("refractory_dtype", [tf.int8, tf.int16])
 @pytest.mark.parametrize("hard_reset", [False, True])
+@pytest.mark.parametrize("return_pre_reset_voltage", [False, True])
 @pytest.mark.parametrize(
     "batch,dampening,loss_outputs",
     [(3, 0.25, None), (32, -0.2, (0, 6)), (1, 1.2, (1,))],
 )
 def test_fused_nest_state_matches_reference_values_and_gradients(
-    dtype, refractory_dtype, hard_reset, batch, dampening, loss_outputs
+    dtype, refractory_dtype, hard_reset, batch, dampening, loss_outputs,
+    return_pre_reset_voltage,
 ):
     from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
         fused_nest_state,
@@ -105,6 +107,7 @@ def test_fused_nest_state_matches_reference_values_and_gradients(
         )
         spikes = spike_function(voltage - parameters["v_th"], parameters["dampening"])
         spikes = tf.where(active, spikes, tf.zeros_like(spikes))
+        before_reset = voltage
         voltage, remaining, adaptation = spike_reset(
             voltage,
             remaining,
@@ -116,7 +119,7 @@ def test_fused_nest_state_matches_reference_values_and_gradients(
             asc_refractory_decay=parameters["asc_refractory_decay"],
             hard_reset=hard_reset,
         )
-        return (
+        result = (
             spikes,
             voltage,
             remaining,
@@ -125,13 +128,15 @@ def test_fused_nest_state_matches_reference_values_and_gradients(
             tf.reshape(new_psc, (batch, neurons * 4)),
             tf.concat([spikes, history[:, :-neurons]], axis=1),
         )
+        return result + (before_reset,) if return_pre_reset_voltage else result
 
     def evaluate(fused):
         with tf.GradientTape() as tape:
             tape.watch(values)
             if fused:
                 outputs = fused_nest_state(
-                    values[0], refractory, *values[1:], **parameters
+                    values[0], refractory, *values[1:],
+                    return_pre_reset_voltage=return_pre_reset_voltage, **parameters
                 )
             else:
                 outputs = reference(*values)
@@ -171,7 +176,7 @@ def test_fused_nest_state_matches_reference_values_and_gradients(
         )
     np.testing.assert_array_equal(actual[0], expected[0])
     np.testing.assert_array_equal(actual[2], expected[2])
-    np.testing.assert_array_equal(actual[-1], expected[-1])
+    np.testing.assert_array_equal(actual[6], expected[6])
     assert np.any(expected[0].numpy() != 0)
     for observed, reference_value in zip(gradients, expected_gradients):
         assert observed is not None and reference_value is not None
@@ -225,8 +230,13 @@ def test_nest_spike_history_rejects_malformed_shapes(backward, history_shape):
         refractory = tf.zeros((2, 2), tf.bool)
         history = tf.zeros(history_shape)
         if backward:
-            glif_state_ops._OPS.dpointnet_spike_shift_backward(
-                voltage, refractory, voltage, history, tf.constant(0.3)
+            glif_state_ops._OPS.dpointnet_spike_shift_backward_v2(
+                voltage,
+                refractory,
+                voltage,
+                history,
+                tf.constant(0.3),
+                tf.constant(0.5),
             )
         else:
             glif_state_ops._OPS.dpointnet_spike_shift(voltage, refractory, history)
@@ -618,7 +628,8 @@ def test_nest_fused_state_selection_and_unsupported_models(monkeypatch, availabl
     else:
         with pytest.raises(ValueError, match="rebuild CUDA"):
             _resolve_fused_state(True, 4, False, "nest")
-    for basis, gaussian in ((1, False), (4, True)):
+    assert _resolve_fused_state("auto", 4, True, "nest") is available
+    for basis, gaussian in ((1, False), (1, True)):
         assert _resolve_fused_state("auto", basis, gaussian, "nest") is False
         with pytest.raises(ValueError, match="incompatible"):
             _resolve_fused_state(True, basis, gaussian, "nest")

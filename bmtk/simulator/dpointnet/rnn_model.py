@@ -382,6 +382,7 @@ class RNN:
 
         _batch_size = batch_size or self.adjusted_batch_size
         _seq_len = seq_len or self.adjusted_seq_len
+        self._use_state_input = bool(use_state_input)
 
         # Pre-populate the global syn_id mapping by scanning all networks (recurrent + inputs)
         # BEFORE building any dict. This ensures the recurrent network's basis_weights table
@@ -398,16 +399,27 @@ class RNN:
         network = self.recurrent_network
         external_input_networks = [i for i in self._input_networks.values() if i.n_spiking_nodes > 0]
         n_spiking_inputs = sum(i.n_spiking_nodes for i in external_input_networks)
+        inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
+        has_external_continuous_inputs = any(
+            item.get("options", {}).get("input_type", item["input_type"]) == "current"
+            and item["n_inputs"] > 0
+            for item in inputs_dicts.values()
+        )
         external_input_dtype = self.dtype
+        if cell_params.get("temporal_gradient_precision") == "float32":
+            external_input_dtype = tf.float32
         external_populations = {i.name for i in external_input_networks}
         external_mods = [
             mod for mod in self._input_generators_mods.values()
             if mod.population_name in external_populations
         ]
-        if external_mods and all(type(mod).__name__ == 'LGNGenerator' for mod in external_mods):
+        if (
+            external_mods
+            and not has_external_continuous_inputs
+            and all(type(mod).__name__ == 'LGNGenerator' for mod in external_mods)
+        ):
             external_input_dtype = tf.bool
         n_neurons = network['n_nodes']
-        inputs_dicts = {i.name: i.to_dict() for i in self._input_networks.values()}
 
         extrn_inputs = tf.keras.layers.Input(
             shape=(None, n_spiking_inputs,),
@@ -432,8 +444,19 @@ class RNN:
         # the reference V1_GLIF_model, which builds create_model() within strategy.scope().
         if issubclass(self.cell_cls, GLIF3Cell):
             cell_params.setdefault('batch_size', _batch_size)
+            if getattr(self, "_online_voltage_losses", None):
+                cell_params["online_voltage_losses"] = self._online_voltage_losses
+            if cell_params.get("temporal_gradient_precision") == "float32" and self.training_engine is not None:
+                if self.training_engine.gradient_checkpointing:
+                    size = self.training_engine.gradient_checkpoint_chunk_size
+                    if cell_params.get("temporal_checkpoint_chunk_size", size) != size:
+                        raise ValueError("Cell temporal and training checkpoint chunk sizes conflict.")
+                    cell_params["temporal_checkpoint_chunk_size"] = size
+                cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
         with self.strategy.scope():
             self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
+            for loss in getattr(self, "_online_voltage_losses", ()):
+                loss.build(self._cell)
             self.zero_state, state_names = self._cell.zero_state(self.batch_size, self.dtype, with_names=True)
 
             if use_state_input:
@@ -451,7 +474,11 @@ class RNN:
             rnn_class = (
                 ExplicitStateRNN
                 if isinstance(self._cell, GLIF3Cell)
-                and self._cell.dynamics_mode == "nest"
+                and (
+                    self._cell.dynamics_mode == "nest"
+                    or self._cell.state_precision == "selective"
+                    or self._cell._online_voltage_losses
+                )
                 else tf.keras.layers.RNN
             )
             rnn = rnn_class(
@@ -463,6 +490,8 @@ class RNN:
             # Keep the cell's provided state dtypes instead of letting Keras autocast them to the
             # compute dtype. Matches the reference (V1_GLIF_model create_model).
             rnn._autocast = False
+            if getattr(self._cell, "_online_voltage_losses", ()):
+                rnn.autocast = False
             rnn_layer = rnn(full_inputs, initial_state=rnn_initial_state)
 
             rnn_out, _ = self._split_rnn_layer_output(rnn_layer)
@@ -485,10 +514,16 @@ class RNN:
         self._model_built = True
 
     def model_inputs(self, spikes, initial_state=None, state_inputs=None):
+        if (
+            getattr(self._cell, "temporal_gradient_precision", "compute") == "float32"
+            and self._cell._temporal_continuous_inputs
+            and tf.as_dtype(spikes.dtype) != tf.float32
+        ):
+            raise ValueError("FP32 temporal continuous-input gradients require float32 model inputs.")
         inputs = [spikes]
         if state_inputs is not None:
             inputs.append(state_inputs)
-        if initial_state is not None:
+        if initial_state is not None and getattr(self, "_use_state_input", True):
             inputs.extend(tf.nest.flatten(initial_state))
         return inputs
 
@@ -543,7 +578,11 @@ class RNN:
 
     def _split_rnn_layer_output(self, rnn_layer_output):
         if (
-            getattr(self._cell, "dynamics_mode", None) == "nest"
+            (
+                getattr(self._cell, "dynamics_mode", None) == "nest"
+                or getattr(self._cell, "state_precision", None) == "selective"
+                or getattr(self._cell, "_online_voltage_losses", ())
+            )
             and not self._cell._return_voltage_sequences
             and isinstance(rnn_layer_output, (list, tuple))
             and not isinstance(rnn_layer_output[0], (list, tuple))
@@ -637,6 +676,8 @@ class RNN:
             )
             # Preserve heterogeneous state dtypes for the state rollout path as well.
             state_rnn._autocast = False
+            if getattr(self._cell, "_online_voltage_losses", ()):
+                state_rnn.autocast = False
             if state_inputs:
                 state_out = state_rnn(full_inputs, initial_state=state_inputs)
             else:
@@ -1076,6 +1117,20 @@ class RNN:
 
         #     network._inference_inputs[input_name] = input_mod
 
+        # Reserve online state channels before any state/weight loss constructor
+        # can build the model. JSON loss ordering must not change state layout.
+        shared_loss_cache = {}
+        for parameter in (config.get("training") or {}).get("parameters", ()):
+            for spec in parameter.get("loss_functions", {}).values():
+                if spec.get("enabled", True) and spec["module"] == "VoltageRateFloor":
+                    cache_key = tuple(sorted(
+                        (key, repr(value)) for key, value in spec.items() if key != "enabled"
+                    ))
+                    if cache_key not in shared_loss_cache:
+                        shared_loss_cache[cache_key] = LossModules().get_module(
+                            "VoltageRateFloor"
+                        )(rnn=network, **spec)
+
         init_state_params = config.get('initial_state', {})
         if init_state_params:
             mod_cls = StateModules().get_init_state_module(init_state_params['module'])
@@ -1161,7 +1216,6 @@ class RNN:
                 callbacks = cb_class(rnn=network, **callback_params)
                 training_engine.set_callbacks(callbacks=callbacks)
 
-            shared_loss_cache = {}
             parameter_specs = []
             for train_params_dict in train_dict["parameters"]:
                 pname = train_params_dict["name"]
@@ -1193,7 +1247,7 @@ class RNN:
                         continue
                     loss_mod = LossModules().get_module(loss_fnc_params["module"])
                     loss_obj = None
-                    if loss_fnc_params["module"] == "EMDWeightRegularization":
+                    if loss_fnc_params["module"] in ("EMDWeightRegularization", "VoltageRateFloor"):
                         cache_key = tuple(
                             sorted(
                                 (key, repr(value))

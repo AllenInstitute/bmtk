@@ -264,7 +264,11 @@ def test_noise_step_is_explicit_state_and_replays_poisson_draws():
     cell._n_syn_basis = 2
     cell._refractory_state_dtype = tf.int16
     cell.noise_seed = tf.constant(53, dtype=tf.int64)
-    cell.calculate_input_current_from_spikes = lambda spikes, input_net: spikes
+    def identity_projection(spikes, input_net, initial_currents=None):
+        assert initial_currents is None
+        return spikes
+
+    cell.calculate_input_current_from_spikes = identity_projection
     input_net = {
         "input_dense_shape": (2, 64),
         "spike_prob": tf.constant(0.25, dtype=tf.float32),

@@ -565,7 +565,11 @@ def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch)
         calls.append((sm_architectures, ptx_architecture, architecture_path))
         return None
 
-    monkeypatch.setattr(glif_state_ops, "_OPS", object())
+    monkeypatch.setattr(
+        glif_state_ops,
+        "_OPS",
+        type("CurrentStateABI", (), {"dpointnet_spike_shift_backward_v2": None})(),
+    )
     monkeypatch.setattr(glif_state_ops, "_SM_ARCHITECTURES", (86, 120))
     monkeypatch.setattr(glif_state_ops, "_PTX_ARCHITECTURE", 120)
     monkeypatch.setattr(glif_state_ops, "_gpu_compatibility_error", compatibility_error)
@@ -746,7 +750,7 @@ def test_explicit_pair_projection_is_batch_and_basis_generic(batch_size, basis_w
         ("auto", True, 4, False, True),
         ("auto", False, 4, False, False),
         ("auto", True, 3, False, False),
-        ("auto", True, 4, True, False),
+        ("auto", True, 4, True, True),
     ],
 )
 def test_fused_state_policy_resolution(
@@ -764,8 +768,8 @@ def test_forced_fused_state_rejects_incompatible_model(monkeypatch):
         "bmtk.simulator.dpointnet.cell_models.glif3_cell.fused_glif_state_available",
         lambda: True,
     )
-    with pytest.raises(ValueError, match="pseudo_gauss"):
-        _resolve_fused_state(True, 4, True)
+    with pytest.raises(ValueError, match="basis"):
+        _resolve_fused_state(True, 3, True)
 
 
 @pytest.mark.parametrize(

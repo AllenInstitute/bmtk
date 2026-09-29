@@ -4,6 +4,16 @@ import tensorflow as tf
 
 
 class ExplicitStateRNN(tf.keras.layers.RNN):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._autocast = False
+        self.autocast = False
+        if getattr(self.cell, "temporal_gradient_precision", "compute") == "float32":
+            if self.unroll or self.go_backwards or self.stateful:
+                raise ValueError(
+                    "FP32 temporal gradients require a forward, non-stateful, non-unrolled RNN."
+                )
+
     def call(self, sequences, initial_state=None, mask=None, training=False):
         if self.stateful:
             raise ValueError(
@@ -19,7 +29,24 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 self.compute_dtype,
             )
         states = [tf.convert_to_tensor(value) for value in initial_state]
-        compact_unroll = self.unroll and not self.cell._return_voltage_sequences
+        self.cell.validate_state_precision(states)
+        if getattr(self.cell, "temporal_gradient_precision", "compute") == "float32":
+            if mask is not None or getattr(self, "time_major", False):
+                raise ValueError(
+                    "FP32 temporal gradients require unmasked batch-major input."
+                )
+            from ..temporal_adjoint import TemporalAdjointRunner
+
+            runner = TemporalAdjointRunner(
+                self.cell,
+                chunk_size=self.cell.temporal_checkpoint_chunk_size,
+                pack_spike_checkpoints=self.cell.temporal_pack_spike_checkpoints,
+            )
+            output, states = runner(sequences, states)
+            if not self.return_sequences:
+                output = tf.nest.map_structure(lambda value: value[:, -1], output)
+            return (output, *states) if self.return_state else output
+        compact_unroll = self.unroll and isinstance(self.cell.output_size, tuple)
         if hasattr(self, "inner_loop") and not compact_unroll:
             last, sequence, states = self.inner_loop(
                 sequences, states, mask, training=training
@@ -83,14 +110,20 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
     ):
         shapes = self.compute_output_shape(sequences.shape)
         output_shape = shapes[0] if self.return_state else shapes
-        output = (
-            tf.keras.KerasTensor(output_shape, dtype=self.cell.compute_dtype)
-            if self.cell._return_voltage_sequences
-            else (
+        if isinstance(self.cell.output_size, tuple):
+            output = (
                 tf.keras.KerasTensor(output_shape[0], dtype=self.cell.compute_dtype),
                 tf.keras.KerasTensor(output_shape[1], dtype="float32"),
             )
-        )
+        else:
+            output = tf.keras.KerasTensor(
+                output_shape,
+                dtype=(
+                    self.cell.state_dtype
+                    if self.cell._return_voltage_sequences
+                    else "float32"
+                ),
+            )
         if not self.return_state:
             return output
         initial_state = (

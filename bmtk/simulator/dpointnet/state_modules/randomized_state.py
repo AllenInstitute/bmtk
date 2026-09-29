@@ -26,6 +26,10 @@ def constant(shape, dtype, value, batch_size):
     return tf.constant(shape=_shape, value=value)
 
 
+def _zero_voltage_penalty(n_channels, batch_size):
+    return tf.zeros((batch_size, n_channels), dtype=tf.float32)
+
+
 class RandomizedStateModule:
     def __init__(self, rnn, params, **kwargs):
         self._rnn = rnn
@@ -70,7 +74,7 @@ class RandomizedStateModule:
             rand_funcs = []
             if isinstance(self.params, dict):
                 missing = set(state_names) - set(self.params.keys())
-                required_missing = missing - {"noise_step0"}
+                required_missing = missing - {"noise_step0", "online_voltage_penalty0"}
                 if required_missing:
                     raise ValueError(
                         f"{self.__class__}: The following state parameters are missing from RNN Column class {self._rnn.cell.__class__}; {missing}."
@@ -81,7 +85,7 @@ class RandomizedStateModule:
                         f"{self.__class__.__name__}: Contains extra parameters that are not used by {self._rnn.cell.__class__.__name__}: {list(extra)}"
                     )
 
-                for name in state_names:
+                for name, zero in zip(state_names, zs_params):
                     if name == "noise_step0" and name not in self.params:
                         rand_funcs.append(
                             partial(
@@ -91,13 +95,24 @@ class RandomizedStateModule:
                                 value=0,
                             )
                         )
+                    elif name == "online_voltage_penalty0" and name not in self.params:
+                        rand_funcs.append(
+                            partial(_zero_voltage_penalty, n_channels=zero.shape[-1])
+                        )
                     else:
                         rand_funcs.append(self._build_funcs(self.params[name]))
 
             else:
                 for func_params in self.params:
                     rand_funcs.append(self._build_funcs(func_params))
-                if len(rand_funcs) == len(state_names) - 1:
+                if "online_voltage_penalty0" in state_names:
+                    if len(rand_funcs) == len(state_names) - 2:
+                        rand_funcs.insert(6, partial(constant, shape=(), dtype=tf.int32, value=0))
+                    if len(rand_funcs) == len(state_names) - 1:
+                        rand_funcs.append(
+                            partial(_zero_voltage_penalty, n_channels=zs_params[-1].shape[-1])
+                        )
+                elif len(rand_funcs) == len(state_names) - 1:
                     rand_funcs.append(
                         partial(
                             constant,
