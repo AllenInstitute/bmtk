@@ -15,24 +15,27 @@ The measurements qualify a throughput implementation, not NEST training converge
 or a universal learning-rate optimum. Keep legacy dynamics for new unrelated
 projects; do not silently switch an existing experiment's dynamics or precision.
 
-## Choose the precision profile explicitly
+## Precision profiles
 
-- **Throughput-oriented V1 engineering:** selective forward state with ordinary
-  per-state temporal gradients (`temporal_gradient_precision="compute"`). Use the
-  explicit overlay below for the qualified NEST/SM86/batch32 topology.
-- **Precision reference:** selective forward state with
+- **Default (FP16 temporal backward):** selective forward state with ordinary
+  per-state temporal gradients (`temporal_gradient_precision="compute"`, which is
+  also the constructor default) and native dynamic loss scaling. Use the explicit
+  overlay below for the qualified NEST/SM86/batch32 topology.
+- **Opt-in accuracy reference:** selective forward state with
   `temporal_gradient_precision="float32"` and `current_replay_mode="record"`.
-  Keep both public `use_packed_sm120_*` flags **false**. The internally selected
-  FP32 recurrent kernel is distinct from the FP16 packed kernels.
+  Use it when a task depends on very small long-lag credit, when reverse accuracy
+  is itself under study, or to check an FP16 result. Keep both public
+  `use_packed_sm120_*` flags **false**; the internally selected FP32 recurrent
+  kernel is distinct from the FP16 packed kernels. It costs about 1.5–1.8x update time.
 - `current_replay_mode="recompute"` is an explicitly approximate alternative:
   atomic current projection need not reproduce the original forward exactly.
 
 The existing [training guide](autodocs/source/dpointnet_guide.rst) describes general
-APIs. Constructor defaults remain compatibility choices; most parity accelerators
-are opt-in. ExpAdam now defaults to `jit_compile=true` on its eligible path;
-set it explicitly and validate XLA availability on a new environment.
+APIs. Most parity accelerators are opt-in constructor flags. ExpAdam now defaults
+to `jit_compile=true` on its eligible path; set it explicitly and validate XLA
+availability on a new environment.
 
-## Qualified throughput overlay
+## Qualified default overlay
 
 [dpointnet_parity_overlay.json](dpointnet_parity_overlay.json) is a **partial config**:
 merge these run/cell/training keys into a complete project-owned config. It contains
@@ -125,8 +128,8 @@ Those were **separate forward executions**, not an identical-forward oracle:
 atomic-order variability obscures smaller precision errors. Initial-state gradient
 norms alone cannot rule out spurious small tails. The prior controlled small-network
 FP16 rounding plateau is not disproved, and no learning/convergence test establishes
-that FP16 is safe for every delayed-credit task. Use FP32-record for precision
-qualification and tiny long-lag signals; throughput FP16 is a measured trade-off.
+that FP16 is safe for every delayed-credit task. FP16 is therefore the default,
+with FP32-record as the check for tiny long-lag signals and precision qualification.
 
 The tested snapshot passed1567 GPU tests (6 skipped),958 CUDA-disabled tests
 (615 skipped), and922 actual Python3.8/Keras2 CPU tests (651 skipped).
