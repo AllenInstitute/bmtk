@@ -72,4 +72,3 @@ def test_native_voltage_penalty_option_requires_rebuilt_operator(monkeypatch):
             dynamics_mode="nest",
             use_native_voltage_penalty=True,
         )
-
