@@ -129,13 +129,23 @@ class SpikeRateDistributionTarget:
         #     if self._post_delay is not None and self._post_delay != 0:
         #         spikes = spikes[:, :-self._post_delay, :]
 
-        spikes = loss_utils.spike_trimming(
-            spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+        use_cached_counts = (
+            trim
+            and self._pre_delay == 0
+            and self._post_delay == 0
+            and kwargs.get("spike_counts") is not None
         )
-
-        spike_counts = loss_utils.temporal_sum(spikes, dtype=self._dtype)
+        if use_cached_counts:
+            spike_counts = tf.cast(kwargs["spike_counts"], self._dtype)
+            duration = tf.cast(kwargs["spike_count_duration"], self._dtype)
+        else:
+            spikes = loss_utils.spike_trimming(
+                spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+            )
+            spike_counts = loss_utils.temporal_sum(spikes, dtype=self._dtype)
+            duration = tf.cast(tf.shape(spikes)[1], self._dtype)
         rates = tf.reduce_mean(spike_counts, axis=0)
-        rates /= tf.cast(tf.shape(spikes)[1], self._dtype)
+        rates /= duration
 
         reg_loss = loss_utils.compute_spike_rate_target_loss(
             rates, self._target_rates, dtype=self._dtype

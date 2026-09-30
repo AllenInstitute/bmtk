@@ -329,6 +329,80 @@ def test_active_row_forward_handles_sparse_and_empty_samples(batch_size, dtype):
         connectivity.close()
 
 
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch_size", [5, 32])
+@pytest.mark.parametrize("activity", ["all_silent", "delayed_sparse", "dense"])
+@pytest.mark.parametrize("aggregate", [False, True])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_device_active_queue_forward_matches_dense_reference(
+    batch_size, activity, aggregate, dtype
+):
+    indices = np.array(
+        [
+            [0, 0],
+            [0, 2],
+            [1, 2],
+            [1, 5],
+            [0, 5],
+        ],
+        dtype=np.int64,
+    )
+    synapse_types = np.array([1, 0, 1, 0, 0], dtype=np.int64)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        n_source_neurons=6,
+        n_target_neurons=2,
+        n_synapse_types=2,
+        sort_by_target=aggregate,
+    )
+    master = tf.Variable([1.0, -2.0, 0.5, 3.0, -1.5], dtype=tf.float32)
+    basis = tf.constant(
+        [[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]],
+        dtype=dtype,
+    )
+    values = np.zeros((batch_size, 6), dtype=np.float32)
+    if activity == "delayed_sparse":
+        values[::2, 0] = 1.0
+        values[-1, 2] = 2.0
+        values[:, 5] = np.arange(batch_size, dtype=np.float32) % 2
+    elif activity == "dense":
+        values[:] = (np.arange(batch_size * 6).reshape(batch_size, 6) % 3) + 1
+    spikes = tf.Variable(values, dtype=dtype)
+    upstream = tf.constant(
+        np.linspace(-0.25, 0.75, batch_size * 2 * 4).reshape(batch_size * 2, 4),
+        dtype=dtype,
+    )
+    try:
+        with tf.GradientTape() as tape:
+            output = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                2,
+                True,
+                use_device_active_queue_forward=True,
+                use_forward_run_aggregation=aggregate,
+                use_packed_sm120_backward=False,
+            )
+            loss = tf.reduce_sum(output * upstream)
+        gradients = tape.gradient(loss, (spikes, master))
+        with tf.GradientTape() as tape:
+            reference = _reference_currents_for_connectivity(
+                spikes, master, basis, indices, synapse_types, n_post=2
+            )
+            reference_loss = tf.reduce_sum(reference * upstream)
+        expected_gradients = tape.gradient(reference_loss, (spikes, master))
+        tolerance = 2e-2 if dtype == tf.float16 else 1e-5
+        np.testing.assert_allclose(output, reference, rtol=tolerance, atol=tolerance)
+        for actual, expected in zip(gradients, expected_gradients):
+            np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
+    finally:
+        connectivity.close()
+
+
 def _reference_dense_state(
     prev_z,
     voltage,
@@ -403,6 +477,29 @@ def test_build_csr_connectivity_groups_edges_by_source():
     assert connectivity["n_pairs"] == 4
     assert connectivity["index_dtype"] == "uint32"
     assert _metadata_values(connectivity).dtype == tf.uint32
+
+
+def test_build_csr_connectivity_can_sort_runs_by_target_within_source():
+    indices = np.array(
+        [[1, 0], [0, 0], [1, 0], [0, 1], [0, 0]],
+        dtype=np.int64,
+    )
+    synapse_types = np.array([1, 1, 0, 0, 0], dtype=np.int64)
+    connectivity = build_csr_connectivity(
+        indices, synapse_types, 2, 2, 2, sort_by_target=True
+    )
+    try:
+        metadata = _metadata_values(connectivity).numpy()
+        post_ids = metadata[:5]
+        types = metadata[5:10]
+        row_splits = metadata[10:13]
+        edge_ids = metadata[13:18]
+        np.testing.assert_array_equal(row_splits, [0, 4, 5])
+        np.testing.assert_array_equal(post_ids[:4], [0, 0, 1, 1])
+        np.testing.assert_array_equal(types[:4], [0, 1, 0, 1])
+        np.testing.assert_array_equal(edge_ids[:4], [4, 1, 2, 0])
+    finally:
+        connectivity.close()
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")

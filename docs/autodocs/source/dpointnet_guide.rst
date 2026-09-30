@@ -144,6 +144,21 @@ the compute and variable dtypes in the error. ``false`` remains the default and
 retains TensorFlow state updates.
 The legacy state kernel is never used for NEST. Fused current projection is independent.
 
+``use_fused_nest_event_vjp=true`` optionally moves NEST's existing attached-reset
+and attached-ASC event-adjoint arithmetic into the NEST backward kernel. It
+defaults to ``false`` and requires ``dynamics_mode="nest"``, enabled fused state,
+and a rebuilt library containing ``DpointnetNestStateBackwardEvents``. Explicit
+unsupported requests raise an error rather than silently changing the derivative.
+The old backward ABI and default path remain available. This changes neither
+forward equations nor the reset/ASC attachment settings; it does not fuse spike
+history or change replay, losses, canonical weights, or mixed-precision shadows.
+The option supports ordinary per-state gradients and selective FP32 temporal
+record/recompute execution. Separate dtype-rounded intermediate arithmetic is
+retained, but bitwise gradient equality across TensorFlow/CUDA math implementations
+is not guaranteed; qualify the intended precision and surrogate combination.
+It is a backward-only option, not an inference accelerator or a general NEST
+training recommendation.
+
 The NEST kernel preserves alpha-current voltage integration, adaptation hold/reset,
 hard/soft reset ordering, pre-reset spike surrogates, and delayed spike history.
 Gradients cover floating state, currents and history; neuron coefficients remain

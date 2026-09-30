@@ -30,6 +30,22 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
             )
         states = [tf.convert_to_tensor(value) for value in initial_state]
         self.cell.validate_state_precision(states)
+        rollout_coefficients = (
+            self.cell.prepare_rollout_nest_coefficients()
+            if getattr(self.cell, "_use_prepacked_nest_coefficients", False)
+            else None
+        )
+        previous_rollout_coefficients = getattr(
+            self.cell, "_rollout_nest_coefficients", None
+        )
+        self.cell._rollout_nest_coefficients = rollout_coefficients
+        previous_rollout_noise_seed = getattr(self.cell, "_rollout_noise_seed", None)
+        if hasattr(self.cell, "noise_seed"):
+            # One host copy per rollout instead of a device read every step.
+            with tf.device("/CPU:0"):
+                self.cell._rollout_noise_seed = tf.cast(
+                    tf.identity(self.cell.noise_seed), tf.int32
+                )
         if getattr(self.cell, "temporal_gradient_precision", "compute") == "float32":
             if mask is not None or getattr(self, "time_major", False):
                 raise ValueError(
@@ -42,45 +58,174 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 chunk_size=self.cell.temporal_checkpoint_chunk_size,
                 pack_spike_checkpoints=self.cell.temporal_pack_spike_checkpoints,
             )
-            output, states = runner(sequences, states)
+            try:
+                output, states = runner(sequences, states)
+            finally:
+                self.cell._rollout_nest_coefficients = previous_rollout_coefficients
+                self.cell._rollout_noise_seed = previous_rollout_noise_seed
             if not self.return_sequences:
                 output = tf.nest.map_structure(lambda value: value[:, -1], output)
             return (output, *states) if self.return_state else output
-        compact_unroll = self.unroll and isinstance(self.cell.output_size, tuple)
-        if hasattr(self, "inner_loop") and not compact_unroll:
-            last, sequence, states = self.inner_loop(
-                sequences, states, mask, training=training
+        try:
+            compact_unroll = self.unroll and isinstance(self.cell.output_size, tuple)
+            use_direct_loop = (
+                getattr(self.cell, "_use_direct_state_rnn_loop", False)
+                and mask is None
+                and not self.go_backwards
+                and not self.unroll
+                and not getattr(self, "time_major", False)
             )
-        else:
-            cell_kwargs = (
-                {"training": training}
-                if "training" in inspect.signature(self.cell.call).parameters
-                else {}
+            carry_weights = (
+                use_direct_loop
+                and getattr(self.cell, "temporal_gradient_precision", "compute")
+                == "compute"
+                and getattr(self.cell, "use_fused_recurrent_accumulation", False)
             )
-
-            def step(inputs, states):
-                output, next_states = self.cell(inputs, states, **cell_kwargs)
-                if compact_unroll:
-                    spikes, penalty = output
-                    output = tf.concat(
-                        [tf.cast(spikes, tf.float32), penalty[:, None]], axis=-1
+            if (
+                getattr(self.cell, "use_fused_recurrent_accumulation", False)
+                and getattr(self.cell, "temporal_gradient_precision", "compute")
+                == "compute"
+                and not use_direct_loop
+            ):
+                raise ValueError(
+                    "Ordinary fused recurrent accumulation requires the direct "
+                    "state RNN loop."
+                )
+            if use_direct_loop:
+                cell_kwargs = (
+                    {"training": training}
+                    if "training" in inspect.signature(self.cell.call).parameters
+                    else {}
+                )
+                length = tf.shape(sequences)[1]
+                flat_shapes = tf.nest.flatten(self.cell.output_size)
+                if isinstance(self.cell.output_size, tuple):
+                    flat_dtypes = [tf.as_dtype(self.cell.compute_dtype), tf.float32]
+                else:
+                    flat_dtypes = [
+                        tf.as_dtype(
+                            self.cell.state_dtype
+                            if getattr(self.cell, "_return_voltage_sequences", False)
+                            else tf.float32
+                        )
+                    ]
+                element_shapes = [
+                    tf.TensorShape([sequences.shape[0]]).concatenate(shape)
+                    for shape in flat_shapes
+                ]
+                # Appending needs no write index: TensorArray writes make the
+                # gradient loop pop an accumulated int32 index every step,
+                # which is a device-to-host round trip on GPU.
+                list_shapes = [
+                    tf.constant(
+                        [-1 if size is None else size for size in shape.as_list()],
+                        tf.int32,
                     )
-                return output, next_states
+                    for shape in element_shapes
+                ]
+                arrays = tuple(
+                    tf.raw_ops.EmptyTensorList(
+                        element_shape=list_shape,
+                        max_num_elements=-1,
+                        element_dtype=dtype,
+                    )
+                    for dtype, list_shape in zip(flat_dtypes, list_shapes)
+                )
+                carrier = (
+                    (tf.identity(self.cell.recurrent_weight_values),)
+                    if carry_weights
+                    else ()
+                )
 
-            last, sequence, states = tf.keras.backend.rnn(
-                step,
-                sequences,
-                states,
-                go_backwards=self.go_backwards,
-                mask=mask,
-                unroll=self.unroll,
-                input_length=sequences.shape[
-                    0 if getattr(self, "time_major", False) else 1
-                ],
-                time_major=getattr(self, "time_major", False),
-                zero_output_for_mask=self.zero_output_for_mask,
-                return_all_outputs=self.return_sequences,
-            )
+                def direct_step(index, state_values, output_arrays, *weight_carrier):
+                    if carry_weights:
+                        output, next_states, next_carrier = self.cell._call_impl(
+                            sequences[:, index],
+                            state_values,
+                            recurrent_weight_carrier=weight_carrier[0],
+                        )
+                        weight_carrier = (next_carrier,)
+                    else:
+                        output, next_states = self.cell(
+                            sequences[:, index], state_values, **cell_kwargs
+                        )
+                    output_arrays = tuple(
+                        tf.raw_ops.TensorListPushBack(input_handle=array, tensor=value)
+                        for array, value in zip(output_arrays, tf.nest.flatten(output))
+                    )
+                    return (
+                        index + 1,
+                        tuple(next_states),
+                        output_arrays,
+                    ) + weight_carrier
+
+                result = tf.while_loop(
+                    lambda index, *_: index < length,
+                    direct_step,
+                    (tf.constant(0), tuple(states), arrays) + carrier,
+                    parallel_iterations=1,
+                )
+                _, states, arrays = result[:3]
+                stacked = tuple(
+                    tf.ensure_shape(
+                        tf.raw_ops.TensorListStack(
+                            input_handle=array,
+                            element_shape=list_shape,
+                            element_dtype=dtype,
+                            num_elements=-1,
+                        ),
+                        tf.TensorShape([sequences.shape[1]]).concatenate(element_shape),
+                    )
+                    for array, dtype, list_shape, element_shape in zip(
+                        arrays, flat_dtypes, list_shapes, element_shapes
+                    )
+                )
+                flat_sequence = tuple(
+                    tf.transpose(
+                        value,
+                        [1, 0] + list(range(2, len(tf.TensorShape(shape)) + 2)),
+                    )
+                    for value, shape in zip(stacked, flat_shapes)
+                )
+                sequence = tf.nest.pack_sequence_as(self.cell.output_size, flat_sequence)
+                last = tf.nest.map_structure(lambda value: value[:, -1], sequence)
+            elif hasattr(self, "inner_loop") and not compact_unroll:
+                last, sequence, states = self.inner_loop(
+                    sequences, states, mask, training=training
+                )
+            else:
+                cell_kwargs = (
+                    {"training": training}
+                    if "training" in inspect.signature(self.cell.call).parameters
+                    else {}
+                )
+
+                def step(inputs, states):
+                    output, next_states = self.cell(inputs, states, **cell_kwargs)
+                    if compact_unroll:
+                        spikes, penalty = output
+                        output = tf.concat(
+                            [tf.cast(spikes, tf.float32), penalty[:, None]], axis=-1
+                        )
+                    return output, next_states
+
+                last, sequence, states = tf.keras.backend.rnn(
+                    step,
+                    sequences,
+                    states,
+                    go_backwards=self.go_backwards,
+                    mask=mask,
+                    unroll=self.unroll,
+                    input_length=sequences.shape[
+                        0 if getattr(self, "time_major", False) else 1
+                    ],
+                    time_major=getattr(self, "time_major", False),
+                    zero_output_for_mask=self.zero_output_for_mask,
+                    return_all_outputs=self.return_sequences,
+                )
+        finally:
+            self.cell._rollout_nest_coefficients = previous_rollout_coefficients
+            self.cell._rollout_noise_seed = previous_rollout_noise_seed
         output = sequence if self.return_sequences else last
         if compact_unroll:
             output = (

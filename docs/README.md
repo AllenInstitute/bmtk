@@ -1,5 +1,7 @@
 ## BMTK documentation, guides, and examples
 
+- [DPointNet parity branch: settings, qualification and agent handoff](dpointnet_parity.md)
+
 #### directory structure
 
 - autodocs/ - scripts and pages for the generation of github-pages html files.

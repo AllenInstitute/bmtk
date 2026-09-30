@@ -32,7 +32,14 @@ def raw_gradient(conn, spikes, weights, basis, upstream, accumulator=None):
         if accumulator is None
         else ops._OPS.dpointnet_csr_spike_grad_accumulate
     )
-    args = (spikes, upstream, conn["metadata_handle"], weights, basis, tf.constant(0.7))
+    args = (
+        spikes,
+        upstream,
+        conn["metadata_handle"],
+        weights,
+        basis,
+        tf.constant(0.7, dtype=spikes.dtype),
+    )
     if accumulator is not None:
         args += (accumulator,)
     return fn(
@@ -224,6 +231,27 @@ def test_accumulation_requires_supported_route():
 
 
 @gpu
+def test_accumulation_accepts_ordinary_direct_loop_route(monkeypatch):
+    import bmtk.simulator.dpointnet.cell_models.glif3_cell as glif3_cell
+
+    monkeypatch.setattr(
+        glif3_cell, "fused_recurrent_accumulation_available", lambda: True
+    )
+    cell = make_cell(
+        batch_size=32,
+        use_fused_cuda=True,
+        use_direct_csr_recurrent_gradient=True,
+        use_direct_state_rnn_loop=True,
+        temporal_gradient_precision="compute",
+        use_fused_recurrent_accumulation=True,
+    )
+    try:
+        assert cell.use_fused_recurrent_accumulation is True
+    finally:
+        cell.close_fused_cuda()
+
+
+@gpu
 @pytest.mark.parametrize("dynamics", ["legacy", "nest"])
 @pytest.mark.parametrize("replay_mode", ["record", "recompute"])
 def test_regularizer_persistent_backward_and_optimizer_shadows(dynamics, replay_mode):
@@ -306,14 +334,14 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
 
     def forward(z, master, handle, weights, basis, scale, *args, **kwargs):
         return tf.raw_ops.IdentityN(
-            input=[tf.zeros((tf.shape(z)[0], 4)), master, handle]
+            input=[tf.zeros((tf.shape(z)[0], 4), z.dtype), master, handle]
         )[0]
 
     def backward(z, dy, handle, weights, basis, scale, acc, **kwargs):
         projection = tf.reduce_sum(dy * basis, axis=1, keepdims=True)
         return (
             projection * weights[0] * scale,
-            acc + tf.reduce_sum(z * projection)[None],
+            acc + tf.cast(tf.reduce_sum(z * projection)[None], acc.dtype),
         )
 
     monkeypatch.setattr(
@@ -331,19 +359,24 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
         with tf.GradientTape() as tape:
 
             def step(index, carrier, loss):
+                z = tf.ones((32, 1), dtype=carrier.dtype)
                 currents, carrier = ops.fused_recurrent_weight_carry(
-                    tf.ones((32, 1)),
+                    z,
                     carrier,
-                    tf.ones((1,)),
+                    tf.ones((1,), dtype=carrier.dtype),
                     conn,
-                    tf.ones((1, 4)),
+                    tf.ones((1, 4), dtype=carrier.dtype),
                     1,
                     1.0,
+                    vjp_only=False,
                 )
                 return (
                     index + 1,
                     carrier,
-                    loss + tf.reduce_sum(currents) * tf.cast(index + 1, tf.float32),
+                    loss + tf.cast(
+                        tf.reduce_sum(currents) * tf.cast(index + 1, currents.dtype),
+                        tf.float32,
+                    ),
                 )
 
             _, carrier, loss = tf.while_loop(
@@ -355,6 +388,69 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
         return tape.gradient(loss, master)
 
     np.testing.assert_array_equal(run(), [769.0])
+
+    master.assign([2.0])
+
+    @tf.function
+    def run_half():
+        with tf.GradientTape() as tape:
+            carrier0 = tf.cast(master, tf.float32)
+
+            def step(index, carrier, loss):
+                currents, carrier = ops.fused_recurrent_weight_carry(
+                    tf.ones((32, 1), dtype=tf.float16),
+                    carrier,
+                    tf.ones((1,), dtype=tf.float16),
+                    conn,
+                    tf.ones((1, 4), dtype=tf.float16),
+                    1,
+                    tf.constant(1.0, dtype=tf.float16),
+                    vjp_only=False,
+                )
+                return (
+                    index + 1,
+                    carrier,
+                    loss + tf.cast(tf.reduce_sum(currents), tf.float32),
+                )
+
+            _, carrier, loss = tf.while_loop(
+                lambda index, *_: index < 2,
+                step,
+                (0, carrier0, tf.constant(0.0)),
+            )
+            loss += tf.reduce_sum(carrier)
+        return tape.gradient(loss, master)
+
+    np.testing.assert_array_equal(run_half(), [257.0])
+
+
+@gpu
+def test_half_producer_nonzero_accumulator_alias_and_dense_oracle():
+    conn = build_csr_connectivity(
+        np.array([[0, 0], [1, 0], [1, 1], [0, 2]], np.uint32),
+        np.array([0, 1, 0, 1], np.uint32),
+        3,
+        2,
+        2,
+        build_compact_pairs=True,
+    )
+    try:
+        spikes = (tf.reshape(tf.cast(tf.range(96) % 5, tf.float16), (32, 3)) / 4)
+        upstream = (
+            tf.reshape(tf.cast(tf.range(256) % 7, tf.float16), (64, 4)) / 8
+        )
+        basis = tf.constant([[1.0, -0.25, 0.5, 0.125], [0.75, 0.2, -0.3, 0.4]], tf.float16)
+        weights = reorder_csr_values(
+            tf.constant([0.5, -0.75, 1.25, 0.875], tf.float16), conn
+        )
+        seed = tf.constant([0.1, -0.2, 0.3, -0.4], tf.float32)
+        dz, dw = raw_gradient(conn, spikes, weights, basis, upstream)
+        actual_z, actual_w = raw_gradient(conn, spikes, weights, basis, upstream, seed)
+        np.testing.assert_array_equal(actual_z, dz)
+        np.testing.assert_allclose(actual_w, seed + dw, rtol=1e-3, atol=2e-3)
+        assert actual_w.dtype == tf.float32
+    finally:
+        conn.close()
 
 
 @gpu

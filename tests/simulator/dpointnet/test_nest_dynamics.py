@@ -1050,6 +1050,40 @@ def test_internal_noise_uses_original_population_size_and_delayed_history():
     np.testing.assert_array_equal(state[6], [1, 1])
 
 
+def test_uniform_input_delay_projection_matches_expanded_delay_currents():
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    network, inputs = make_network_inputs(delay=3.0)
+    common = dict(
+        dt=1.0,
+        tau_basis=[2.0],
+        hard_reset=False,
+        train_recurrent_per_type=False,
+        use_fused_cuda=False,
+        dynamics_mode="nest",
+    )
+    expanded = GLIF3Cell(network, inputs, **common)
+    uniform = GLIF3Cell(
+        network, inputs, use_uniform_input_delay_projection=True, **common
+    )
+    assert expanded.inputs["drive"]["input_dense_shape"] == (1, 3)
+    assert uniform.inputs["drive"]["input_dense_shape"] == (1, 1)
+
+    state = list(expanded.zero_state(2, tf.float32))
+    state[7] = tf.constant([[2.0, 3.0], [4.0, 5.0]], tf.float32)
+    values = tf.constant([[7.0], [11.0]], tf.float32)
+    expanded_currents, expanded_history = expanded._project_step_currents(
+        values, tuple(state)
+    )
+    uniform_currents, uniform_history = uniform._project_step_currents(
+        values, tuple(state)
+    )
+
+    np.testing.assert_allclose(uniform_currents, expanded_currents, rtol=0, atol=0)
+    np.testing.assert_array_equal(uniform_history[0], expanded_history[0])
+    np.testing.assert_array_equal(uniform_history[0], [[7.0, 2.0], [11.0, 4.0]])
+
+
 def test_cached_legacy_state_cannot_silently_drop_input_history(tmp_path):
     from types import SimpleNamespace
     from bmtk.simulator.dpointnet.state_modules.cached_states import CachedInitState

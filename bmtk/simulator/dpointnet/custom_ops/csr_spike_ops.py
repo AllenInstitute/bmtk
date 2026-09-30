@@ -256,6 +256,7 @@ def build_csr_connectivity(
     n_synapse_types,
     build_compact_pairs=False,
     build_fixed4_incoming=False,
+    sort_by_target=False,
 ):
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
@@ -303,12 +304,28 @@ def build_csr_connectivity(
         n_synapse_types,
     )
     numpy_index_dtype = index_dtype.as_numpy_dtype
-    edge_ids = np.argsort(pre_ids, kind="stable").astype(numpy_index_dtype, copy=False)
+    if sort_by_target:
+        edge_ids = np.lexsort((synapse_types, post_ids, pre_ids)).astype(
+            numpy_index_dtype, copy=False
+        )
+    else:
+        edge_ids = np.argsort(pre_ids, kind="stable").astype(
+            numpy_index_dtype, copy=False
+        )
     sorted_pre_ids = pre_ids[edge_ids]
     counts = np.bincount(sorted_pre_ids, minlength=n_source_neurons)
     row_splits = np.empty(n_source_neurons + 1, dtype=numpy_index_dtype)
     row_splits[0] = 0
     np.cumsum(counts, dtype=np.int64, out=row_splits[1:])
+    has_repeated_targets = False
+    if sort_by_target and post_ids.size > 1:
+        ordered_posts_for_runs = post_ids[edge_ids]
+        has_repeated_targets = bool(
+            np.any(
+                (sorted_pre_ids[1:] == sorted_pre_ids[:-1])
+                & (ordered_posts_for_runs[1:] == ordered_posts_for_runs[:-1])
+            )
+        )
 
     device = "/GPU:0" if tf.config.get_visible_devices("GPU") else "/CPU:0"
     with tf.device(device):
@@ -364,6 +381,7 @@ def build_csr_connectivity(
                 "n_post": int(n_target_neurons),
                 "n_synapse_types": int(n_synapse_types),
                 "n_pairs": n_pairs,
+                "has_repeated_targets": has_repeated_targets,
                 "fixed4_incoming": bool(incoming_pre_ids.size),
                 "incoming_pre_ids": tf.constant(incoming_pre_ids, dtype=index_dtype),
                 "incoming_edge_ids": tf.constant(incoming_edge_ids, dtype=index_dtype),
@@ -423,6 +441,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
             write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
             use_small_batch_backward=op.get_attr("use_small_batch_backward"),
+            use_javier_batch32_backward=False,
         )
         if not compute_weight_gradient:
             weight_grad = None
@@ -474,19 +493,27 @@ def fused_recurrent_weight_carry(
     basis,
     n_post,
     spike_gradient_scale,
+    vjp_only=True,
+    use_javier_batch32_backward=False,
 ):
-    """VJP-only currents with a differentiable identity weight carrier.
+    """Currents with a differentiable identity weight carrier.
 
     The carrier's cotangent is the true loop-carried CSR weight accumulator.
     It is passed into the producer, not added to a materialized step gradient.
+    FP32 replay uses ``vjp_only=True`` to provide only the derivative; the
+    ordinary direct RNN loop uses ``vjp_only=False`` so the same call supplies
+    the primal compute-dtype recurrent currents.
     """
     if _OPS is None or not hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate"):
         raise RuntimeError("Rebuild CUDA operators for fused recurrent accumulation.")
-    if any(
-        value.dtype != tf.float32
-        for value in (spikes, weight_carrier, csr_weights, basis)
-    ):
-        raise ValueError("Fused recurrent accumulation requires FP32 operands.")
+    if weight_carrier.dtype != tf.float32:
+        raise ValueError("Fused recurrent accumulation requires an FP32 carrier.")
+    if any(value.dtype != spikes.dtype for value in (csr_weights, basis)):
+        raise ValueError(
+            "Fused recurrent accumulation requires matching compute operands."
+        )
+    if vjp_only and spikes.dtype != tf.float32:
+        raise ValueError("VJP-only fused recurrent accumulation requires FP32 operands.")
 
     @tf.custom_gradient
     def project(z, carrier, weights, coefficients, scale):
@@ -501,7 +528,7 @@ def fused_recurrent_weight_carry(
             spike_gradient_scale=scale,
             use_packed_sm120_backward=False,
             write_csr_weight_gradient=True,
-            vjp_only=True,
+            vjp_only=vjp_only,
         )
         # Reuse this FuncGraph's capture; recapturing the eager handle in grad
         # breaks TensorFlow's nested while-gradient resource mapping.
@@ -528,6 +555,7 @@ def fused_recurrent_weight_carry(
                 n_post=n_post,
                 n_edges=connectivity["n_edges"],
                 n_pairs=connectivity["n_pairs"],
+                use_javier_batch32_backward=use_javier_batch32_backward,
             )
             return dz, accumulated, None, None, None
 
@@ -538,7 +566,7 @@ def fused_recurrent_weight_carry(
         weight_carrier,
         csr_weights,
         basis,
-        tf.cast(spike_gradient_scale, tf.float32),
+        tf.cast(spike_gradient_scale, spikes.dtype),
     )
 
 
@@ -558,6 +586,8 @@ def fused_spike_currents(
     write_csr_weight_gradient=False,
     use_small_batch_backward=False,
     use_active_row_forward=False,
+    use_forward_run_aggregation=False,
+    use_device_active_queue_forward=False,
     vjp_only=False,
 ):
     """Project currents, or supply only their registered VJP for recorded replay.
@@ -628,10 +658,17 @@ def fused_spike_currents(
             raise ValueError(
                 "Active-row forward requires batch size 1..32 and four basis columns."
             )
+    if use_forward_run_aggregation and basis.shape[1] != 4:
+        raise ValueError("Forward run aggregation requires four basis columns.")
+    if use_device_active_queue_forward:
+        if spikes.shape[0] not in range(1, 33) or basis.shape[1] != 4:
+            raise ValueError(
+                "Device active-queue forward requires batch size 1..32 and four basis columns."
+            )
     use_grouped_batch32_forward = (
-        use_active_row_forward or spikes.shape[0] == 32
+        use_active_row_forward or use_device_active_queue_forward or spikes.shape[0] == 32
     ) and basis.shape[1] == 4
-    if use_grouped_batch32_forward and not vjp_only:
+    if use_grouped_batch32_forward and not vjp_only and not use_device_active_queue_forward:
         active_rows = tf.cast(
             tf.where(tf.reduce_any(spikes > 0, axis=0))[:, 0],
             tf.int64,
@@ -671,6 +708,8 @@ def fused_spike_currents(
         compute_weight_gradient=compute_weight_gradient,
         use_grouped_batch32_forward=use_grouped_batch32_forward,
         use_fixed4_forward=use_fixed4_forward,
+        use_forward_run_aggregation=use_forward_run_aggregation,
+        use_device_active_queue_forward=use_device_active_queue_forward,
         use_packed_sm120_backward=use_packed_sm120_backward,
         write_csr_weight_gradient=write_csr_weight_gradient,
         use_small_batch_backward=use_small_batch_backward,

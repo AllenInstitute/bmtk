@@ -720,7 +720,7 @@ def test_parallel_step_slices_state_and_reports_condition_mean():
         return (values, values), row_ids, row_ids + 10.0
 
     engine._run_extractor = run_extractor
-    engine._prepare_loss_kwargs = lambda parameter, spikes, targets: {}
+    engine._prepare_loss_kwargs = lambda parameter, spikes, targets, **_: {}
     inputs = [tf.ones((2, 1)), tf.fill((2, 1), 3.0)]
 
     loss_values = engine._train_step_parallel(inputs, [{}, {}], init_state=None)
@@ -762,7 +762,7 @@ def test_series_refreshes_compute_shadow_between_parameter_updates():
         return (inputs, inputs), tf.zeros((1, 1))
 
     engine._run_extractor = run_extractor
-    engine._prepare_loss_kwargs = lambda parameter, spikes, targets: {}
+    engine._prepare_loss_kwargs = lambda parameter, spikes, targets, **_: {}
 
     engine._train_step_series(
         [tf.ones((1, 1)), tf.ones((1, 1))], [{}, {}], init_state=None

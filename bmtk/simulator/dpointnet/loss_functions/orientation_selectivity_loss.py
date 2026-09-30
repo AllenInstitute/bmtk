@@ -69,22 +69,33 @@ class OrientationSelectivityLoss:
     def uses_ema_normalizer(self):
         return self._use_ema_normalizer and self._method == "crowd_osi"
 
-    def update_normalizers(self, spikes, normalizers, trim=True):
+    def update_normalizers(self, spikes, normalizers, trim=True, **kwargs):
         if not self.uses_ema_normalizer:
             return
 
-        spikes = loss_utils.spike_trimming(
-            spikes,
-            pre_delay=self._pre_delay,
-            post_delay=self._post_delay,
-            trim=trim,
+        use_cached_counts = (
+            trim
+            and self._pre_delay == 0
+            and self._post_delay == 0
+            and kwargs.get("spike_counts") is not None
         )
-        duration = spikes.shape[1]
-        if duration is None:
-            raise ValueError("Orientation loss requires a static sequence length.")
-        rates = loss_utils.temporal_sum(spikes, dtype=tf.float32) / tf.cast(
-            duration, tf.float32
-        )
+        if use_cached_counts:
+            rates = tf.cast(kwargs["spike_counts"], tf.float32) / tf.cast(
+                kwargs["spike_count_duration"], tf.float32
+            )
+        else:
+            spikes = loss_utils.spike_trimming(
+                spikes,
+                pre_delay=self._pre_delay,
+                post_delay=self._post_delay,
+                trim=trim,
+            )
+            duration = spikes.shape[1]
+            if duration is None:
+                raise ValueError("Orientation loss requires a static sequence length.")
+            rates = loss_utils.temporal_sum(spikes, dtype=tf.float32) / tf.cast(
+                duration, tf.float32
+            )
         evoked_rates = tf.reduce_mean(rates, axis=0)
         v1_ema = normalizers["v1_ema"]
         v1_ema.assign(self._ema_decay * v1_ema + (1.0 - self._ema_decay) * evoked_rates)
@@ -393,17 +404,29 @@ class OrientationSelectivityLoss:
         # Keep spikes in the compute dtype (fp16 under mixed precision); only the small reduced
         # rate tensors are upcast to fp32 below. Casting the full [batch, seq, n_neurons] spikes
         # tensor here previously allocated ~1 GiB of fp32 transients per call.
-        spikes = loss_utils.spike_trimming(
-            spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+        use_cached_counts = (
+            trim
+            and self._pre_delay == 0
+            and self._post_delay == 0
+            and kwargs.get("spike_counts") is not None
         )
+        if not use_cached_counts:
+            spikes = loss_utils.spike_trimming(
+                spikes, pre_delay=self._pre_delay, post_delay=self._post_delay, trim=trim
+            )
 
         if self._method in ("crowd_osi", "crowd_spikes"):
-            duration = spikes.shape[1]
-            if duration is None:
-                raise ValueError("Orientation loss requires a static sequence length.")
-            rates = loss_utils.temporal_sum(spikes, dtype=self._dtype) / tf.cast(
-                duration, self._dtype
-            )
+            if use_cached_counts:
+                rates = tf.cast(kwargs["spike_counts"], self._dtype) / tf.cast(
+                    kwargs["spike_count_duration"], self._dtype
+                )
+            else:
+                duration = spikes.shape[1]
+                if duration is None:
+                    raise ValueError("Orientation loss requires a static sequence length.")
+                rates = loss_utils.temporal_sum(spikes, dtype=self._dtype) / tf.cast(
+                    duration, self._dtype
+                )
 
         normalizer = kwargs.get("normalizer")
         if normalizer is None and self._use_ema_normalizer:

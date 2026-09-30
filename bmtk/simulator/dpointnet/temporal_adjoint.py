@@ -203,6 +203,15 @@ class TemporalAdjointRunner:
         carrier = (
             (tf.identity(self.cell.recurrent_weight_values),) if carry_weights else ()
         )
+        rollout_coefficients = (
+            self.cell.prepare_rollout_nest_coefficients()
+            if getattr(self.cell, "_use_prepacked_nest_coefficients", False)
+            else None
+        )
+        previous_rollout_coefficients = getattr(
+            self.cell, "_rollout_nest_coefficients", None
+        )
+        self.cell._rollout_nest_coefficients = rollout_coefficients
 
         def step(index, state, output_arrays, current_array, *weight_carrier):
             kwargs = {"adjoint_replay": replay}
@@ -240,12 +249,15 @@ class TemporalAdjointRunner:
                 current_array,
             ) + weight_carrier
 
-        result = tf.while_loop(
-            lambda index, *_: index < length,
-            step,
-            (tf.constant(0), tuple(initial_state), arrays, currents) + carrier,
-            parallel_iterations=1,
-        )
+        try:
+            result = tf.while_loop(
+                lambda index, *_: index < length,
+                step,
+                (tf.constant(0), tuple(initial_state), arrays, currents) + carrier,
+                parallel_iterations=1,
+            )
+        finally:
+            self.cell._rollout_nest_coefficients = previous_rollout_coefficients
         _, state, arrays, currents = result[:4]
         outputs = tuple(
             tf.ensure_shape(
@@ -269,11 +281,12 @@ class TemporalAdjointRunner:
         """
         self._validate(inputs, initial_state)
         length = tf.shape(inputs)[1]
-        noise_seed = (
-            tf.identity(self.cell.noise_seed)
-            if hasattr(self.cell, "noise_seed")
-            else None
-        )
+        noise_seed = None
+        if hasattr(self.cell, "noise_seed"):
+            # The Poisson sampler runs on the host; one host copy per rollout
+            # avoids a device-to-host read every time step.
+            with tf.device("/CPU:0"):
+                noise_seed = tf.cast(tf.identity(self.cell.noise_seed), tf.int32)
         capture_projection = getattr(self.cell, "_capture_adjoint_projection_values", None)
         projection_values = capture_projection() if capture_projection is not None else None
         probes = tf.constant(tuple(probe_steps), tf.int32)

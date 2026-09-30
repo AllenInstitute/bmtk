@@ -66,6 +66,23 @@ def fano_sampling_plan(n_pool, n_samples, n_trials, seed=FANO_PLAN_SEED):
     }
 
 
+@tf.function(jit_compile=True)
+def _gather_population_traces(
+    spikes, sample_ids, neuron_mask, n_trials, duration, per_trial, max_count
+):
+    """Gather balanced Fano sub-population traces in one XLA call.
+
+    Structure adapted from Javier's V1 loss implementation
+    (`v1_model_utils/loss_functions.py`, commit 2c52ec10), credited to Javier.
+    """
+    gathered = tf.gather(spikes, sample_ids, axis=2, batch_dims=1)
+    gathered = tf.reshape(gathered, [n_trials, duration, per_trial, max_count])
+    selected = tf.reduce_sum(gathered * neuron_mask[:, None, :, :], axis=3)
+    return tf.reshape(
+        tf.transpose(selected, [0, 2, 1]), [n_trials * per_trial, duration]
+    )
+
+
 class SynchronizationLoss(tf.keras.layers.Layer):
     def __init__(
         self,
@@ -301,16 +318,9 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             tf.constant(plan["positions"], dtype=tf.int32),
         )
 
-        spikes = tf.cast(spikes, self._dtype)
-        gathered = tf.gather(spikes, sample_ids, axis=2, batch_dims=1)
-        gathered = tf.reshape(gathered, [n_trials, duration, per_trial, max_count])
-        neuron_mask = tf.constant(plan["neuron_mask"], dtype=gathered.dtype)
-        selected_spikes_sample = tf.reduce_sum(
-            gathered * neuron_mask[:, None, :, :], axis=3
-        )
-        selected_spikes_sample = tf.reshape(
-            tf.transpose(selected_spikes_sample, [0, 2, 1]),
-            [n_trials * per_trial, duration],
+        neuron_mask = tf.constant(plan["neuron_mask"], dtype=spikes.dtype)
+        selected_spikes_sample = _gather_population_traces(
+            spikes, sample_ids, neuron_mask, n_trials, duration, per_trial, max_count
         )
         if selected_spikes_sample.dtype != self._dtype:
             selected_spikes_sample = tf.cast(selected_spikes_sample, self._dtype)
