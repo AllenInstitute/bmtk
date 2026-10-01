@@ -12,6 +12,7 @@ from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
 from .learning_rules import LearningRuleObservations
 from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
 from .loss_functions import loss_utils
+from .loss_functions.weight_regularization import weight_regularization_scope
 
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
@@ -372,7 +373,7 @@ class TrainingEngine:
         selected_variable_ids = {id(variable) for variable in selected_variables}
         all_weight_variables = list(self.rnn.model.trainable_variables)
 
-        with tf.GradientTape() as signal_tape:
+        with tf.GradientTape() as signal_tape, weight_regularization_scope():
             signal_tape.watch(spikes_out)
             signal_tape.watch(voltages_out)
             total_loss = tf.constant(0.0, dtype=tf.float32)
@@ -627,7 +628,7 @@ class TrainingEngine:
         pname = self.parameters[0].name
         loss_vals = {pname: {}}
         input_spikes = x[0]
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(input_spikes, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
@@ -670,7 +671,7 @@ class TrainingEngine:
             copy.deepcopy(self.inputs_signature_factory.lu_tables[parameter_index]), y
         )
         loss_vals = {p.name: {}}
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(x, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
@@ -798,7 +799,7 @@ class TrainingEngine:
         all_losses = []
         x_concat = tf.concat(xs, axis=0)
         sigs = self.inputs_signature_factory.build(ys)
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(x_concat, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
@@ -881,7 +882,7 @@ class TrainingEngine:
         all_losses = []
         for parameter_index, (p, x, y) in enumerate(zip(self.parameters, xs, ys)):
             loss_vals[p.name] = {}
-            with tf.GradientTape() as tape:
+            with tf.GradientTape() as tape, weight_regularization_scope():
                 _out = self._run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]

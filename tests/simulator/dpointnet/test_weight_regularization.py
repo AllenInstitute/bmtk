@@ -114,6 +114,54 @@ def test_emd_gradient_flows(patched_conn_types):
     assert float(tf.reduce_sum(tf.abs(grad)).numpy()) > 0
 
 
+def test_graph_dedup_preserves_independent_series_tapes(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    weights = rnn.cell.recurrent_weight_values
+    weights.assign([2.0, 3.0])
+
+    @tf.function
+    def series_updates():
+        values = []
+        for _ in range(2):
+            with tf.GradientTape() as tape:
+                loss = reg()
+            gradient = tape.gradient(loss, weights)
+            assert gradient is not None
+            values.append(loss)
+            weights.assign_sub(0.2 * tf.convert_to_tensor(gradient))
+        return tf.stack(values), tf.identity(weights)
+
+    values, final_weights = series_updates()
+    np.testing.assert_allclose(values, [1.0, 0.9], rtol=1e-6)
+    np.testing.assert_allclose(final_weights, [1.8, 2.8], rtol=1e-6)
+
+
+def test_scoped_graph_dedup_preserves_series_updates(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    weights = rnn.cell.recurrent_weight_values
+    weights.assign([2.0, 3.0])
+
+    @tf.function
+    def series_updates():
+        values = []
+        for _ in range(2):
+            with tf.GradientTape() as tape, wr.weight_regularization_scope():
+                first = reg()
+                second = reg()
+                assert first is second
+                loss = (first + second) / 2.0
+            gradient = tape.gradient(loss, weights)
+            assert gradient is not None
+            values.append(loss)
+            weights.assign_sub(0.2 * tf.convert_to_tensor(gradient))
+        return tf.stack(values), tf.identity(weights)
+
+    values, final_weights = series_updates()
+    np.testing.assert_allclose(values, [1.0, 0.9], rtol=1e-6)
+    np.testing.assert_allclose(final_weights, [1.8, 2.8], rtol=1e-6)
+    assert len(reg._graph_cache) == 2
+
+
 def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
     initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0], dtype=np.float32)
     group_ids = np.array([0, 0, 1, 1, 0, 1], dtype=np.int64)

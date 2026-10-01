@@ -56,6 +56,7 @@ class InitStateFromInputModule:
                 batch_size=batch_size,
                 seq_len=self.rnn.seq_len,
                 ordered_populations=self.rnn.ordered_inputs_populations,
+                recover_input_errors=True,
             )
             self._spikes_itrs_batch_size = batch_size
 
@@ -64,6 +65,7 @@ class InitStateFromInputModule:
     def get_state(self, max_retries=8, batch_size=None, **kwargs):
         batch_size = batch_size or self.rnn.adjusted_batch_size
         last_err = None
+        diagnostic_path = None
         self.state_model = self.rnn.state_only_model
         for attempt in range(max_retries):
             try:
@@ -79,9 +81,23 @@ class InitStateFromInputModule:
                     tf.shape(spikes_inputs)[1],
                 )
                 self._last_state = state_out
+                if last_err is not None:
+                    details = (
+                        f" Details: {diagnostic_path}."
+                        if diagnostic_path is not None else ""
+                    )
+                    io.log_info(
+                        "Initial-state input generation recovered; continuing normally."
+                        + details
+                    )
                 return state_out
             except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as exc:
                 last_err = exc
+                diagnostic_path = io.save_exception(
+                    exc,
+                    f"{self.__class__.__name__}: initial-state generation "
+                    f"(attempt {attempt + 1}/{max_retries}, batch_size={batch_size})",
+                )
                 io.log_debug(
                     f"{self.__class__.__name__}: get_state() raised {type(exc).__name__} "
                     f"(attempt {attempt + 1}/{max_retries}); rebuilding iterator and retrying."
@@ -89,14 +105,26 @@ class InitStateFromInputModule:
                 try:
                     self.spikes_itrs(batch_size).close()
                     self.spikes_itrs(batch_size).build()
-                except Exception:
-                    pass
+                except tf.errors.OpError as rebuild_error:
+                    io.save_exception(
+                        rebuild_error,
+                        f"{self.__class__.__name__}: iterator rebuild "
+                        f"(attempt {attempt + 1}/{max_retries})",
+                    )
 
         if self._last_state is not None:
+            details = (
+                f" Details: {diagnostic_path}."
+                if diagnostic_path is not None else ""
+            )
             io.log_warning(
-                f"{self.__class__.__name__}: get_state() failed after {max_retries} attempts; "
-                "reusing the last successfully generated initial state."
+                "Initial-state input generation was interrupted; continuing with "
+                "the previous initial state." + details
             )
             return self._last_state
 
+        io.log_error(
+            "Unable to generate an initial state; no previous state is available."
+            + (f" Details: {diagnostic_path}." if diagnostic_path is not None else "")
+        )
         raise last_err

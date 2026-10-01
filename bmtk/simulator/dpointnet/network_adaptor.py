@@ -410,6 +410,7 @@ class SONATANetwork(NetworkAdaptor):
         self._dynamics_params_lu = {}
         self._cache_file = cache_file
         self._basis_weights = None
+        self._generated_basis_weights = {}
         # self.population_name = sonata_node_pop.name
 
         self.id_maps = TFIDMap()
@@ -497,7 +498,24 @@ class SONATANetwork(NetworkAdaptor):
                     f'basis_weights_file {basis_weights_file} must contain either a "name" or '
                     '"connection_name" column.'
                 )
-            self._basis_weights = {r[name_col]: np.array([r['w0'], r['w1'], r['w2'], r['w3']]) for _, r in basis_weights_df.iterrows()}
+            weight_columns = sorted(
+                [
+                    column
+                    for column in basis_weights_df
+                    if column.startswith("w") and column[1:].isdigit()
+                ],
+                key=lambda column: int(column[1:]),
+            )
+            if not weight_columns or weight_columns != [
+                f"w{index}" for index in range(len(weight_columns))
+            ]:
+                raise ValueError(
+                    "basis_weights_file must contain consecutive w0, w1, ... columns"
+                )
+            self._basis_weights = {
+                r[name_col]: r[weight_columns].to_numpy(dtype=float)
+                for _, r in basis_weights_df.iterrows()
+            }
 
     def get_bmtk_ids(self, **filter):
         node_ids = {self._sonata_node_pop.name: []}
@@ -538,7 +556,12 @@ class SONATANetwork(NetworkAdaptor):
                     with open(dyn_params_path, 'r') as f:
                         dyn_params_dict = json.load(f)
 
-                    if self._basis_weights is not None:
+                    generated_weights = getattr(
+                        self, "_generated_basis_weights", {}
+                    ).get(Path(dyn_params_path))
+                    if generated_weights is not None:
+                        dyn_params_dict["basis_weights"] = generated_weights
+                    elif self._basis_weights is not None:
                         basis_name = Path(dyn_params_path).stem
                         if basis_name in self._basis_weights:
                             dyn_params_dict['basis_weights'] = self._basis_weights[basis_name]

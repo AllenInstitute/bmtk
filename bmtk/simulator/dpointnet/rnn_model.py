@@ -90,7 +90,9 @@ class RNN:
         else:
             self.cell_cls = cell_cls
 
-        self.cell_params = cell_params
+        self.cell_params = {} if cell_params is None else dict(cell_params)
+        self._alpha_basis_options = self.cell_params.pop("alpha_basis", None)
+        self.alpha_basis_fit = None
         self._components = {}
         self._node_populations = {}
         self.io = io
@@ -390,6 +392,24 @@ class RNN:
         from bmtk.simulator.dpointnet.network_adaptor import SONATANetwork
         SONATANetwork.reset_global_syn_id_mapping()
         all_networks = list(self._recurrent_networks.values()) + list(self._input_networks.values())
+        if issubclass(self.cell_cls, GLIF3Cell):
+            from .alpha_basis import prepare_alpha_basis
+
+            fitted = prepare_alpha_basis(
+                all_networks, cell_params, self._alpha_basis_options
+            )
+            if fitted is not None:
+                self.alpha_basis_fit = fitted
+                self.cell_params["tau_basis"] = fitted["tau_basis"]
+                if fitted["diagnostics"]["force_recompute"]:
+                    self.cell_params.pop("synaptic_basis_weights", None)
+                io.log_info(
+                    "Fitted {} alpha basis functions in {:.3f}s; maximum relative RMS error {:.6g}".format(
+                        len(fitted["tau_basis"]),
+                        fitted["diagnostics"]["elapsed_seconds"],
+                        fitted["relative_rms"].max(),
+                    )
+                )
         for net in all_networks:
             if hasattr(net, '_synaptic_dyn_params'):
                 net._synaptic_dyn_params()

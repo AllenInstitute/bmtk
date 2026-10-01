@@ -74,10 +74,18 @@ cancellation; separate FP32 value/input-gradient tests remain. Production
 precision and1e-6 tolerances were not changed.
 
 Complete final-production-source regression suites passed1735GPU tests
-(26skipped),966CPU/Keras3 tests and966actualPython3.8/TF2.13/Keras2 tests
+(26skipped, on RTX3090/SM86),966CPU/Keras3 tests and966actualPython3.8/TF2.13/Keras2 tests
 (795skipped each). The subsequent test-only oracle precision correction passed
 all18LGN tests on Pascal and both CPU/Keras versions. No production-code changes
 followed the complete suites. No physical multi-GPU or TitanXp result is claimed.
+
+The2026-10-01 combined-branch audit onGTX1080Ti passed68focused alpha-basis,
+LGN and recovery tests, but its full GPU suite did not pass:1502passed,
+160failed,140skipped. Early failures included the fused NEST forward kernel
+requesting too many launch resources; later failures included additional GPU
+errors. This does not qualify general NEST execution on Pascal. The earlier
+legacy batch16/LGN smoke and SM86 suite are narrower, separate qualifications;
+do not interpret them as a complete Pascal regression pass.
 
 Full validation and authoritative memory/timing receipts are recorded in
 `/local2/results/dpointnet_rule_search/pascal_bs16_20260930/FINAL_REPORT.md`.

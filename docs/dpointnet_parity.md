@@ -73,6 +73,11 @@ For every `EMDWeightRegularization` loss, set:
 }
 ```
 
+Deduplication is limited to one training loss/gradient evaluation. Parallel
+conditions can share the calculation; series conditions use independent scopes
+so each update reads current weights and retains its EMD gradient. Direct loss
+calls outside the trainer recompute rather than caching across unrelated tapes.
+
 Retain all scientific losses. The measured V1 loss set included firing-rate
 distribution targets, online range voltage regularization, synchronization,
 EMD weight regularization and evoked orientation selectivity. No rescue term was

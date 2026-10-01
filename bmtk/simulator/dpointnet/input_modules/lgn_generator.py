@@ -4,6 +4,7 @@ import numpy as np
 from pathlib import Path
 from copy import copy
 from concurrent.futures import ThreadPoolExecutor
+from queue import SimpleQueue
 
 from bmtk.simulator.dpointnet.lgn_tf.lgn import LGN
 from bmtk.simulator.dpointnet.io_tools import io
@@ -63,7 +64,7 @@ class LGNGenerator(InputsGeneratorMod):
 
         self.input_network.input_type = 'spikes'
 
-    def create_generator(self, seq_len, dt=1.0, dtype=tf.float32):
+    def create_generator(self, seq_len, dt=1.0, dtype=tf.float32, _error_handler=None):
         _seq_len = seq_len
         if _seq_len is None:
             raise ValueError(f'No "seq_len" value set, please specify number of time-steps.')
@@ -88,14 +89,24 @@ class LGNGenerator(InputsGeneratorMod):
                 seq_len=_seq_len,
                 seed=seed,
                 dtype=dtype,
+                _error_handler=_error_handler,
                 **stimulus_opts
             )
         return self._generator_fn(
             lgn_network=self.lgn,
             seq_len=_seq_len,
             seed=seed,
+            _error_handler=_error_handler,
             **stimulus_opts
         )
+
+    def create_recoverable_iterator(self, seq_len, batch_size):
+        errors = SimpleQueue()
+        dataset = self.create_generator(seq_len, _error_handler=errors.put)
+        iterator = iter(
+            dataset.batch(batch_size, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
+        )
+        return _RecoverableLGNIterator(iterator, errors)
 
     def create_batch_iterator(self, seq_len, batch_size, strategy):
         options = dict(self.stimulus_opts)
@@ -150,6 +161,37 @@ class LGNGenerator(InputsGeneratorMod):
             'temp_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.temporal.pkl'),
             'spatial_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.spatial.pkl'),
         }
+
+
+class _RecoverableLGNIterator:
+    def __init__(self, iterator, errors):
+        self.iterator = iterator
+        self.errors = errors
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.iterator)
+        except StopIteration:
+            if not self.errors.empty():
+                raise self.errors.get() from None
+            raise
+
+
+def _guard_generator(factory, error_handler):
+    def generate():
+        try:
+            yield from factory()
+        except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as error:
+            if error_handler is None:
+                raise
+            # End the callback normally, then re-raise in the eager consumer.
+            # This avoids TensorFlow printing a Python traceback before recovery.
+            error_handler(error)
+
+    return generate
 
 
 def _stateless_seed_pair(seed, salt=0):
@@ -553,6 +595,7 @@ def create_drifting_gratings_generator(
     dtype=tf.float32,
     seed=None,
     phase=None,
+    _error_handler=None,
 ):
 
     # lgn = LGN(
@@ -685,7 +728,7 @@ def create_drifting_gratings_generator(
         data_dtype = tf.bool
 
     data_set = tf.data.Dataset.from_generator(
-        _g, 
+        _guard_generator(_g, _error_handler),
         output_signature=(
             tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=data_dtype),
             {
@@ -709,7 +752,8 @@ def create_grey_screen_generator(
         bmtk_compat=True,
         return_firing_rates=False,
         dtype=tf.float32,
-        seed=None
+        seed=None,
+        _error_handler=None,
     ):
     
     # lgn = LGN(
@@ -765,7 +809,7 @@ def create_grey_screen_generator(
         data_dtype = tf.bool
 
     data_set = tf.data.Dataset.from_generator(
-        _g,
+        _guard_generator(_g, _error_handler),
         output_signature=(
             tf.TensorSpec(shape=probabilities.shape, dtype=data_dtype),
             {

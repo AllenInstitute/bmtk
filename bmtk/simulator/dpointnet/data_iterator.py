@@ -15,6 +15,7 @@ class DataIterator:
         fetch_in_graph=False,
         strategy=None,
         prefetch_device_inputs=True,
+        recover_input_errors=False,
     ):
         self.input_mods = input_mods
         self.batch_size = batch_size
@@ -23,6 +24,7 @@ class DataIterator:
         self.fetch_in_graph = fetch_in_graph
         self.strategy = strategy
         self.prefetch_device_inputs = prefetch_device_inputs
+        self.recover_input_errors = recover_input_errors
         self._device_generation = False
         self._prefetch_executor = None
         self._prefetch_future = None
@@ -82,6 +84,14 @@ class DataIterator:
             self.strategy = strategy
             self._device_generation = True
             return mod.create_batch_iterator(seq_len, batch_size, strategy)
+        recoverable_iterator = getattr(mod, "create_recoverable_iterator", None)
+        if (
+            self.recover_input_errors
+            and recoverable_iterator is not None
+            and not self.fetch_in_graph
+            and tf.executing_eagerly()
+        ):
+            return recoverable_iterator(seq_len, batch_size)
         generator = mod.create_generator(seq_len=seq_len)
         return (
             None

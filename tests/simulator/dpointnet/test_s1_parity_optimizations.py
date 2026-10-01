@@ -9,6 +9,7 @@ from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
 )
 from bmtk.simulator.dpointnet.loss_functions.weight_regularization import (
     EMDWeightRegularization,
+    weight_regularization_scope,
 )
 
 
@@ -98,7 +99,7 @@ def test_emd_graph_dedup_reuses_value_but_counts_gradient_twice():
 
     @tf.function
     def two_terms():
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             value = dedup() + dedup()
         return value, tape.gradient(value, current)
 
@@ -108,6 +109,7 @@ def test_emd_graph_dedup_reuses_value_but_counts_gradient_twice():
     value, grad = two_terms()
     np.testing.assert_allclose(value.numpy(), 2.0 * single_value.numpy(), rtol=1e-6)
     np.testing.assert_allclose(grad.numpy(), 2.0 * single_grad.numpy(), rtol=1e-6)
+    assert len(dedup._graph_cache) == 1
 
 
 def test_pack_nest_state_coefficients_reads_current_values_each_invocation():

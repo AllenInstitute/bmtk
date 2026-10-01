@@ -1,7 +1,22 @@
 import numpy as np
 import tensorflow as tf
+from contextlib import contextmanager
+from contextvars import ContextVar
 
 from . import loss_utils
+
+
+_weight_regularization_scope = ContextVar("weight_regularization_scope", default=None)
+
+
+@contextmanager
+def weight_regularization_scope():
+    """Share weight losses only within one training loss/gradient evaluation."""
+    token = _weight_regularization_scope.set(object())
+    try:
+        yield
+    finally:
+        _weight_regularization_scope.reset(token)
 
 
 def _connection_type_ids(network, data_dir=''):
@@ -258,11 +273,13 @@ class EMDWeightRegularization:
     def __call__(self, **kwargs):
         # Weight regularizer: independent of activity (spikes/voltages). Reads the current
         # trainable recurrent weights so gradients flow back to them.
-        if self._deduplicate_within_graph and tf.inside_function():
+        scope = _weight_regularization_scope.get()
+        if self._deduplicate_within_graph and scope is not None and tf.inside_function():
             graph = tf.compat.v1.get_default_graph()
-            cached = self._graph_cache.get(graph)
+            cache_key = (graph, scope)
+            cached = self._graph_cache.get(cache_key)
             if cached is None:
                 cached = self._compute(tf.convert_to_tensor(self._weights))
-                self._graph_cache[graph] = cached
+                self._graph_cache[cache_key] = cached
             return cached
         return self._compute(tf.convert_to_tensor(self._weights))

@@ -1,6 +1,8 @@
 ## BMTK documentation, guides, and examples
 
 - [DPointNet parity branch: settings, qualification and agent handoff](dpointnet_parity.md)
+- [DPointNet automatic alpha-basis fitting](dpointnet_alpha_basis.md)
+- [DPointNet initial-state input recovery diagnostics](dpointnet_input_recovery.md)
 
 #### directory structure
 

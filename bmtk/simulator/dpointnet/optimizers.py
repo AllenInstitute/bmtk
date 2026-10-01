@@ -119,7 +119,7 @@ def create_optimizer(optimizer, learning_rate, optimizer_params=None):
 
     factories = {
         'adam': (tf.keras.optimizers.Adam, {'epsilon': 1.0e-11}),
-        'exp_adam': (ExponentiatedAdam, {'epsilon': 1.0e-11}),
+        'exp_adam': (ExponentiatedAdam, {'epsilon': 1.0e-11, 'jit_compile': True}),
         'sgd': (tf.keras.optimizers.SGD, {'momentum': 0.0, 'nesterov': False}),
     }
     if optimizer not in factories:
@@ -261,6 +261,8 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         **kwargs
     ):
         """Create a new ExponentiatedAdam optimizer."""
+        if not isinstance(jit_compile, bool):
+            raise ValueError("jit_compile must be true or false.")
         base_kwargs = dict(
             name=name,
             weight_decay=weight_decay,

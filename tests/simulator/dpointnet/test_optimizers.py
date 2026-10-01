@@ -1,6 +1,8 @@
 """Factory safeguards and actual updates on both Keras 2 and Keras 3."""
 
 import itertools
+import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -180,3 +182,29 @@ def test_learning_rate_schedule_with_clipping(name):
     schedule = tf.keras.optimizers.schedules.ExponentialDecay(0.1, 10, 0.5)
     optimizer = create_optimizer(name, schedule, {"global_clipnorm": 5.0})
     assert optimizer._learning_rate is schedule
+
+
+def test_documented_parity_optimizer_overlay_is_accepted():
+    root = Path(__file__).resolve().parents[3]
+    training = json.loads(
+        (root / "docs/dpointnet_parity_overlay.json").read_text()
+    )["training"]
+    params = training["optimizer"]
+    optimizer = create_optimizer(params["name"], training["learning_rate"], params)
+    assert optimizer.jit_compile is True
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_exp_adam_jit_compile_factory_roundtrip(enabled):
+    optimizer = create_optimizer("exp_adam", 0.1, {"jit_compile": enabled})
+    restored = ExponentiatedAdam.from_config(optimizer.get_config())
+    assert optimizer.jit_compile is enabled
+    assert restored.jit_compile is enabled
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "true", "auto"])
+def test_exp_adam_invalid_jit_compile_is_rejected(value):
+    with pytest.raises(ValueError, match="jit_compile must be true or false"):
+        create_optimizer("exp_adam", 0.1, {"jit_compile": value})
+    with pytest.raises(ValueError, match="jit_compile must be true or false"):
+        ExponentiatedAdam(jit_compile=value)
