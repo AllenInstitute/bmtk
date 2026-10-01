@@ -12,10 +12,12 @@ _weight_regularization_scope = ContextVar("weight_regularization_scope", default
 @contextmanager
 def weight_regularization_scope():
     """Share weight losses only within one training loss/gradient evaluation."""
-    token = _weight_regularization_scope.set(object())
+    cache = {}
+    token = _weight_regularization_scope.set(cache)
     try:
         yield
     finally:
+        cache.clear()
         _weight_regularization_scope.reset(token)
 
 
@@ -163,7 +165,6 @@ class EMDWeightRegularization:
         self._use_grouped_custom_gradient = bool(use_grouped_custom_gradient)
         self._use_javier_grouped_emd = bool(use_javier_grouped_emd)
         self._deduplicate_within_graph = bool(deduplicate_within_graph)
-        self._graph_cache = {}
 
         # Capture the initial weights directly from the cell variable. These are already in the
         # normalized (weights / voltage_scale) space the reference EMD uses, and guarantee the
@@ -276,10 +277,10 @@ class EMDWeightRegularization:
         scope = _weight_regularization_scope.get()
         if self._deduplicate_within_graph and scope is not None and tf.inside_function():
             graph = tf.compat.v1.get_default_graph()
-            cache_key = (graph, scope)
-            cached = self._graph_cache.get(cache_key)
+            cache_key = (self, graph)
+            cached = scope.get(cache_key)
             if cached is None:
                 cached = self._compute(tf.convert_to_tensor(self._weights))
-                self._graph_cache[cache_key] = cached
+                scope[cache_key] = cached
             return cached
         return self._compute(tf.convert_to_tensor(self._weights))

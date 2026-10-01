@@ -1,6 +1,37 @@
 import inspect
+from contextlib import contextmanager
 
 import tensorflow as tf
+
+
+@contextmanager
+def _rollout_context(cell):
+    missing = object()
+    previous_coefficients = getattr(cell, "_rollout_nest_coefficients", missing)
+    previous_noise_seed = getattr(cell, "_rollout_noise_seed", missing)
+    try:
+        cell._rollout_nest_coefficients = (
+            cell.prepare_rollout_nest_coefficients()
+            if getattr(cell, "_use_prepacked_nest_coefficients", False)
+            else None
+        )
+        if hasattr(cell, "noise_seed"):
+            # One host copy per rollout instead of a device read every step.
+            with tf.device("/CPU:0"):
+                cell._rollout_noise_seed = tf.cast(
+                    tf.identity(cell.noise_seed), tf.int32
+                )
+        yield
+    finally:
+        for name, previous in (
+            ("_rollout_nest_coefficients", previous_coefficients),
+            ("_rollout_noise_seed", previous_noise_seed),
+        ):
+            if previous is missing:
+                if hasattr(cell, name):
+                    delattr(cell, name)
+            else:
+                setattr(cell, name, previous)
 
 
 class ExplicitStateRNN(tf.keras.layers.RNN):
@@ -23,6 +54,13 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
             sequences, *initial_state = sequences
         if isinstance(mask, (list, tuple)):
             mask = mask[0]
+        float32_temporal = (
+            getattr(self.cell, "temporal_gradient_precision", "compute") == "float32"
+        )
+        if float32_temporal and (mask is not None or getattr(self, "time_major", False)):
+            raise ValueError(
+                "FP32 temporal gradients require unmasked batch-major input."
+            )
         if initial_state is None:
             initial_state = self.cell.zero_state(
                 tf.shape(sequences)[1 if getattr(self, "time_major", False) else 0],
@@ -30,43 +68,19 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
             )
         states = [tf.convert_to_tensor(value) for value in initial_state]
         self.cell.validate_state_precision(states)
-        rollout_coefficients = (
-            self.cell.prepare_rollout_nest_coefficients()
-            if getattr(self.cell, "_use_prepacked_nest_coefficients", False)
-            else None
-        )
-        previous_rollout_coefficients = getattr(
-            self.cell, "_rollout_nest_coefficients", None
-        )
-        self.cell._rollout_nest_coefficients = rollout_coefficients
-        previous_rollout_noise_seed = getattr(self.cell, "_rollout_noise_seed", None)
-        if hasattr(self.cell, "noise_seed"):
-            # One host copy per rollout instead of a device read every step.
-            with tf.device("/CPU:0"):
-                self.cell._rollout_noise_seed = tf.cast(
-                    tf.identity(self.cell.noise_seed), tf.int32
-                )
-        if getattr(self.cell, "temporal_gradient_precision", "compute") == "float32":
-            if mask is not None or getattr(self, "time_major", False):
-                raise ValueError(
-                    "FP32 temporal gradients require unmasked batch-major input."
-                )
-            from ..temporal_adjoint import TemporalAdjointRunner
+        with _rollout_context(self.cell):
+            if float32_temporal:
+                from ..temporal_adjoint import TemporalAdjointRunner
 
-            runner = TemporalAdjointRunner(
-                self.cell,
-                chunk_size=self.cell.temporal_checkpoint_chunk_size,
-                pack_spike_checkpoints=self.cell.temporal_pack_spike_checkpoints,
-            )
-            try:
+                runner = TemporalAdjointRunner(
+                    self.cell,
+                    chunk_size=self.cell.temporal_checkpoint_chunk_size,
+                    pack_spike_checkpoints=self.cell.temporal_pack_spike_checkpoints,
+                )
                 output, states = runner(sequences, states)
-            finally:
-                self.cell._rollout_nest_coefficients = previous_rollout_coefficients
-                self.cell._rollout_noise_seed = previous_rollout_noise_seed
-            if not self.return_sequences:
-                output = tf.nest.map_structure(lambda value: value[:, -1], output)
-            return (output, *states) if self.return_state else output
-        try:
+                if not self.return_sequences:
+                    output = tf.nest.map_structure(lambda value: value[:, -1], output)
+                return (output, *states) if self.return_state else output
             compact_unroll = self.unroll and isinstance(self.cell.output_size, tuple)
             use_direct_loop = (
                 getattr(self.cell, "_use_direct_state_rnn_loop", False)
@@ -223,16 +237,13 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                     zero_output_for_mask=self.zero_output_for_mask,
                     return_all_outputs=self.return_sequences,
                 )
-        finally:
-            self.cell._rollout_nest_coefficients = previous_rollout_coefficients
-            self.cell._rollout_noise_seed = previous_rollout_noise_seed
-        output = sequence if self.return_sequences else last
-        if compact_unroll:
-            output = (
-                tf.cast(output[..., :-1], self.cell.compute_dtype),
-                output[..., -1],
-            )
-        return (output, *states) if self.return_state else output
+            output = sequence if self.return_sequences else last
+            if compact_unroll:
+                output = (
+                    tf.cast(output[..., :-1], self.cell.compute_dtype),
+                    output[..., -1],
+                )
+            return (output, *states) if self.return_state else output
 
     def compute_output_shape(self, sequences_shape, initial_state_shape=None):
         batch, length = sequences_shape[:2]

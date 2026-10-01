@@ -77,6 +77,11 @@ Deduplication is limited to one training loss/gradient evaluation. Parallel
 conditions can share the calculation; series conditions use independent scopes
 so each update reads current weights and retains its EMD gradient. Direct loss
 calls outside the trainer recompute rather than caching across unrelated tapes.
+The cache is owned by the evaluation scope and cleared on exit, including
+exceptions; regularizers do not retain old scopes or graphs across retracing.
+Explicit-state rollout coefficients and noise-seed snapshots are also temporary:
+they are restored after preparation, execution, or tracing failures. Rejected
+FP32 masked/time-major calls are validated before installing those snapshots.
 
 Retain all scientific losses. The measured V1 loss set included firing-rate
 distribution targets, online range voltage regularization, synchronization,

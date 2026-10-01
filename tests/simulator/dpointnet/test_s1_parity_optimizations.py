@@ -40,7 +40,6 @@ def _emd_object(current, initial, groups, *, custom=False, dedup=False):
     )
     obj._use_grouped_custom_gradient = custom
     obj._deduplicate_within_graph = dedup
-    obj._graph_cache = {}
     return obj
 
 
@@ -109,7 +108,7 @@ def test_emd_graph_dedup_reuses_value_but_counts_gradient_twice():
     value, grad = two_terms()
     np.testing.assert_allclose(value.numpy(), 2.0 * single_value.numpy(), rtol=1e-6)
     np.testing.assert_allclose(grad.numpy(), 2.0 * single_grad.numpy(), rtol=1e-6)
-    assert len(dedup._graph_cache) == 1
+    assert not hasattr(dedup, "_graph_cache")
 
 
 def test_pack_nest_state_coefficients_reads_current_values_each_invocation():

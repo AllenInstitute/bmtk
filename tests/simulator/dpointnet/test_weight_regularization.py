@@ -159,7 +159,61 @@ def test_scoped_graph_dedup_preserves_series_updates(patched_conn_types):
     values, final_weights = series_updates()
     np.testing.assert_allclose(values, [1.0, 0.9], rtol=1e-6)
     np.testing.assert_allclose(final_weights, [1.8, 2.8], rtol=1e-6)
-    assert len(reg._graph_cache) == 2
+    assert not hasattr(reg, "_graph_cache")
+
+
+def test_scope_restores_outer_cache_and_clears_on_exception(patched_conn_types):
+    _, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    caches = []
+
+    @tf.function
+    def nested_scopes():
+        with wr.weight_regularization_scope():
+            outer = wr._weight_regularization_scope.get()
+            caches.append(outer)
+            first = reg()
+            assert len(outer) == 1
+            with pytest.raises(RuntimeError, match="scope interrupted"):
+                with wr.weight_regularization_scope():
+                    inner = wr._weight_regularization_scope.get()
+                    caches.append(inner)
+                    second = reg()
+                    assert first is not second
+                    assert len(inner) == 1
+                    raise RuntimeError("scope interrupted")
+            assert not inner
+            assert wr._weight_regularization_scope.get() is outer
+            assert reg() is first
+        assert not outer
+        assert wr._weight_regularization_scope.get() is None
+        return first
+
+    assert float(nested_scopes().numpy()) == 0.0
+    assert all(not cache for cache in caches)
+    assert wr._weight_regularization_scope.get() is None
+
+
+def test_repeated_tracing_does_not_retain_scope_entries(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    rnn.cell.recurrent_weight_values.assign([2.0, 3.0])
+    caches = []
+    for index in range(8):
+        @tf.function
+        def evaluate():
+            with wr.weight_regularization_scope():
+                cache = wr._weight_regularization_scope.get()
+                caches.append(cache)
+                first = reg()
+                assert reg() is first
+                assert len(cache) == 1
+            assert not cache
+            return first
+
+        assert float(evaluate().numpy()) == pytest.approx(1.0)
+        assert len(caches) >= index + 1
+        assert all(not cache for cache in caches)
+        assert not hasattr(reg, "_graph_cache")
+        assert wr._weight_regularization_scope.get() is None
 
 
 def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
