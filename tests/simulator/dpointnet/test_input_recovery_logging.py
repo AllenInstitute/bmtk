@@ -9,6 +9,7 @@ import pytest
 import tensorflow as tf
 
 from bmtk.simulator.dpointnet.data_iterator import DataIterator
+from bmtk.simulator.dpointnet.config import Config
 from bmtk.simulator.dpointnet.input_modules.lgn_generator import (
     LGNGenerator, _guard_generator, _RecoverableLGNIterator,
     create_grey_screen_generator,
@@ -123,6 +124,66 @@ def test_diagnostics_io_failure_is_visible(console, monkeypatch):
     assert "Details:" not in console.getvalue()
 
 
+@pytest.mark.parametrize("preinitialize", [False, True])
+@pytest.mark.parametrize("log_to_console", [False, True])
+def test_config_build_env_configures_recovery_logging(
+    tmp_path, monkeypatch, preinitialize, log_to_console
+):
+    output = string_io.StringIO()
+    logger = logging.getLogger("bmtk.simulator.dpointnet.io_tools")
+    monkeypatch.setattr(logger, "handlers", [])
+    monkeypatch.setattr(logger, "level", logging.INFO)
+    monkeypatch.setattr(logger, "propagate", False)
+    monkeypatch.setattr(RNNIOUtils, "_logger", None)
+    monkeypatch.setattr(io, "_diagnostic_path", None)
+    monkeypatch.setattr(io, "_console_handler", None)
+    monkeypatch.setattr(io, "_log_to_console", True)
+    monkeypatch.setattr(io, "_log_level", logging.INFO)
+    monkeypatch.setattr(io, "_log_format", logging.Formatter("%(message)s"))
+    monkeypatch.setattr("sys.stdout", output)
+    if preinitialize:
+        io.log_info("before configuration")
+        output.seek(0)
+        output.truncate()
+
+    output_dir = tmp_path / "run"
+    logfile = output_dir / "run.log"
+    config = Config.from_dict({
+        "output": {
+            "output_dir": str(output_dir),
+            "log_file": str(logfile),
+            "log_level": "WARNING",
+            "log_to_console": log_to_console,
+            "log_format": "%(levelname)s: %(message)s",
+            "overwrite_results": False,
+        },
+    })
+    try:
+        config.build_env()
+        assert config.io is io
+        io.log_info("filtered information")
+        module = _module([None, tf.errors.UnknownError(None, None, "private details")])
+        previous = module.get_state(max_retries=1)
+        assert module.get_state(max_retries=1) is previous
+        assert Path(io._diagnostic_path).parent == output_dir
+        assert "private details" in Path(io._diagnostic_path).read_text()
+        log_text = logfile.read_text()
+        assert "WARNING: Initial-state input generation was interrupted" in log_text
+        assert io._diagnostic_path in log_text
+        assert "filtered information" not in log_text
+        assert "private details" not in log_text
+        if log_to_console:
+            assert "WARNING: Initial-state input generation was interrupted" in output.getvalue()
+            assert "private details" not in output.getvalue()
+            assert "filtered information" not in output.getvalue()
+        else:
+            assert output.getvalue() == ""
+    finally:
+        for handler in logger.handlers[:]:
+            logger.removeHandler(handler)
+            handler.close()
+
+
 def test_guard_preserves_error_identity_without_callback_traceback(capfd):
     error = tf.errors.InvalidArgumentError(None, None, "callback failure detail")
     errors = SimpleQueue()
@@ -190,10 +251,13 @@ def test_grey_screen_recovery_iterator_preserves_seeded_batches():
 
 
 @pytest.mark.parametrize("recover", [False, True])
-def test_data_iterator_recovery_route_is_opt_in(recover):
+@pytest.mark.parametrize("device_enabled", [False, True])
+def test_data_iterator_recovery_route_is_opt_in(recover, device_enabled):
     calls = []
 
     class Module:
+        use_device_generation = device_enabled
+
         @staticmethod
         def create_recoverable_iterator(seq_len, batch_size):
             calls.append("recoverable")
@@ -204,7 +268,9 @@ def test_data_iterator_recovery_route_is_opt_in(recover):
             calls.append("default")
             return tf.data.Dataset.from_tensors(tf.zeros((3, 1)))
 
-    iterator = DataIterator([Module()], 2, 3, recover_input_errors=recover)
+    iterator = DataIterator(
+        [Module()], 2, 3, recover_input_errors=recover, use_device_generation=False,
+    )
     iterator.build()
     assert calls == ["recoverable" if recover else "default"]
     iterator.close()

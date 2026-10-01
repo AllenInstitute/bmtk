@@ -16,6 +16,7 @@ class DataIterator:
         strategy=None,
         prefetch_device_inputs=True,
         recover_input_errors=False,
+        use_device_generation=True,
     ):
         self.input_mods = input_mods
         self.batch_size = batch_size
@@ -25,6 +26,7 @@ class DataIterator:
         self.strategy = strategy
         self.prefetch_device_inputs = prefetch_device_inputs
         self.recover_input_errors = recover_input_errors
+        self.use_device_generation = use_device_generation
         self._device_generation = False
         self._prefetch_executor = None
         self._prefetch_future = None
@@ -68,7 +70,7 @@ class DataIterator:
             )
 
     def _create_iterator(self, mod, seq_len, batch_size):
-        if getattr(mod, "use_device_generation", False):
+        if self.use_device_generation and getattr(mod, "use_device_generation", False):
             if self.fetch_in_graph or not tf.executing_eagerly():
                 raise ValueError(
                     "Per-device LGN generation requires eager iterator fetching."

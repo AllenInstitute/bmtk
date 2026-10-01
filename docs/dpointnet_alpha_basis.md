@@ -71,13 +71,11 @@ dimension passes, build raises with the achieved error; tolerance is never
 automatically relaxed. Solver budgets are finite and do not guarantee the global
 optimum. Very extreme fast/slow ratios may require increasing `n_points`.
 
-The default is twice the archived V1 four-basis worst-class relative RMS error:
-`2 * 0.040061444489979656 = 0.08012288897995931`. Calibration covered all 90 used
-synapse classes from the 2010 unique target-type/synapse pairs in `core_nll_0`.
-The archived taus were `[0.9895877164, 1.8801909320, 3.6289592843, 5.6534043090]` ms.
-This is a waveform approximation threshold, not a bound on voltage, spike timing,
-training gradients, or network behavior. A stricter application should explicitly
-choose its tolerance and sampling window.
+The default tolerance is approximately 8.012%. It was chosen as twice a V1
+four-basis reference error, not as a universal accuracy requirement. This is a
+waveform approximation threshold, not a bound on voltage, spike timing, training
+gradients, or network behavior. Validate the fitted waveforms for your network
+and explicitly choose the tolerance and sampling window your application needs.
 
 ## Kinetics and execution
 

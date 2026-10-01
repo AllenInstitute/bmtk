@@ -282,6 +282,8 @@ class SynchronizationLoss(tf.keras.layers.Layer):
             return tf.constant(0.0, dtype=self._dtype)
 
         spikes = tf.convert_to_tensor(spikes)
+        if spikes.dtype == tf.bool:
+            spikes = tf.cast(spikes, self._dtype)
         if spikes.shape.rank is None:
             spikes = tf.cond(
                 tf.equal(tf.rank(spikes), 2),

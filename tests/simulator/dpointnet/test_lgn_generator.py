@@ -104,7 +104,7 @@ def test_device_batch_matches_seeded_host_generator(prefetch):
     assert actual._prefetch_executor is None
 
 
-def test_two_replica_pipeline_keeps_batches_and_constants_local():
+def test_two_replica_pipeline_and_host_reference_initializer():
     script = r"""
 import faulthandler
 faulthandler.enable()
@@ -116,6 +116,7 @@ physical = tf.config.list_physical_devices('CPU')[0]
 tf.config.set_logical_device_configuration(physical, [tf.config.LogicalDeviceConfiguration(), tf.config.LogicalDeviceConfiguration()])
 from bmtk.simulator.dpointnet.input_modules.lgn_generator import LGNGenerator, create_drifting_gratings_generator
 from bmtk.simulator.dpointnet.data_iterator import DataIterator
+from bmtk.simulator.dpointnet.state_modules.input_state import InitStateFromInputModule
 class FakeLGN:
     n_nodes = 4
     def __init__(self):
@@ -131,6 +132,8 @@ mod.population_name = 'lgn'
 mod.stimulus_opts = dict(row_size=5, col_size=7, seed=71, regular=True, phase=21)
 mod.lgn = FakeLGN()
 mod.use_device_generation = True
+mod.stimulus_type = 'drifting_gratings'
+mod._generator_fn = create_drifting_gratings_generator
 iterator = DataIterator([mod], 3, 8, ['lgn'])
 reference = list(create_drifting_gratings_generator(mod.lgn, 8, **mod.stimulus_opts).batch(3).take(2))
 try:
@@ -151,8 +154,41 @@ finally:
     iterator.close()
 assert iterator._prefetch_executor is None
 assert local_iterator._executor is None
+
+noise_advances = []
+def warmup(inputs):
+    spikes, state = inputs
+    assert not isinstance(spikes, tf.distribute.DistributedValues)
+    return (state[0] + tf.reduce_sum(tf.cast(spikes, tf.float32), axis=(1, 2))[:, None],)
+mod.rnn.adjusted_batch_size = 3
+mod.rnn.seq_len = 8
+mod.rnn.dtype = tf.float32
+mod.rnn.ordered_inputs_populations = ['lgn']
+mod.rnn.parse_input_mods_from_config = lambda inputs: [('lgn', mod)]
+mod.rnn.cell = SimpleNamespace(
+    advance_noise_seed=lambda: noise_advances.append(True),
+    zero_state=lambda batch_size, *args, **kwargs: (tf.zeros((batch_size, 1)),),
+)
+mod.rnn.state_only_model = warmup
+mod.rnn.model_inputs = lambda spikes, state: (spikes, state)
+initializer = InitStateFromInputModule(mod.rnn, inputs={})
+try:
+    for batch_size in (3, 2):
+        state = initializer.get_state(batch_size=batch_size, max_retries=1)
+        expected_spikes, _ = next(iter(create_drifting_gratings_generator(
+            mod.lgn, 8, **mod.stimulus_opts).batch(batch_size)))
+        expected_state = tf.reduce_sum(
+            tf.cast(expected_spikes, tf.float32), axis=(1, 2))[:, None]
+        np.testing.assert_array_equal(state[0], expected_state)
+        assert state[0].shape == (batch_size, 1)
+        assert initializer.spikes_itrs(batch_size)._device_generation is False
+        assert initializer.spikes_itrs(batch_size)._prefetch_executor is None
+    assert len(noise_advances) == 2
+    assert mod.use_device_generation is True
+finally:
+    initializer.spikes_itrs().close()
 faulthandler.cancel_dump_traceback_later()
-print('Two replica seeded batches and constant placement passed')
+print('Two replica placement, seeded batches and host-reference initialization passed')
 """
     env = dict(
         os.environ,

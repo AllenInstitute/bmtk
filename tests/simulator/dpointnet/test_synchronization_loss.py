@@ -154,6 +154,36 @@ def test_synchronization_loss_batched_sampling_has_finite_gradient(monkeypatch):
     assert loss._plan_cache[2]["n_effective"] == 6
 
 
+@pytest.mark.parametrize("batched", [False, True])
+@pytest.mark.parametrize("traced", [False, True])
+def test_boolean_spikes_match_numeric_synchronization_loss(monkeypatch, batched, traced):
+    pop_names = np.array(["e0"] * 20)
+    rnn = SimpleNamespace(
+        recurrent_network={
+            "n_nodes": 20,
+            "node_params": {"pop_name": pop_names},
+        }
+    )
+    monkeypatch.setattr(
+        loss_utils, "get_pop_names", lambda network, data_dir="": pop_names
+    )
+    monkeypatch.setattr("os.path.exists", lambda path: True)
+    monkeypatch.setattr(
+        np, "load", lambda path, allow_pickle=True: np.ones((3, 20), dtype=np.float32)
+    )
+    boolean_loss = SynchronizationLoss(rnn, t_start=0, t_end=20, n_samples=5, seed=31)
+    numeric_loss = SynchronizationLoss(rnn, t_start=0, t_end=20, n_samples=5, seed=31)
+    shape = (2, 20, 20) if batched else (20, 20)
+    spikes = tf.constant(np.random.default_rng(31).uniform(size=shape) < 0.2)
+    call = tf.function(boolean_loss) if traced else boolean_loss
+    actual = call(spikes)
+    expected = numeric_loss(tf.cast(spikes, tf.float32))
+    assert actual.dtype == tf.float32
+    assert actual.shape == ()
+    assert np.isfinite(actual.numpy())
+    np.testing.assert_array_equal(actual, expected)
+
+
 def test_synchronization_loss_matches_loop_reference_value_and_gradient(monkeypatch):
     pop_names = np.array(["e0"] * 40)
     rnn = SimpleNamespace(

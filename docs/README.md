@@ -1,8 +1,22 @@
 ## BMTK documentation, guides, and examples
 
-- [DPointNet parity branch: settings, qualification and agent handoff](dpointnet_parity.md)
-- [DPointNet automatic alpha-basis fitting](dpointnet_alpha_basis.md)
-- [DPointNet initial-state input recovery diagnostics](dpointnet_input_recovery.md)
+### DPointNet user and configuration guides
+
+- [DPointNet user guide](autodocs/source/dpointnet_guide.rst)
+- [Performance configuration and precision](dpointnet_parity.md)
+- [Variable-batch acceleration and device Poisson sampling](dpointnet_variable_batch.md)
+- [Automatic alpha-basis fitting](dpointnet_alpha_basis.md)
+- [Per-device LGN input generation](dpointnet_lgn_pipeline.md)
+- [Pascal GPU compatibility and limitations](dpointnet_pascal.md)
+- [Initial-state input recovery diagnostics](dpointnet_input_recovery.md)
+
+These Markdown supplements can be read directly on GitHub. They are not currently
+included in the [published user guide](https://alleninstitute.github.io/bmtk/dpointnet_guide.html)
+navigation. Consult documentation from the same revision as your installed BMTK.
+
+### DPointNet developer notes
+
+- [Startup preprocessing and ordering invariants](dpointnet_startup.md)
 
 #### directory structure
 

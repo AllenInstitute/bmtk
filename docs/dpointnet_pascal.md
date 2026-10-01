@@ -1,8 +1,14 @@
 # Pascal GPU compatibility
 
-This follow-up to `7bf7855` adds Pascal-compatible CUDA atomics/warp grouping
-and LGN spatial filtering. It does not change neuronal dynamics, losses,
-configured precision, background distribution or installed dependencies.
+This guide is for users of Pascal GPUs and developers maintaining older-device
+compatibility. DPointNet includes Pascal-compatible CUDA atomics/warp grouping
+and GPU LGN spatial filtering without changing neuronal dynamics, losses,
+configured precision or background distribution.
+
+**General NEST execution on Pascal is not qualified.** A full GTX 1080 Ti
+regression run failed, including fused NEST launch-resource errors. The legacy
+batch-16 and LGN smoke results below are narrower checks, not a complete Pascal
+support claim.
 
 ## Build and settings
 
@@ -23,8 +29,9 @@ Pascal does not satisfy the SM86+ accelerator contracts. Set these flags false:
 ```
 
 Keep other flags only when their independent hardware/topology qualifications
-are met. No precision or dynamics switch is required by this patch. Preserve
-the selected scientific protocol; legacy remains the unrelated-project default.
+are met. Do not switch an existing experiment's precision or dynamics to work
+around compatibility failures. Legacy remains the default; NEST training is
+experimental and is not recommended on any hardware.
 
 ## Compatibility implementation
 
@@ -47,47 +54,30 @@ can lower the filters back into cuDNN. Modern GPUs keep their original
 convolution/XLA paths. This is hardware compatibility, not a blanket speed claim
 or a fallback that moves LGN computation to CPU.
 
-## Measured scope
+## Validation scope and limits
 
-Actual GTX1080Ti (SM61), TensorFlow2.21/CUDA12.9/cuDNN9.25,66,658-neuron V1,
-500ms, effective batch16(12evoked+4spontaneous), selective forward/ordinary FP16
-temporal gradients, chunk25, original Poisson BKG, default BFC and fresh prefetched
-LGN inputs: three finite applied optimizer updates passed. Final-source post-trace
-times were8.74/10.24s including fresh input work; first update was51.09s including
-tracing. An earlier smoke measured8.88/10.29s and54.28s, respectively.
-These are two smoke timing samples, not a qualified20-sample performance benchmark.
+| Surface | Scope |
+|---|---|
+| CUDA currents and gradients | Focused independent-reference tests passed on GTX 1080 Ti / SM61. |
+| LGN filters | Real spatial and temporal shapes passed CPU-reference checks with GPU placement required and a `1e-6` tolerance. |
+| Legacy training | A three-update V1 batch-16 smoke passed; long-run training and higher-activity memory capacity are not qualified. |
+| General NEST execution | Not qualified: the full Pascal suite failed, including fused NEST launch-resource errors. |
+| Titan Xp and physical multi-GPU | Not separately measured. |
 
-Final-source TF allocation peaks were7.83/7.86/7.80GiB per update, including input
-generation and prefetch; the earlier smoke reached8.01GiB. Driver process
-reservation was about10.43GiB on an11GiB card,
-leaving limited headroom. Short smoke feasibility does not establish safe memory
-for trained higher-activity networks, longer sequences, other losses or long runs.
-TitanXp was not separately tested; do not present it as measured capacity.
+The legacy smoke used TensorFlow 2.21, CUDA 12.9 and cuDNN 9.25 on GTX 1080 Ti:
+66,658 neurons, 500-ms sequences, effective batch 16 (12 evoked + 4 spontaneous),
+selective forward state, ordinary FP16 temporal gradients, checkpoint chunk 25,
+original Poisson BKG, default BFC and fresh prefetched LGN inputs. TensorFlow
+allocation peaked around 7.9 GiB and driver reservation around 10.4 GiB on an
+11-GiB card, leaving limited headroom. This does not establish safe memory for
+trained higher-activity networks, longer sequences, other losses or long runs.
+There is no qualified steady-state performance claim.
 
-Real LGN normalization kernels7x7through27x27,500-frame packed spatial filtering
-and574/314-tap temporal filters passed the existing1e-6 CPU-reference gate with
-GPU placement required. A rejected all-explicit temporal candidate failed that
-gate; tolerances were not loosened. Small gradient/chunk/warp-boundary tests
-cover independent reference values and gradients. Nonlinear chunk-boundary
-gradients use an FP64 synthetic oracle to isolate indexing from FP32 reduction
-cancellation; separate FP32 value/input-gradient tests remain. Production
-precision and1e-6 tolerances were not changed.
+Independent tests retain FP32 value/input-gradient coverage. Nonlinear
+chunk-boundary tests also use an FP64 synthetic oracle to isolate indexing from
+FP32 reduction cancellation; production precision and tolerances are unchanged.
+Passing the complete SM86 suite is not a complete Pascal regression pass.
 
-Complete final-production-source regression suites passed1735GPU tests
-(26skipped, on RTX3090/SM86),966CPU/Keras3 tests and966actualPython3.8/TF2.13/Keras2 tests
-(795skipped each). The subsequent test-only oracle precision correction passed
-all18LGN tests on Pascal and both CPU/Keras versions. No production-code changes
-followed the complete suites. No physical multi-GPU or TitanXp result is claimed.
-
-The2026-10-01 combined-branch audit onGTX1080Ti passed68focused alpha-basis,
-LGN and recovery tests, but its full GPU suite did not pass:1502passed,
-160failed,140skipped. Early failures included the fused NEST forward kernel
-requesting too many launch resources; later failures included additional GPU
-errors. This does not qualify general NEST execution on Pascal. The earlier
-legacy batch16/LGN smoke and SM86 suite are narrower, separate qualifications;
-do not interpret them as a complete Pascal regression pass.
-
-Full validation and authoritative memory/timing receipts are recorded in
-`/local2/results/dpointnet_rule_search/pascal_bs16_20260930/FINAL_REPORT.md`.
-Pin the published revision and rebuild operators before adoption; existing
-environments and experiment source checkouts are not upgraded automatically.
+Rebuild operators for your source and GPU, then smoke-test the exact workload
+before adoption. Do not interpret a successful build or a focused LGN test as
+qualification of every execution path.

@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import tempfile
 import traceback
 from datetime import datetime
@@ -15,6 +16,34 @@ class RNNIOUtils(IOUtils):
         super(RNNIOUtils, self).__init__()
         self._diagnostic_path = None
         self._diagnostic_lock = Lock()
+        self._console_handler = None
+
+    @IOUtils.log_to_console.setter
+    def log_to_console(self, flag):
+        IOUtils.log_to_console.fset(self, flag)
+        if RNNIOUtils._logger is not None:
+            if flag:
+                self._set_console_logging()
+            elif self._console_handler is not None:
+                self.logger.removeHandler(self._console_handler)
+                self._console_handler.close()
+                self._console_handler = None
+
+    def _set_console_logging(self):
+        if self._log_to_console and self._console_handler is None:
+            self._console_handler = logging.StreamHandler(sys.stdout)
+            self._console_handler.setFormatter(self._log_format)
+            self._logger.addHandler(self._console_handler)
+
+    def set_log_level(self, loglevel):
+        super(RNNIOUtils, self).set_log_level(loglevel)
+        if RNNIOUtils._logger is not None:
+            self.logger.setLevel(self._log_level)
+
+    def set_log_format(self, format_str):
+        super(RNNIOUtils, self).set_log_format(format_str)
+        if self._console_handler is not None:
+            self._console_handler.setFormatter(self._log_format)
 
     def save_exception(self, exception, context):
         """Save recovery details without sending a traceback to console handlers."""

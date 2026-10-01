@@ -57,6 +57,7 @@ class InitStateFromInputModule:
                 seq_len=self.rnn.seq_len,
                 ordered_populations=self.rnn.ordered_inputs_populations,
                 recover_input_errors=True,
+                use_device_generation=False,
             )
             self._spikes_itrs_batch_size = batch_size
 
