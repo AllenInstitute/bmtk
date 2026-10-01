@@ -37,6 +37,23 @@ from bmtk.simulator.dpointnet.state_modules.cached_states import CachedInitState
 from bmtk.simulator.dpointnet.state_modules.input_state import _complete_noise_state
 
 
+@pytest.mark.parametrize(
+    "indices",
+    [
+        np.array([[2, 1], [0, 5], [2, 0], [2, 1], [0, 5]], dtype=np.uint32),
+        np.array([[2**50, 17], [2**50, 1], [2**50 - 1, 17]], dtype=np.int64),
+        np.array([[2**62, 17], [2**62, 1], [2**62 - 1, 17]], dtype=np.int64),
+        np.array([[0, 2**64 - 1], [0, 1]], dtype=np.uint64),
+        np.array([[-1, 3], [0, -2], [-1, 1]], dtype=np.int64),
+        np.array([[0.5, 2.0], [0.1, 2.0], [0.5, 1.0]]),
+        np.empty((0, 2), dtype=np.int64),
+    ],
+)
+def test_edge_sort_preserves_lexicographic_order_and_ties(indices):
+    expected = np.lexsort((indices[:, 1], indices[:, 0]))
+    np.testing.assert_array_equal(lex_sort_order_np(indices), expected)
+
+
 @pytest.mark.parametrize("mode", ["nest", "legacy"])
 @pytest.mark.parametrize(
     "reset_options", [{}, {"hard_reset": None}, {"hard_reset": False}]

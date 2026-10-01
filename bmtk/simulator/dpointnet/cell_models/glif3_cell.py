@@ -780,6 +780,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_native_voltage_penalty=False,
         online_voltage_losses=None,
         use_fused_state_history=False,
+        use_device_poisson=False,
         # current_input=False,
     ):
         super().__init__()
@@ -797,10 +798,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
             ("detach_asc_reset", detach_asc_reset),
             ("use_fused_nest_event_vjp", use_fused_nest_event_vjp),
             ("use_javier_recurrent_vjp", use_javier_recurrent_vjp),
+            ("use_device_poisson", use_device_poisson),
             ("use_prepacked_nest_coefficients", use_prepacked_nest_coefficients),
             ("use_type_indexed_nest_coefficients", use_type_indexed_nest_coefficients),
-            ("require_type_indexed_nest_coefficients", require_type_indexed_nest_coefficients),
-            ("use_static_type_indexed_nest_dispatch", use_static_type_indexed_nest_dispatch),
+            (
+                "require_type_indexed_nest_coefficients",
+                require_type_indexed_nest_coefficients,
+            ),
+            (
+                "use_static_type_indexed_nest_dispatch",
+                use_static_type_indexed_nest_dispatch,
+            ),
             ("use_direct_state_rnn_loop", use_direct_state_rnn_loop),
             ("use_unity_lr_scale_fastpath", use_unity_lr_scale_fastpath),
             ("use_native_voltage_penalty", use_native_voltage_penalty),
@@ -812,6 +820,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if not np.isfinite(dampening_factor) or dampening_factor < 0:
             raise ValueError("dampening_factor must be finite and nonnegative.")
         self.state_precision = state_precision
+        self._use_device_poisson = use_device_poisson
         self.use_fused_nest_event_vjp = use_fused_nest_event_vjp
         self._use_type_indexed_nest_coefficients = use_type_indexed_nest_coefficients
         self._require_type_indexed_nest_coefficients = require_type_indexed_nest_coefficients
@@ -868,13 +877,13 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if (
                 not supported_temporal_route
                 or not use_direct_csr_recurrent_gradient
-                or batch_size != 32
+                or batch_size not in range(1, 33)
                 or not train_recurrent
                 or train_recurrent_per_type
             ):
                 raise ValueError(
                     "Fused recurrent accumulation requires FP32 temporal carry or "
-                    "the direct state RNN loop, batch32, direct CSR and trainable "
+                    "the direct state RNN loop, batch1..32, direct CSR and trainable "
                     "per-edge recurrent weights."
                 )
         if current_replay_mode not in (None, "record", "recompute"):
@@ -1586,6 +1595,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 input_props["spike_prob_value"] = float(
                     np.asarray(firing_rate * dt / 1000.0, dtype=np.float64)
                 )
+                if self._use_device_poisson:
+                    from scipy.stats import poisson
+
+                    rate = float(
+                        np.asarray(
+                            input_props["spike_prob_value"],
+                            dtype=tf.as_dtype(self.compute_dtype).as_numpy_dtype,
+                        )
+                    )
+                    if not np.isfinite(rate) or rate < 0:
+                        raise ValueError(
+                            "Device Poisson rate must be finite and nonnegative."
+                        )
+                    cutoff = int(poisson.ppf(np.nextafter(1.0, 0.0), rate))
+                    levels = poisson.cdf(np.arange(cutoff + 1), rate)
+                    levels[-1] = 1.0
+                    input_props["poisson_cdf"] = tf.constant(levels, tf.float64)
                 end_indx = self.inputs_idx[idx]
             elif input_type == "current":
                 end_indx = self.inputs_idx[idx] + n_input_nodes
@@ -1788,6 +1814,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     self._recurrent_dampening,
                     vjp_only=False,
                     use_javier_batch32_backward=self.use_javier_recurrent_vjp,
+                    use_active_row_forward=(
+                        rec_z_buf.shape[0] != 32 and self._use_active_row_forward
+                    ),
+                    use_forward_run_aggregation=(
+                        rec_z_buf.shape[0] != 32
+                        and self._use_forward_run_aggregation
+                        and self.recurrent_fused_connectivity.get(
+                            "has_repeated_targets", False
+                        )
+                    ),
+                    use_device_active_queue_forward=(
+                        rec_z_buf.shape[0] != 32
+                        and self._use_device_active_queue_forward
+                    ),
                 )
             return fused_spike_currents(
                 rec_z_buf,
@@ -2025,6 +2065,37 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
 
     def sample_noise_spikes(self, batch_size, noise_step, input_net, noise_seed=None):
+        if getattr(self, "_use_device_poisson", False):
+            rollout_seed = getattr(self, "_rollout_noise_seed", None)
+            base_seed = tf.cast(
+                (
+                    noise_seed
+                    if noise_seed is not None
+                    else rollout_seed if rollout_seed is not None else self.noise_seed
+                ),
+                tf.int32,
+            )
+            replica_context = tf.distribute.get_replica_context()
+            replica_id = (
+                0
+                if replica_context is None
+                else replica_context.replica_id_in_sync_group
+            )
+            seed = tf.stack(
+                [
+                    base_seed + tf.cast(replica_id, tf.int32) * 1000003,
+                    tf.cast(noise_step[0], tf.int32),
+                ]
+            )
+            shape = [
+                batch_size,
+                input_net.get("input_dim", input_net["input_dense_shape"][1]),
+            ]
+            uniform = tf.random.stateless_uniform(shape, seed=seed, dtype=tf.float64)
+            counts = tf.searchsorted(
+                input_net["poisson_cdf"], tf.reshape(uniform, [-1]), side="right"
+            )
+            return tf.reshape(counts, shape)
         # StatelessRandomPoisson only has a CPU kernel. Building every input on
         # the host keeps the sampler off the device stream: a device-resident
         # seed, rate or shape costs an in-order round trip every time step.

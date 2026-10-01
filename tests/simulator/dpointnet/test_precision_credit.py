@@ -111,6 +111,26 @@ def make_cell(
     return GLIF3Cell(network, inputs, **arguments)
 
 
+@pytest.mark.parametrize("mode", ["legacy", "nest"])
+def test_device_poisson_distribution_and_replay(mode):
+    cell = make_cell(mode, noise=True, use_device_poisson=True)
+    net = cell.inputs["drive"]
+
+    @tf.function
+    def sample(step):
+        return cell.sample_noise_spikes(100000, tf.reshape(step, [1]), net)
+
+    first = sample(tf.constant(0)).numpy()
+    np.testing.assert_array_equal(first, sample(tf.constant(0)).numpy())
+    assert not np.array_equal(first, sample(tf.constant(1)).numpy())
+    assert first.dtype == np.int32
+    assert abs(first.mean() - 0.5) < 0.01
+    assert abs(first.var() - 0.5) < 0.015
+    assert np.count_nonzero(first > 1) > 10000
+    graph = sample.get_concrete_function(tf.constant(0)).graph.as_graph_def()
+    assert not any("Poisson" in node.op for node in graph.node)
+
+
 @pytest.mark.parametrize(
     "detach_reset,detach_asc", itertools.product([False, True], repeat=2)
 )
@@ -340,10 +360,11 @@ def build_core(cell, length=31, batch=2):
 @pytest.mark.parametrize("mode", ["legacy", "nest"])
 @pytest.mark.parametrize("chunk", [1, 7, 25])
 @pytest.mark.parametrize("fused", [False, True])
-def test_selective_exact_replay_and_poisson(mode, chunk, fused):
+@pytest.mark.parametrize("device_poisson", [False, True])
+def test_selective_exact_replay_and_poisson(mode, chunk, fused, device_poisson):
     if fused and not fused_glif_state_available():
         pytest.skip("GPU operator unavailable")
-    cell = make_cell(mode, fused=fused, noise=True)
+    cell = make_cell(mode, fused=fused, noise=True, use_device_poisson=device_poisson)
     core, state, sequence = build_core(cell)
     runner = SegmentedRecomputeRunner(core, 31, chunk, 2, pack_spike_checkpoints=True)
     floating = [x for x in state if x.dtype.is_floating]

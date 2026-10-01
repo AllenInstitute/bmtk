@@ -115,7 +115,7 @@ def test_ordinary_checkpoint_and_poisson(monkeypatch, chunk):
         return original(*args, **kwargs)
 
     monkeypatch.setattr(reference, "make_cell", make_cell)
-    reference.test_selective_exact_replay_and_poisson("nest", chunk, True)
+    reference.test_selective_exact_replay_and_poisson("nest", chunk, True, False)
 
 
 @pytest.mark.parametrize("replay_mode", ["record", "recompute"])

@@ -97,7 +97,7 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                     if "training" in inspect.signature(self.cell.call).parameters
                     else {}
                 )
-                length = tf.shape(sequences)[1]
+                length = sequences.shape[1] or tf.shape(sequences)[1]
                 flat_shapes = tf.nest.flatten(self.cell.output_size)
                 if isinstance(self.cell.output_size, tuple):
                     flat_dtypes = [tf.as_dtype(self.cell.compute_dtype), tf.float32]
@@ -163,7 +163,7 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                     lambda index, *_: index < length,
                     direct_step,
                     (tf.constant(0), tuple(states), arrays) + carrier,
-                    parallel_iterations=1,
+                    parallel_iterations=32,
                 )
                 _, states, arrays = result[:3]
                 stacked = tuple(

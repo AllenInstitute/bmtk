@@ -305,9 +305,23 @@ def build_csr_connectivity(
     )
     numpy_index_dtype = index_dtype.as_numpy_dtype
     if sort_by_target:
-        edge_ids = np.lexsort((synapse_types, post_ids, pre_ids)).astype(
-            numpy_index_dtype, copy=False
-        )
+        if (
+            int(n_target_neurons) < 2**64
+            and int(n_synapse_types) < 2**64
+            and int(n_source_neurons) * int(n_target_neurons) * int(n_synapse_types)
+            <= 2**64
+        ):
+            keys = pre_ids.astype(np.uint64) * np.uint64(n_target_neurons)
+            keys += post_ids.astype(np.uint64, copy=False)
+            keys *= np.uint64(n_synapse_types)
+            keys += synapse_types.astype(np.uint64, copy=False)
+            edge_ids = np.argsort(keys, kind="stable").astype(
+                numpy_index_dtype, copy=False
+            )
+        else:
+            edge_ids = np.lexsort((synapse_types, post_ids, pre_ids)).astype(
+                numpy_index_dtype, copy=False
+            )
     else:
         edge_ids = np.argsort(pre_ids, kind="stable").astype(
             numpy_index_dtype, copy=False
@@ -357,11 +371,23 @@ def build_csr_connectivity(
         ]
         n_pairs = 0
         if build_compact_pairs and post_ids.size:
-            pairs, pair_ids = np.unique(
-                np.column_stack((post_ids, sorted_synapse_types)),
-                axis=0,
-                return_inverse=True,
-            )
+            if (
+                int(n_synapse_types) < 2**64
+                and int(n_target_neurons) * int(n_synapse_types) <= 2**64
+            ):
+                stride = np.uint64(n_synapse_types)
+                keys = post_ids.astype(np.uint64) * stride
+                keys += sorted_synapse_types.astype(np.uint64, copy=False)
+                unique_keys, pair_ids = np.unique(keys, return_inverse=True)
+                pairs = np.column_stack(
+                    (unique_keys // stride, unique_keys % stride)
+                ).astype(numpy_index_dtype, copy=False)
+            else:
+                pairs, pair_ids = np.unique(
+                    np.column_stack((post_ids, sorted_synapse_types)),
+                    axis=0,
+                    return_inverse=True,
+                )
             metadata_parts.extend(
                 (
                     pair_ids.astype(numpy_index_dtype, copy=False),
@@ -495,6 +521,9 @@ def fused_recurrent_weight_carry(
     spike_gradient_scale,
     vjp_only=True,
     use_javier_batch32_backward=False,
+    use_active_row_forward=False,
+    use_forward_run_aggregation=False,
+    use_device_active_queue_forward=False,
 ):
     """Currents with a differentiable identity weight carrier.
 
@@ -529,6 +558,9 @@ def fused_recurrent_weight_carry(
             use_packed_sm120_backward=False,
             write_csr_weight_gradient=True,
             vjp_only=vjp_only,
+            use_active_row_forward=use_active_row_forward,
+            use_forward_run_aggregation=use_forward_run_aggregation,
+            use_device_active_queue_forward=use_device_active_queue_forward,
         )
         # Reuse this FuncGraph's capture; recapturing the eager handle in grad
         # breaks TensorFlow's nested while-gradient resource mapping.

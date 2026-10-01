@@ -184,14 +184,14 @@ def _reference_currents(spikes, master_weights, basis):
     )
 
 
-@pytest.mark.parametrize("batch_size", [1, 5, 32])
+@pytest.mark.parametrize("batch_size", [1, 5, 8, 13, 16, 23, 31, 32, 33])
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
 @pytest.mark.parametrize("small_batch", [False, True])
 @pytest.mark.parametrize("pair_projection", [False, True])
 def test_general_direct_csr_gradient_matches_reference(
     batch_size, dtype, small_batch, pair_projection
 ):
-    if small_batch and batch_size == 32:
+    if small_batch and batch_size > 8:
         pytest.skip("Small-batch kernel is restricted to 1..8")
     if not fused_cuda_available():
         pytest.skip("Fused CUDA operators unavailable")
@@ -477,6 +477,47 @@ def test_build_csr_connectivity_groups_edges_by_source():
     assert connectivity["n_pairs"] == 4
     assert connectivity["index_dtype"] == "uint32"
     assert _metadata_values(connectivity).dtype == tf.uint32
+
+
+@pytest.mark.parametrize(
+    "n_post,n_types", [(19, 7), (2**33, 17), (2**50, 17), (2**58, 8), (2**50, 2**30)]
+)
+@pytest.mark.parametrize("sort_by_target", [False, True])
+def test_compact_pair_metadata_matches_tuple_unique(n_post, n_types, sort_by_target):
+    rng = np.random.default_rng(319)
+    indices = np.column_stack((rng.integers(n_post, size=73), rng.integers(5, size=73)))
+    types = rng.integers(n_types, size=73)
+    indices[20:30] = indices[:10]
+    types[20:30] = types[:10]
+    connectivity = build_csr_connectivity(
+        indices,
+        types,
+        5,
+        n_post,
+        n_types,
+        build_compact_pairs=True,
+        sort_by_target=sort_by_target,
+    )
+    try:
+        metadata = _metadata_values(connectivity).numpy()
+        count = len(indices)
+        order = metadata[2 * count + 6 : 3 * count + 6].astype(np.int64)
+        expected_order = (
+            np.lexsort((types, indices[:, 0], indices[:, 1]))
+            if sort_by_target
+            else np.argsort(indices[:, 1], kind="stable")
+        )
+        np.testing.assert_array_equal(order, expected_order)
+        pairs, inverse = np.unique(
+            np.column_stack((indices[order, 0], types[order])),
+            axis=0,
+            return_inverse=True,
+        )
+        expected = np.concatenate((inverse, pairs[:, 0], pairs[:, 1]))
+        np.testing.assert_array_equal(metadata[3 * count + 6 :], expected)
+        assert connectivity["n_pairs"] == len(pairs)
+    finally:
+        connectivity.close()
 
 
 def test_build_csr_connectivity_can_sort_runs_by_target_within_source():

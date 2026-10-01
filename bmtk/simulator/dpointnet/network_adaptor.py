@@ -14,6 +14,18 @@ from .io_tools import io
 
 
 def lex_sort_order_np(indices):
+    if (
+        len(indices)
+        and np.issubdtype(indices.dtype, np.integer)
+        and np.min(indices) >= 0
+    ):
+        second_max = int(indices[:, 1].max())
+        stride = second_max + 1
+        limit = np.iinfo(np.uint64).max
+        if stride <= limit and int(indices[:, 0].max()) * stride + second_max <= limit:
+            keys = indices[:, 0].astype(np.uint64) * np.uint64(stride)
+            keys += indices[:, 1].astype(np.uint64, copy=False)
+            return np.argsort(keys, kind="stable")
     return np.lexsort((indices[:, 1], indices[:, 0]))
 
 

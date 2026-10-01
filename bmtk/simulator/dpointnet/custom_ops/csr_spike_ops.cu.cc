@@ -653,12 +653,11 @@ __global__ void DpointnetProjectionScaleKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, int kSlice = 32>
 __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
-    int64_t n_pairs, int n_post, const T* current_grad, const T* basis,
+  int64_t n_pairs, int n_post, int batch, const T* current_grad, const T* basis,
     const Index* pair_posts, const Index* pair_types, Eigen::half* projected,
     const float* scale) {
-  constexpr int kSlice = 32;
   constexpr int kPairsPerTile = 32;
   __shared__ float tile[kSlice][kPairsPerTile + 2];
   const int64_t pair_base = static_cast<int64_t>(blockIdx.x) * kPairsPerTile;
@@ -667,7 +666,7 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
     const int sample = index / kPairsPerTile;
     const int64_t pair = pair_base + pair_offset;
     float value = 0.0f;
-    if (pair < n_pairs) {
+    if (pair < n_pairs && sample < batch) {
       const int post = static_cast<int>(pair_posts[pair]);
       const int type = static_cast<int>(pair_types[pair]);
       const int64_t gradient_base = (static_cast<int64_t>(sample) * n_post + post) * 4;
@@ -693,14 +692,14 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, int kSlice = 32>
 __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
-    int n_pre, const Index* row_splits, const Index* pair_ids, const T* weights,
+  int n_pre, int batch, const Index* row_splits, const Index* pair_ids, const T* weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
     const float* inverse_scale, Index sentinel_pair) {
-  constexpr int kPack = 8;
-  constexpr int kLanesPerEdge = 4;
-  constexpr int kSlots = 8;
+  constexpr int kPack = kSlice < 8 ? kSlice : 8;
+  constexpr int kLanesPerEdge = kSlice / kPack;
+  constexpr int kSlots = 32 / kLanesPerEdge;
   constexpr int kRows = 4;
   const int lane = threadIdx.x & 31;
   const int row_lane = threadIdx.x >> 5;
@@ -718,18 +717,31 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
     const Index my_pair = own ? pair_ids[edge_lane] : sentinel_pair;
     const float my_weight = own ? ToFloat(weights[edge_lane]) : 0.0f;
 #pragma unroll
-    for (int step = 0; step < 4; ++step) {
+    for (int step = 0; step < kLanesPerEdge; ++step) {
       const int column = kSlots * step + slot;
       const Index pair = static_cast<Index>(
           __shfl_sync(0xffffffffu, static_cast<unsigned>(my_pair), column));
       const float weight = __shfl_sync(0xffffffffu, my_weight, column);
-      using Vector = ::uint4;
-      const Vector raw = *reinterpret_cast<const Vector*>(
-          projected + static_cast<int64_t>(pair) * 32 + sample_base);
-      const Eigen::half* packed = reinterpret_cast<const Eigen::half*>(&raw);
+        const Eigen::half* packed =
+          projected + static_cast<int64_t>(pair) * kSlice + sample_base;
+      float values[kPack];
+      if constexpr (kPack == 8) {
+        const ::uint4 raw = *reinterpret_cast<const ::uint4*>(packed);
+        const Eigen::half* vector_values =
+            reinterpret_cast<const Eigen::half*>(&raw);
+#pragma unroll
+        for (int sample = 0; sample < kPack; ++sample) {
+          values[sample] = ToFloat(vector_values[sample]);
+        }
+      } else {
+#pragma unroll
+        for (int sample = 0; sample < kPack; ++sample) {
+          values[sample] = ToFloat(packed[sample]);
+        }
+      }
 #pragma unroll
       for (int sample = 0; sample < kPack; ++sample) {
-        grad[sample] += ToFloat(packed[sample]) * weight;
+        grad[sample] += values[sample] * weight;
       }
     }
   }
@@ -744,8 +756,10 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
     const float factor = inverse_scale[1] * ToFloat(*spike_gradient_scale);
 #pragma unroll
     for (int sample = 0; sample < kPack; ++sample) {
-      spike_grad[static_cast<int64_t>(sample_base + sample) * n_pre + pre] =
-          FromFloat<T>(grad[sample] * factor);
+      if (sample_base + sample < batch) {
+        spike_grad[static_cast<int64_t>(sample_base + sample) * n_pre + pre] =
+            FromFloat<T>(grad[sample] * factor);
+      }
     }
   }
 }
@@ -789,6 +803,49 @@ __global__ void CsrSpikeGradPairBatch32Kernel(
       FromFloat<T>(pre_gradient * ToFloat(*spike_gradient_scale));
 }
 
+template <typename T, typename Index, int kSlice>
+__global__ void CsrSpikeGradPairVariableBatchKernel(
+    int batch, int n_pre, const Index* row_splits,
+    const Index* pair_ids, const T* weights, const float* projected,
+    T* spike_grad, const T* spike_gradient_scale) {
+  constexpr int kPack = 4;
+  constexpr int kLanesPerEdge = kSlice / kPack;
+  constexpr int kSlots = 32 / kLanesPerEdge;
+  const int lane = threadIdx.x & 31;
+  const int pre = blockIdx.x * 4 + (threadIdx.x >> 5);
+  if (pre >= n_pre) return;
+  const int slot = lane / kLanesPerEdge;
+  const int sample_base = (lane % kLanesPerEdge) * kPack;
+  float gradients[kPack] = {};
+  for (Index edge = row_splits[pre] + slot; edge < row_splits[pre + 1];
+       edge += kSlots) {
+    const float weight = ToFloat(weights[edge]);
+    const int64_t base = static_cast<int64_t>(pair_ids[edge]) * batch;
+#pragma unroll
+    for (int sample = 0; sample < kPack; ++sample) {
+      if (sample_base + sample < batch) {
+        gradients[sample] += projected[base + sample_base + sample] * weight;
+      }
+    }
+  }
+#pragma unroll
+  for (int mask = kLanesPerEdge; mask < 32; mask <<= 1) {
+#pragma unroll
+    for (int sample = 0; sample < kPack; ++sample) {
+      gradients[sample] += __shfl_xor_sync(0xffffffffu, gradients[sample], mask);
+    }
+  }
+  if (lane < kLanesPerEdge) {
+#pragma unroll
+    for (int sample = 0; sample < kPack; ++sample) {
+      if (sample_base + sample < batch) {
+        spike_grad[static_cast<int64_t>(sample_base + sample) * n_pre + pre] =
+            FromFloat<T>(gradients[sample] * ToFloat(*spike_gradient_scale));
+      }
+    }
+  }
+}
+
 // Event-sparse recurrent weight-gradient path adapted from Javier's
 // `v1_model_utils/cuda_csr_recurrent/event_weight_grad.cuh` at commit
 // 2c52ec10. Credit: Javier. The DPointNet port keeps DPointNet's CSR metadata
@@ -798,7 +855,7 @@ constexpr int kDpointnetEventThreads = 256;
 constexpr int kDpointnetEventChunk = 4 * kDpointnetEventThreads;
 constexpr int kDpointnetEventBlocks = 4512;
 
-template <typename T, typename Index>
+template <typename T, typename Index, bool kPositiveOnly = false>
 __global__ __launch_bounds__(kDpointnetEventThreads)
 void DpointnetEventRowQueueKernel(
     int64_t n_pre, int64_t batch, const T* activity, const Index* row_splits,
@@ -811,8 +868,10 @@ void DpointnetEventRowQueueKernel(
 #pragma unroll
     for (int sample = 0; sample < 32; ++sample) {
       if (sample < batch) {
+        const float activity_value =
+            ToFloat(activity[static_cast<int64_t>(sample) * n_pre + row]);
         mask |= static_cast<unsigned int>(
-                    ToFloat(activity[static_cast<int64_t>(sample) * n_pre + row]) != 0.0f)
+              kPositiveOnly ? activity_value > 0.0f : activity_value != 0.0f)
                 << sample;
       }
     }
@@ -1690,11 +1749,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               accumulator.NumElements() == n_edges_,
           errors::InvalidArgument("Accumulator must have one FP32 value per CSR edge."));
       OP_REQUIRES(
-          context, batch == 32 && n_basis == 4 && n_pairs_ > 0 &&
+          context, batch >= 1 && batch <= 32 && n_basis == 4 && n_pairs_ > 0 &&
               write_csr_weight_gradient_ && !use_small_batch_backward_ &&
               !use_packed_sm120_backward_ && SupportsPackedBatch32Backward(),
           errors::InvalidArgument(
-              "Fused accumulation requires SM86+, batch32/four bases, pairs, "
+              "Fused accumulation requires SM86+, batch1..32/four bases, pairs, "
               "direct CSR and generic packed backward flags."));
     }
     OP_REQUIRES(
@@ -1763,7 +1822,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     if constexpr ((kAccumulate || std::is_same<T, float>::value) &&
                   std::is_same<Index, uint32>::value) {
-      if (!use_small_batch_backward_ && batch == 32 &&
+        if (!use_small_batch_backward_ &&
+          (batch == 32 || (use_javier_batch32_backward_ && batch > 0 && batch < 32)) &&
           n_basis == 4 && n_pairs_ > 0) {
         if (use_javier_batch32_backward_ && write_csr_weight_gradient_) {
           OP_REQUIRES(
@@ -1772,7 +1832,9 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                   "Javier batch32 recurrent backward is currently supported "
                   "only for FP16 compute with the FP32 accumulator/direct-CSR path."));
           Tensor projected_half;
-          const int64_t projected_count = (n_pairs_ + 1) * 32;
+          int slice = 1;
+          while (slice < batch) slice *= 2;
+          const int64_t projected_count = (n_pairs_ + 1) * slice;
           OP_REQUIRES_OK(context, context->allocate_temp(
               DT_HALF, TensorShape({projected_count}), &projected_half));
           Tensor scale_tensor;
@@ -1781,8 +1843,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           float* scale = scale_tensor.flat<float>().data();
           unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 2);
           OP_REQUIRES_OK(context, GpuLaunchKernel(
-              SetZeroKernel<Eigen::half>, 1, 32, 0, device.stream(), 32,
-              projected_half.flat<Eigen::half>().data() + n_pairs_ * 32));
+              SetZeroKernel<Eigen::half>, 1, 32, 0, device.stream(), slice,
+              projected_half.flat<Eigen::half>().data() + n_pairs_ * slice));
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
               reinterpret_cast<uint32*>(max_bits)));
@@ -1793,12 +1855,22 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               DpointnetProjectionScaleKernel<T>, 1, 32, 0, device.stream(),
               max_bits, basis.flat<T>().data(), static_cast<int>(basis.dim_size(0)),
               static_cast<int>(n_basis), scale));
-          OP_REQUIRES_OK(context, GpuLaunchKernel(
-              DpointnetPreprojectPairsHalfBatch32Kernel<T, Index>,
-              static_cast<int>((n_pairs_ + 31) / 32), 128, 0, device.stream(),
-              n_pairs_, n_post_, current_grad.flat<T>().data(),
-              basis.flat<T>().data(), pair_posts, pair_types,
-              projected_half.flat<Eigen::half>().data(), scale));
+#define LAUNCH_HALF_PROJECTION(SLICE) \
+          OP_REQUIRES_OK(context, GpuLaunchKernel( \
+              DpointnetPreprojectPairsHalfBatch32Kernel<T, Index, SLICE>, \
+              static_cast<int>((n_pairs_ + 31) / 32), 128, 0, device.stream(), \
+              n_pairs_, n_post_, static_cast<int>(batch), current_grad.flat<T>().data(), \
+              basis.flat<T>().data(), pair_posts, pair_types, \
+              projected_half.flat<Eigen::half>().data(), scale))
+          switch (slice) {
+            case 1: LAUNCH_HALF_PROJECTION(1); break;
+            case 2: LAUNCH_HALF_PROJECTION(2); break;
+            case 4: LAUNCH_HALF_PROJECTION(4); break;
+            case 8: LAUNCH_HALF_PROJECTION(8); break;
+            case 16: LAUNCH_HALF_PROJECTION(16); break;
+            default: LAUNCH_HALF_PROJECTION(32); break;
+          }
+#undef LAUNCH_HALF_PROJECTION
           if (weight_grad->flat<float>().data() != accumulator) {
             OP_REQUIRES(
                 context,
@@ -1810,15 +1882,23 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                     "Failed to seed recurrent weight accumulator."));
           }
           if (n_pre > 0) {
-            OP_REQUIRES_OK(context, GpuLaunchKernel(
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index>,
-                static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(),
-                static_cast<int>(n_pre), row_splits, pair_ids,
-                weights.flat<T>().data(),
-                projected_half.flat<Eigen::half>().data(),
-                spike_grad->flat<T>().data(),
-                spike_gradient_scale.flat<T>().data(), scale,
-                static_cast<Index>(n_pairs_)));
+#define LAUNCH_HALF_ROWS(SLICE) \
+            OP_REQUIRES_OK(context, GpuLaunchKernel( \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE>, \
+                static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
+                static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
+                weights.flat<T>().data(), projected_half.flat<Eigen::half>().data(), \
+                spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
+                scale, static_cast<Index>(n_pairs_)))
+            switch (slice) {
+              case 1: LAUNCH_HALF_ROWS(1); break;
+              case 2: LAUNCH_HALF_ROWS(2); break;
+              case 4: LAUNCH_HALF_ROWS(4); break;
+              case 8: LAUNCH_HALF_ROWS(8); break;
+              case 16: LAUNCH_HALF_ROWS(16); break;
+              default: LAUNCH_HALF_ROWS(32); break;
+            }
+#undef LAUNCH_HALF_ROWS
             const int64_t capacity =
                 n_pre + n_edges_ / kDpointnetEventChunk + 1;
             Tensor queue_tensor;
@@ -1831,7 +1911,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                 SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
                 reinterpret_cast<uint32*>(queue_count)));
             OP_REQUIRES_OK(context, GpuLaunchKernel(
-                DpointnetEventRowQueueKernel<T, Index>,
+                DpointnetEventRowQueueKernel<T, Index, false>,
                 static_cast<int>((n_pre + kDpointnetEventThreads - 1) /
                                  kDpointnetEventThreads),
                 kDpointnetEventThreads, 0, device.stream(), n_pre, batch,
@@ -1893,6 +1973,64 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         current_grad.flat<T>().data(), basis.flat<T>().data(), pair_posts, pair_types,
         general_projected.flat<float>().data()));
       general_projection = general_projected.flat<float>().data();
+    }
+    if (!use_small_batch_backward_ && batch > 0 && batch < 32 &&
+        general_projection != nullptr) {
+      if constexpr (kAccumulate) {
+        if (weight_grad->flat<float>().data() != accumulator) {
+          OP_REQUIRES(context, cudaMemcpyAsync(
+              weight_grad->flat<float>().data(), accumulator,
+              n_edges_ * sizeof(float), cudaMemcpyDeviceToDevice,
+              device.stream()) == cudaSuccess,
+              errors::Internal("Failed to seed recurrent weight accumulator."));
+        }
+      } else {
+        OP_REQUIRES_OK(context, GpuLaunchKernel(
+            SetZeroKernel<float>, BlockCountFor(n_edges_, 256, device), 256, 0,
+            device.stream(), n_edges_, weight_grad->flat<float>().data()));
+      }
+      if (n_pre > 0) {
+  #define LAUNCH_VARIABLE_BATCH(SLICE) \
+      OP_REQUIRES_OK(context, GpuLaunchKernel( \
+        CsrSpikeGradPairVariableBatchKernel<T, Index, SLICE>, \
+        static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
+        static_cast<int>(batch), static_cast<int>(n_pre), row_splits, pair_ids, \
+        weights.flat<T>().data(), general_projection, \
+        spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data()))
+      if (batch <= 4) { LAUNCH_VARIABLE_BATCH(4); }
+      else if (batch <= 8) { LAUNCH_VARIABLE_BATCH(8); }
+      else if (batch <= 16) { LAUNCH_VARIABLE_BATCH(16); }
+      else { LAUNCH_VARIABLE_BATCH(32); }
+  #undef LAUNCH_VARIABLE_BATCH
+      const int64_t capacity = n_pre + n_edges_ / kDpointnetEventChunk + 1;
+      Tensor queue_tensor;
+      OP_REQUIRES_OK(context, context->allocate_temp(
+        DT_UINT32, TensorShape({4 * capacity + 1}), &queue_tensor));
+      unsigned int* queue = reinterpret_cast<unsigned int*>(
+        queue_tensor.flat<uint32>().data());
+      unsigned int* queue_count = queue + 4 * capacity;
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+        SetZeroKernel<uint32>, 1, 1, 0, device.stream(), 1,
+        reinterpret_cast<uint32*>(queue_count)));
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+        DpointnetEventRowQueueKernel<T, Index, true>,
+        static_cast<int>((n_pre + kDpointnetEventThreads - 1) /
+                 kDpointnetEventThreads),
+        kDpointnetEventThreads, 0, device.stream(), n_pre, batch,
+        spikes.flat<T>().data(), row_splits, queue, queue_count));
+  #define LAUNCH_VARIABLE_WEIGHTS(CSR) \
+      OP_REQUIRES_OK(context, GpuLaunchKernel( \
+        DpointnetEventWeightGradKernel<T, Index, 0, CSR>, \
+        kDpointnetEventBlocks, kDpointnetEventThreads, 0, device.stream(), \
+        n_pre, n_post_, static_cast<int>(n_basis), batch, \
+        spikes.flat<T>().data(), current_grad.flat<T>().data(), \
+        basis.flat<T>().data(), post_ids, synapse_types, row_splits, edge_ids, \
+        queue, queue_count, weight_grad->flat<float>().data()))
+      if (write_csr_weight_gradient_) { LAUNCH_VARIABLE_WEIGHTS(true); }
+      else { LAUNCH_VARIABLE_WEIGHTS(false); }
+  #undef LAUNCH_VARIABLE_WEIGHTS
+      }
+      return;
     }
     if (use_small_batch_backward_) {
       OP_REQUIRES(context, batch >= 1 && batch <= 8,

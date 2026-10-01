@@ -7,6 +7,12 @@ Branch: `feature/dpointnet-javier-parity`, based on consolidated training commit
 snapshot (stages S1-S16, 2026-09-30), not just the final S16 patch.
 No shared editable installation or scientific environment is changed by this commit.
 
+The subsequent2026-09-30 follow-up adds [variable-batch acceleration](dpointnet_variable_batch.md)
+and [startup preprocessing](dpointnet_startup.md). The original batch32 overlay
+below remains valid. For batches below32, follow the variable-batch guide rather
+than forcing the batch32-only packed flags. Device Poisson remains default-off
+because changing its algorithm changes seeded realizations.
+
 Javier-derived kernels, grouped EMD and optimizer work retain source attribution to
 `v1_model_utils` at commit `2c52ec10` in their implementation comments. The user
 confirmed contractual permission to adapt this code on 2026-09-29.

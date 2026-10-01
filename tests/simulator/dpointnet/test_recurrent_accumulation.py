@@ -26,7 +26,9 @@ def policy():
     tf.keras.mixed_precision.set_global_policy(before)
 
 
-def raw_gradient(conn, spikes, weights, basis, upstream, accumulator=None):
+def raw_gradient(
+    conn, spikes, weights, basis, upstream, accumulator=None, scaled=False
+):
     fn = (
         ops._OPS.dpointnet_csr_spike_grad
         if accumulator is None
@@ -49,13 +51,62 @@ def raw_gradient(conn, spikes, weights, basis, upstream, accumulator=None):
         n_edges=conn["n_edges"],
         n_pairs=conn["n_pairs"],
         write_csr_weight_gradient=True,
+        use_javier_batch32_backward=scaled,
     )
 
 
 @gpu
+@pytest.mark.parametrize("batch_size", [1, 2, 3, 5, 8, 13, 16, 23, 31, 32])
+def test_scaled_variable_batch_gradients_dense_reference(batch_size):
+    rng = np.random.default_rng(761)
+    indices = np.column_stack((rng.integers(7, size=129), rng.integers(5, size=129)))
+    types = rng.integers(3, size=len(indices))
+    conn = build_csr_connectivity(indices, types, 6, 7, 3, build_compact_pairs=True)
+    activity = rng.poisson(0.3, (batch_size, 6)).astype(np.float16)
+    activity[:, 0] = -1
+    activity[:, 2] = 0
+    weights = rng.normal(size=len(indices)).astype(np.float16)
+    basis = rng.normal(size=(3, 4)).astype(np.float16)
+    upstream = rng.normal(size=(batch_size, 7, 4)).astype(np.float16)
+    seed = rng.normal(size=len(indices)).astype(np.float32)
+    try:
+        actual_spikes, actual_weights = raw_gradient(
+            conn,
+            tf.constant(activity),
+            reorder_csr_values(tf.constant(weights), conn),
+            tf.constant(basis),
+            tf.constant(upstream.reshape(-1, 4)),
+            tf.constant(seed),
+            scaled=True,
+        )
+        projection = np.einsum(
+            "ber,er->be",
+            upstream[:, indices[:, 0]].astype(np.float64),
+            basis[types].astype(np.float64),
+        )
+        expected_spikes = np.zeros_like(activity, dtype=np.float64)
+        for edge, (_, pre) in enumerate(indices):
+            expected_spikes[:, pre] += projection[:, edge] * weights[edge]
+        expected_spikes *= float(np.float16(0.7))
+        expected_weights = np.sum(projection * activity[:, indices[:, 1]], axis=0)
+        expected_weights = expected_weights[np.argsort(indices[:, 1], kind="stable")]
+        np.testing.assert_allclose(
+            actual_weights, seed + expected_weights, rtol=2e-5, atol=3e-5
+        )
+        np.testing.assert_allclose(actual_spikes, expected_spikes, rtol=3e-3, atol=5e-3)
+        assert np.linalg.norm(np.asarray(actual_spikes)[:, 2]) > 0
+        np.testing.assert_array_equal(np.asarray(actual_spikes)[:, 5], 0)
+    finally:
+        conn.close()
+
+
+@gpu
+@pytest.mark.parametrize("batch_size", [1, 7, 8, 13, 16, 23, 31, 32])
 @pytest.mark.parametrize("fanout", [1, 31, 32, 33, 129])
 @pytest.mark.parametrize("silent", [False, True])
-def test_producer_nonzero_accumulator_alias_and_dense_oracle(fanout, silent):
+def test_producer_nonzero_accumulator_alias_and_dense_oracle(
+    fanout, silent, batch_size
+):
     rng = np.random.default_rng(513)
     pre = np.repeat([0, 3, 12], fanout)
     indices = np.column_stack((rng.integers(7, size=len(pre)), pre))
@@ -63,12 +114,12 @@ def test_producer_nonzero_accumulator_alias_and_dense_oracle(fanout, silent):
     indices = indices[order]
     types = rng.integers(3, size=len(pre))
     conn = build_csr_connectivity(indices, types, 13, 7, 3, build_compact_pairs=True)
-    spikes = rng.poisson(1.3, (32, 13)).astype(np.float32) * 5
+    spikes = rng.poisson(1.3, (batch_size, 13)).astype(np.float32) * 5
     spikes[:, 3] = -2
     if silent:
         spikes.fill(0)
     basis = rng.normal(size=(3, 4)).astype(np.float32)
-    upstream = rng.normal(size=(32, 7, 4)).astype(np.float32)
+    upstream = rng.normal(size=(batch_size, 7, 4)).astype(np.float32)
     weights = rng.normal(size=len(pre)).astype(np.float32)
     accumulator = rng.normal(size=len(pre)).astype(np.float32)
     try:
@@ -333,6 +384,8 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
     )
 
     def forward(z, master, handle, weights, basis, scale, *args, **kwargs):
+        assert kwargs["use_device_active_queue_forward"] is True
+        assert kwargs["use_forward_run_aggregation"] is True
         return tf.raw_ops.IdentityN(
             input=[tf.zeros((tf.shape(z)[0], 4), z.dtype), master, handle]
         )[0]
@@ -369,6 +422,8 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
                     1,
                     1.0,
                     vjp_only=False,
+                    use_device_active_queue_forward=True,
+                    use_forward_run_aggregation=True,
                 )
                 return (
                     index + 1,
@@ -406,6 +461,8 @@ def test_carrier_graph_compatibility_with_tensorflow_test_double(monkeypatch):
                     1,
                     tf.constant(1.0, dtype=tf.float16),
                     vjp_only=False,
+                    use_device_active_queue_forward=True,
+                    use_forward_run_aggregation=True,
                 )
                 return (
                     index + 1,
