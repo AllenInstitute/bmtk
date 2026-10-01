@@ -70,7 +70,129 @@ def _sample_spatial(flattened_movie, indices, weights):
     return tf.reduce_sum(values * weights[None, ...], axis=-1)
 
 
-def _prepare_spatial_filters(gaussian_filters, row_size, col_size, dtype):
+def _requires_native_spatial_convolution():
+    for device in tf.config.get_visible_devices("GPU"):
+        capability = tf.config.experimental.get_device_details(device).get(
+            "compute_capability"
+        )
+        if capability is not None and tuple(capability) < (7, 0):
+            return True
+    return False
+
+
+def _native_depthwise_convolution(
+    movie, filters, padding="SAME", patch_budget=4_000_000
+):
+    kernel_height, kernel_width, channels, multiplier = filters.shape
+    height, width = movie.shape[1:3]
+    if padding == "SAME":
+        before_height = (kernel_height - 1) // 2
+        before_width = (kernel_width - 1) // 2
+        movie = tf.pad(
+            movie,
+            (
+                (0, 0),
+                (before_height, kernel_height - 1 - before_height),
+                (before_width, kernel_width - 1 - before_width),
+                (0, 0),
+            ),
+        )
+        output_height, output_width = height, width
+    else:
+        output_height, output_width = (
+            height - kernel_height + 1,
+            width - kernel_width + 1,
+        )
+    row_chunk = min(
+        output_height,
+        max(
+            1, patch_budget // (output_width * kernel_height * kernel_width * channels)
+        ),
+    )
+    batch_chunk = max(
+        1,
+        patch_budget
+        // (row_chunk * output_width * kernel_height * kernel_width * channels),
+    )
+    batch = tf.shape(movie)[0]
+    row_blocks = (output_height + row_chunk - 1) // row_chunk
+    batch_blocks = (batch + batch_chunk - 1) // batch_chunk
+    arrays = tf.TensorArray(movie.dtype, size=batch_blocks, infer_shape=False)
+    coefficients = tf.reshape(
+        filters, (kernel_height * kernel_width, channels, multiplier)
+    )
+
+    def batch_step(batch_block, arrays):
+        start = batch_block * batch_chunk
+        stop = tf.minimum(start + batch_chunk, batch)
+        rows = tf.TensorArray(movie.dtype, size=row_blocks, infer_shape=False)
+
+        def row_step(row_block, rows):
+            row_start = row_block * row_chunk
+            row_stop = tf.minimum(row_start + row_chunk, output_height)
+            patch_source = movie[start:stop, row_start : row_stop + kernel_height - 1]
+            patches = tf.image.extract_patches(
+                patch_source,
+                (1, kernel_height, kernel_width, 1),
+                (1, 1, 1, 1),
+                (1, 1, 1, 1),
+                "VALID",
+            )
+            patches = tf.reshape(
+                patches,
+                (
+                    stop - start,
+                    row_stop - row_start,
+                    output_width,
+                    kernel_height * kernel_width,
+                    channels,
+                ),
+            )
+            values = tf.einsum("bhwkc,kcm->bhwcm", patches, coefficients)
+            values = tf.reshape(
+                values,
+                (
+                    stop - start,
+                    row_stop - row_start,
+                    output_width,
+                    channels * multiplier,
+                ),
+            )
+            return row_block + 1, rows.write(
+                row_block, tf.transpose(values, (1, 0, 2, 3))
+            )
+
+        _, rows = tf.while_loop(
+            lambda index, _: index < row_blocks,
+            row_step,
+            (0, rows),
+            parallel_iterations=1,
+        )
+        return batch_block + 1, arrays.write(
+            batch_block, tf.transpose(rows.concat(), (1, 0, 2, 3))
+        )
+
+    _, arrays = tf.while_loop(
+        lambda index, _: index < batch_blocks,
+        batch_step,
+        (0, arrays),
+        parallel_iterations=1,
+    )
+    return tf.ensure_shape(
+        arrays.concat(),
+        (movie.shape[0], output_height, output_width, channels * multiplier),
+    )
+
+
+def _single_channel_spatial_convolution(movie, filters, native=None):
+    if native is None:
+        native = _requires_native_spatial_convolution()
+    if native:
+        return _native_depthwise_convolution(movie, filters)
+    return tf.nn.conv2d(movie, filters, strides=1, padding="SAME")
+
+
+def _prepare_spatial_filters(gaussian_filters, row_size, col_size, dtype, native=None):
     vertical_filters = []
     horizontal_filters = []
     edge_reciprocals = []
@@ -82,11 +204,10 @@ def _prepare_spatial_filters(gaussian_filters, row_size, col_size, dtype):
         scale = np.sqrt(singular_values[0])
         vertical_filters.append((left[:, 0] * scale)[:, None, None, None])
         horizontal_filters.append((right[0] * scale)[None, :, None, None])
-        edge_fraction = tf.nn.conv2d(
+        edge_fraction = _single_channel_spatial_convolution(
             tf.ones((1, row_size, col_size, 1), dtype=dtype),
             tf.constant(gaussian_filter, dtype=dtype),
-            strides=1,
-            padding="SAME",
+            native=native,
         )
         edge_reciprocals.append(tf.math.reciprocal(edge_fraction))
 
@@ -452,11 +573,14 @@ class LGN:
             sorted_neuron_ids_indices, dtype=tf.int32
         )
 
+        self._use_native_spatial = _requires_native_spatial_convolution()
         (
             self.packed_vertical_filters,
             self.packed_horizontal_filters,
             self.edge_reciprocals,
-        ) = _prepare_spatial_filters(gaussian_filters, row_size, col_size, dtype)
+        ) = _prepare_spatial_filters(
+            gaussian_filters, row_size, col_size, dtype, native=self._use_native_spatial
+        )
 
         composite_mask = is_composite.astype(bool)
         composite_ids = np.flatnonzero(composite_mask).astype(np.int32)
@@ -505,15 +629,25 @@ class LGN:
     def spatial_response(self, movie, bmtk_compat=True):
         """Return dominant responses and compact composite-cell responses."""
         movie = tf.cast(movie, dtype=self.dtype)
-        convolved_movies = tf.nn.conv2d(
-            movie, self.packed_vertical_filters, strides=1, padding="SAME"
+        convolved_movies = _single_channel_spatial_convolution(
+            movie,
+            self.packed_vertical_filters,
+            native=getattr(self, "_use_native_spatial", None),
         )
-        convolved_movies = tf.nn.depthwise_conv2d(
-            convolved_movies,
-            self.packed_horizontal_filters,
-            strides=(1, 1, 1, 1),
-            padding="SAME",
-        )
+        native = getattr(self, "_use_native_spatial", None)
+        if native is None:
+            native = _requires_native_spatial_convolution()
+        if native:
+            convolved_movies = _native_depthwise_convolution(
+                convolved_movies, self.packed_horizontal_filters
+            )
+        else:
+            convolved_movies = tf.nn.depthwise_conv2d(
+                convolved_movies,
+                self.packed_horizontal_filters,
+                strides=(1, 1, 1, 1),
+                padding="SAME",
+            )
         all_spatial_responses = []
         all_non_dom_spatial_responses = []
         for i, _ in enumerate(self.spatial_range_indices):
@@ -552,10 +686,24 @@ class LGN:
         )
         return all_spatial_responses, all_non_dom_spatial_responses
 
-    @tf.function(jit_compile=True)
     def firing_rates_from_spatial(
         self, all_spatial_responses, all_non_dom_spatial_responses
     ):
+        native = getattr(self, "_use_native_spatial", None)
+        if native is None:
+            native = _requires_native_spatial_convolution()
+        function = self._native_firing_rates if native else self._compiled_firing_rates
+        return function(all_spatial_responses, all_non_dom_spatial_responses)
+
+    @tf.function(jit_compile=True)
+    def _compiled_firing_rates(self, dominant, non_dominant):
+        return self._firing_rates_impl(dominant, non_dominant)
+
+    @tf.function
+    def _native_firing_rates(self, dominant, non_dominant):
+        return self._firing_rates_impl(dominant, non_dominant)
+
+    def _firing_rates_impl(self, all_spatial_responses, all_non_dom_spatial_responses):
         dom_filtered_output = LGN.temporal_filter(
             all_spatial_responses, self.dom_temporal_kernels
         )
@@ -652,6 +800,8 @@ class LGN:
             all_spatial_responses[None, :, None, :],
             ((0, 0), (temporal_kernels.shape[0] - 1, 0), (0, 0), (0, 0)),
         )
+        if _requires_native_spatial_convolution() and temporal_kernels.shape[1] == 1:
+            return _native_depthwise_convolution(tr_spatial_responses, temporal_kernels[:, None, :, None], "VALID")[0, :, 0]
         return tf.nn.depthwise_conv2d(
             tr_spatial_responses,
             temporal_kernels[:, None, :, None],

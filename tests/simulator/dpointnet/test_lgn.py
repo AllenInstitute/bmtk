@@ -7,12 +7,80 @@ from bmtk.simulator.dpointnet.lgn_tf.lgn import (
     LGN,
     _bilinear_metadata,
     _prepare_spatial_filters,
+    _single_channel_spatial_convolution,
+    _requires_native_spatial_convolution,
+    _native_depthwise_convolution,
 )
 from bmtk.simulator.dpointnet.input_modules.lgn_generator import (
     _tensorflow_uniform_scalar,
     create_drifting_gratings_generator,
     make_drifting_grating_stimulus,
 )
+
+
+@pytest.mark.parametrize("width", [3, 11, 27])
+@pytest.mark.parametrize("outputs", [1, 8])
+def test_native_spatial_convolution_matches_values_and_gradients(width, outputs):
+    rng = np.random.default_rng(951)
+    movie = tf.Variable(rng.normal(size=(2, 9, 12, 1)).astype(np.float32))
+    filters = tf.constant(
+        rng.normal(size=(width, 1, 1, outputs)).astype(np.float32) / width
+    )
+    results = []
+    with tf.device("/CPU:0"):
+        for native in (False, True):
+            with tf.GradientTape() as tape:
+                value = _single_channel_spatial_convolution(
+                    movie, filters, native=native
+                )
+                loss = tf.reduce_sum(value)
+            results.append((value, tape.gradient(loss, movie)))
+    for actual, expected in zip(results[1], results[0]):
+        np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=1e-6)
+
+
+@pytest.mark.parametrize("padding", ["SAME", "VALID"])
+@pytest.mark.parametrize("channels,multiplier", [(1, 8), (3, 1)])
+def test_native_depthwise_chunk_boundaries_and_gradients(padding, channels, multiplier):
+    rng = np.random.default_rng(517)
+    values = tf.Variable(rng.normal(size=(5, 7, 9, channels)), dtype=tf.float64)
+    filters = tf.Variable(
+        rng.normal(size=(3, 2, channels, multiplier)) / 8, dtype=tf.float64
+    )
+    results = []
+    with tf.device("/CPU:0"):
+        for native in (False, True):
+            with tf.GradientTape() as tape:
+                output = (
+                    _native_depthwise_convolution(
+                        values, filters, padding, patch_budget=200
+                    )
+                    if native
+                    else tf.nn.depthwise_conv2d(values, filters, [1, 1, 1, 1], padding)
+                )
+                loss = tf.reduce_sum(output * output)
+            results.append((output, *tape.gradient(loss, (values, filters))))
+    for actual, expected in zip(results[1], results[0]):
+        np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=1e-6)
+
+
+@pytest.mark.parametrize(
+    "capability,expected", [((6, 1), True), ((7, 0), False), ((8, 6), False)]
+)
+def test_native_spatial_convolution_architecture_selection(
+    monkeypatch, capability, expected
+):
+    import bmtk.simulator.dpointnet.lgn_tf.lgn as module
+
+    monkeypatch.setattr(
+        module.tf.config, "get_visible_devices", lambda kind: [object()]
+    )
+    monkeypatch.setattr(
+        module.tf.config.experimental,
+        "get_device_details",
+        lambda device: {"compute_capability": capability},
+    )
+    assert _requires_native_spatial_convolution() is expected
 
 
 def test_drifting_grating_accepts_repeated_scalar_tensor_parameters():
@@ -141,7 +209,8 @@ def test_fused_separable_spatial_response_matches_full_convolutions():
     reference_dominant = np.empty((4, 3), dtype=np.float32)
     reference_non_dominant = np.empty((4, 2), dtype=np.float32)
     for kernel, indices, reciprocal in zip(gaussian_filters, groups, edge_reciprocals):
-        convolved = tf.nn.conv2d(movie, kernel, strides=1, padding="SAME")
+        with tf.device("/CPU:0"):
+            convolved = tf.nn.conv2d(movie, kernel, strides=1, padding="SAME")
         convolved = (convolved * reciprocal)[..., 0]
         dominant = LGN.select_spatial(
             tf.constant(x[indices]), tf.constant(y[indices]), convolved

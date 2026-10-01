@@ -79,9 +79,13 @@ __device__ inline void FastAtomicAdd(T* address, T value) {
 template <>
 __device__ inline void FastAtomicAdd<Eigen::half>(
     Eigen::half* address, Eigen::half value) {
+#if __CUDA_ARCH__ >= 700
   atomicAdd(
       reinterpret_cast<__half*>(address),
       __float2half(ToFloat(value)));
+#else
+  GpuAtomicAdd(address, value);
+#endif
 }
 
 template <typename T>
@@ -93,9 +97,30 @@ __device__ inline void FastAtomicAddPair(T* address, float first, float second) 
 template <>
 __device__ inline void FastAtomicAddPair<Eigen::half>(
     Eigen::half* address, float first, float second) {
+#if __CUDA_ARCH__ >= 600
   atomicAdd(
       reinterpret_cast<__half2*>(address),
       __floats2half2_rn(first, second));
+#else
+  GpuAtomicAdd(address, FromFloat<Eigen::half>(first));
+  GpuAtomicAdd(address + 1, FromFloat<Eigen::half>(second));
+#endif
+}
+
+__device__ inline unsigned int MatchWarpValue(unsigned int value) {
+#if __CUDA_ARCH__ >= 700
+  return __match_any_sync(0xffffffffu, value);
+#else
+  const int lane = threadIdx.x & 31;
+  unsigned int group = 0;
+#pragma unroll
+  for (int source_lane = 0; source_lane < 32; ++source_lane) {
+    const unsigned int candidate = __shfl_sync(0xffffffffu, value, source_lane);
+    const unsigned int matches = __ballot_sync(0xffffffffu, value == candidate);
+    if (lane == source_lane) group = matches;
+  }
+  return group;
+#endif
 }
 
 struct PackActiveSlot {
@@ -386,7 +411,7 @@ __global__ void CsrSpikeForwardDeviceQueueKernel(
               valid ? spike * ToFloat(weights[edge]) : 0.0f;
           const int synapse_type =
               valid ? static_cast<int>(synapse_types[edge]) : 0;
-          const unsigned int group = __match_any_sync(0xffffffffu, post);
+          const unsigned int group = MatchWarpValue(post);
           const bool any_run =
               !__all_sync(0xffffffffu, __popc(group) == 1);
           const bool leader = valid && lane == __ffs(group) - 1;

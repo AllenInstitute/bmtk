@@ -403,6 +403,45 @@ def test_device_active_queue_forward_matches_dense_reference(
         connectivity.close()
 
 
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("fanout", [1, 31, 32, 33, 65])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_device_active_queue_forward_duplicate_warp_groups(fanout, dtype):
+    indices = np.column_stack((np.arange(fanout) % 3, np.zeros(fanout, np.int64)))
+    types = np.arange(fanout) % 2
+    connectivity = build_csr_connectivity(indices, types, 2, 3, 2, sort_by_target=True)
+    spikes = tf.Variable([[1.0, 0.0], [2.0, 0.0]], dtype=dtype)
+    master = tf.Variable(np.full(fanout, 0.125), dtype=tf.float32)
+    basis = tf.constant([[1.0, 0.5, 0.25, 0.125], [0.5, 0.25, 0.125, 1.0]], dtype=dtype)
+    try:
+        with tf.GradientTape() as tape:
+            actual = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                3,
+                True,
+                use_device_active_queue_forward=True,
+                use_forward_run_aggregation=True,
+                use_packed_sm120_backward=False,
+            )
+            loss = tf.reduce_sum(actual)
+        gradients = tape.gradient(loss, (spikes, master))
+        with tf.GradientTape() as tape:
+            expected = _reference_currents_for_connectivity(
+                spikes, master, basis, indices, types, 3
+            )
+            expected_loss = tf.reduce_sum(expected)
+        expected_gradients = tape.gradient(expected_loss, (spikes, master))
+        np.testing.assert_array_equal(actual, expected)
+        for value, reference in zip(gradients, expected_gradients):
+            np.testing.assert_array_equal(value, reference)
+    finally:
+        connectivity.close()
+
+
 def _reference_dense_state(
     prev_z,
     voltage,
