@@ -60,7 +60,21 @@ memory feasibility, convergence or cross-GPU equivalence. Rebuild and qualify
 the intended environment normally. Standalone cells and external runners can
 use `bmtk.simulator.dpointnet.acceleration.resolve_acceleration_options` with
 their actual dtypes, batch and basis width; runner-only accelerators remain the
-runner's responsibility.
+runner's responsibility. The report includes both requested and resolved flags.
+
+External weight-carrier runners can additionally use
+`resolve_weight_carry_options` and `project_weight_carry` from the same module.
+The native accumulator is gated independently on SM86+: disabling Javier alone
+does not make its kernel compatible with SM70/75/80. The compatible generic
+route combines direct-CSR values/gradients with a TensorFlow identity carrier,
+retaining live recurrent spike credit, including silent-neuron adjoints.
+Explicit stopped external inputs retain a zero-scaled unused spike VJP on the
+generic route because its direct-CSR contract requires that VJP. Optional native
+weight-only projection additionally requires stopped-input eligibility and the
+compatible rebuilt operator. Explicit incompatible carrier requests fail.
+External runners must also apply the resolved external-packed/fixed-four flags
+to every input projection and wire project-specific smoothing compatibility;
+the cell resolver cannot control those independent runner surfaces.
 
 - **Throughput profile (FP16 temporal backward):** selective forward state with ordinary
   per-state temporal gradients (`temporal_gradient_precision="compute"`, which is

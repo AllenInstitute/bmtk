@@ -36,6 +36,7 @@ def resolve_acceleration_options(
         "tensorflow_cudnn": build_info.get("cudnn_version"),
         "csr_status": csr_spike_ops.cuda_op_status(),
         "state_status": glif_state_ops.glif_state_op_status(),
+        "requested": dict(cell_params),
         "selected": {},
         "reasons": {},
     }
@@ -118,6 +119,7 @@ def resolve_acceleration_options(
     )
     accumulator = (
         currents and small_batch and carry_route
+        and architecture is not None and architecture >= 86
         and options["use_direct_csr_recurrent_gradient"] is True
         and options.get("train_recurrent", True)
         and not options.get("train_recurrent_per_type", train_recurrent_per_type)
@@ -131,6 +133,17 @@ def resolve_acceleration_options(
         accumulator and options["use_fused_recurrent_accumulation"] is True and fp16_backward,
         "compatible fused accumulator and FP16 temporal backward",
     )
+    if options["use_fused_recurrent_accumulation"] is True and not accumulator:
+        raise ValueError(
+            "use_fused_recurrent_accumulation=True requires compatible SM86+ "
+            "operators and the declared per-edge/direct-CSR carrier route."
+        )
+    if options["use_javier_recurrent_vjp"] is True and not (
+        accumulator and options["use_fused_recurrent_accumulation"] is True and fp16_backward
+    ):
+        raise ValueError(
+            "use_javier_recurrent_vjp=True requires compatible FP16 native accumulation."
+        )
     io.log_info(f"DPointNet automatic acceleration: {report}")
     if not currents:
         io.log_warning(
@@ -138,3 +151,92 @@ def resolve_acceleration_options(
             f"inspect acceleration_report for compatibility and explicit overrides: {report}"
         )
     return options, report
+
+
+def resolve_weight_carry_options(
+    cell_options, *, stopped_input=False, overrides=None
+):
+    """Select native or generic carrier accumulation for an external runner.
+
+    Generic direct-CSR gradients retain an identity carrier and live recurrent
+    credit. For stopped external inputs their unused spike VJP is zero-scaled.
+    """
+    requested = dict(overrides or {})
+    allowed = {"native_accumulator", "compute_spike_gradient"}
+    unknown = requested.keys() - allowed
+    if unknown:
+        raise ValueError(f"Unknown carrier overrides: {sorted(unknown)}")
+    for key, value in requested.items():
+        if value is not True and value is not False:
+            raise ValueError(f"{key} must be true or false.")
+    architecture = csr_spike_ops._gpu_compute_architecture()
+    available = (
+        architecture is not None and architecture >= 86
+        and csr_spike_ops.fused_recurrent_accumulation_available()
+    )
+    native = available and cell_options.get("use_fused_recurrent_accumulation") is True
+    if cell_options.get("use_fused_recurrent_accumulation") is True and not available:
+        raise ValueError("Selected native accumulator is incompatible with this GPU/library.")
+    if "native_accumulator" in requested:
+        native = requested["native_accumulator"]
+        if native and not (
+            available and cell_options.get("use_fused_recurrent_accumulation") is True
+        ):
+            raise ValueError("native_accumulator=True requires compatible SM86+ operators and an admitted carrier route.")
+    javier = native and cell_options.get("use_javier_recurrent_vjp") is True
+    weight_only = (
+        native and stopped_input and javier
+        and csr_spike_ops.weight_only_accumulation_available()
+    )
+    spike_gradient = requested.get("compute_spike_gradient", not weight_only)
+    if not spike_gradient and not weight_only:
+        raise ValueError(
+            "compute_spike_gradient=False requires explicitly stopped inputs, "
+            "rebuilt native SM86+ FP16 Javier weight-only accumulation."
+        )
+    if not stopped_input and not spike_gradient:
+        raise ValueError("Live recurrent spike credit cannot be disabled.")
+    report = {
+        "requested": requested,
+        "resolved": {
+            "native_accumulator": native,
+            "compute_spike_gradient": spike_gradient,
+            "use_javier_batch32_backward": javier,
+            "use_packed_sm120_backward": False,
+            "use_device_active_queue_forward": cell_options.get(
+                "use_device_active_queue_forward", False
+            ),
+            "stopped_input": stopped_input,
+        },
+        "reason": (
+            "Native SM86+ carrier with eligible explicitly stopped input credit"
+            if native else "Generic direct-CSR gradient plus TensorFlow identity carrier"
+        ),
+    }
+    io.log_info(f"DPointNet carrier selection: {report}")
+    return report
+
+
+def project_weight_carry(
+    spikes, carrier, csr_weights, connectivity, basis, n_post,
+    spike_gradient_scale, *, resolved,
+):
+    """Execute a resolved carrier route without changing canonical weight order."""
+    if resolved["stopped_input"]:
+        spikes = tf.stop_gradient(spikes)
+        spike_gradient_scale = 0.
+    if resolved["native_accumulator"]:
+        return csr_spike_ops.fused_recurrent_weight_carry(
+            spikes, carrier, csr_weights, connectivity, basis, n_post,
+            spike_gradient_scale, vjp_only=False,
+            compute_spike_gradient=resolved["compute_spike_gradient"],
+            use_javier_batch32_backward=resolved["use_javier_batch32_backward"],
+            use_device_active_queue_forward=resolved["use_device_active_queue_forward"],
+        )
+    currents = csr_spike_ops.fused_spike_currents(
+        spikes, carrier, csr_weights, connectivity, basis, n_post,
+        compute_spike_gradient=True, spike_gradient_scale=spike_gradient_scale,
+        use_packed_sm120_backward=False, write_csr_weight_gradient=True,
+        use_device_active_queue_forward=resolved["use_device_active_queue_forward"],
+    )
+    return currents, tf.identity(carrier)

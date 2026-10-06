@@ -155,3 +155,102 @@ def test_explicit_auto_pair_metadata_does_not_admit_variable_batch_accumulator(h
 def test_invalid_profile_rejected(profile):
     with pytest.raises(ValueError, match="acceleration_profile"):
         resolve({"acceleration_profile": profile})
+
+
+@pytest.mark.parametrize("architecture", [70, 75, 80, 86, 89])
+def test_runner_carriers_gate_native_op_independently(hardware, monkeypatch, architecture):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
+    monkeypatch.setattr(csr, "weight_only_accumulation_available", lambda: True)
+    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    rec = acceleration.resolve_weight_carry_options(options)
+    audio = acceleration.resolve_weight_carry_options(options, stopped_input=True)
+    eligible = architecture >= 86
+    assert rec["resolved"]["native_accumulator"] == eligible
+    assert rec["resolved"]["compute_spike_gradient"] is True
+    assert audio["resolved"]["native_accumulator"] == eligible
+    assert audio["resolved"]["compute_spike_gradient"] == (not eligible)
+    assert not options["use_packed_sm120_external_backward"] if architecture < 86 else True
+
+
+def test_incompatible_explicit_carrier_override_rejected(hardware, monkeypatch):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
+    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    with pytest.raises(ValueError, match="SM86"):
+        acceleration.resolve_weight_carry_options(options, overrides={"native_accumulator": True})
+    with pytest.raises(ValueError, match="stopped"):
+        acceleration.resolve_weight_carry_options(options, overrides={"compute_spike_gradient": False})
+    with pytest.raises(ValueError, match="SM86"):
+        resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": True})
+    with pytest.raises(ValueError, match="FP16"):
+        resolve({"use_direct_state_rnn_loop": True, "use_javier_recurrent_vjp": True})
+
+
+def test_generic_carrier_keeps_live_credit_without_calling_accumulator(hardware, monkeypatch):
+    import numpy as np
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
+    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("SM70 native op called"))
+    monkeypatch.setattr(csr, "fused_spike_currents", lambda z, carrier, *a, **k: z * tf.reduce_sum(carrier))
+    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    for stopped in (False, True):
+        route = acceleration.resolve_weight_carry_options(options, stopped_input=stopped)["resolved"]
+        spikes, carrier = tf.ones((2, 2)), tf.ones((3,))
+        with tf.GradientTape() as tape:
+            tape.watch((spikes, carrier))
+            current, identity = acceleration.project_weight_carry(
+                spikes, carrier, None, None, None, 2, 1., resolved=route,
+            )
+            loss = tf.reduce_sum(current) + tf.reduce_sum(identity)
+        dz, dw = tape.gradient(loss, (spikes, carrier))
+        assert (dz is None) == stopped
+        if not stopped:
+            np.testing.assert_array_equal(dz, np.full((2, 2), 3.))
+        np.testing.assert_array_equal(dw, np.full(3, 5.))
+
+
+@pytest.mark.skipif(
+    not acceleration.csr_spike_ops.fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("stopped", [False, True])
+def test_actual_auto_carrier_matches_independent_dense_oracle(stopped):
+    import numpy as np
+    csr = acceleration.csr_spike_ops
+    indices = np.array([[0, 0], [1, 1], [1, 0]], dtype=np.int64)
+    types = np.zeros(3, dtype=np.int64)
+    conn = csr.build_csr_connectivity(indices, types, 2, 2, 1, build_compact_pairs=True)
+    try:
+        options, _ = resolve({"use_direct_state_rnn_loop": True})
+        route = acceleration.resolve_weight_carry_options(options, stopped_input=stopped)["resolved"]
+        # The generic route is the exact newly qualified SM70/75/80 path.
+        if route["native_accumulator"]:
+            pytest.skip("Native carrier oracle covered by weight-only accumulator tests")
+        spikes = tf.constant([[0., 1.], [1., 0.]] * 16, tf.float16)
+        weights = tf.constant([.125, .25, .5], tf.float32)
+        basis = tf.constant([[.5, .25, .125, .0625]], tf.float16)
+        carrier = csr.reorder_csr_values(weights, conn)
+        shadow = tf.cast(carrier, tf.float16)
+        with tf.GradientTape() as tape:
+            tape.watch((spikes, carrier))
+            current, identity = acceleration.project_weight_carry(
+                spikes, carrier, shadow, conn, basis, 2, .5, resolved=route,
+            )
+            loss = tf.reduce_sum(tf.cast(current, tf.float32)) + tf.reduce_sum(identity)
+        dz, dw = tape.gradient(loss, (spikes, carrier))
+        tensor = np.zeros((2, 2, 4), dtype=np.float32)
+        for edge, (post, pre) in enumerate(indices):
+            tensor[pre, post] += weights.numpy()[edge] * basis.numpy()[0]
+        expected = np.einsum("bp,pnk->bnk", spikes.numpy().astype(np.float32), tensor)
+        np.testing.assert_allclose(current.numpy().reshape(32, 2, 4), expected, rtol=2e-5, atol=2e-6)
+        expected_dw = spikes.numpy().astype(np.float32).sum(0)[indices[:, 1]] * basis.numpy().sum() + 1.
+        np.testing.assert_allclose(csr.restore_csr_values(dw, conn), expected_dw, rtol=2e-5, atol=2e-6)
+        if stopped:
+            assert dz is None
+        else:
+            # Spike zero does not imply zero credit.
+            np.testing.assert_allclose(dz.numpy(), np.broadcast_to(tensor.sum((1, 2)) * .5, (32, 2)), rtol=2e-5, atol=2e-6)
+            assert np.all(dz.numpy()[spikes.numpy() == 0] != 0)
+    finally:
+        conn.close()
