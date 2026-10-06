@@ -1740,6 +1740,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     use_javier_batch32_backward_ = false;
     (void)context->GetAttr(
         "use_javier_batch32_backward", &use_javier_batch32_backward_);
+    compute_spike_gradient_ = true;
+    if constexpr (kAccumulate) {
+      OP_REQUIRES_OK(
+          context, context->GetAttr("compute_spike_gradient", &compute_spike_gradient_));
+    }
   }
 
   void Compute(OpKernelContext* context) override {
@@ -1768,6 +1773,12 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const int64_t n_pre = spikes.dim_size(1);
     const int64_t n_basis = basis.dim_size(1);
     if constexpr (kAccumulate) {
+      OP_REQUIRES(
+          context,
+          compute_spike_gradient_ ||
+              (use_javier_batch32_backward_ && std::is_same<T, Eigen::half>::value),
+          errors::InvalidArgument(
+              "Weight-only accumulation requires FP16 Javier event-weight backward."));
       const Tensor& accumulator = context->input(6);
       OP_REQUIRES(
           context, TensorShapeUtils::IsVector(accumulator.shape()) &&
@@ -1859,13 +1870,15 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           Tensor projected_half;
           int slice = 1;
           while (slice < batch) slice *= 2;
+          Tensor scale_tensor;
+          float* scale = nullptr;
+          if (compute_spike_gradient_) {
           const int64_t projected_count = (n_pairs_ + 1) * slice;
           OP_REQUIRES_OK(context, context->allocate_temp(
               DT_HALF, TensorShape({projected_count}), &projected_half));
-          Tensor scale_tensor;
           OP_REQUIRES_OK(context, context->allocate_temp(
               DT_FLOAT, TensorShape({3}), &scale_tensor));
-          float* scale = scale_tensor.flat<float>().data();
+          scale = scale_tensor.flat<float>().data();
           unsigned int* max_bits = reinterpret_cast<unsigned int*>(scale + 2);
           OP_REQUIRES_OK(context, GpuLaunchKernel(
               SetZeroKernel<Eigen::half>, 1, 32, 0, device.stream(), slice,
@@ -1896,6 +1909,12 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             default: LAUNCH_HALF_PROJECTION(32); break;
           }
 #undef LAUNCH_HALF_PROJECTION
+          } else {
+            OP_REQUIRES_OK(context, GpuLaunchKernel(
+                SetZeroKernel<T>,
+                BlockCountFor(spikes.NumElements(), 256, device), 256, 0,
+                device.stream(), spikes.NumElements(), spike_grad->flat<T>().data()));
+          }
           if (weight_grad->flat<float>().data() != accumulator) {
             OP_REQUIRES(
                 context,
@@ -1907,6 +1926,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                     "Failed to seed recurrent weight accumulator."));
           }
           if (n_pre > 0) {
+            if (compute_spike_gradient_) {
 #define LAUNCH_HALF_ROWS(SLICE) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
                 DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE>, \
@@ -1924,6 +1944,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               default: LAUNCH_HALF_ROWS(32); break;
             }
 #undef LAUNCH_HALF_ROWS
+            }
             const int64_t capacity =
                 n_pre + n_edges_ / kDpointnetEventChunk + 1;
             Tensor queue_tensor;
@@ -2179,6 +2200,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
   bool write_csr_weight_gradient_;
   bool use_javier_batch32_backward_;
   bool use_small_batch_backward_;
+  bool compute_spike_gradient_;
 };
 
 template <typename T, typename Index>

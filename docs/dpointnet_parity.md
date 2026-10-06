@@ -22,6 +22,46 @@ experiment's dynamics, precision or random sampler.
 
 ## Precision profiles
 
+### Automatic accelerator selection
+
+Set `"acceleration_profile": "auto"` in `rnn_cell_params` to select compatible
+execution accelerators at model build time. Omitting it preserves existing
+defaults. Explicit individual flags take precedence and retain their normal
+validation; an unsupported explicit `true` is not silently downgraded.
+
+```json
+{
+  "rnn_cell_params": {
+    "acceleration_profile": "auto",
+    "dynamics_mode": "legacy"
+  }
+}
+```
+
+Selection uses GPU compute capability (SM), the loaded operators' architecture
+manifests and entry points, compute/master/temporal dtypes, batch size and basis
+width. CUDA toolkit version alone does not identify GPU capabilities.
+TensorFlow/CUDA/cuDNN build versions and selection reasons are logged and
+available as `rnn.acceleration_report`. This records selected configuration,
+not proof that every topology-specific kernel executed.
+
+Compatible generic CUDA routes remain eligible on SM70/75/80; FP16 packed
+backward and recurrent accumulators require SM86+. Multiple visible GPUs or
+missing/incompatible operators select the documented TensorFlow fallback with
+a warning. General NEST/Pascal is not automatically admitted. Fixed-four inputs
+and packed metadata retain per-connectivity validation/fallback. Recurrent
+accumulation additionally requires an explicitly selected direct-state loop or
+FP32 replay route, direct CSR and trainable per-edge weights.
+
+The profile does not change dynamics, reset semantics, precision, temporal
+credit, loss functions, optimizer, allocator, random sampler or scientific
+parameters. It neither rebuilds/installs libraries nor establishes workload
+memory feasibility, convergence or cross-GPU equivalence. Rebuild and qualify
+the intended environment normally. Standalone cells and external runners can
+use `bmtk.simulator.dpointnet.acceleration.resolve_acceleration_options` with
+their actual dtypes, batch and basis width; runner-only accelerators remain the
+runner's responsibility.
+
 - **Throughput profile (FP16 temporal backward):** selective forward state with ordinary
   per-state temporal gradients (`temporal_gradient_precision="compute"`, which is
   also the constructor default) and native dynamic loss scaling. Apply only
@@ -114,11 +154,30 @@ python -m pytest -q tests/simulator/dpointnet
 ```
 
 The architecture override above targets SM86; choose the target for your GPU
-instead. Rebuild both operators after source, TensorFlow or CUDA changes:
+instead. For a multi-architecture HPC artifact, use
+`DPOINTNET_CUDA_ARCHS="61 70 75 80 86 89 90"` with a compiler supporting every
+requested target. Do not silently omit unsupported targets; declare separate
+toolchain/artifact profiles when necessary.
+Rebuild both operators after source, TensorFlow or CUDA changes:
 NEST type-index inputs use int64, so older int32 binaries are incompatible.
 Record the source revision and resolved import path. Keep FP32 masters, canonical neuron/edge order,
 constraints and recurrent/named-input shadow refresh. Do not prune silent-neuron
 spike adjoints.
+
+### Optional auditory weight-only accumulation
+
+`custom_ops.csr_spike_ops.fused_recurrent_weight_carry` accepts
+`compute_spike_gradient=False` for fixed external spikes whose adjoints are
+already stopped. It preserves weight accumulation while avoiding the FP16
+Javier input-spike projection/VJP workspace. This requires rebuilt compatible
+operators, FP16 operands and `use_javier_batch32_backward=True`.
+
+The default remains `True`: recurrent spike credit, including silent-neuron
+credit, is retained. Existing default wrapper calls also remain compatible
+with the old accumulator signature. Requesting the new option against an old
+binary raises a rebuild error. Automatic acceleration never disables spike
+credit or assumes an input is stopped; the input-owning runner must make that
+explicit scientific/graph decision.
 
 ## Precision and measurement limits
 

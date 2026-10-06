@@ -1,4 +1,5 @@
 import os
+import inspect
 import itertools
 import weakref
 from collections.abc import Mapping
@@ -511,6 +512,16 @@ def fused_recurrent_accumulation_available():
     )
 
 
+def weight_only_accumulation_available():
+    return (
+        _OPS is not None
+        and hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate")
+        and "compute_spike_gradient" in inspect.signature(
+            _OPS.dpointnet_csr_spike_grad_accumulate
+        ).parameters
+    )
+
+
 def fused_recurrent_weight_carry(
     spikes,
     weight_carrier,
@@ -524,6 +535,7 @@ def fused_recurrent_weight_carry(
     use_active_row_forward=False,
     use_forward_run_aggregation=False,
     use_device_active_queue_forward=False,
+    compute_spike_gradient=True,
 ):
     """Currents with a differentiable identity weight carrier.
 
@@ -532,11 +544,27 @@ def fused_recurrent_weight_carry(
     FP32 replay uses ``vjp_only=True`` to provide only the derivative; the
     ordinary direct RNN loop uses ``vjp_only=False`` so the same call supplies
     the primal compute-dtype recurrent currents.
+    ``compute_spike_gradient=False`` skips input-spike credit on the FP16
+    Javier accumulator path. Weight credit and the default live recurrent
+    spike-credit behavior are unchanged.
     """
     if _OPS is None or not hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate"):
         raise RuntimeError("Rebuild CUDA operators for fused recurrent accumulation.")
     if weight_carrier.dtype != tf.float32:
         raise ValueError("Fused recurrent accumulation requires an FP32 carrier.")
+    if not isinstance(compute_spike_gradient, bool):
+        raise TypeError("compute_spike_gradient must be an explicit boolean.")
+    if not compute_spike_gradient and (
+        spikes.dtype != tf.float16 or not use_javier_batch32_backward
+    ):
+        raise ValueError(
+            "Weight-only accumulation requires FP16 Javier event-weight backward."
+        )
+    if not compute_spike_gradient and not weight_only_accumulation_available():
+        raise RuntimeError(
+            "Rebuild CUDA operators for compute_spike_gradient=False; "
+            "the loaded accumulator does not support weight-only gradients."
+        )
     if any(value.dtype != spikes.dtype for value in (csr_weights, basis)):
         raise ValueError(
             "Fused recurrent accumulation requires matching compute operands."
@@ -575,6 +603,7 @@ def fused_recurrent_weight_carry(
                 dcarrier = tf.zeros_like(carrier)
             if dcurrents is None:
                 dcurrents = tf.zeros_like(currents)
+            spike_options = {} if compute_spike_gradient else {"compute_spike_gradient": False}
             dz, accumulated = _OPS.dpointnet_csr_spike_grad_accumulate(
                 z,
                 dcurrents,
@@ -588,8 +617,12 @@ def fused_recurrent_weight_carry(
                 n_edges=connectivity["n_edges"],
                 n_pairs=connectivity["n_pairs"],
                 use_javier_batch32_backward=use_javier_batch32_backward,
+                **spike_options,
             )
-            return dz, accumulated, None, None, None
+            return (
+                dz if compute_spike_gradient else None,
+                accumulated, None, None, None,
+            )
 
         return (currents, tf.identity(carrier)), grad
 

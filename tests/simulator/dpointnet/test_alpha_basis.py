@@ -254,8 +254,9 @@ def sonata_config(tmp_path, tau_basis=None, csv_weights=None):
 
 
 @pytest.mark.parametrize("provided", [False, True])
+@pytest.mark.parametrize("acceleration_profile", [None, "auto"])
 def test_real_sonata_rnn_uses_shared_basis_for_recurrent_and_input(
-    tmp_path, provided, monkeypatch
+    tmp_path, provided, acceleration_profile, monkeypatch
 ):
     from bmtk.simulator.dpointnet.rnn_model import RNN
     from bmtk.simulator.dpointnet.id_maps import TFIDMap
@@ -273,8 +274,11 @@ def test_real_sonata_rnn_uses_shared_basis_for_recurrent_and_input(
         tmp_path, [1, 2, 4, 8, 16] if provided else None, columns if provided else None
     )
     rnn = RNN.from_config(config)
+    if acceleration_profile is not None:
+        rnn.cell_params["acceleration_profile"] = acceleration_profile
     try:
         rnn.build()
+        assert (rnn.acceleration_report is None) == (acceleration_profile is None)
         assert rnn.cell.synaptic_basis_weights.shape == (2, 5 if provided else 4)
         assert (rnn.alpha_basis_fit is None) == provided
         if provided:

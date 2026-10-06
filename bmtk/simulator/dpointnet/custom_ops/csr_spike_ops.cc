@@ -309,6 +309,7 @@ REGISTER_OP("DpointnetCsrSpikeGradAccumulate")
     .Attr("write_csr_weight_gradient: bool = true")
     .Attr("use_small_batch_backward: bool = false")
     .Attr("use_javier_batch32_backward: bool = false")
+    .Attr("compute_spike_gradient: bool = true")
     .Output("spike_grad: T")
     .Output("weight_grad: float")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {

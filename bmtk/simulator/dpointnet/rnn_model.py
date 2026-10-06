@@ -22,6 +22,7 @@ from .callbacks import callback_classes
 from .id_maps import TFIDMap
 from .weights import ModelWeights
 from .data_iterator import DataIterator
+from .acceleration import resolve_acceleration_options
 
 
 class Inference:
@@ -93,6 +94,7 @@ class RNN:
         self.cell_params = {} if cell_params is None else dict(cell_params)
         self._alpha_basis_options = self.cell_params.pop("alpha_basis", None)
         self.alpha_basis_fit = None
+        self.acceleration_report = None
         self._components = {}
         self._node_populations = {}
         self.io = io
@@ -473,6 +475,22 @@ class RNN:
                         raise ValueError("Cell temporal and training checkpoint chunk sizes conflict.")
                     cell_params["temporal_checkpoint_chunk_size"] = size
                 cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
+            tau_basis = cell_params.get("tau_basis")
+            basis_width = None
+            if cell_params.get("acceleration_profile") is not None and tau_basis is not None:
+                if isinstance(tau_basis, (str, Path)):
+                    tau_basis = np.load(tau_basis)
+                basis_width = np.asarray(tau_basis).size
+            cell_params, self.acceleration_report = resolve_acceleration_options(
+                cell_params,
+                compute_dtype=tf_utils._get_active_policy(self.precision_module).compute_dtype,
+                variable_dtype=tf_utils._get_active_policy(self.precision_module).variable_dtype,
+                batch_size=cell_params["batch_size"],
+                basis_width=basis_width,
+                train_recurrent_per_type=False,
+            )
+        elif "acceleration_profile" in cell_params:
+            raise ValueError("acceleration_profile requires a GLIF3Cell model.")
         with self.strategy.scope():
             self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
             for loss in getattr(self, "_online_voltage_losses", ()):
