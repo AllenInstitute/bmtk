@@ -65,6 +65,12 @@ the profile still preserves library defaults and existing experiments.
    intended GPU. External runners must wire the shared resolver and their own
    input/carrier surfaces; setting a cell flag alone cannot control them.
 
+**Initial build cost:** approximately13-14minutes for both full-target operators
+on the tested8-CPU HPC allocation, estimated from job-phase timings. This excludes
+environment setup, queue waiting and model initialization/first-step tracing.
+Reuse the binaries across supported GPUs and batches in a compatible environment;
+rebuild after CUDA-source, TensorFlow ABI or CUDA-toolchain changes.
+
 Let the resolver handle architecture, loaded operators, dtype, topology and
 batch restrictions. Explicit individual flags override it, so do not carry
 old manual accelerator lists into a new automatic profile unless they are

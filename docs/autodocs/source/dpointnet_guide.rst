@@ -56,6 +56,12 @@ PTX. Compilation on HPC belongs in an allocated compute job. Do not silently
 drop unsupported targets; report a compiler mismatch. Binaries are specific
 to the execution environment's TensorFlow/CUDA ABI.
 
+The initial full-target build of both operators took approximately 13-14 minutes
+on the tested 8-CPU HPC allocation, estimated from job-phase timings. This excludes
+environment setup, queue waiting and model initialization/first-step tracing.
+Reuse the binaries across supported GPUs and batches in a compatible environment;
+rebuild after CUDA-source, TensorFlow ABI or CUDA-toolchain changes.
+
 Add to the otherwise unchanged simulation configuration:
 
 .. code-block:: json
