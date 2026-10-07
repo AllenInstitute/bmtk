@@ -3,7 +3,8 @@
 ### DPointNet user and configuration guides
 
 - [DPointNet user guide](autodocs/source/dpointnet_guide.rst)
-- [Performance configuration and precision](dpointnet_parity.md)
+- [Recommended multi-GPU build and automatic acceleration workflow](dpointnet_parity.md#recommended-workflow-for-new-projects)
+- [Performance configuration and precision](dpointnet_parity.md#precision-profiles)
 - [Variable-batch acceleration and device Poisson sampling](dpointnet_variable_batch.md)
 - [Automatic alpha-basis fitting](dpointnet_alpha_basis.md)
 - [Per-device LGN input generation](dpointnet_lgn_pipeline.md)

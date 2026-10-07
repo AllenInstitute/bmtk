@@ -31,6 +31,62 @@ or without a gpu:
 
     $ pip install tensorflow
 
+Recommended portable acceleration
+---------------------------------
+
+For new projects using the consolidated DPointNet fork, build both CUDA
+operators for the full supported GPU pool and use automatic accelerator
+selection instead of maintaining GPU-specific flag lists. Pin the qualified
+fork revision ``94f90d70e6353af54bf6205708a7e2b75e85a534`` from
+``shixnya/bmtk:feature/dpointnet-training-inputs-consolidated`` in the
+project's dependency contract and verify the imported BMTK path. This is an
+engineering preview, not an upstream release or an upgrade of existing
+installed environments.
+
+In the declared TensorFlow/CUDA environment, first check that
+``nvcc --list-gpu-code`` supports all requested targets, then run:
+
+.. code-block:: bash
+
+  DPOINTNET_CUDA_ARCHS="61 70 75 80 86 89 90" \
+    python -m bmtk.simulator.dpointnet.custom_ops.build
+
+This includes Pascal, V100, RTX8000, A100, RTX3090, L40S and H200, plus SM90
+PTX. Compilation on HPC belongs in an allocated compute job. Do not silently
+drop unsupported targets; report a compiler mismatch. Binaries are specific
+to the execution environment's TensorFlow/CUDA ABI.
+
+Add to the otherwise unchanged simulation configuration:
+
+.. code-block:: json
+
+  {
+    "rnn_cell_params": {
+      "acceleration_profile": "auto"
+    }
+  }
+
+For eligible direct-loop BPTT, explicitly select
+``use_direct_state_rnn_loop=true`` as well. Native recurrent accumulation
+requires direct CSR, four bases and trainable per-edge weights; retain
+per-type training if that is your scientific recipe. Inspect
+``rnn.acceleration_report`` and qualify actual updates, checkpoint restoration
+and memory on the intended GPU. Explicit individual flags override the profile.
+External runners must wire the resolver and their independent input surfaces.
+
+Automatic selection chooses qualified paths using actual GPU capability,
+loaded operators, precision, topology and batch, not CUDA version alone.
+RTX8000 ordinary FP16 backward and existing SM86+ native paths are admitted;
+Pascal native paths remain explicit opt-ins, V100/A100 automatic paths remain
+conservative, and RTX8000 FP32 compute/replay stays generic. Packed backward
+remains batch32-only; batch16 retains eligible native accumulation.
+
+This does not automatically choose batch, precision, dynamics, parameter
+sharing, sampler, loss, optimizer or allocator. Fat compilation is not
+universal runtime qualification or execution authorization. Preserve running
+and immutable experiment pins. See
+`performance configuration and qualification limits <https://github.com/shixnya/bmtk/blob/feature/dpointnet-training-inputs-consolidated/docs/dpointnet_parity.md>`_.
+
 GLIF dynamics and explicit state
 -------------------------------
 

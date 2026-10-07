@@ -2,8 +2,9 @@
 
 ## Scope
 
-This guide describes opt-in acceleration and precision settings for advanced
-training users. Library defaults favor compatibility; an accelerated profile must
+This guide describes the recommended automatic acceleration workflow for new
+projects and explicit precision settings. Library defaults favor compatibility;
+an accelerated profile must
 match the selected hardware, topology, precision and training objective.
 
 For batches below 32, follow the [variable-batch guide](dpointnet_variable_batch.md)
@@ -19,6 +20,68 @@ recommended.** Throughput and gradient checks do not establish training
 convergence. NEST is an opt-in compatibility mode requiring separate validation
 of the intended network and outputs. Do not silently switch an existing
 experiment's dynamics, precision or random sampler.
+
+## Recommended workflow for new projects
+
+Build both operators for the full supported GPU pool, then use
+`"acceleration_profile": "auto"` rather than maintaining GPU-specific lists of
+accelerator flags. This is the recommended new-project starting point; omitting
+the profile still preserves library defaults and existing experiments.
+
+1. Pin the consolidated fork's qualified source, for example
+   `94f90d70e6353af54bf6205708a7e2b75e85a534` on
+   `shixnya/bmtk:feature/dpointnet-training-inputs-consolidated`, in the project's
+   dependency contract. Verify the actual BMTK import path.
+2. In the intended TensorFlow/CUDA environment, check that `nvcc --list-gpu-code`
+   supports every requested target and build:
+
+   ```bash
+   DPOINTNET_CUDA_ARCHS="61 70 75 80 86 89 90" \
+     python -m bmtk.simulator.dpointnet.custom_ops.build
+   ```
+
+   This covers GTX1080Ti/TitanXp, V100, RTX8000, A100, RTX3090, L40S and H200,
+   with PTX for SM90. Compile on an allocated compute node for HPC. If the
+   compiler cannot cover the list, report the mismatch; do not silently omit
+   older GPUs. Binaries remain TensorFlow/CUDA ABI-specific. Compilation does
+   not qualify every GPU or authorize its use.
+3. Add the automatic profile to your otherwise unchanged configuration:
+
+   ```json
+   {
+     "rnn_cell_params": {
+       "acceleration_profile": "auto"
+     }
+   }
+   ```
+
+   For the eligible direct-loop BPTT route, explicitly select
+   `"use_direct_state_rnn_loop": true` as well. Automatic acceleration does not
+   choose this route, precision or scientific parameter sharing for you.
+   Preserve your per-type/per-edge recipe; recurrent native accumulation
+   requires trainable per-edge weights, direct CSR and four bases.
+4. Inspect `rnn.acceleration_report`, including fallback/disabled reasons,
+   and smoke-test real optimizer updates, restoration and memory on the
+   intended GPU. External runners must wire the shared resolver and their own
+   input/carrier surfaces; setting a cell flag alone cannot control them.
+
+Let the resolver handle architecture, loaded operators, dtype, topology and
+batch restrictions. Explicit individual flags override it, so do not carry
+old manual accelerator lists into a new automatic profile unless they are
+intentional, documented exceptions. The goal is the fastest qualified route
+for the selected workload, not a guarantee of maximum speed on arbitrary GPUs.
+
+Current automatic native policy admits RTX8000/SM75 ordinary FP16 temporal
+backward and existing SM86+ paths. Pascal remains an explicit opt-in;
+V100/SM70 and A100/SM80 remain conservative/generic pending automatic-policy
+qualification. RTX8000 FP32 compute/replay remains generic. Batch16 can use
+the native accumulator without batch32-only packed backward; see the
+[matched RTX8000 batch comparison](dpointnet_variable_batch.md#matched-rtx8000-batch1632-execution-check).
+Use batch32 where the selected workload fits and throughput is the priority;
+batch16 is a measured lower-memory alternative, not an automatic batch change.
+
+Do not migrate running/pinned experiments, change scientific settings or
+force an unqualified path merely because the fat binary contains its SM target.
 
 ## Precision profiles
 
@@ -87,13 +150,9 @@ the exact commit in each new project's dependency contract. This is an
 engineering preview, not an upstream release or a migration of existing
 experiments. Keep existing project/environment/checkpoint pins unchanged.
 
-Build in the intended TensorFlow/CUDA environment, including on an allocated
-compute node for HPC:
-
-```bash
-DPOINTNET_CUDA_ARCHS="61 70 75 80 86 89 90" \
-  python -m bmtk.simulator.dpointnet.custom_ops.build
-```
+Follow the [recommended multi-architecture build workflow](#recommended-workflow-for-new-projects)
+in the intended TensorFlow/CUDA environment, including on an allocated compute
+node for HPC.
 
 Both operators must be rebuilt when adopting the portable CUDA changes;
 previous fat binaries can contain all SM targets but still have the old SM86
