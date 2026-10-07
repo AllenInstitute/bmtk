@@ -254,3 +254,46 @@ def test_actual_auto_carrier_matches_independent_dense_oracle(stopped):
             assert np.all(dz.numpy()[spikes.numpy() == 0] != 0)
     finally:
         conn.close()
+
+
+@pytest.mark.parametrize("stopped", [False, True])
+def test_generic_carrier_nested_recompute_while_loop_resource_capture(hardware, monkeypatch, stopped):
+    import numpy as np
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
+    monkeypatch.setattr(csr, "fused_recurrent_weight_carry", lambda *a, **k: pytest.fail("SM70 native op called"))
+    metadata = tf.Variable(2., trainable=False)
+
+    def projection(z, carrier, shadow, connectivity, *args, **kwargs):
+        return z * tf.reduce_sum(carrier) * connectivity["metadata_handle"].read_value()
+
+    monkeypatch.setattr(csr, "fused_spike_currents", projection)
+    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    route = acceleration.resolve_weight_carry_options(options, stopped_input=stopped)["resolved"]
+
+    @tf.recompute_grad
+    def segment(z, carrier):
+        def step(index, credit, loss):
+            current, credit = acceleration.project_weight_carry(
+                z, credit, None, {"metadata_handle": metadata}, None, 2, 1., resolved=route,
+            )
+            return index + 1, credit, loss + tf.reduce_sum(current)
+        _, credit, loss = tf.while_loop(
+            lambda index, *_: index < 3, step, (0, carrier, tf.constant(0.)),
+        )
+        return loss + tf.reduce_sum(credit)
+
+    @tf.function
+    def gradients(z, carrier):
+        with tf.GradientTape() as tape:
+            tape.watch((z, carrier))
+            loss = segment(z, carrier)
+        dz, dw = tape.gradient(loss, (z, carrier))
+        return loss, dz, dw
+
+    spikes = tf.constant([[0., 1.], [1., 0.]])
+    loss, dz, dw = gradients(spikes, tf.ones((3,)))
+    np.testing.assert_array_equal(loss, 39.)
+    np.testing.assert_array_equal(dw, np.full(3, 13.))
+    # recompute_grad materializes zeros for deliberately stopped inputs.
+    np.testing.assert_array_equal(dz, np.zeros((2, 2)) if stopped else np.full((2, 2), 18.))
