@@ -71,6 +71,37 @@ workload, not just the execution speed. Compare identical update semantics and
 record the effective model batch. A speed comparison that enables device Poisson
 is not an unchanged-seeded-input control or evidence of equivalent learning.
 
+### Matched RTX8000 batch16/32 execution check
+
+At executable revision `9dcd65614bf2fe5b144c53e2abc7fa35c2b12ed6`, the
+automatic profile passed full 66,658-neuron V1+LGN fresh/trained runs at both
+batch16(12evoked+4spontaneous) and batch32(24+8) in one RTX8000 allocation.
+Each case applied23updates:3excluded warmups and20synchronized measured
+input-fetch+training+optimizer+rules+shadow-refresh updates. Starting masters
+matched between batches; trained cases strictly restored the same epoch64
+checkpoint and regenerated batch-sized initial state.
+
+| State | Batch | Median update | Samples/s (mean time) | TF peak |
+| --- | ---: | ---: | ---: | ---: |
+| Fresh | 16 | 2.891s | 5.525 | 8.10GiB |
+| Fresh | 32 | 4.989s | 6.405 | 13.07GiB |
+| Trained epoch64 | 16 | 3.020s | 5.278 | 8.16GiB |
+| Trained epoch64 | 32 | 5.854s | 5.434 | 13.48GiB |
+
+Batch16 takes less time per update; batch32 processes twice as many samples,
+giving15.9% higher fresh throughput and3.0% higher trained throughput in this
+bounded comparison. Native accumulation executed at both batches; packed
+backward executed only at32. Strict checkpoint roundtrips, finite constrained
+masters and refreshed shadows passed with no rejections or initialization
+fallbacks. TF peaks include all23updates, not total driver VRAM.
+
+This used the selected experimental NEST soft-reset V1 qualification recipe,
+ordinary FP16 temporal gradients, FP32 masters/optimizer slots, unchanged
+losses/ExpAdam/LGN/raw Poisson and default BFC memory growth. It is not a
+training recommendation, convergence result or cross-batch update-equivalence
+claim. There is no matched old-code RTX8000 batch16 run here to isolate the
+causal contribution of an individual optimization.
+
 Tests cover non-power-of-two batches, silent-neuron spike adjoints, canonical
 gradient ordering and checkpoint replay. GPU and topology restrictions still
 apply; successful execution at one batch size does not qualify another device.
