@@ -117,6 +117,9 @@ precision, sampler, loss or optimizer. Native accumulation supports batch1..32;
 packed gradients still require batch32, four bases and compatible compact
 metadata. Batch8/16 keeps the accumulator but disables packed-only paths.
 RTX8000 FP32 temporal replay remains generic in automatic selection.
+The example presupposes per-edge training: retain per-type training if your
+scientific recipe uses it, rather than changing parameter sharing for speed.
+Automatic selection then leaves per-edge accumulation disabled.
 
 The initial bounded 66,658-neuron V1+LGN comparison completed fresh and
 epoch64-restored baseline/native runs, each with3warmups and20measured updates.
@@ -126,7 +129,19 @@ measured9.68/10.05s versus8.46/8.75s, with native peaks8.65-8.70GiB.
 These are acceleration-bundle timings, not isolated-kernel or same-batch
 cross-GPU comparisons. They do not establish convergence, long-run memory
 safety, arbitrary-topology support or bitwise-equivalent complete updates.
-The separate exact-auto RTX8000 qualification is a release gate.
+The separate exact-auto RTX8000 release gate passed at executable revision
+`9dcd65614bf2fe5b144c53e2abc7fa35c2b12ed6`: full GPU suite1925passed/28skipped,
+focused77passed/2skipped, and all nine weight-only regressions executed in both.
+Complete CUDA-disabled Keras3 and actual Python3.8/TF2.13/Keras2 suites each
+passed1149tests/804skips. Both operators were rebuilt for the full target list.
+Fresh and strictly epoch64-restored exact-auto V1+LGN BS32 cases each applied
+23updates, with actual accumulator/packed graph evidence and matching starting
+masters/LGN inputs against the earlier explicit route. Their20sample medians
+were5.03/5.85s and TF peaks12.97/13.57GiB. Peak allocation varies between these
+whole-model runs; unchanged accumulator buffers do not guarantee identical
+TensorFlow allocator peaks. No rejected updates or initialization fallbacks
+occurred; strict checkpoint roundtrips passed. This remains bounded execution
+qualification, not a convergence or universal workload-memory guarantee.
 
 GTX1080Ti BS16 failed GPU-memory allocation in the baseline route before native
 comparison. The separate BS8(6+2) fresh/trained comparison passed all four
