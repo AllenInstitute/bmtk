@@ -45,8 +45,11 @@ TensorFlow/CUDA/cuDNN build versions and selection reasons are logged and
 available as `rnn.acceleration_report`. This records selected configuration,
 not proof that every topology-specific kernel executed.
 
-Compatible generic CUDA routes remain eligible on SM70/75/80; FP16 packed
-backward and recurrent accumulators require SM86+. Multiple visible GPUs or
+Compatible generic CUDA routes remain eligible on SM70/75/80. Automatic native
+selection admits SM75 (RTX8000) ordinary FP16 temporal backward and the existing
+SM86+ paths. SM70/V100 and SM80/A100 retain generic automatic selection while
+their portable qualifications are pending. Pascal remains an explicit opt-in.
+Multiple visible GPUs or
 missing/incompatible operators select the documented TensorFlow fallback with
 a warning. General NEST/Pascal is not automatically admitted. Fixed-four inputs
 and packed metadata retain per-connectivity validation/fallback. Recurrent
@@ -64,8 +67,9 @@ runner's responsibility. The report includes both requested and resolved flags.
 
 External weight-carrier runners can additionally use
 `resolve_weight_carry_options` and `project_weight_carry` from the same module.
-The native accumulator is gated independently on SM86+: disabling Javier alone
-does not make its kernel compatible with SM70/75/80. The compatible generic
+Rebuilt native operators support SM61+ independently of the narrower automatic
+policy. External carrier selection also checks the admitted cell route:
+compatible hardware alone does not turn on native accumulation. The compatible generic
 route combines direct-CSR values/gradients with a TensorFlow identity carrier,
 retaining live recurrent spike credit, including silent-neuron adjoints.
 Explicit stopped external inputs retain a zero-scaled unused spike VJP on the
@@ -75,6 +79,62 @@ compatible rebuilt operator. Explicit incompatible carrier requests fail.
 External runners must also apply the resolved external-packed/fixed-four flags
 to every input projection and wire project-specific smoothing compatibility;
 the cell resolver cannot control those independent runner surfaces.
+
+### Portable preview adoption
+
+Use the fork's `feature/dpointnet-training-inputs-consolidated` branch and pin
+the exact commit in each new project's dependency contract. This is an
+engineering preview, not an upstream release or a migration of existing
+experiments. Keep existing project/environment/checkpoint pins unchanged.
+
+Build in the intended TensorFlow/CUDA environment, including on an allocated
+compute node for HPC:
+
+```bash
+DPOINTNET_CUDA_ARCHS="61 70 75 80 86 89 90" \
+  python -m bmtk.simulator.dpointnet.custom_ops.build
+```
+
+Both operators must be rebuilt when adopting the portable CUDA changes;
+previous fat binaries can contain all SM targets but still have the old SM86
+eligibility restriction. Binaries are environment/ABI-specific, not universal
+across TensorFlow or CUDA versions.
+
+For qualified RTX8000 FP16 per-edge BPTT, select your scientific recipe and add:
+
+```json
+{
+  "rnn_cell_params": {
+    "acceleration_profile": "auto",
+    "use_direct_state_rnn_loop": true,
+    "train_recurrent_per_type": false
+  }
+}
+```
+
+This explicitly selects the execution route, not a different dynamics model,
+precision, sampler, loss or optimizer. Native accumulation supports batch1..32;
+packed gradients still require batch32, four bases and compatible compact
+metadata. Batch8/16 keeps the accumulator but disables packed-only paths.
+RTX8000 FP32 temporal replay remains generic in automatic selection.
+
+The initial bounded 66,658-neuron V1+LGN comparison completed fresh and
+epoch64-restored baseline/native runs, each with3warmups and20measured updates.
+RTX8000 BS32(24+8) measured28.51/28.57s baseline versus5.01/5.87s native,
+with native TF peaks13.01-13.04GiB. TitanXp BS16(12+4), using explicit flags,
+measured9.68/10.05s versus8.46/8.75s, with native peaks8.65-8.70GiB.
+These are acceleration-bundle timings, not isolated-kernel or same-batch
+cross-GPU comparisons. They do not establish convergence, long-run memory
+safety, arbitrary-topology support or bitwise-equivalent complete updates.
+The separate exact-auto RTX8000 qualification is a release gate.
+
+GTX1080Ti BS16 failed GPU-memory allocation in the baseline route before native
+comparison. The separate BS8(6+2) fresh/trained comparison passed all four
+scenarios:6.95/7.16s baseline versus5.45/5.66s native, with native TF peaks
+about6.21/6.35GiB. This is a different batch protocol, not recovery of the
+failed BS16 qualification. V100/A100/L40S
+portable matrix results remain pending. Do not remove compatible/reference
+backends or silently enable experimental settings on those projects.
 
 - **Throughput profile (FP16 temporal backward):** selective forward state with ordinary
   per-state temporal gradients (`temporal_gradient_precision="compute"`, which is

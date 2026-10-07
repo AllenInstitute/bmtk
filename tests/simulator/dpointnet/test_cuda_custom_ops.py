@@ -762,24 +762,38 @@ def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch)
     assert glif_state_ops._ARCHITECTURE_PATH.name == "_glif_state_ops.archs"
 
 
-def test_packed_sm120_auto_uses_fallback_on_sm80(monkeypatch):
+@pytest.mark.parametrize("architecture", [61, 70, 80])
+def test_packed_sm120_auto_uses_conservative_older_fallback(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
 
     assert not _resolve_packed_sm120_backward(
         "auto", tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
     )
 
 
-def test_packed_sm120_auto_selects_eligible_sm120(monkeypatch):
+@pytest.mark.parametrize("architecture", [61, 70, 75, 80])
+def test_portable_packed_explicit_opt_in_retains_shape_validation(monkeypatch, architecture):
+    connectivity = {"index_dtype": "uint32", "n_pairs": 1}
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
+    assert _resolve_packed_sm120_backward(
+        True, tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
+    )
+    assert _resolve_packed_sm120_model_option(True, True, tf.float16, 32, 4) is True
+    with pytest.raises(ValueError, match="batch size"):
+        _resolve_packed_sm120_model_option(True, True, tf.float16, 16, 4)
+
+
+@pytest.mark.parametrize("architecture", [75, 86, 89, 120])
+def test_packed_sm120_auto_selects_eligible_architecture(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 120)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
 
     assert _resolve_packed_sm120_backward(
         "auto", tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
@@ -803,14 +817,14 @@ def test_packed_sm120_external_auto_falls_back_for_connectivity(
     )
 
 
-def test_forced_packed_sm120_rejects_sm80(monkeypatch):
+def test_forced_packed_sm120_rejects_sm60(monkeypatch):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         _resolve_packed_sm120_backward(
             True, tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
         )
@@ -818,7 +832,8 @@ def test_forced_packed_sm120_rejects_sm80(monkeypatch):
 
 @pytest.mark.parametrize(
     ("architecture", "expected"),
-    [(80, False), (86, "auto"), (89, "auto"), (120, "auto")],
+    [(61, False), (70, False), (75, "auto"), (80, False),
+     (86, "auto"), (89, "auto"), (120, "auto")],
 )
 def test_packed_sm120_external_model_selection(monkeypatch, architecture, expected):
     monkeypatch.setattr(
@@ -830,10 +845,10 @@ def test_packed_sm120_external_model_selection(monkeypatch, architecture, expect
     )
 
 
-def test_forced_packed_sm120_external_model_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_forced_packed_sm120_external_model_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
 
-    with pytest.raises(ValueError, match="use_packed_sm120_external_backward.*SM80"):
+    with pytest.raises(ValueError, match="use_packed_sm120_external_backward.*SM60"):
         _resolve_packed_sm120_model_option(True, True, tf.float16, 32, 4)
 
 
@@ -847,15 +862,15 @@ def test_fixed_input_connectivity_omits_compact_pair_metadata():
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_fused_currents_forced_packed_sm120_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_fused_currents_forced_packed_sm120_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
     )
     master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
     csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         fused_spike_currents(
             tf.ones([32, 3], tf.float16),
             master_weights,
@@ -869,15 +884,15 @@ def test_fused_currents_forced_packed_sm120_rejects_sm80(monkeypatch):
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_fused_external_forced_packed_sm120_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_fused_external_forced_packed_sm120_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
     )
     master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
     csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         fused_spike_currents(
             tf.ones([32, 3], tf.float16),
             master_weights,

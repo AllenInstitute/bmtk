@@ -93,13 +93,13 @@ def resolve_acceleration_options(
     )
     packed = (
         currents and fp16_backward and four_basis and batch_size == 32
-        and architecture is not None and architecture >= 86 and pair_projection
+        and csr_spike_ops._auto_native_architecture(architecture) and pair_projection
     )
     select("use_packed_sm120_backward", packed,
-           "FP16 temporal backward, SM86+, batch32, four bases and pair metadata; "
+           "FP16 temporal backward, automatic policy SM75/SM86+, batch32, four bases and pair metadata; "
            "per-connectivity checks remain automatic")
     select("use_packed_sm120_external_backward", packed,
-           "FP16 temporal backward, SM86+, batch32 and four bases")
+           "FP16 temporal backward, automatic policy SM75/SM86+, batch32 and four bases")
     # Auto keeps the existing per-connectivity fallback for oversized/int64 metadata.
     if packed and cell_params.get("use_packed_sm120_backward") is None:
         options["use_packed_sm120_backward"] = "auto"
@@ -118,15 +118,17 @@ def resolve_acceleration_options(
         "use_direct_state_rnn_loop", False
     )
     accumulator = (
-        currents and small_batch and carry_route
-        and architecture is not None and architecture >= 86
+        currents and small_batch and four_basis and carry_route
+        and csr_spike_ops._auto_native_architecture(architecture)
+        and (architecture != 75 or fp16_backward)
         and options["use_direct_csr_recurrent_gradient"] is True
         and options.get("train_recurrent", True)
         and not options.get("train_recurrent_per_type", train_recurrent_per_type)
         and pair_projection and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     select("use_fused_recurrent_accumulation", accumulator,
-           "SM86+ accumulator library, batch1..32, per-edge training, direct CSR "
+           "Automatic policy SM75 FP16 temporal backward or SM86+ accumulator library, "
+           "batch1..32/four bases, per-edge training, direct CSR "
            "and explicitly selected direct-loop or FP32 replay route")
     select(
         "use_javier_recurrent_vjp",
@@ -135,7 +137,7 @@ def resolve_acceleration_options(
     )
     if options["use_fused_recurrent_accumulation"] is True and not accumulator:
         raise ValueError(
-            "use_fused_recurrent_accumulation=True requires compatible SM86+ "
+            "use_fused_recurrent_accumulation=True with auto requires admitted SM75/SM86+ "
             "operators and the declared per-edge/direct-CSR carrier route."
         )
     if options["use_javier_recurrent_vjp"] is True and not (
@@ -171,7 +173,7 @@ def resolve_weight_carry_options(
             raise ValueError(f"{key} must be true or false.")
     architecture = csr_spike_ops._gpu_compute_architecture()
     available = (
-        architecture is not None and architecture >= 86
+        architecture is not None and architecture >= 61
         and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     native = available and cell_options.get("use_fused_recurrent_accumulation") is True
@@ -182,7 +184,7 @@ def resolve_weight_carry_options(
         if native and not (
             available and cell_options.get("use_fused_recurrent_accumulation") is True
         ):
-            raise ValueError("native_accumulator=True requires compatible SM86+ operators and an admitted carrier route.")
+            raise ValueError("native_accumulator=True requires compatible SM61+ operators and an admitted carrier route.")
     javier = native and cell_options.get("use_javier_recurrent_vjp") is True
     weight_only = (
         native and stopped_input and javier
@@ -192,7 +194,7 @@ def resolve_weight_carry_options(
     if not spike_gradient and not weight_only:
         raise ValueError(
             "compute_spike_gradient=False requires explicitly stopped inputs, "
-            "rebuilt native SM86+ FP16 Javier weight-only accumulation."
+            "rebuilt native SM61+ FP16 Javier weight-only accumulation."
         )
     if not stopped_input and not spike_gradient:
         raise ValueError("Live recurrent spike credit cannot be disabled.")
@@ -209,7 +211,7 @@ def resolve_weight_carry_options(
             "stopped_input": stopped_input,
         },
         "reason": (
-            "Native SM86+ carrier with eligible explicitly stopped input credit"
+            "Native SM61+ carrier with eligible explicitly stopped input credit"
             if native else "Generic direct-CSR gradient plus TensorFlow identity carrier"
         ),
     }

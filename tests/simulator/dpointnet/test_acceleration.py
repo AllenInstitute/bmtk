@@ -42,7 +42,7 @@ def test_architecture_and_precision_gate_packed_flags(hardware, monkeypatch, arc
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
     params = {"temporal_gradient_precision": temporal}
     actual, report = resolve(params)
-    enabled = architecture is not None and architecture >= 86 and temporal == "compute"
+    enabled = architecture is not None and (architecture == 75 or architecture >= 86) and temporal == "compute"
     assert actual["use_packed_sm120_backward"] == ("auto" if enabled else False)
     assert actual["use_packed_sm120_external_backward"] == ("auto" if enabled else False)
     assert report["architecture"] == architecture
@@ -165,19 +165,19 @@ def test_runner_carriers_gate_native_op_independently(hardware, monkeypatch, arc
     options, _ = resolve({"use_direct_state_rnn_loop": True})
     rec = acceleration.resolve_weight_carry_options(options)
     audio = acceleration.resolve_weight_carry_options(options, stopped_input=True)
-    eligible = architecture >= 86
+    eligible = architecture == 75 or architecture >= 86
     assert rec["resolved"]["native_accumulator"] == eligible
     assert rec["resolved"]["compute_spike_gradient"] is True
     assert audio["resolved"]["native_accumulator"] == eligible
     assert audio["resolved"]["compute_spike_gradient"] == (not eligible)
-    assert not options["use_packed_sm120_external_backward"] if architecture < 86 else True
+    assert options["use_packed_sm120_external_backward"] == ("auto" if eligible else False)
 
 
 def test_incompatible_explicit_carrier_override_rejected(hardware, monkeypatch):
     csr, _ = hardware
     monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 70)
     options, _ = resolve({"use_direct_state_rnn_loop": True})
-    with pytest.raises(ValueError, match="SM86"):
+    with pytest.raises(ValueError, match="admitted carrier route"):
         acceleration.resolve_weight_carry_options(options, overrides={"native_accumulator": True})
     with pytest.raises(ValueError, match="stopped"):
         acceleration.resolve_weight_carry_options(options, overrides={"compute_spike_gradient": False})
@@ -185,6 +185,56 @@ def test_incompatible_explicit_carrier_override_rejected(hardware, monkeypatch):
         resolve({"use_direct_state_rnn_loop": True, "use_fused_recurrent_accumulation": True})
     with pytest.raises(ValueError, match="FP16"):
         resolve({"use_direct_state_rnn_loop": True, "use_javier_recurrent_vjp": True})
+
+
+@pytest.mark.parametrize("architecture", [61, 70, 80])
+def test_unqualified_architectures_keep_conservative_auto(hardware, monkeypatch, architecture):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: architecture)
+    actual, _ = resolve({"use_direct_state_rnn_loop": True})
+    assert actual["use_fused_recurrent_accumulation"] is False
+    assert actual["use_javier_recurrent_vjp"] is False
+    assert actual["use_packed_sm120_backward"] is False
+    assert actual["use_packed_sm120_external_backward"] is False
+
+
+@pytest.mark.parametrize("batch", [8, 16, 32])
+def test_rtx8000_auto_keeps_batch_specific_guards(hardware, monkeypatch, batch):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 75)
+    actual, _ = resolve({"use_direct_state_rnn_loop": True}, batch_size=batch)
+    assert actual["use_fused_recurrent_accumulation"] is True
+    assert actual["use_javier_recurrent_vjp"] is True
+    assert actual["use_packed_sm120_backward"] == ("auto" if batch == 32 else False)
+    assert actual["use_packed_sm120_external_backward"] == ("auto" if batch == 32 else False)
+
+
+def test_explicit_pascal_carrier_requires_opt_in(hardware, monkeypatch):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 61)
+    options, _ = resolve({"use_direct_state_rnn_loop": True})
+    assert acceleration.resolve_weight_carry_options(options)["resolved"]["native_accumulator"] is False
+    explicit = {"use_fused_recurrent_accumulation": True, "use_javier_recurrent_vjp": True}
+    assert acceleration.resolve_weight_carry_options(explicit)["resolved"]["native_accumulator"] is True
+
+
+@pytest.mark.parametrize("compute,temporal", [
+    (tf.float32, "compute"), (tf.float16, "float32"),
+])
+def test_rtx8000_auto_keeps_unqualified_precision_routes_generic(hardware, monkeypatch, compute, temporal):
+    csr, _ = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 75)
+    actual, _ = resolve(
+        {"use_direct_state_rnn_loop": True, "temporal_gradient_precision": temporal},
+        compute_dtype=compute,
+    )
+    assert actual["use_fused_recurrent_accumulation"] is False
+    assert actual["use_javier_recurrent_vjp"] is False
+
+
+def test_auto_accumulator_requires_four_bases(hardware):
+    actual, _ = resolve({"use_direct_state_rnn_loop": True}, basis_width=5)
+    assert actual["use_fused_recurrent_accumulation"] is False
 
 
 def test_generic_carrier_keeps_live_credit_without_calling_accumulator(hardware, monkeypatch):

@@ -1156,7 +1156,7 @@ inline bool SupportsPackedBatch32Backward() {
                                 device) == cudaSuccess &&
          cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor,
                                 device) == cudaSuccess &&
-         major * 10 + minor >= 86;
+         major * 10 + minor >= 61;
 }
 
 inline uint32 PackedRowSplitCount(int64_t n_rows) {
@@ -1789,7 +1789,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
               write_csr_weight_gradient_ && !use_small_batch_backward_ &&
               !use_packed_sm120_backward_ && SupportsPackedBatch32Backward(),
           errors::InvalidArgument(
-              "Fused accumulation requires SM86+, batch1..32/four bases, pairs, "
+              "Fused accumulation requires SM61+, batch1..32/four bases, pairs, "
               "direct CSR and generic packed backward flags."));
     }
     OP_REQUIRES(
@@ -1830,7 +1830,7 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         context, SupportsPackedBatch32Backward(),
         errors::InvalidArgument(
           "Packed recurrent backward requires GPU compute capability "
-          "SM86 or newer."));
+          "SM61 or newer."));
       }
     }
     const Index* metadata_values = metadata.flat<Index>().data();
@@ -2274,7 +2274,7 @@ class DpointnetCsrWeightGradOp : public OpKernel {
             context, SupportsPackedBatch32Backward(),
             errors::InvalidArgument(
                 "Packed external backward requires GPU compute capability "
-              "SM86 or newer."));
+              "SM61 or newer."));
       }
     }
 

@@ -131,6 +131,10 @@ def _gpu_compute_architecture():
     return int(capability[0]) * 10 + int(capability[1])
 
 
+def _auto_native_architecture(architecture):
+    return architecture is not None and (architecture == 75 or architecture >= 86)
+
+
 def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
     option = _validate_packed_sm120_option(option)
     incompatibilities = []
@@ -147,17 +151,20 @@ def _resolve_packed_sm120_backward(option, spikes, connectivity, basis):
     if connectivity["n_pairs"] <= 0:
         incompatibilities.append("compact pair metadata is unavailable")
     architecture = _gpu_compute_architecture()
-    if architecture is None or architecture < 86:
+    if architecture is None or architecture < 61:
         description = "unavailable" if architecture is None else f"SM{architecture}"
         incompatibilities.append(
-            f"GPU compute capability is {description}, not SM86 or newer"
+            f"GPU compute capability is {description}, not SM61 or newer"
         )
     if option is True and incompatibilities:
         raise ValueError(
             "use_packed_sm120_backward=True is incompatible: "
             + "; ".join(incompatibilities)
         )
-    return option is not False and not incompatibilities
+    return (
+        option is not False and not incompatibilities
+        and (option is True or _auto_native_architecture(architecture))
+    )
 
 
 def _resolve_packed_sm120_model_option(
@@ -176,10 +183,10 @@ def _resolve_packed_sm120_model_option(
     if basis_width != 4:
         incompatibilities.append(f"basis width is {basis_width}, not 4")
     architecture = _gpu_compute_architecture()
-    if architecture is None or architecture < 86:
+    if architecture is None or architecture < 61:
         description = "unavailable" if architecture is None else f"SM{architecture}"
         incompatibilities.append(
-            f"GPU compute capability is {description}, not SM86 or newer"
+            f"GPU compute capability is {description}, not SM61 or newer"
         )
     if option is True and incompatibilities:
         raise ValueError(
@@ -187,6 +194,8 @@ def _resolve_packed_sm120_model_option(
             + "; ".join(incompatibilities)
         )
     if incompatibilities or option is False:
+        return False
+    if option == "auto" and not _auto_native_architecture(architecture):
         return False
     return option
 
@@ -508,7 +517,7 @@ def fused_recurrent_accumulation_available():
     return (
         _OPS is not None
         and hasattr(_OPS, "dpointnet_csr_spike_grad_accumulate")
-        and (_gpu_compute_architecture() or 0) >= 86
+        and (_gpu_compute_architecture() or 0) >= 61
     )
 
 

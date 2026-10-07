@@ -26,7 +26,10 @@ state RNN loop. For batches below 32, set both `use_packed_sm120_backward` and
 `use_packed_sm120_external_backward` to false: those separate public options
 remain batch32-only. Do not weaken their validation to force them on.
 
-Fused accumulation retains its SM86+ hardware and four-basis requirements. The
+The portable preview's rebuilt fused accumulation supports SM61+ and retains
+its four-basis requirements. Automatic native selection admits SM75 ordinary
+FP16 temporal backward and existing SM86+ paths; other older architectures
+remain explicit opt-ins while qualification is pending. The
 FP32 temporal-carry reference remains available independently of the default
 FP16 temporal-gradient profile.
 

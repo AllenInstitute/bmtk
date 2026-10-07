@@ -17,7 +17,9 @@ Build the selected source in a project-owned environment with
 For a multi-target binary, use a space-separated list such as `"61 86"`, not
 commas. SM61 is not added to the default architecture list.
 
-Pascal does not satisfy the SM86+ accelerator contracts. Set these flags false:
+The portable preview's rebuilt accumulator supports SM61+, but automatic
+selection remains conservative on Pascal. For general or unqualified
+workloads, keep these flags false:
 
 ```json
 {
@@ -32,6 +34,24 @@ Keep other flags only when their independent hardware/topology qualifications
 are met. Do not switch an existing experiment's precision or dynamics to work
 around compatibility failures. Legacy remains the default; NEST training is
 experimental and is not recommended on any hardware.
+
+The bounded TitanXp V1+LGN batch16 comparison separately passed fresh and
+strict epoch64-restored baseline/native runs with23updates each. Its explicit
+native configuration sets `use_fused_recurrent_accumulation` and
+`use_javier_recurrent_vjp` to true while both packed flags stay false.
+Packed paths still require batch32; this result does not qualify them on
+Pascal. Omit `acceleration_profile="auto"` when deliberately qualifying this
+explicit experimental configuration. All other topology, precision and
+execution-route prerequisites still apply. See
+[portable preview adoption](dpointnet_parity.md#portable-preview-adoption).
+
+GTX1080Ti batch16 failed GPU-memory allocation in the newer full V1 baseline
+comparison before the native route was reached. Its separate
+batch8(6evoked+2spontaneous) fresh/trained baseline/native qualification passed
+all four scenarios with23updates each, strict restoration, no rejected updates
+or initialization fallback, and actual native graph proof. Native medians were
+5.45/5.66s with TF peaks about6.21/6.35GiB. This does not qualify batch16:
+TitanXp's12GiB result does not establish feasibility on GTX1080Ti's11GiB.
 
 ## Compatibility implementation
 
@@ -62,7 +82,8 @@ or a fallback that moves LGN computation to CPU.
 | LGN filters | Real spatial and temporal shapes passed CPU-reference checks with GPU placement required and a `1e-6` tolerance. |
 | Legacy training | A three-update V1 batch-16 smoke passed; long-run training and higher-activity memory capacity are not qualified. |
 | General NEST execution | Not qualified: the full Pascal suite failed, including fused NEST launch-resource errors. |
-| Titan Xp and physical multi-GPU | Not separately measured. |
+| Titan Xp | Bounded V1+LGN batch16 fresh/trained baseline/native comparison passed; not general Pascal qualification. |
+| Physical multi-GPU | Not separately measured. |
 
 The legacy smoke used TensorFlow 2.21, CUDA 12.9 and cuDNN 9.25 on GTX 1080 Ti:
 66,658 neurons, 500-ms sequences, effective batch 16 (12 evoked + 4 spontaneous),
