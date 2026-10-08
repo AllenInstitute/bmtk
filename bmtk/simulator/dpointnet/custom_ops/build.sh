@@ -50,13 +50,13 @@ gencode_flags+=(
 )
 
 mkdir -p "$build_dir"
-"$cxx" -std=c++17 -fPIC -O3 \
+"$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
   -I"$prefix/include" \
   "${tf_compile_flags[@]}" \
   -c "$custom_ops_dir/csr_spike_ops.cc" \
   -o "$build_dir/csr_spike_ops.o"
 
-"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 \
+"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
   --expt-relaxed-constexpr \
   -DGOOGLE_CUDA=1 \
   -I"$prefix/include" \
@@ -73,13 +73,13 @@ mkdir -p "$build_dir"
   -Wl,-rpath,"$prefix/lib" \
   -o "$output"
 
-"$cxx" -std=c++17 -fPIC -O3 \
+"$cxx" -std=c++17 -fPIC -O3 -DNDEBUG \
   -I"$prefix/include" \
   "${tf_compile_flags[@]}" \
   -c "$custom_ops_dir/glif_state_ops.cc" \
   -o "$build_dir/glif_state_ops.o"
 
-"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 \
+"$nvcc" -ccbin "$cxx" -std=c++17 -x cu -Xcompiler=-fPIC -O3 -DNDEBUG \
   --expt-relaxed-constexpr \
   -DGOOGLE_CUDA=1 \
   -I"$prefix/include" \

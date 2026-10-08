@@ -30,10 +30,27 @@ def _unpack_spikes(packed, width, dtype):
     return tf.ensure_shape(spikes, (packed.shape[0], width))
 
 
+def _reject_nested_temporal_adjoint(model):
+    for layer in getattr(model, "layers", ()):
+        if (
+            getattr(
+                getattr(layer, "cell", None), "temporal_gradient_precision", "compute"
+            )
+            == "float32"
+        ):
+            raise ValueError(
+                "FP32 temporal gradients own their reverse/checkpoint loop; configure "
+                "temporal_checkpoint_chunk_size instead of an outer gradient wrapper."
+            )
+        if hasattr(layer, "layers"):
+            _reject_nested_temporal_adjoint(layer)
+
+
 class FullBPTTGradientRunner:
     """Retain a full rollout tape and restore variable-gradient layout at its boundary."""
 
     def __init__(self, core_model, variable_gradient_transform):
+        _reject_nested_temporal_adjoint(core_model)
         self.core_model = core_model
         self.variable_gradient_transform = variable_gradient_transform
 
@@ -86,6 +103,7 @@ class SegmentedRecomputeRunner:
         pack_spike_checkpoints=False,
         variable_gradient_transform=None,
     ):
+        _reject_nested_temporal_adjoint(core_model)
         self.core_model = core_model
         self.sequence_length = int(sequence_length)
         self.chunk_size = int(chunk_size)

@@ -2,6 +2,9 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 from pathlib import Path
+from copy import copy
+from concurrent.futures import ThreadPoolExecutor
+from queue import SimpleQueue
 
 from bmtk.simulator.dpointnet.lgn_tf.lgn import LGN
 from bmtk.simulator.dpointnet.io_tools import io
@@ -12,13 +15,23 @@ class LGNGenerator(InputsGeneratorMod):
     def __init__(self, rnn, name, input_network, **kwargs):
         super().__init__(rnn=rnn, name=name, input_network=input_network, **kwargs)
         # self.rnn = rnn
-        # self.name = name       
+        # self.name = name
         # self.input_network = input_network
         self.stimulus_type = kwargs['stimulus_type']
         self.stimulus_opts = kwargs['stimulus_options']
         self.row_size = self.stimulus_opts['row_size']
         self.col_size = self.stimulus_opts['col_size']
         self._cache_paths = self._resolve_cache_paths(kwargs)
+        self.use_device_generation = kwargs.get("use_device_generation", False)
+        if (
+            self.use_device_generation is not True
+            and self.use_device_generation is not False
+        ):
+            raise ValueError("use_device_generation must be true or false.")
+        if self.use_device_generation and self.stimulus_type != "drifting_gratings":
+            raise ValueError(
+                "Per-device LGN generation currently requires drifting_gratings."
+            )
 
         if kwargs.get('cache_overwrite', False):
             for cache_path in self._cache_paths.values():
@@ -51,7 +64,7 @@ class LGNGenerator(InputsGeneratorMod):
 
         self.input_network.input_type = 'spikes'
 
-    def create_generator(self, seq_len, dt=1.0, dtype=tf.float32):
+    def create_generator(self, seq_len, dt=1.0, dtype=tf.float32, _error_handler=None):
         _seq_len = seq_len
         if _seq_len is None:
             raise ValueError(f'No "seq_len" value set, please specify number of time-steps.')
@@ -76,19 +89,38 @@ class LGNGenerator(InputsGeneratorMod):
                 seq_len=_seq_len,
                 seed=seed,
                 dtype=dtype,
+                _error_handler=_error_handler,
                 **stimulus_opts
             )
         return self._generator_fn(
             lgn_network=self.lgn,
             seq_len=_seq_len,
             seed=seed,
+            _error_handler=_error_handler,
             **stimulus_opts
+        )
+
+    def create_recoverable_iterator(self, seq_len, batch_size):
+        errors = SimpleQueue()
+        dataset = self.create_generator(seq_len, _error_handler=errors.put)
+        iterator = iter(
+            dataset.batch(batch_size, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
+        )
+        return _RecoverableLGNIterator(iterator, errors)
+
+    def create_batch_iterator(self, seq_len, batch_size, strategy):
+        options = dict(self.stimulus_opts)
+        seed = options.pop("seed", None)
+        if seed is None and self.rnn.default_seed is not None:
+            seed = self.rnn.default_seed + 10000
+        return PerDeviceLGNIterator(
+            self.lgn, seq_len, batch_size, strategy, seed, options
         )
 
     @staticmethod
     def module():
         return 'lgn_generator'
-       
+
     @staticmethod
     def input_type():
         return 'spikes'
@@ -129,6 +161,37 @@ class LGNGenerator(InputsGeneratorMod):
             'temp_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.temporal.pkl'),
             'spatial_krns_path': str(cache_prefix.parent / f'{cache_prefix.name}.spatial.pkl'),
         }
+
+
+class _RecoverableLGNIterator:
+    def __init__(self, iterator, errors):
+        self.iterator = iterator
+        self.errors = errors
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.iterator)
+        except StopIteration:
+            if not self.errors.empty():
+                raise self.errors.get() from None
+            raise
+
+
+def _guard_generator(factory, error_handler):
+    def generate():
+        try:
+            yield from factory()
+        except (tf.errors.InvalidArgumentError, tf.errors.UnknownError) as error:
+            if error_handler is None:
+                raise
+            # End the callback normally, then re-raise in the eager consumer.
+            # This avoids TensorFlow printing a Python traceback before recovery.
+            error_handler(error)
+
+    return generate
 
 
 def _stateless_seed_pair(seed, salt=0):
@@ -290,6 +353,228 @@ def make_drifting_grating_stimulus(
         return tf.tile(data[0][tf.newaxis, ...], (image_duration, 1, 1))
 
 
+class DriftingGratingLGN:
+    """Graph-callable grating filtering, adapted from Javier's stim_dataset.py."""
+
+    def __init__(
+        self,
+        lgn_network,
+        seq_len,
+        row_size=80,
+        col_size=120,
+        pre_delay=0,
+        post_delay=0,
+        temporal_f=2,
+        cpd=0.04,
+        contrast=0.8,
+        rotation="ccw",
+        billeh_phase=False,
+        bmtk_compat=True,
+        dtype=tf.float32,
+        current_input=False,
+    ):
+        self.lgn = lgn_network
+        self.seq_len = seq_len
+        self.pre_delay = pre_delay
+        self.post_delay = post_delay
+        self.duration = seq_len - pre_delay - post_delay
+        if self.duration < 0:
+            raise ValueError("Grating delays must not exceed seq_len.")
+        self.row_size = row_size
+        self.col_size = col_size
+        self.temporal_f = temporal_f
+        self.cpd = cpd
+        self.contrast = contrast
+        self.rotation = rotation
+        self.billeh_phase = billeh_phase
+        self.bmtk_compat = bmtk_compat
+        self.dtype = tf.as_dtype(dtype)
+        self.current_input = current_input
+
+    def firing_rates(self, orientation, phase):
+        theta = orientation if self.rotation == "cw" else -orientation
+        if self.billeh_phase:
+            theta += 180
+        movie = make_drifting_grating_stimulus(
+            row_size=self.row_size,
+            col_size=self.col_size,
+            image_duration=self.duration,
+            cpd=self.cpd,
+            temporal_f=self.temporal_f,
+            theta=tf.cast(theta, self.dtype),
+            phase=tf.cast(phase, self.dtype),
+            contrast=self.contrast,
+            dtype=self.dtype,
+        )
+        videos = movies_concat(
+            movie[..., None], self.pre_delay, self.post_delay, self.dtype
+        )
+        return self.lgn.firing_rates_from_spatial(
+            *self.lgn.spatial_response(videos, self.bmtk_compat)
+        )
+
+    def spikes(self, orientation, phase, spike_seed):
+        probabilities = 1 - tf.exp(-self.firing_rates(orientation, phase) / 1000.0)
+        if self.current_input:
+            return probabilities * 1.3
+        uniform = tf.random.stateless_uniform(
+            tf.shape(probabilities), seed=spike_seed, dtype=self.dtype
+        )
+        return uniform < probabilities
+
+    def batch_spikes(self, orientation, phase, spike_seeds):
+        return tf.map_fn(
+            lambda sample: self.spikes(*sample),
+            (orientation[:, 0], phase, spike_seeds),
+            fn_output_signature=tf.TensorSpec(
+                (self.seq_len, self.lgn.n_nodes),
+                self.dtype if self.current_input else tf.bool,
+            ),
+            parallel_iterations=1,
+        )
+
+
+def create_drifting_grating_parameters(
+    seed, orientation=None, phase=None, regular=False, dtype=tf.float32
+):
+    """Yield the existing seeded stimulus stream without rendering any movies."""
+    if seed is None:
+        raise ValueError(
+            "Per-device LGN generation requires an explicit or run default seed."
+        )
+    base_seed = _stateless_seed_pair(seed, salt=1001)
+    if orientation is not None:
+        values = (
+            orientation if pd.api.types.is_list_like(orientation) else [orientation]
+        )
+        orientations = tf.constant(values, dtype=dtype)
+        if orientations.shape[0] == 0:
+            raise ValueError("orientation must not be empty.")
+
+    def sample(index):
+        with tf.device("/CPU:0"):
+            sample_seed = _fold_in_seed(base_seed, index)
+            orientation_seed = _fold_in_seed(sample_seed, 0)
+            phase_seed = _fold_in_seed(sample_seed, 1)
+            spike_seed = _fold_in_seed(sample_seed, 2)
+            if orientation is not None:
+                theta = tf.gather(orientations, index % orientations.shape[0])
+            elif regular:
+                theta = tf.cast((index % 8) * 45, dtype)
+            else:
+                theta = tf.random.stateless_uniform(
+                    (), orientation_seed, 0, 360, dtype=dtype
+                )
+            sample_phase = (
+                tf.cast(phase, dtype)
+                if phase is not None
+                else tf.random.stateless_uniform((), phase_seed, 0, 360, dtype=dtype)
+            )
+            return tf.reshape(theta, (1,)), sample_phase, spike_seed
+
+    options = tf.data.Options()
+    options.deterministic = True
+    return (
+        tf.data.Dataset.range(np.iinfo(np.int64).max).map(sample).with_options(options)
+    )
+
+
+class PerDeviceLGNIterator:
+    """Generate and retain each replica's LGN batch on its consuming device."""
+
+    def __init__(self, lgn, seq_len, batch_size, strategy, seed, options):
+        self.strategy = strategy
+        self.batch_size = batch_size
+        self.options = dict(options)
+        try:
+            self.devices = tuple(strategy.extended.worker_devices)
+        except RuntimeError:
+            self.devices = (
+                "/GPU:0" if tf.config.list_logical_devices("GPU") else "/CPU:0",
+            )
+        if len(self.devices) != strategy.num_replicas_in_sync:
+            raise ValueError("Per-device LGN requires a local single-worker strategy.")
+        dtype = self.options.get("dtype", tf.float32)
+        parameters = create_drifting_grating_parameters(
+            seed,
+            orientation=self.options.pop("orientation", None),
+            phase=self.options.pop("phase", None),
+            regular=self.options.pop("regular", False),
+            dtype=dtype,
+        )
+        if self.options.pop("return_firing_rates", False):
+            raise ValueError(
+                "Per-device LGN input generation returns spikes or current, not rates."
+            )
+        self.parameters = iter(
+            parameters.batch(batch_size, drop_remainder=True).prefetch(1)
+        )
+        self.generators = []
+        for device in self.devices:
+            with tf.device(device):
+                local_lgn = copy(lgn)
+                for name, value in vars(lgn).items():
+                    setattr(
+                        local_lgn,
+                        name,
+                        tf.nest.map_structure(
+                            lambda item: (
+                                tf.identity(item) if tf.is_tensor(item) else item
+                            ),
+                            value,
+                        ),
+                    )
+                generator = DriftingGratingLGN(local_lgn, seq_len, **self.options)
+                self.generators.append((generator, generator.batch_spikes))
+        self._executor = (
+            ThreadPoolExecutor(
+                max_workers=len(self.devices), thread_name_prefix="dpointnet-lgn-device"
+            )
+            if len(self.devices) > 1
+            else None
+        )
+
+    def close(self):
+        if self._executor is not None:
+            self._executor.shutdown(wait=True)
+            self._executor = None
+
+    def _generate_replica(self, replica, values):
+        generator, generate = self.generators[replica]
+        with tf.device(self.devices[replica]):
+            spikes = generate(*values)
+            signatures = {
+                "orientation": tf.identity(values[0]),
+                "contrast": tf.fill(
+                    (self.batch_size, 1), tf.cast(generator.contrast, generator.dtype)
+                ),
+                "duration": tf.fill(
+                    (self.batch_size, 1), tf.cast(generator.duration, generator.dtype)
+                ),
+            }
+            return spikes, signatures
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        parameters = next(self.parameters)
+        if self._executor is None:
+            outputs = [self._generate_replica(0, parameters)]
+        else:
+            futures = [
+                self._executor.submit(self._generate_replica, replica, parameters)
+                for replica in range(len(self.devices))
+            ]
+            outputs = [future.result() for future in futures]
+        return tf.nest.map_structure(
+            lambda *values: self.strategy.experimental_distribute_values_from_function(
+                lambda context: values[context.replica_id_in_sync_group]
+            ),
+            *outputs,
+        )
+
+
 def create_drifting_gratings_generator(
     lgn_network,
     seq_len,
@@ -310,6 +595,7 @@ def create_drifting_gratings_generator(
     dtype=tf.float32,
     seed=None,
     phase=None,
+    _error_handler=None,
 ):
 
     # lgn = LGN(
@@ -442,7 +728,7 @@ def create_drifting_gratings_generator(
         data_dtype = tf.bool
 
     data_set = tf.data.Dataset.from_generator(
-        _g, 
+        _guard_generator(_g, _error_handler),
         output_signature=(
             tf.TensorSpec(shape=(seq_len, lgn_network.n_nodes), dtype=data_dtype),
             {
@@ -466,7 +752,8 @@ def create_grey_screen_generator(
         bmtk_compat=True,
         return_firing_rates=False,
         dtype=tf.float32,
-        seed=None
+        seed=None,
+        _error_handler=None,
     ):
     
     # lgn = LGN(
@@ -522,7 +809,7 @@ def create_grey_screen_generator(
         data_dtype = tf.bool
 
     data_set = tf.data.Dataset.from_generator(
-        _g,
+        _guard_generator(_g, _error_handler),
         output_signature=(
             tf.TensorSpec(shape=probabilities.shape, dtype=data_dtype),
             {

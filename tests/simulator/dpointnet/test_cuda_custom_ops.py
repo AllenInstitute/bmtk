@@ -184,14 +184,14 @@ def _reference_currents(spikes, master_weights, basis):
     )
 
 
-@pytest.mark.parametrize("batch_size", [1, 5, 32])
+@pytest.mark.parametrize("batch_size", [1, 5, 8, 13, 16, 23, 31, 32, 33])
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
 @pytest.mark.parametrize("small_batch", [False, True])
 @pytest.mark.parametrize("pair_projection", [False, True])
 def test_general_direct_csr_gradient_matches_reference(
     batch_size, dtype, small_batch, pair_projection
 ):
-    if small_batch and batch_size == 32:
+    if small_batch and batch_size > 8:
         pytest.skip("Small-batch kernel is restricted to 1..8")
     if not fused_cuda_available():
         pytest.skip("Fused CUDA operators unavailable")
@@ -329,6 +329,119 @@ def test_active_row_forward_handles_sparse_and_empty_samples(batch_size, dtype):
         connectivity.close()
 
 
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch_size", [5, 32])
+@pytest.mark.parametrize("activity", ["all_silent", "delayed_sparse", "dense"])
+@pytest.mark.parametrize("aggregate", [False, True])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_device_active_queue_forward_matches_dense_reference(
+    batch_size, activity, aggregate, dtype
+):
+    indices = np.array(
+        [
+            [0, 0],
+            [0, 2],
+            [1, 2],
+            [1, 5],
+            [0, 5],
+        ],
+        dtype=np.int64,
+    )
+    synapse_types = np.array([1, 0, 1, 0, 0], dtype=np.int64)
+    connectivity = build_csr_connectivity(
+        indices,
+        synapse_types,
+        n_source_neurons=6,
+        n_target_neurons=2,
+        n_synapse_types=2,
+        sort_by_target=aggregate,
+    )
+    master = tf.Variable([1.0, -2.0, 0.5, 3.0, -1.5], dtype=tf.float32)
+    basis = tf.constant(
+        [[1.0, 0.5, 0.25, 0.125], [0.25, 2.0, 0.75, 1.5]],
+        dtype=dtype,
+    )
+    values = np.zeros((batch_size, 6), dtype=np.float32)
+    if activity == "delayed_sparse":
+        values[::2, 0] = 1.0
+        values[-1, 2] = 2.0
+        values[:, 5] = np.arange(batch_size, dtype=np.float32) % 2
+    elif activity == "dense":
+        values[:] = (np.arange(batch_size * 6).reshape(batch_size, 6) % 3) + 1
+    spikes = tf.Variable(values, dtype=dtype)
+    upstream = tf.constant(
+        np.linspace(-0.25, 0.75, batch_size * 2 * 4).reshape(batch_size * 2, 4),
+        dtype=dtype,
+    )
+    try:
+        with tf.GradientTape() as tape:
+            output = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                2,
+                True,
+                use_device_active_queue_forward=True,
+                use_forward_run_aggregation=aggregate,
+                use_packed_sm120_backward=False,
+            )
+            loss = tf.reduce_sum(output * upstream)
+        gradients = tape.gradient(loss, (spikes, master))
+        with tf.GradientTape() as tape:
+            reference = _reference_currents_for_connectivity(
+                spikes, master, basis, indices, synapse_types, n_post=2
+            )
+            reference_loss = tf.reduce_sum(reference * upstream)
+        expected_gradients = tape.gradient(reference_loss, (spikes, master))
+        tolerance = 2e-2 if dtype == tf.float16 else 1e-5
+        np.testing.assert_allclose(output, reference, rtol=tolerance, atol=tolerance)
+        for actual, expected in zip(gradients, expected_gradients):
+            np.testing.assert_allclose(actual, expected, rtol=tolerance, atol=tolerance)
+    finally:
+        connectivity.close()
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("fanout", [1, 31, 32, 33, 65])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_device_active_queue_forward_duplicate_warp_groups(fanout, dtype):
+    indices = np.column_stack((np.arange(fanout) % 3, np.zeros(fanout, np.int64)))
+    types = np.arange(fanout) % 2
+    connectivity = build_csr_connectivity(indices, types, 2, 3, 2, sort_by_target=True)
+    spikes = tf.Variable([[1.0, 0.0], [2.0, 0.0]], dtype=dtype)
+    master = tf.Variable(np.full(fanout, 0.125), dtype=tf.float32)
+    basis = tf.constant([[1.0, 0.5, 0.25, 0.125], [0.5, 0.25, 0.125, 1.0]], dtype=dtype)
+    try:
+        with tf.GradientTape() as tape:
+            actual = fused_spike_currents(
+                spikes,
+                master,
+                reorder_csr_values(tf.cast(master, dtype), connectivity),
+                connectivity,
+                basis,
+                3,
+                True,
+                use_device_active_queue_forward=True,
+                use_forward_run_aggregation=True,
+                use_packed_sm120_backward=False,
+            )
+            loss = tf.reduce_sum(actual)
+        gradients = tape.gradient(loss, (spikes, master))
+        with tf.GradientTape() as tape:
+            expected = _reference_currents_for_connectivity(
+                spikes, master, basis, indices, types, 3
+            )
+            expected_loss = tf.reduce_sum(expected)
+        expected_gradients = tape.gradient(expected_loss, (spikes, master))
+        np.testing.assert_array_equal(actual, expected)
+        for value, reference in zip(gradients, expected_gradients):
+            np.testing.assert_array_equal(value, reference)
+    finally:
+        connectivity.close()
+
+
 def _reference_dense_state(
     prev_z,
     voltage,
@@ -403,6 +516,70 @@ def test_build_csr_connectivity_groups_edges_by_source():
     assert connectivity["n_pairs"] == 4
     assert connectivity["index_dtype"] == "uint32"
     assert _metadata_values(connectivity).dtype == tf.uint32
+
+
+@pytest.mark.parametrize(
+    "n_post,n_types", [(19, 7), (2**33, 17), (2**50, 17), (2**58, 8), (2**50, 2**30)]
+)
+@pytest.mark.parametrize("sort_by_target", [False, True])
+def test_compact_pair_metadata_matches_tuple_unique(n_post, n_types, sort_by_target):
+    rng = np.random.default_rng(319)
+    indices = np.column_stack((rng.integers(n_post, size=73), rng.integers(5, size=73)))
+    types = rng.integers(n_types, size=73)
+    indices[20:30] = indices[:10]
+    types[20:30] = types[:10]
+    connectivity = build_csr_connectivity(
+        indices,
+        types,
+        5,
+        n_post,
+        n_types,
+        build_compact_pairs=True,
+        sort_by_target=sort_by_target,
+    )
+    try:
+        metadata = _metadata_values(connectivity).numpy()
+        count = len(indices)
+        order = metadata[2 * count + 6 : 3 * count + 6].astype(np.int64)
+        expected_order = (
+            np.lexsort((types, indices[:, 0], indices[:, 1]))
+            if sort_by_target
+            else np.argsort(indices[:, 1], kind="stable")
+        )
+        np.testing.assert_array_equal(order, expected_order)
+        pairs, inverse = np.unique(
+            np.column_stack((indices[order, 0], types[order])),
+            axis=0,
+            return_inverse=True,
+        )
+        expected = np.concatenate((inverse, pairs[:, 0], pairs[:, 1]))
+        np.testing.assert_array_equal(metadata[3 * count + 6 :], expected)
+        assert connectivity["n_pairs"] == len(pairs)
+    finally:
+        connectivity.close()
+
+
+def test_build_csr_connectivity_can_sort_runs_by_target_within_source():
+    indices = np.array(
+        [[1, 0], [0, 0], [1, 0], [0, 1], [0, 0]],
+        dtype=np.int64,
+    )
+    synapse_types = np.array([1, 1, 0, 0, 0], dtype=np.int64)
+    connectivity = build_csr_connectivity(
+        indices, synapse_types, 2, 2, 2, sort_by_target=True
+    )
+    try:
+        metadata = _metadata_values(connectivity).numpy()
+        post_ids = metadata[:5]
+        types = metadata[5:10]
+        row_splits = metadata[10:13]
+        edge_ids = metadata[13:18]
+        np.testing.assert_array_equal(row_splits, [0, 4, 5])
+        np.testing.assert_array_equal(post_ids[:4], [0, 0, 1, 1])
+        np.testing.assert_array_equal(types[:4], [0, 1, 0, 1])
+        np.testing.assert_array_equal(edge_ids[:4], [4, 1, 2, 0])
+    finally:
+        connectivity.close()
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
@@ -565,7 +742,11 @@ def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch)
         calls.append((sm_architectures, ptx_architecture, architecture_path))
         return None
 
-    monkeypatch.setattr(glif_state_ops, "_OPS", object())
+    monkeypatch.setattr(
+        glif_state_ops,
+        "_OPS",
+        type("CurrentStateABI", (), {"dpointnet_spike_shift_backward_v2": None})(),
+    )
     monkeypatch.setattr(glif_state_ops, "_SM_ARCHITECTURES", (86, 120))
     monkeypatch.setattr(glif_state_ops, "_PTX_ARCHITECTURE", 120)
     monkeypatch.setattr(glif_state_ops, "_gpu_compatibility_error", compatibility_error)
@@ -581,24 +762,38 @@ def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch)
     assert glif_state_ops._ARCHITECTURE_PATH.name == "_glif_state_ops.archs"
 
 
-def test_packed_sm120_auto_uses_fallback_on_sm80(monkeypatch):
+@pytest.mark.parametrize("architecture", [61, 70, 80])
+def test_packed_sm120_auto_uses_conservative_older_fallback(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
 
     assert not _resolve_packed_sm120_backward(
         "auto", tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
     )
 
 
-def test_packed_sm120_auto_selects_eligible_sm120(monkeypatch):
+@pytest.mark.parametrize("architecture", [61, 70, 75, 80])
+def test_portable_packed_explicit_opt_in_retains_shape_validation(monkeypatch, architecture):
+    connectivity = {"index_dtype": "uint32", "n_pairs": 1}
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
+    assert _resolve_packed_sm120_backward(
+        True, tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
+    )
+    assert _resolve_packed_sm120_model_option(True, True, tf.float16, 32, 4) is True
+    with pytest.raises(ValueError, match="batch size"):
+        _resolve_packed_sm120_model_option(True, True, tf.float16, 16, 4)
+
+
+@pytest.mark.parametrize("architecture", [75, 86, 89, 120])
+def test_packed_sm120_auto_selects_eligible_architecture(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 120)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: architecture)
 
     assert _resolve_packed_sm120_backward(
         "auto", tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
@@ -622,14 +817,14 @@ def test_packed_sm120_external_auto_falls_back_for_connectivity(
     )
 
 
-def test_forced_packed_sm120_rejects_sm80(monkeypatch):
+def test_forced_packed_sm120_rejects_sm60(monkeypatch):
     connectivity = {
         "index_dtype": "uint32",
         "n_pairs": 1,
     }
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         _resolve_packed_sm120_backward(
             True, tf.ones([32, 3], tf.float16), connectivity, tf.ones([2, 4])
         )
@@ -637,7 +832,8 @@ def test_forced_packed_sm120_rejects_sm80(monkeypatch):
 
 @pytest.mark.parametrize(
     ("architecture", "expected"),
-    [(80, False), (86, "auto"), (89, "auto"), (120, "auto")],
+    [(61, False), (70, False), (75, "auto"), (80, False),
+     (86, "auto"), (89, "auto"), (120, "auto")],
 )
 def test_packed_sm120_external_model_selection(monkeypatch, architecture, expected):
     monkeypatch.setattr(
@@ -649,10 +845,10 @@ def test_packed_sm120_external_model_selection(monkeypatch, architecture, expect
     )
 
 
-def test_forced_packed_sm120_external_model_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_forced_packed_sm120_external_model_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
 
-    with pytest.raises(ValueError, match="use_packed_sm120_external_backward.*SM80"):
+    with pytest.raises(ValueError, match="use_packed_sm120_external_backward.*SM60"):
         _resolve_packed_sm120_model_option(True, True, tf.float16, 32, 4)
 
 
@@ -666,15 +862,15 @@ def test_fixed_input_connectivity_omits_compact_pair_metadata():
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_fused_currents_forced_packed_sm120_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_fused_currents_forced_packed_sm120_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
     )
     master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
     csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         fused_spike_currents(
             tf.ones([32, 3], tf.float16),
             master_weights,
@@ -688,15 +884,15 @@ def test_fused_currents_forced_packed_sm120_rejects_sm80(monkeypatch):
 
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
-def test_fused_external_forced_packed_sm120_rejects_sm80(monkeypatch):
-    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 80)
+def test_fused_external_forced_packed_sm120_rejects_sm60(monkeypatch):
+    monkeypatch.setattr(csr_spike_ops, "_gpu_compute_architecture", lambda: 60)
     connectivity = build_csr_connectivity(
         INDICES, SYNAPSE_TYPES, 3, 2, 2, build_compact_pairs=True
     )
     master_weights = tf.Variable([1.0, 2.0, 3.0, 4.0], dtype=tf.float32)
     csr_weights = reorder_csr_values(tf.cast(master_weights, tf.float16), connectivity)
 
-    with pytest.raises(ValueError, match="SM80"):
+    with pytest.raises(ValueError, match="SM60"):
         fused_spike_currents(
             tf.ones([32, 3], tf.float16),
             master_weights,
@@ -746,7 +942,7 @@ def test_explicit_pair_projection_is_batch_and_basis_generic(batch_size, basis_w
         ("auto", True, 4, False, True),
         ("auto", False, 4, False, False),
         ("auto", True, 3, False, False),
-        ("auto", True, 4, True, False),
+        ("auto", True, 4, True, True),
     ],
 )
 def test_fused_state_policy_resolution(
@@ -764,8 +960,8 @@ def test_forced_fused_state_rejects_incompatible_model(monkeypatch):
         "bmtk.simulator.dpointnet.cell_models.glif3_cell.fused_glif_state_available",
         lambda: True,
     )
-    with pytest.raises(ValueError, match="pseudo_gauss"):
-        _resolve_fused_state(True, 4, True)
+    with pytest.raises(ValueError, match="basis"):
+        _resolve_fused_state(True, 3, True)
 
 
 @pytest.mark.parametrize(

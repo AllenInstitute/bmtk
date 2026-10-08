@@ -1,7 +1,33 @@
 import inspect
+from collections.abc import Mapping
+from numbers import Real
 
 import tensorflow as tf
 import math
+
+
+# Adapted from Javier v1_model_utils/optimizers.py at commit 2c52ec10.
+# Credit: Javier. DPointNet keeps its existing optimizer slot order, constraints,
+# loss scaling, and post-update shadow refresh; this helper only fuses the dense
+# ExponentiatedAdam tensor update into one XLA cluster.
+@tf.function(jit_compile=True)
+def _dense_exponentiated_adam_update(
+    weights,
+    momentums,
+    velocities,
+    gradient,
+    alpha,
+    beta_1,
+    beta_2,
+    epsilon,
+):
+    new_momentums = momentums + (gradient - momentums) * (1 - beta_1)
+    new_velocities = velocities + (tf.square(gradient) - velocities) * (1 - beta_2)
+    adam_gradient = new_momentums / (tf.sqrt(new_velocities) + epsilon)
+    signs = tf.sign(weights)
+    signs = tf.where(tf.equal(signs, 0), tf.ones_like(signs), signs)
+    new_weights = weights * tf.exp(-alpha * adam_gradient * signs)
+    return new_weights, new_momentums, new_velocities
 
 
 def _optimizer_init_accepts(argument_name):
@@ -77,31 +103,51 @@ def prepare_local_gradients_for_optimizer(optimizer, gradients):
 
 
 def create_optimizer(optimizer, learning_rate, optimizer_params=None):
+    """Build a configured optimizer, clipping physical (unscaled) gradients.
+
+    ``name`` is the training-config selector, not the Keras instance name.
+    Configure clipping here on the inner optimizer, before loss-scale wrapping.
+    """
+    if optimizer_params is None:
+        optimizer_params = {}
+    if not isinstance(optimizer_params, Mapping):
+        raise TypeError('optimizer_params must be a mapping.')
     if isinstance(optimizer, tf.keras.optimizers.Optimizer):
+        if optimizer_params:
+            raise ValueError('optimizer_params cannot configure an optimizer instance.')
         return optimizer
 
-    _optimizer = None
-    optimizer_params = optimizer_params or {}
-    if optimizer == 'adam':
-        _optimizer = tf.keras.optimizers.Adam(
-            learning_rate=learning_rate,
-            epsilon=optimizer_params.get('epsilon', 1.0e-11),
-        )
-    elif optimizer == 'exp_adam':
-        _optimizer = ExponentiatedAdam(
-            learning_rate=learning_rate,
-            epsilon=optimizer_params.get('epsilon', 1.0e-11),
-        )
-    elif optimizer == 'sgd':
-        _optimizer = tf.keras.optimizers.SGD(
-            learning_rate=learning_rate,
-            momentum=optimizer_params.get('momentum', 0.0),
-            nesterov=optimizer_params.get('nesterov', False),
-        )
-    else:
+    factories = {
+        'adam': (tf.keras.optimizers.Adam, {'epsilon': 1.0e-11}),
+        'exp_adam': (ExponentiatedAdam, {'epsilon': 1.0e-11, 'jit_compile': True}),
+        'sgd': (tf.keras.optimizers.SGD, {'momentum': 0.0, 'nesterov': False}),
+    }
+    if optimizer not in factories:
         raise ValueError(f'Invalid optimizer: {optimizer}')
-    
-    return _optimizer
+    optimizer_cls, params = factories[optimizer]
+    clipping_modes = ('clipnorm', 'clipvalue', 'global_clipnorm')
+    unsupported = set(optimizer_params) - set(params) - set(clipping_modes) - {'name'}
+    if unsupported:
+        raise ValueError(
+            f'Unsupported optimizer_params for {optimizer}: '
+            + ', '.join(sorted(str(key) for key in unsupported))
+        )
+    if 'name' in optimizer_params and optimizer_params['name'] != optimizer:
+        raise ValueError('optimizer_params name must match the optimizer selector.')
+
+    enabled_clipping = []
+    for key in clipping_modes:
+        value = optimizer_params.get(key)
+        if value is not None:
+            if (isinstance(value, bool) or not isinstance(value, Real)
+                    or not math.isfinite(value) or value <= 0):
+                raise ValueError(f'{key} must be a finite positive number or None.')
+            enabled_clipping.append(key)
+    if len(enabled_clipping) > 1:
+        raise ValueError('Only one of clipnorm, clipvalue, global_clipnorm may be set.')
+
+    params.update({key: value for key, value in optimizer_params.items() if key != 'name'})
+    return optimizer_cls(learning_rate=learning_rate, **params)
 
 
 class LinearWarmupCosineDecay(tf.keras.optimizers.schedules.LearningRateSchedule):
@@ -215,6 +261,8 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         **kwargs
     ):
         """Create a new ExponentiatedAdam optimizer."""
+        if not isinstance(jit_compile, bool):
+            raise ValueError("jit_compile must be true or false.")
         base_kwargs = dict(
             name=name,
             weight_decay=weight_decay,
@@ -239,6 +287,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
         self.beta_2 = beta_2
         self.epsilon = epsilon
         self.amsgrad = amsgrad
+        self.jit_compile = bool(jit_compile)
 
     def _add_slot_variable(self, variable, name):
         try:
@@ -384,6 +433,22 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
             )
 
         else:
+            if self.jit_compile and not self.amsgrad:
+                new_weights, new_m, new_v = _dense_exponentiated_adam_update(
+                    tf.convert_to_tensor(variable),
+                    tf.convert_to_tensor(m),
+                    tf.convert_to_tensor(v),
+                    gradient,
+                    alpha,
+                    beta_1_t,
+                    beta_2_t,
+                    tf.cast(self.epsilon, variable.dtype),
+                )
+                m.assign(new_m)
+                v.assign(new_v)
+                variable.assign(new_weights)
+                return
+
             # Dense gradient
             # 1) Update m
             m.assign_add((gradient - m) * (1 - beta_1_t))
@@ -421,6 +486,7 @@ class ExponentiatedAdam(tf.keras.optimizers.Optimizer):
                 "beta_2": self.beta_2,
                 "epsilon": self.epsilon,
                 "amsgrad": self.amsgrad,
+                "jit_compile": self.jit_compile,
             }
         )
         return config

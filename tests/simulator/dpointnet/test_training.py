@@ -37,6 +37,23 @@ from bmtk.simulator.dpointnet.state_modules.cached_states import CachedInitState
 from bmtk.simulator.dpointnet.state_modules.input_state import _complete_noise_state
 
 
+@pytest.mark.parametrize(
+    "indices",
+    [
+        np.array([[2, 1], [0, 5], [2, 0], [2, 1], [0, 5]], dtype=np.uint32),
+        np.array([[2**50, 17], [2**50, 1], [2**50 - 1, 17]], dtype=np.int64),
+        np.array([[2**62, 17], [2**62, 1], [2**62 - 1, 17]], dtype=np.int64),
+        np.array([[0, 2**64 - 1], [0, 1]], dtype=np.uint64),
+        np.array([[-1, 3], [0, -2], [-1, 1]], dtype=np.int64),
+        np.array([[0.5, 2.0], [0.1, 2.0], [0.5, 1.0]]),
+        np.empty((0, 2), dtype=np.int64),
+    ],
+)
+def test_edge_sort_preserves_lexicographic_order_and_ties(indices):
+    expected = np.lexsort((indices[:, 1], indices[:, 0]))
+    np.testing.assert_array_equal(lex_sort_order_np(indices), expected)
+
+
 @pytest.mark.parametrize("mode", ["nest", "legacy"])
 @pytest.mark.parametrize(
     "reset_options", [{}, {"hard_reset": None}, {"hard_reset": False}]
@@ -264,7 +281,11 @@ def test_noise_step_is_explicit_state_and_replays_poisson_draws():
     cell._n_syn_basis = 2
     cell._refractory_state_dtype = tf.int16
     cell.noise_seed = tf.constant(53, dtype=tf.int64)
-    cell.calculate_input_current_from_spikes = lambda spikes, input_net: spikes
+    def identity_projection(spikes, input_net, initial_currents=None):
+        assert initial_currents is None
+        return spikes
+
+    cell.calculate_input_current_from_spikes = identity_projection
     input_net = {
         "input_dense_shape": (2, 64),
         "spike_prob": tf.constant(0.25, dtype=tf.float32),
@@ -716,7 +737,7 @@ def test_parallel_step_slices_state_and_reports_condition_mean():
         return (values, values), row_ids, row_ids + 10.0
 
     engine._run_extractor = run_extractor
-    engine._prepare_loss_kwargs = lambda parameter, spikes, targets: {}
+    engine._prepare_loss_kwargs = lambda parameter, spikes, targets, **_: {}
     inputs = [tf.ones((2, 1)), tf.fill((2, 1), 3.0)]
 
     loss_values = engine._train_step_parallel(inputs, [{}, {}], init_state=None)
@@ -758,7 +779,7 @@ def test_series_refreshes_compute_shadow_between_parameter_updates():
         return (inputs, inputs), tf.zeros((1, 1))
 
     engine._run_extractor = run_extractor
-    engine._prepare_loss_kwargs = lambda parameter, spikes, targets: {}
+    engine._prepare_loss_kwargs = lambda parameter, spikes, targets, **_: {}
 
     engine._train_step_series(
         [tf.ones((1, 1)), tf.ones((1, 1))], [{}, {}], init_state=None

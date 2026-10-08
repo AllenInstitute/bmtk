@@ -60,11 +60,26 @@ def patched_conn_types(monkeypatch):
 _CURRENT_RNN = None
 
 
-def _make_reg(weights, group_ids):
+def _make_reg(weights, group_ids, **kwargs):
     global _CURRENT_RNN
     rnn = _FakeRNN(np.asarray(weights, dtype=np.float32), group_ids)
     _CURRENT_RNN = rnn
-    return rnn, EMDWeightRegularization(rnn=rnn, cost=1.0)
+    return rnn, EMDWeightRegularization(rnn=rnn, cost=1.0, **kwargs)
+
+
+def _fp64_groupwise_reference(initial, current, group_ids):
+    initial = np.asarray(initial, dtype=np.float64)
+    current = np.asarray(current, dtype=np.float64)
+    group_ids = np.asarray(group_ids, dtype=np.int64)
+    losses = []
+    grad = np.zeros_like(current)
+    for group_id in np.unique(group_ids):
+        indices = np.flatnonzero(group_ids == group_id)
+        order = indices[np.argsort(current[indices], kind="stable")]
+        deviation = current[order] - np.sort(initial[indices])
+        losses.append(np.mean(np.abs(deviation)))
+        grad[order] = np.sign(deviation) / (len(indices) * len(np.unique(group_ids)))
+    return np.mean(losses), grad
 
 
 def test_emd_zero_at_init(patched_conn_types):
@@ -99,6 +114,108 @@ def test_emd_gradient_flows(patched_conn_types):
     assert float(tf.reduce_sum(tf.abs(grad)).numpy()) > 0
 
 
+def test_graph_dedup_preserves_independent_series_tapes(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    weights = rnn.cell.recurrent_weight_values
+    weights.assign([2.0, 3.0])
+
+    @tf.function
+    def series_updates():
+        values = []
+        for _ in range(2):
+            with tf.GradientTape() as tape:
+                loss = reg()
+            gradient = tape.gradient(loss, weights)
+            assert gradient is not None
+            values.append(loss)
+            weights.assign_sub(0.2 * tf.convert_to_tensor(gradient))
+        return tf.stack(values), tf.identity(weights)
+
+    values, final_weights = series_updates()
+    np.testing.assert_allclose(values, [1.0, 0.9], rtol=1e-6)
+    np.testing.assert_allclose(final_weights, [1.8, 2.8], rtol=1e-6)
+
+
+def test_scoped_graph_dedup_preserves_series_updates(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    weights = rnn.cell.recurrent_weight_values
+    weights.assign([2.0, 3.0])
+
+    @tf.function
+    def series_updates():
+        values = []
+        for _ in range(2):
+            with tf.GradientTape() as tape, wr.weight_regularization_scope():
+                first = reg()
+                second = reg()
+                assert first is second
+                loss = (first + second) / 2.0
+            gradient = tape.gradient(loss, weights)
+            assert gradient is not None
+            values.append(loss)
+            weights.assign_sub(0.2 * tf.convert_to_tensor(gradient))
+        return tf.stack(values), tf.identity(weights)
+
+    values, final_weights = series_updates()
+    np.testing.assert_allclose(values, [1.0, 0.9], rtol=1e-6)
+    np.testing.assert_allclose(final_weights, [1.8, 2.8], rtol=1e-6)
+    assert not hasattr(reg, "_graph_cache")
+
+
+def test_scope_restores_outer_cache_and_clears_on_exception(patched_conn_types):
+    _, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    caches = []
+
+    @tf.function
+    def nested_scopes():
+        with wr.weight_regularization_scope():
+            outer = wr._weight_regularization_scope.get()
+            caches.append(outer)
+            first = reg()
+            assert len(outer) == 1
+            with pytest.raises(RuntimeError, match="scope interrupted"):
+                with wr.weight_regularization_scope():
+                    inner = wr._weight_regularization_scope.get()
+                    caches.append(inner)
+                    second = reg()
+                    assert first is not second
+                    assert len(inner) == 1
+                    raise RuntimeError("scope interrupted")
+            assert not inner
+            assert wr._weight_regularization_scope.get() is outer
+            assert reg() is first
+        assert not outer
+        assert wr._weight_regularization_scope.get() is None
+        return first
+
+    assert float(nested_scopes().numpy()) == 0.0
+    assert all(not cache for cache in caches)
+    assert wr._weight_regularization_scope.get() is None
+
+
+def test_repeated_tracing_does_not_retain_scope_entries(patched_conn_types):
+    rnn, reg = _make_reg([1.0, 2.0], [0, 0], deduplicate_within_graph=True)
+    rnn.cell.recurrent_weight_values.assign([2.0, 3.0])
+    caches = []
+    for index in range(8):
+        @tf.function
+        def evaluate():
+            with wr.weight_regularization_scope():
+                cache = wr._weight_regularization_scope.get()
+                caches.append(cache)
+                first = reg()
+                assert reg() is first
+                assert len(cache) == 1
+            assert not cache
+            return first
+
+        assert float(evaluate().numpy()) == pytest.approx(1.0)
+        assert len(caches) >= index + 1
+        assert all(not cache for cache in caches)
+        assert not hasattr(reg, "_graph_cache")
+        assert wr._weight_regularization_scope.get() is None
+
+
 def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
     initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0], dtype=np.float32)
     group_ids = np.array([0, 0, 1, 1, 0, 1], dtype=np.int64)
@@ -127,6 +244,51 @@ def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
         rtol=1e-7,
         atol=1e-7,
     )
+
+
+def test_javier_grouped_emd_matches_dp_reference_and_fp64(patched_conn_types):
+    initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0, 7.0], dtype=np.float32)
+    current = np.array([1.25, -2.5, 5.0, 2.0, -0.5, 2.5, 6.5], dtype=np.float32)
+    group_ids = np.array([0, 0, 1, 1, 0, 1, 2], dtype=np.int64)
+    ref_value, ref_grad = _fp64_groupwise_reference(initial, current, group_ids)
+
+    rnn_ref, reg_ref = _make_reg(initial, group_ids)
+    rnn_javier, reg_javier = _make_reg(
+        initial, group_ids, use_javier_grouped_emd=True
+    )
+    rnn_ref.cell.recurrent_weight_values.assign(current)
+    rnn_javier.cell.recurrent_weight_values.assign(current)
+
+    with tf.GradientTape() as ref_tape:
+        actual_ref = reg_ref()
+    ref_gradient = ref_tape.gradient(actual_ref, rnn_ref.cell.recurrent_weight_values)
+    with tf.GradientTape() as javier_tape:
+        actual_javier = reg_javier()
+    javier_gradient = javier_tape.gradient(
+        actual_javier, rnn_javier.cell.recurrent_weight_values
+    )
+
+    ref_gradient = tf.convert_to_tensor(ref_gradient)
+    javier_gradient = tf.convert_to_tensor(javier_gradient)
+    np.testing.assert_allclose(actual_javier, actual_ref, rtol=1e-7, atol=1e-7)
+    np.testing.assert_allclose(javier_gradient, ref_gradient, rtol=1e-7, atol=1e-7)
+    np.testing.assert_allclose(actual_javier, ref_value, rtol=1e-7, atol=1e-7)
+    np.testing.assert_allclose(javier_gradient.numpy(), ref_grad, rtol=1e-7, atol=1e-7)
+
+
+def test_javier_grouped_emd_tie_value_and_zero_subgradient(patched_conn_types):
+    initial = np.array([1.0, 1.0, -2.0, -2.0, 4.0, 4.0], dtype=np.float32)
+    group_ids = np.array([0, 0, 1, 1, 2, 2], dtype=np.int64)
+    rnn, reg = _make_reg(initial, group_ids, use_javier_grouped_emd=True)
+    # Tied current values exactly match tied initial distributions in every group.
+    rnn.cell.recurrent_weight_values.assign([1.0, 1.0, -2.0, -2.0, 4.0, 4.0])
+
+    with tf.GradientTape() as tape:
+        loss = reg()
+    gradient = tape.gradient(loss, rnn.cell.recurrent_weight_values)
+
+    assert float(loss.numpy()) == pytest.approx(0.0, abs=1e-7)
+    np.testing.assert_allclose(gradient.numpy(), np.zeros(6), atol=1e-7)
 
 
 def test_emd_empty_network_returns_connected_zero(patched_conn_types):

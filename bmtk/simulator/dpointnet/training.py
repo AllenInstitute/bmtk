@@ -11,6 +11,8 @@ from .data_iterator import DataIterator
 from .learning_rules import BPTTLearningRule, LearningRule, LearningRules
 from .learning_rules import LearningRuleObservations
 from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunner
+from .loss_functions import loss_utils
+from .loss_functions.weight_regularization import weight_regularization_scope
 
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
@@ -120,6 +122,9 @@ class InputsSignatureFactory:
 
 
 class TrainingEngine:
+    _record_signature_metrics_enabled = True
+    _record_mean_rate_metrics_enabled = True
+
     def __init__(
         self, rnn, n_epochs, steps_per_epoch, training_approach=None, **kwargs
     ):
@@ -153,6 +158,12 @@ class TrainingEngine:
 
         self._callbacks = None
         self._normalizers = None
+        self._record_signature_metrics_enabled = bool(
+            kwargs.get("record_signature_metrics", True)
+        )
+        self._record_mean_rate_metrics_enabled = bool(
+            kwargs.get("record_mean_rate_metrics", True)
+        )
 
     @property
     def optimizer(self):
@@ -305,6 +316,8 @@ class TrainingEngine:
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
         if prepare_training_model is not None:
             prepare_training_model()
+        if getattr(self.rnn, "_online_voltage_losses", ()) and not self.learning_rule.uses_bptt:
+            raise ValueError("VoltageRateFloor requires the BPTT learning rule.")
         if self._training_fnc is None:
             if not self.learning_rule.uses_bptt:
                 if self.n_parameters != 1:
@@ -349,9 +362,10 @@ class TrainingEngine:
         out = self._run_extractor(input_spikes, init_state)
         spikes_out, voltages_out = (tf.stop_gradient(value) for value in out[0])
         model_state = tf.nest.map_structure(tf.stop_gradient, out[1:])
-        loss_vals[pname]["__mean_rate"] = tf.cast(
-            tf.reduce_mean(spikes_out), tf.float32
-        )
+        if self._record_mean_rate_metrics_enabled:
+            loss_vals[pname]["__mean_rate"] = tf.cast(
+                tf.reduce_mean(spikes_out), tf.float32
+            )
 
         selected_variables = [
             surface.variable for surface in self.learning_rule.weight_surfaces
@@ -359,7 +373,7 @@ class TrainingEngine:
         selected_variable_ids = {id(variable) for variable in selected_variables}
         all_weight_variables = list(self.rnn.model.trainable_variables)
 
-        with tf.GradientTape() as signal_tape:
+        with tf.GradientTape() as signal_tape, weight_regularization_scope():
             signal_tape.watch(spikes_out)
             signal_tape.watch(voltages_out)
             total_loss = tf.constant(0.0, dtype=tf.float32)
@@ -467,12 +481,12 @@ class TrainingEngine:
                 return True
         return False
 
-    def _prepare_loss_kwargs(self, parameter, spikes, y):
+    def _prepare_loss_kwargs(self, parameter, spikes, y, **cached):
         if self._normalizers is None:
             return {}
 
         if self._has_orientation(y):
-            self._update_normalizers(parameter, spikes, y)
+            self._update_normalizers(parameter, spikes, y, **cached)
             return {
                 "normalizer": tf.stop_gradient(
                     tf.identity(self._normalizers["v1_ema"])
@@ -482,14 +496,14 @@ class TrainingEngine:
 
         return {}
 
-    def _update_normalizers(self, parameter, spikes, y):
+    def _update_normalizers(self, parameter, spikes, y, **cached):
         if self._normalizers is None or not self._has_orientation(y):
             return
 
         for loss_fnc in parameter.loss_functions.values():
             update_normalizers = getattr(loss_fnc, "update_normalizers", None)
             if update_normalizers is not None:
-                update_normalizers(tf.stop_gradient(spikes), self._normalizers)
+                update_normalizers(tf.stop_gradient(spikes), self._normalizers, **cached)
                 break
 
     @property
@@ -537,6 +551,19 @@ class TrainingEngine:
         if prepare_training_model is not None:
             prepare_training_model()
         cell = getattr(self.rnn, "cell", None)
+        if getattr(cell, "temporal_gradient_precision", "compute") == "float32":
+            if self.gradient_checkpointing and (
+                cell.temporal_checkpoint_chunk_size
+                != self.gradient_checkpoint_chunk_size
+            ):
+                raise ValueError(
+                    "Set temporal_checkpoint_chunk_size before building the FP32-adjoint RNN; "
+                    "an outer checkpoint wrapper would narrow temporal cotangents."
+                )
+            io.log_info(
+                "FP32 temporal reverse/replay owns checkpointing and canonical gradient restore."
+            )
+            return
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
         )
@@ -601,13 +628,14 @@ class TrainingEngine:
         pname = self.parameters[0].name
         loss_vals = {pname: {}}
         input_spikes = x[0]
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(input_spikes, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
-            loss_vals[pname]["__mean_rate"] = tf.cast(
-                tf.reduce_mean(_spikes_out), tf.float32
-            )
+            if self._record_mean_rate_metrics_enabled:
+                loss_vals[pname]["__mean_rate"] = tf.cast(
+                    tf.reduce_mean(_spikes_out), tf.float32
+                )
 
             _total_loss = 0.0
             loss_kwargs = self._prepare_loss_kwargs(self.parameters[0], _spikes_out, y)
@@ -632,7 +660,7 @@ class TrainingEngine:
         # Backpropagation of the model (gradients computation and application)
         grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
-        self.optimizer.apply_gradients(zip(grad, self.rnn.model.trainable_variables))
+        self._apply_gradients(grad, self._voltage_floor_rate_statistics(_spikes_out))
 
         return loss_vals
 
@@ -643,16 +671,22 @@ class TrainingEngine:
             copy.deepcopy(self.inputs_signature_factory.lu_tables[parameter_index]), y
         )
         loss_vals = {p.name: {}}
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(x, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
-            loss_vals[p.name]["__mean_rate"] = tf.cast(
-                tf.reduce_mean(_spikes_out), tf.float32
-            )
+            if self._record_mean_rate_metrics_enabled:
+                loss_vals[p.name]["__mean_rate"] = tf.cast(
+                    tf.reduce_mean(_spikes_out), tf.float32
+                )
 
             _total_loss = 0.0
             loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, ysig)
+            if getattr(self.rnn, "_online_voltage_losses", ()):
+                loss_kwargs["voltage_rate_floor_batch_weight"] = (
+                    self.n_parameters * p.batch_size
+                    / sum(parameter.batch_size for parameter in self.parameters)
+                )
             for loss_name, loss_fnc in p.loss_functions.items():
                 _loss = loss_fnc(
                     spikes=_spikes_out,
@@ -673,6 +707,8 @@ class TrainingEngine:
 
         grads = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grads = optimizers.unscale_gradients_for_optimizer(self.optimizer, grads)
+        if getattr(self.rnn, "_online_voltage_losses", ()):
+            loss_vals["__voltage_floor_statistics"] = self._voltage_floor_rate_statistics(_spikes_out)
         return loss_vals, grads
 
     @tf.function
@@ -684,12 +720,57 @@ class TrainingEngine:
             args=(x, y, init_state, parameter_index),
         )
 
-    def _apply_gradients(self, grads):
-        self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+    def _voltage_floor_rate_statistics(self, spikes):
+        if not getattr(self.rnn, "_online_voltage_losses", ()):
+            return None
+        # Detached FP32 chunk reductions never expand the full spike sequence.
+        spikes = tf.stop_gradient(spikes)
+        counts = tf.add_n([
+            tf.reduce_sum(tf.cast(spikes[:, start:start + 25], tf.float32), axis=(0, 1))
+            for start in range(0, spikes.shape[1], 25)
+        ])
+        samples = tf.cast(tf.shape(spikes)[0] * tf.shape(spikes)[1], tf.float32)
+        context = tf.distribute.get_replica_context()
+        if context is not None:
+            counts = context.all_reduce(tf.distribute.ReduceOp.SUM, counts)
+            samples = context.all_reduce(tf.distribute.ReduceOp.SUM, samples)
+        return counts, samples
+
+    def _apply_gradients(self, grads, rate_statistics=None):
+        losses = getattr(self.rnn, "_online_voltage_losses", ())
+        if not losses:
+            self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+            return
+        if rate_statistics is None:
+            raise ValueError("VoltageRateFloor requires measured rates for every optimizer update.")
+        # Keras 2's dynamic scaler can increment iterations even when it skips
+        # an update. Its finite-gradient check must accompany the counter check.
+        finite = tf.reduce_all(tf.stack([
+            tf.reduce_all(tf.math.is_finite(g.values if isinstance(g, tf.IndexedSlices) else g))
+            for g in grads if g is not None
+        ]))
+        context = tf.distribute.get_replica_context()
+        if context is not None:
+            finite = context.all_reduce(tf.distribute.ReduceOp.SUM, tf.cast(finite, tf.int32))
+            finite = finite == self.rnn.strategy.num_replicas_in_sync
+        before = tf.identity(self.optimizer.iterations)
+        with tf.control_dependencies([before]):
+            self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
+        accepted = self.optimizer.iterations > before
+        if optimizers.optimizer_supports_loss_scaling(self.optimizer):
+            accepted = tf.logical_and(accepted, finite)
+        counts, samples = rate_statistics
+
+        def commit():
+            for loss in losses:
+                loss.commit_rates(counts * (1000.0 / loss.dt) / samples)
+            return tf.constant(0)
+
+        return tf.cond(accepted, commit, lambda: tf.constant(0))
 
     @tf.function
-    def _distributed_apply_gradients(self, grads):
-        return self.rnn.strategy.run(self._apply_gradients, args=(grads,))
+    def _distributed_apply_gradients(self, grads, rate_statistics=None):
+        return self.rnn.strategy.run(self._apply_gradients, args=(grads, rate_statistics))
 
     @staticmethod
     def _record_signature_metrics(loss_vals, pname, y):
@@ -718,7 +799,7 @@ class TrainingEngine:
         all_losses = []
         x_concat = tf.concat(xs, axis=0)
         sigs = self.inputs_signature_factory.build(ys)
-        with tf.GradientTape() as tape:
+        with tf.GradientTape() as tape, weight_regularization_scope():
             _out = self._run_extractor(x_concat, init_state)
             _spikes_out, _v_out = _out[0]
             _model_state = _out[1:]
@@ -732,11 +813,37 @@ class TrainingEngine:
                 _pstate = tf.nest.map_structure(
                     lambda state: state[pidx_beg:pidx_end], _model_state
                 )
-                loss_vals[p.name]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_pspikes), tf.float32
+                if self._record_mean_rate_metrics_enabled:
+                    loss_vals[p.name]["__mean_rate"] = tf.cast(
+                        tf.reduce_mean(_pspikes), tf.float32
+                    )
+                if self._record_signature_metrics_enabled:
+                    self._record_signature_metrics(loss_vals, p.name, ysig)
+                cached_spike_counts = None
+                cached_spike_duration = None
+                if _pspikes.shape[1] is not None:
+                    cached_spike_counts = loss_utils.temporal_sum(
+                        _pspikes, dtype=tf.float32
+                    )
+                    cached_spike_duration = tf.cast(tf.shape(_pspikes)[1], tf.float32)
+                loss_kwargs = self._prepare_loss_kwargs(
+                    p,
+                    _pspikes,
+                    ysig,
+                    spike_counts=(
+                        None
+                        if cached_spike_counts is None
+                        else tf.stop_gradient(cached_spike_counts)
+                    ),
+                    spike_count_duration=cached_spike_duration,
                 )
-                self._record_signature_metrics(loss_vals, p.name, ysig)
-                loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
+                if cached_spike_counts is not None:
+                    loss_kwargs["spike_counts"] = cached_spike_counts
+                    loss_kwargs["spike_count_duration"] = cached_spike_duration
+                if getattr(self.rnn, "_online_voltage_losses", ()):
+                    loss_kwargs["voltage_rate_floor_batch_weight"] = tf.cast(
+                        self.n_parameters * tf.shape(_pspikes)[0], tf.float32
+                    ) / tf.cast(tf.shape(_spikes_out)[0], tf.float32)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,
@@ -745,7 +852,8 @@ class TrainingEngine:
                         y=ysig,
                         **loss_kwargs,
                     )
-                    _total_loss += tf.cast(_loss, tf.float32)
+                    _loss32 = tf.cast(_loss, tf.float32)
+                    _total_loss += _loss32
                     loss_vals[p.name][loss_name] = _loss
                 # Advance to this parameter's slice of the concatenated batch so the next
                 # parameter's losses are computed on its own spikes/voltages (not [0:end]).
@@ -761,11 +869,12 @@ class TrainingEngine:
         # Backpropagation of the model (gradients computation and application)
         grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
-        self.optimizer.apply_gradients(zip(grad, self.rnn.model.trainable_variables))
+        self._apply_gradients(grad, self._voltage_floor_rate_statistics(_spikes_out))
 
-        loss_vals["__total_loss"] = tf.reduce_mean(all_losses) / tf.cast(
+        total_metric = tf.reduce_mean(all_losses) / tf.cast(
             self.n_parameters, total_loss.dtype
         )
+        loss_vals["__total_loss"] = total_metric
         return loss_vals
 
     def _train_step_series(self, xs, ys, init_state):
@@ -773,14 +882,16 @@ class TrainingEngine:
         all_losses = []
         for parameter_index, (p, x, y) in enumerate(zip(self.parameters, xs, ys)):
             loss_vals[p.name] = {}
-            with tf.GradientTape() as tape:
+            with tf.GradientTape() as tape, weight_regularization_scope():
                 _out = self._run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
-                loss_vals[p.name]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_spikes_out), tf.float32
-                )
-                self._record_signature_metrics(loss_vals, p.name, y)
+                if self._record_mean_rate_metrics_enabled:
+                    loss_vals[p.name]["__mean_rate"] = tf.cast(
+                        tf.reduce_mean(_spikes_out), tf.float32
+                    )
+                if self._record_signature_metrics_enabled:
+                    self._record_signature_metrics(loss_vals, p.name, y)
 
                 _total_loss = 0.0
                 loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, y)
@@ -804,9 +915,7 @@ class TrainingEngine:
 
             grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
             grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
-            self.optimizer.apply_gradients(
-                zip(grad, self.rnn.model.trainable_variables)
-            )
+            self._apply_gradients(grad, self._voltage_floor_rate_statistics(_spikes_out))
             if parameter_index + 1 < self.n_parameters:
                 self.rnn.cell.refresh_recurrent_weight_shadow()
 
@@ -823,6 +932,7 @@ class TrainingEngine:
         loss_vals = {}
         all_losses = []
         accum_grads = None
+        rate_statistics = None
 
         for parameter_index, (p, x, y) in enumerate(zip(self.parameters, xs, ys)):
             param_loss_vals, grads = self._distributed_train_step_parameter_gradients(
@@ -830,6 +940,11 @@ class TrainingEngine:
             )
             loss_vals[p.name] = param_loss_vals[p.name]
             all_losses.append(param_loss_vals["__total_loss"])
+            statistics = param_loss_vals.get("__voltage_floor_statistics")
+            if statistics is not None:
+                rate_statistics = statistics if rate_statistics is None else tf.nest.map_structure(
+                    tf.add, rate_statistics, statistics
+                )
             if accum_grads is None:
                 accum_grads = list(grads)
             else:
@@ -838,7 +953,7 @@ class TrainingEngine:
                     for accum_grad, grad in zip(accum_grads, grads)
                 ]
 
-        self._distributed_apply_gradients(accum_grads)
+        self._distributed_apply_gradients(accum_grads, rate_statistics)
 
         loss_vals["__total_loss"] = tf.reduce_mean(all_losses)
         return loss_vals
@@ -856,13 +971,20 @@ class TrainingEngine:
                 _out = self.rnn.run_extractor(x, init_state)
                 _spikes_out, _v_out = _out[0]
                 _model_state = _out[1:]
-                loss_vals[p.name]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_spikes_out), tf.float32
-                )
-                self._record_signature_metrics(loss_vals, p.name, y)
+                if self._record_mean_rate_metrics_enabled:
+                    loss_vals[p.name]["__mean_rate"] = tf.cast(
+                        tf.reduce_mean(_spikes_out), tf.float32
+                    )
+                if self._record_signature_metrics_enabled:
+                    self._record_signature_metrics(loss_vals, p.name, y)
 
                 _total_loss = 0.0
                 loss_kwargs = self._prepare_loss_kwargs(p, _spikes_out, y)
+                if training_approach == "series_accumulate" and getattr(self.rnn, "_online_voltage_losses", ()):
+                    loss_kwargs["voltage_rate_floor_batch_weight"] = (
+                        self.n_parameters * p.batch_size
+                        / sum(parameter.batch_size for parameter in self.parameters)
+                    )
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_spikes_out,
@@ -897,11 +1019,17 @@ class TrainingEngine:
                 _pstate = tf.nest.map_structure(
                     lambda state: state[pidx_beg:pidx_end], _model_state
                 )
-                loss_vals[p.name]["__mean_rate"] = tf.cast(
-                    tf.reduce_mean(_pspikes), tf.float32
-                )
-                self._record_signature_metrics(loss_vals, p.name, ysig)
+                if self._record_mean_rate_metrics_enabled:
+                    loss_vals[p.name]["__mean_rate"] = tf.cast(
+                        tf.reduce_mean(_pspikes), tf.float32
+                    )
+                if self._record_signature_metrics_enabled:
+                    self._record_signature_metrics(loss_vals, p.name, ysig)
                 loss_kwargs = self._prepare_loss_kwargs(p, _pspikes, ysig)
+                if getattr(self.rnn, "_online_voltage_losses", ()):
+                    loss_kwargs["voltage_rate_floor_batch_weight"] = tf.cast(
+                        self.n_parameters * tf.shape(_pspikes)[0], tf.float32
+                    ) / tf.cast(tf.shape(_spikes_out)[0], tf.float32)
                 for loss_name, loss_fnc in p.loss_functions.items():
                     _loss = loss_fnc(
                         spikes=_pspikes,
