@@ -765,10 +765,10 @@ def test_actual_legacy_compute_factory_executes_auto_weight_carrier(monkeypatch)
         assert isinstance(rnn.rsnn_layer, ExplicitStateRNN)
         assert rnn.cell.state_precision == "compute"
         assert rnn.acceleration_report["selected"]["use_fused_recurrent_accumulation"] is True
-        assert any(observed_carriers)
         with tf.GradientTape() as tape:
             output = rnn.rsnn_layer(tf.ones((2, 3, 2), tf.float16), initial_state=rnn.zero_state)
             loss = tf.reduce_sum(tf.cast(output[0], tf.float32))
+        assert any(observed_carriers)
         gradient = tape.gradient(loss, rnn.cell.recurrent_weight_values)
         assert gradient is not None
         assert np.all(np.isfinite(gradient.numpy()))

@@ -234,7 +234,9 @@ def test_actual_five_basis_auto_projection_and_gradients(batch):
     options, _ = resolve(batch_size=batch, basis_width=5, compute_dtype=tf.float32)
     indices = np.array([[0, pre] for pre in range(4)], dtype=np.int64)
     types = np.arange(4, dtype=np.int64)
-    conn = csr.build_csr_connectivity(indices, types, 4, 1, 4, build_compact_pairs=True)
+    conn = csr.build_csr_connectivity(
+        indices, types, 4, 1, 4, build_compact_pairs=True, build_fixed4_incoming=True
+    )
     try:
         assert conn["fixed4_incoming"]
         spikes = tf.constant(np.tile([0., 1., 1., 0.], (batch, 1)), tf.float32)
