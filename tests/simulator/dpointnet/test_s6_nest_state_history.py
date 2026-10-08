@@ -231,6 +231,28 @@ def test_state_history_stale_abi(monkeypatch):
     assert not ops.fused_nest_state_history_available()
 
 
+def test_separate_state_preserves_history_dtype(cpu_ops):
+    values, refractory, params = _fixture(syn_dtype=tf.float16)
+    values[-1] = tf.cast(values[-1], tf.float32)
+    with tf.GradientTape() as tape:
+        tape.watch(values[-1])
+        outputs = ops.fused_nest_state(
+            values[0], refractory, *values[1:], **params, fuse_history=False
+        )
+        loss = tf.reduce_sum(outputs[6])
+    assert outputs[0].dtype == tf.float32
+    assert outputs[6].dtype == tf.float32
+    gradient = tape.gradient(loss, values[-1])
+    assert gradient.dtype == tf.float32
+    np.testing.assert_array_equal(
+        gradient,
+        tf.concat([
+            tf.ones_like(values[-1][:, :-tf.shape(values[0])[1]]),
+            tf.zeros_like(values[0]),
+        ], axis=1),
+    )
+
+
 @pytest.mark.parametrize("event_vjp", [False, True])
 @pytest.mark.parametrize("pre_reset", [False, True])
 @pytest.mark.parametrize("gaussian", [False, True])

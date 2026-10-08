@@ -9,6 +9,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.ops import handle_data_util
+from .._options import validate_bool_option
 
 _LIBRARY_PATH = Path(__file__).with_name("_csr_spike_ops.so")
 _ARCHITECTURE_PATH = Path(__file__).with_name("_csr_spike_ops.archs")
@@ -105,18 +106,7 @@ def _environment_flag(name):
 
 
 def _validate_packed_sm120_option(value, option_name="use_packed_sm120_backward"):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    if isinstance(value, (bytes, np.bytes_)):
-        try:
-            value = value.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-    if isinstance(value, (str, np.str_)) and value == "auto":
-        return "auto"
-    raise ValueError(f'{option_name} must be true, false, or "auto".')
+    return validate_bool_option(value, option_name, allow_auto=True, unwrap_numpy=True)
 
 
 def _gpu_compute_architecture():
