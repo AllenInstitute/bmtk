@@ -60,11 +60,11 @@ def patched_conn_types(monkeypatch):
 _CURRENT_RNN = None
 
 
-def _make_reg(weights, group_ids, **kwargs):
+def _make_reg(weights, group_ids, cost=1.0, **kwargs):
     global _CURRENT_RNN
     rnn = _FakeRNN(np.asarray(weights, dtype=np.float32), group_ids)
     _CURRENT_RNN = rnn
-    return rnn, EMDWeightRegularization(rnn=rnn, cost=1.0, **kwargs)
+    return rnn, EMDWeightRegularization(rnn=rnn, cost=cost, **kwargs)
 
 
 def _fp64_groupwise_reference(initial, current, group_ids):
@@ -82,11 +82,6 @@ def _fp64_groupwise_reference(initial, current, group_ids):
     return np.mean(losses), grad
 
 
-def test_emd_zero_at_init(patched_conn_types):
-    rnn, reg = _make_reg([1.0, -2.0, 3.0, -4.0], [0, 0, 1, 1])
-    assert float(reg().numpy()) == pytest.approx(0.0, abs=1e-7)
-
-
 def test_emd_finite_and_positive_after_perturbation(patched_conn_types):
     rnn, reg = _make_reg([1.0, -2.0, 3.0, -4.0], [0, 0, 1, 1])
     rnn.cell.recurrent_weight_values.assign([2.0, -2.0, 3.0, -4.0])
@@ -101,17 +96,6 @@ def test_emd_invariant_to_within_group_permutation(patched_conn_types):
     rnn, reg = _make_reg([1.0, 5.0, 3.0, 9.0], [0, 0, 0, 0])
     rnn.cell.recurrent_weight_values.assign([5.0, 1.0, 9.0, 3.0])
     assert float(reg().numpy()) == pytest.approx(0.0, abs=1e-6)
-
-
-def test_emd_gradient_flows(patched_conn_types):
-    rnn, reg = _make_reg([1.0, -2.0, 3.0, -4.0], [0, 0, 1, 1])
-    w = rnn.cell.recurrent_weight_values
-    w.assign([2.5, -2.0, 3.0, -4.0])
-    with tf.GradientTape() as tape:
-        loss = reg()
-    grad = tape.gradient(loss, w)
-    assert grad is not None
-    assert float(tf.reduce_sum(tf.abs(grad)).numpy()) > 0
 
 
 def test_graph_dedup_preserves_independent_series_tapes(patched_conn_types):
@@ -216,12 +200,28 @@ def test_repeated_tracing_does_not_retain_scope_entries(patched_conn_types):
         assert wr._weight_regularization_scope.get() is None
 
 
-def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
-    initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0], dtype=np.float32)
-    group_ids = np.array([0, 0, 1, 1, 0, 1], dtype=np.int64)
-    rnn, reg = _make_reg(initial, group_ids)
+@pytest.mark.parametrize("dtype", [tf.float32, tf.float64])
+@pytest.mark.parametrize(
+    "initial,current,group_ids",
+    [
+        ([1.0, -2.0, 4.0, 3.0, -1.0, 2.0, 7.0],
+         [1.25, -2.5, 5.0, 2.0, -0.5, 2.5, 6.5], [0, 0, 1, 1, 0, 1, 2]),
+        ([1.0, 3.0, -4.0, -2.0, 5.0, 7.0],
+         [2.0, 2.0, -3.0, -3.0, 6.0, 6.0], [1, 1, 0, 0, 2, 2]),
+        ([1.0, 1.0, -2.0, -2.0, 4.0, 4.0],
+         [1.0, 1.0, -2.0, -2.0, 4.0, 4.0], [0, 0, 1, 1, 2, 2]),
+    ],
+    ids=["unequal-groups", "nonzero-ties", "zero-ties"],
+)
+def test_emd_matches_groupwise_reference_value_and_gradient(
+    patched_conn_types, initial, current, group_ids, dtype
+):
+    initial = np.array(initial, dtype=np.float32)
+    group_ids = np.array(group_ids, dtype=np.int64)
+    cost = 1.75
+    rnn, reg = _make_reg(initial, group_ids, cost=cost, dtype=dtype)
     weights = rnn.cell.recurrent_weight_values
-    weights.assign([1.5, -2.5, 5.0, 2.0, -0.5, 2.5])
+    weights.assign(current)
 
     with tf.GradientTape() as actual_tape:
         actual = reg()
@@ -231,10 +231,10 @@ def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
         losses = []
         for group_id in np.unique(group_ids):
             indices = np.flatnonzero(group_ids == group_id)
-            current = tf.sort(tf.gather(weights, indices))
-            baseline = tf.constant(np.sort(initial[indices]), tf.float32)
-            losses.append(tf.reduce_mean(tf.abs(current - baseline)))
-        reference = tf.reduce_mean(tf.stack(losses))
+            sorted_current = tf.sort(tf.cast(tf.gather(weights, indices), dtype))
+            baseline = tf.constant(np.sort(initial[indices]), dtype)
+            losses.append(tf.reduce_mean(tf.abs(sorted_current - baseline)))
+        reference = cost * tf.reduce_mean(tf.stack(losses))
     reference_gradient = reference_tape.gradient(reference, weights)
 
     np.testing.assert_allclose(actual, reference, rtol=1e-7, atol=1e-7)
@@ -244,51 +244,22 @@ def test_emd_matches_groupwise_reference_value_and_gradient(patched_conn_types):
         rtol=1e-7,
         atol=1e-7,
     )
-
-
-def test_javier_grouped_emd_matches_dp_reference_and_fp64(patched_conn_types):
-    initial = np.array([1.0, -2.0, 4.0, 3.0, -1.0, 2.0, 7.0], dtype=np.float32)
-    current = np.array([1.25, -2.5, 5.0, 2.0, -0.5, 2.5, 6.5], dtype=np.float32)
-    group_ids = np.array([0, 0, 1, 1, 0, 1, 2], dtype=np.int64)
     ref_value, ref_grad = _fp64_groupwise_reference(initial, current, group_ids)
-
-    rnn_ref, reg_ref = _make_reg(initial, group_ids)
-    rnn_javier, reg_javier = _make_reg(
-        initial, group_ids, use_javier_grouped_emd=True
-    )
-    rnn_ref.cell.recurrent_weight_values.assign(current)
-    rnn_javier.cell.recurrent_weight_values.assign(current)
-
-    with tf.GradientTape() as ref_tape:
-        actual_ref = reg_ref()
-    ref_gradient = ref_tape.gradient(actual_ref, rnn_ref.cell.recurrent_weight_values)
-    with tf.GradientTape() as javier_tape:
-        actual_javier = reg_javier()
-    javier_gradient = javier_tape.gradient(
-        actual_javier, rnn_javier.cell.recurrent_weight_values
+    np.testing.assert_allclose(actual, cost * ref_value, rtol=1e-7, atol=1e-7)
+    np.testing.assert_allclose(
+        tf.convert_to_tensor(actual_gradient), cost * ref_grad, rtol=1e-7, atol=1e-7
     )
 
-    ref_gradient = tf.convert_to_tensor(ref_gradient)
-    javier_gradient = tf.convert_to_tensor(javier_gradient)
-    np.testing.assert_allclose(actual_javier, actual_ref, rtol=1e-7, atol=1e-7)
-    np.testing.assert_allclose(javier_gradient, ref_gradient, rtol=1e-7, atol=1e-7)
-    np.testing.assert_allclose(actual_javier, ref_value, rtol=1e-7, atol=1e-7)
-    np.testing.assert_allclose(javier_gradient.numpy(), ref_grad, rtol=1e-7, atol=1e-7)
+
+@pytest.mark.parametrize("option", ["use_grouped_custom_gradient", "use_javier_grouped_emd"])
+def test_emd_rejects_retired_implementation_options(patched_conn_types, option):
+    with pytest.raises(TypeError, match=option):
+        _make_reg([1.0], [0], **{option: True})
 
 
-def test_javier_grouped_emd_tie_value_and_zero_subgradient(patched_conn_types):
-    initial = np.array([1.0, 1.0, -2.0, -2.0, 4.0, 4.0], dtype=np.float32)
-    group_ids = np.array([0, 0, 1, 1, 2, 2], dtype=np.int64)
-    rnn, reg = _make_reg(initial, group_ids, use_javier_grouped_emd=True)
-    # Tied current values exactly match tied initial distributions in every group.
-    rnn.cell.recurrent_weight_values.assign([1.0, 1.0, -2.0, -2.0, 4.0, 4.0])
-
-    with tf.GradientTape() as tape:
-        loss = reg()
-    gradient = tape.gradient(loss, rnn.cell.recurrent_weight_values)
-
-    assert float(loss.numpy()) == pytest.approx(0.0, abs=1e-7)
-    np.testing.assert_allclose(gradient.numpy(), np.zeros(6), atol=1e-7)
+def test_emd_accepts_loss_registry_metadata(patched_conn_types):
+    _, reg = _make_reg([1.0], [0], module="EMDWeightRegularization", enabled=True)
+    assert float(reg().numpy()) == 0.0
 
 
 def test_emd_empty_network_returns_connected_zero(patched_conn_types):

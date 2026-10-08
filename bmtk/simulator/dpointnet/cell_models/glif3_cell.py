@@ -743,7 +743,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
         require_type_indexed_nest_coefficients=False,
         use_static_type_indexed_nest_dispatch=False,
         use_direct_state_rnn_loop=False,
-        use_unity_lr_scale_fastpath=False,
         use_native_voltage_penalty=False,
         online_voltage_losses=None,
         use_fused_state_history=False,
@@ -777,7 +776,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 use_static_type_indexed_nest_dispatch,
             ),
             ("use_direct_state_rnn_loop", use_direct_state_rnn_loop),
-            ("use_unity_lr_scale_fastpath", use_unity_lr_scale_fastpath),
             ("use_native_voltage_penalty", use_native_voltage_penalty),
         ):
             validate_bool_option(value, name)
@@ -795,7 +793,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
             use_prepacked_nest_coefficients or use_type_indexed_nest_coefficients
         )
         self._use_direct_state_rnn_loop = use_direct_state_rnn_loop
-        self._use_unity_lr_scale_fastpath = use_unity_lr_scale_fastpath
         self._use_native_voltage_penalty = use_native_voltage_penalty
         self._rollout_nest_coefficients = None
         if temporal_gradient_precision not in ("compute", "float32"):
@@ -1008,9 +1005,6 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
         self._pseudo_gauss = pseudo_gauss
         self._lr_scale = tf.constant(lr_scale, dtype=self.compute_dtype)
-        self._lr_scale_is_unity = bool(np.asarray(lr_scale).item() == 1.0)
-        if self._use_unity_lr_scale_fastpath and not self._lr_scale_is_unity:
-            raise ValueError("use_unity_lr_scale_fastpath=True requires lr_scale=1.0.")
 
         self._noise_seed_base = tf.constant(int(noise_seed), dtype=tf.int64)
         self.noise_seed = tf.Variable(
@@ -2332,12 +2326,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         values = tf.reshape(
             tf.add_n(currents), (batch, self._n_neurons * self._n_syn_basis)
         )
-        scaled_values = (
-            values
-            if self._use_unity_lr_scale_fastpath
-            else values * tf.cast(self._lr_scale, tf.float32)
-        )
-        result = scaled_values, history
+        result = values * tf.cast(self._lr_scale, tf.float32), history
         return (
             result + (recurrent_weight_carrier,)
             if recurrent_weight_carrier is not None
@@ -2539,8 +2528,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis]
         )
         # Scale with the learning rate
-        if not self._use_unity_lr_scale_fastpath:
-            rec_inputs = rec_inputs * self._lr_scale
+        rec_inputs = rec_inputs * self._lr_scale
         if recurrent_weight_carrier is not None:
             return rec_inputs, new_input_history, recurrent_weight_carrier
         return rec_inputs, new_input_history

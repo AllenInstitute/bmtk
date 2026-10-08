@@ -63,7 +63,11 @@ def _sort_initial_values_by_group(initial_values, order, row_splits):
 def _grouped_emd_custom_gradient(
     values, group_order, sorted_initial_values, group_slices, sensitivity_denominators
 ):
-    """Mean per-group Wasserstein-1 distance with one final scatter VJP."""
+    """Mean per-group Wasserstein-1 distance with a stable canonical scatter VJP.
+
+    Adapted from Javier's ``v1_model_utils/loss_functions.py`` ``_grouped_emd``
+    at commit 2c52ec10; credited to Javier.
+    """
 
     @tf.custom_gradient
     def emd(x):
@@ -97,41 +101,6 @@ def _grouped_emd_custom_gradient(
     return emd(values)
 
 
-def _javier_grouped_emd(values, group_order, sorted_initial_values, group_slices, n_groups):
-    """Javier-derived grouped EMD with analytic VJP.
-
-    Adapted from Javier's ``v1_model_utils/loss_functions.py`` ``_grouped_emd``
-    at commit 2c52ec10; credited to Javier. DPointNet supplies canonical
-    recurrent-edge ordering via ``group_order`` and pre-sorted initial values.
-    """
-
-    @tf.custom_gradient
-    def emd(x):
-        grouped_x = tf.gather(x, group_order)
-        group_losses, positions, sensitivities = [], [], []
-        for start, end in group_slices:
-            x_i = grouped_x[start:end]
-            order = tf.argsort(x_i)
-            deviation = tf.gather(x_i, order) - sorted_initial_values[start:end]
-            group_losses.append(tf.reduce_mean(tf.abs(deviation)))
-            positions.append(order + start)
-            sensitivities.append(
-                tf.sign(deviation) / float((end - start) * n_groups)
-            )
-        reg_loss = tf.reduce_mean(tf.stack(group_losses))
-        targets = tf.gather(group_order, tf.concat(positions, axis=0))
-        derivative = tf.concat(sensitivities, axis=0)
-
-        def grad(upstream):
-            return tf.scatter_nd(
-                targets[:, tf.newaxis], derivative * upstream, tf.shape(x)
-            )
-
-        return reg_loss, grad
-
-    return emd(values)
-
-
 class EMDWeightRegularization:
     """Earth Mover's Distance (Wasserstein-1) regularizer on the recurrent weights.
 
@@ -141,8 +110,6 @@ class EMDWeightRegularization:
     Ported from V1_GLIF_model loss_functions.EarthMoversDistanceRegularizer.
     """
 
-    _use_grouped_custom_gradient = False
-    _use_javier_grouped_emd = False
     _deduplicate_within_graph = False
 
     def __init__(
@@ -151,19 +118,18 @@ class EMDWeightRegularization:
         cost=10.0,
         data_dir='',
         dtype=None,
-        use_grouped_custom_gradient=False,
-        use_javier_grouped_emd=False,
         deduplicate_within_graph=False,
         **kwargs
     ):
+        for option in ("use_grouped_custom_gradient", "use_javier_grouped_emd"):
+            if option in kwargs:
+                raise TypeError(f"{option} was removed; grouped EMD is automatic.")
         self._rnn = rnn
         self._network = rnn.recurrent_network
         # The trainable recurrent weights (kept in the master/fp32 dtype under mixed precision).
         self._weights = rnn.cell.recurrent_weight_values
         self._dtype = dtype or self._weights.dtype
         self._cost = tf.constant(cost, dtype=self._dtype)
-        self._use_grouped_custom_gradient = bool(use_grouped_custom_gradient)
-        self._use_javier_grouped_emd = bool(use_javier_grouped_emd)
         self._deduplicate_within_graph = bool(deduplicate_within_graph)
 
         # Capture the initial weights directly from the cell variable. These are already in the
@@ -196,12 +162,6 @@ class EMDWeightRegularization:
             trainable=False,
             name="emd_group_order",
         )
-        self._row_splits = tf.Variable(
-            row_splits_np,
-            dtype=tf.int64,
-            trainable=False,
-            name="emd_row_splits",
-        )
         self._sorted_initial_values = tf.Variable(
             sorted_initial_np,
             dtype=self._dtype,
@@ -231,44 +191,13 @@ class EMDWeightRegularization:
         if self._n_groups == 0:
             return tf.reduce_sum(x) * tf.cast(0.0, self._dtype)
 
-        denominators = getattr(
-            self,
-            "_group_sensitivity_denominators",
-            tuple(
-                int((end - start) * self._n_groups)
-                for start, end in self._group_slices
-            ),
+        reg_loss = _grouped_emd_custom_gradient(
+            x,
+            tf.convert_to_tensor(self._group_order),
+            tf.convert_to_tensor(self._sorted_initial_values),
+            self._group_slices,
+            self._group_sensitivity_denominators,
         )
-        if self._use_javier_grouped_emd:
-            reg_loss = _javier_grouped_emd(
-                x,
-                tf.convert_to_tensor(self._group_order),
-                tf.convert_to_tensor(self._sorted_initial_values),
-                self._group_slices,
-                self._n_groups,
-            )
-            return reg_loss * self._cost
-
-        if self._use_grouped_custom_gradient:
-            reg_loss = _grouped_emd_custom_gradient(
-                x,
-                tf.convert_to_tensor(self._group_order),
-                tf.convert_to_tensor(self._sorted_initial_values),
-                self._group_slices,
-                denominators,
-            )
-            return reg_loss * self._cost
-
-        grouped_x = tf.gather(x, self._group_order)
-        emd_losses = tf.TensorArray(self._dtype, size=self._n_groups)
-        for i in tf.range(self._n_groups):
-            start = self._row_splits[i]
-            end = self._row_splits[i + 1]
-            x_i = grouped_x[start:end]
-            y_i = self._sorted_initial_values[start:end]
-            emd = tf.reduce_mean(tf.abs(tf.sort(x_i) - y_i))
-            emd_losses = emd_losses.write(i, emd)
-        reg_loss = tf.reduce_mean(emd_losses.stack())
         return reg_loss * self._cost
 
     def __call__(self, **kwargs):

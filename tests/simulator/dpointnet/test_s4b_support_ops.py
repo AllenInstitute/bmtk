@@ -1,7 +1,13 @@
-import numpy as np
 import pytest
 
 tf = pytest.importorskip("tensorflow")
+
+
+def test_unity_lr_fastpath_option_is_retired():
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+
+    with pytest.raises(TypeError, match="use_unity_lr_scale_fastpath"):
+        GLIF3Cell(None, None, use_unity_lr_scale_fastpath=False)
 
 
 def test_voltage_penalty_op_shape_inference():
@@ -39,22 +45,6 @@ def test_native_voltage_penalty_option_requires_boolean():
             tau_basis=[2.0],
             dynamics_mode="nest",
             use_native_voltage_penalty="true",
-        )
-
-
-def test_unity_lr_scale_fastpath_requires_unity_lr_scale():
-    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
-    from test_nest_dynamics import make_network_inputs
-
-    network, inputs = make_network_inputs()
-    with pytest.raises(ValueError, match="requires lr_scale=1.0"):
-        GLIF3Cell(
-            network,
-            inputs,
-            tau_basis=[2.0],
-            dynamics_mode="nest",
-            lr_scale=np.float32(0.5),
-            use_unity_lr_scale_fastpath=True,
         )
 
 

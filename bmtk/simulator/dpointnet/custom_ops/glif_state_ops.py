@@ -139,326 +139,7 @@ def fused_nest_state_history_type_indexed_available():
     )
 
 
-def _fused_nest_state_base(
-    voltage,
-    refractory,
-    asc,
-    psc_rise,
-    psc,
-    currents,
-    history,
-    *,
-    syn_decay,
-    psc_initial,
-    asc_decay,
-    asc_amps,
-    decay,
-    current_factor,
-    asc_mean,
-    asc_refractory_decay,
-    psc_voltage,
-    rise_voltage,
-    t_ref_steps,
-    dt,
-    v_reset,
-    v_th,
-    dampening,
-    voltage_gradient_dampening,
-    hard_reset=False,
-    detach_reset=True,
-    detach_asc_reset=True,
-    pseudo_gauss=False,
-    gauss_std=0.5,
-    return_pre_reset_voltage=False,
-    use_fused_event_vjp=False,
-    packed_coefficients=None,
-    packed_kernel_coefficients=None,
-    packed_type_coefficients=None,
-    type_indices=None,
-    type_indexed_identity=None,
-    require_type_indexed_coefficients=False,
-):
-    """Four-basis NEST transition with live frozen coefficients and event VJPs."""
-    if not fused_nest_state_available():
-        raise RuntimeError(
-            "Fused NEST state requires rebuilt CUDA operators: "
-            + glif_state_op_status()
-        )
-    dtype = voltage.dtype
-    validate_bool_option(use_fused_event_vjp, "use_fused_event_vjp")
-    if use_fused_event_vjp and not fused_nest_event_vjp_available():
-        raise RuntimeError("NEST event VJP requires rebuilt CUDA operators.")
-    use_type_indexed = packed_type_coefficients is not None
-    if use_type_indexed and not fused_nest_type_indexed_coefficients_available():
-        raise RuntimeError("NEST type-indexed coefficients require rebuilt CUDA operators.")
-    if (packed_type_coefficients is None) != (type_indices is None):
-        raise ValueError(
-            "packed_type_coefficients and type_indices must be provided together."
-        )
-    if use_type_indexed and type_indexed_identity is None:
-        raise ValueError("type_indexed_identity is required with type-indexed coefficients.")
-    validate_bool_option(require_type_indexed_coefficients, "require_type_indexed_coefficients")
-    type_indexed_identity_static = None
-    if use_type_indexed:
-        type_indexed_identity_static = tf.get_static_value(type_indexed_identity)
-        if type_indexed_identity_static is not None:
-            type_indexed_identity_static = bool(type_indexed_identity_static)
-    neurons = tf.shape(voltage)[1]
-    voltage_gradient_dampening = tf.clip_by_value(
-        tf.cast(voltage_gradient_dampening, dtype),
-        tf.cast(0.0, dtype),
-        tf.cast(1.0, dtype),
-    )
-    if (packed_coefficients is None) != (packed_kernel_coefficients is None):
-        raise ValueError(
-            "packed_coefficients and packed_kernel_coefficients must be provided together."
-        )
-    if packed_coefficients is None:
-        coefficients = pack_nest_state_coefficients(
-            neurons,
-            dtype,
-            syn_decay=syn_decay,
-            psc_initial=psc_initial,
-            asc_decay=asc_decay,
-            asc_amps=asc_amps,
-            decay=decay,
-            current_factor=current_factor,
-            asc_mean=asc_mean,
-            asc_refractory_decay=asc_refractory_decay,
-            psc_voltage=psc_voltage,
-            rise_voltage=rise_voltage,
-            v_reset=v_reset,
-            voltage_gradient_dampening=voltage_gradient_dampening,
-        )
-        kernel_coefficients_prepared = (
-            tf.transpose(coefficients) if dtype == tf.float32 else coefficients
-        )
-    else:
-        coefficients = tf.cast(packed_coefficients, dtype)
-        kernel_coefficients_prepared = tf.cast(packed_kernel_coefficients, dtype)
-    if use_type_indexed:
-        type_coefficients = tf.cast(packed_type_coefficients, dtype)
-        type_indices = tf.cast(type_indices, tf.int64)
-        type_indexed_identity = tf.cast(type_indexed_identity, tf.bool)
-        if require_type_indexed_coefficients:
-            with tf.control_dependencies(
-                [
-                    tf.debugging.assert_equal(
-                        type_indexed_identity,
-                        True,
-                        message=(
-                            "NEST type-indexed coefficients were required, but "
-                            "live per-neuron coefficients are not type-identical."
-                        ),
-                    )
-                ]
-            ):
-                type_indexed_identity = tf.identity(type_indexed_identity)
-    else:
-        type_coefficients = None
-
-    forward_options = {}
-    if return_pre_reset_voltage:
-        import inspect
-        if "emit_pre_reset_voltage" not in inspect.signature(
-            _OPS.dpointnet_nest_state_forward
-        ).parameters:
-            raise RuntimeError("VoltageRateFloor requires rebuilt fused NEST state operators.")
-        forward_options["emit_pre_reset_voltage"] = True
-
-    @tf.custom_gradient
-    def transition(*arguments):
-        layout = "soa" if dtype == tf.float32 else "aos"
-        kernel_coefficients = arguments[7]
-        if use_type_indexed:
-            type_coefficients_arg = arguments[13]
-            type_indices_arg = arguments[14]
-            type_identity_arg = arguments[15]
-
-            def type_indexed_forward():
-                return tuple(_OPS.dpointnet_nest_state_forward_type_indexed(
-                    *arguments[:6], type_coefficients_arg, type_indices_arg,
-                    *arguments[8:11], hard_reset=hard_reset, **forward_options
-                ))
-
-            def full_forward():
-                return tuple(_OPS.dpointnet_nest_state_forward(
-                    *arguments[:6], kernel_coefficients, *arguments[8:11],
-                    hard_reset=hard_reset, coefficients_layout=layout, **forward_options
-                ))
-
-            if type_indexed_identity_static is True:
-                outputs = type_indexed_forward()
-            elif type_indexed_identity_static is False:
-                outputs = full_forward()
-            else:
-                outputs = tf.cond(type_identity_arg, type_indexed_forward, full_forward)
-        else:
-            outputs = _OPS.dpointnet_nest_state_forward(
-                *arguments[:6], kernel_coefficients, *arguments[8:11],
-                hard_reset=hard_reset, coefficients_layout=layout, **forward_options
-            )
-        # The enclosing custom gradient owns the VJP. Nested rollout tapes must
-        # not attempt to differentiate the opaque forward CUDA op itself.
-        outputs = tuple(tf.stop_gradient(value) for value in outputs)
-        backward_refractory = tf.cast(arguments[1] > 0, dtype)
-        threshold_for_backward = (
-            outputs[0] - arguments[10] if return_pre_reset_voltage else outputs[0]
-        )
-
-        def grad(grad_threshold, grad_v, _grad_r, grad_asc, grad_rise, grad_psc,
-                 *history_gradients):
-            grad_threshold = _gradient_like(grad_threshold, outputs[0])
-            grad_v = _gradient_like(grad_v, outputs[1])
-            grad_asc = _gradient_like(grad_asc, outputs[3])
-            old_history_gradient = None
-            if not use_fused_event_vjp and (not detach_reset or not detach_asc_reset):
-                event_grad = tf.zeros_like(outputs[0])
-                params = arguments[6]
-                if not detach_reset:
-                    reset_sensitivity = (
-                        params[:, 26] - (threshold_for_backward + arguments[10])
-                        if hard_reset
-                        else -(1 - params[:, 26])
-                    )
-                    event_grad += grad_v * reset_sensitivity
-                if not detach_asc_reset:
-                    adaptation = tf.reshape(arguments[2], (-1, neurons, 2))
-                    adaptation = tf.where(
-                        backward_refractory[..., None] > 0,
-                        adaptation,
-                        adaptation * params[:, 8:10],
-                    )
-                    sensitivity = params[:, 10:12] + (params[:, 16:18] - 1) * adaptation
-                    event_grad += tf.reduce_sum(
-                        tf.reshape(grad_asc, (-1, neurons, 2)) * sensitivity, axis=-1
-                    )
-                derivative = _surrogate_derivative(
-                    threshold_for_backward, arguments[11], pseudo_gauss, arguments[12]
-                )
-                grad_threshold += tf.where(
-                    backward_refractory > 0,
-                    tf.zeros_like(event_grad),
-                    event_grad * derivative,
-                )
-            backward = _OPS.dpointnet_nest_state_backward
-            type_backward = (
-                _OPS.dpointnet_nest_state_backward_type_indexed
-                if use_type_indexed else None
-            )
-            event_inputs, event_options = (), {}
-            if use_fused_event_vjp:
-                backward = _OPS.dpointnet_nest_state_backward_events
-                type_backward = (
-                    _OPS.dpointnet_nest_state_backward_events_type_indexed
-                    if use_type_indexed else None
-                )
-                event_inputs = (arguments[2], arguments[10], arguments[11], arguments[12])
-                event_options = dict(
-                    detach_reset=detach_reset, detach_asc_reset=detach_asc_reset,
-                    pseudo_gauss=pseudo_gauss,
-                )
-            gradient_inputs = [
-                _gradient_like(gradient, output)
-                for gradient, output in zip(
-                    (grad_threshold, grad_v, grad_asc, grad_rise, grad_psc),
-                    (outputs[0], outputs[1], outputs[3], outputs[4], outputs[5]),
-                )
-            ]
-
-            def full_backward():
-                return tuple(backward(
-                    threshold_for_backward,
-                    tf.cast(backward_refractory, refractory.dtype),
-                    kernel_coefficients,
-                    arguments[9],
-                    1 - arguments[6][0, 27],
-                    *gradient_inputs,
-                    *event_inputs,
-                    hard_reset=hard_reset,
-                    coefficients_layout=layout,
-                    **event_options,
-                ))
-
-            if use_type_indexed:
-                type_event_inputs = (
-                    (arguments[2], arguments[10], arguments[11], arguments[12])
-                    if use_fused_event_vjp
-                    else ()
-                )
-
-                def type_indexed_backward():
-                    return tuple(type_backward(
-                        threshold_for_backward,
-                        tf.cast(backward_refractory, refractory.dtype),
-                        arguments[13],
-                        arguments[14],
-                        arguments[9],
-                        1 - arguments[6][0, 27],
-                        *gradient_inputs,
-                        *type_event_inputs,
-                        hard_reset=hard_reset,
-                        **event_options,
-                    ))
-
-                if type_indexed_identity_static is True:
-                    gradients = type_indexed_backward()
-                elif type_indexed_identity_static is False:
-                    gradients = full_backward()
-                else:
-                    gradients = tf.cond(arguments[15], type_indexed_backward, full_backward)
-            else:
-                gradients = full_backward()
-            extra_nones = (None, None, None) if use_type_indexed else ()
-            return (
-                gradients[0],
-                None,
-                *gradients[1:],
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                *extra_nones,
-            )
-
-        return outputs, grad
-
-    transition_args = (
-        voltage,
-        refractory,
-        asc,
-        psc_rise,
-        psc,
-        currents,
-        coefficients,
-        kernel_coefficients_prepared,
-        tf.cast(t_ref_steps, refractory.dtype),
-        tf.cast(dt, dtype),
-        tf.cast(v_th, dtype),
-        tf.cast(dampening, dtype),
-        tf.cast(gauss_std, dtype),
-    )
-    if use_type_indexed:
-        transition_args += (type_coefficients, type_indices, type_indexed_identity)
-    threshold, new_v, new_r, new_asc, new_rise, new_psc = transition(*transition_args)
-    spikes, new_history = fused_spike_shift(
-        threshold - tf.cast(v_th, dtype) if return_pre_reset_voltage else threshold,
-        refractory > 0,
-        history,
-        dampening,
-        pseudo_gauss=pseudo_gauss,
-        gauss_std=gauss_std,
-    )
-    result = (spikes, new_v, new_r, new_asc, new_rise, new_psc, new_history)
-    if return_pre_reset_voltage:
-        result += (threshold,)
-    return result
-
-
-def _fused_nest_state_history(
+def fused_nest_state(
     voltage,
     refractory,
     asc,
@@ -513,8 +194,15 @@ def _fused_nest_state_history(
     if fuse_history and history.dtype != psc.dtype:
         raise ValueError("NEST state/history fusion requires history and PSC dtypes to match.")
     use_type_indexed = packed_type_coefficients is not None
-    if use_type_indexed and not fused_nest_state_history_type_indexed_available():
-        raise RuntimeError("NEST type-indexed state/history fusion requires rebuilt CUDA operators.")
+    if use_type_indexed:
+        if fuse_history:
+            available = fused_nest_state_history_type_indexed_available()
+            requirement = "NEST type-indexed state/history fusion"
+        else:
+            available = fused_nest_type_indexed_coefficients_available()
+            requirement = "NEST type-indexed coefficients"
+        if not available:
+            raise RuntimeError(requirement + " requires rebuilt CUDA operators.")
     if (packed_type_coefficients is None) != (type_indices is None):
         raise ValueError(
             "packed_type_coefficients and type_indices must be provided together."
@@ -571,9 +259,9 @@ def _fused_nest_state_history(
                         type_indexed_identity,
                         True,
                         message=(
-                            "NEST type-indexed coefficients were required for "
-                            "state/history fusion, but live per-neuron coefficients "
-                            "are not type-identical."
+                            "NEST type-indexed coefficients were required"
+                            + (" for state/history fusion" if fuse_history else "")
+                            + ", but live per-neuron coefficients are not type-identical."
                         ),
                     )
                 ]
@@ -944,7 +632,7 @@ def _fused_nest_state_history(
             tf.cast(v_th, dtype),
             tf.cast(dampening, dtype),
             tf.cast(gauss_std, dtype),
-            tf.cast(history, psc.dtype),
+            tf.cast(history, psc.dtype) if fuse_history else history,
             type_coefficients,
             type_indices,
         )
@@ -986,59 +674,6 @@ def _fused_nest_state_history(
     return result
 
 
-
-def fused_nest_state(
-    voltage, refractory, asc, psc_rise, psc, currents, history, *,
-    syn_decay, psc_initial, asc_decay, asc_amps, decay, current_factor,
-    asc_mean, asc_refractory_decay, psc_voltage, rise_voltage, t_ref_steps,
-    dt, v_reset, v_th, dampening, voltage_gradient_dampening, hard_reset=False,
-    detach_reset=True, detach_asc_reset=True, pseudo_gauss=False, gauss_std=0.5,
-    return_pre_reset_voltage=False, use_fused_event_vjp=False,
-    packed_coefficients=None, packed_kernel_coefficients=None,
-    packed_type_coefficients=None, type_indices=None, type_indexed_identity=None,
-    require_type_indexed_coefficients=False, fuse_history=False,
-):
-    if fuse_history:
-        return _fused_nest_state_history(
-            voltage, refractory, asc, psc_rise, psc, currents, history,
-            syn_decay=syn_decay, psc_initial=psc_initial, asc_decay=asc_decay,
-            asc_amps=asc_amps, decay=decay, current_factor=current_factor,
-            asc_mean=asc_mean, asc_refractory_decay=asc_refractory_decay,
-            psc_voltage=psc_voltage, rise_voltage=rise_voltage,
-            t_ref_steps=t_ref_steps, dt=dt, v_reset=v_reset, v_th=v_th,
-            dampening=dampening,
-            voltage_gradient_dampening=voltage_gradient_dampening,
-            hard_reset=hard_reset, detach_reset=detach_reset,
-            detach_asc_reset=detach_asc_reset, pseudo_gauss=pseudo_gauss,
-            gauss_std=gauss_std, return_pre_reset_voltage=return_pre_reset_voltage,
-            use_fused_event_vjp=use_fused_event_vjp,
-            packed_coefficients=packed_coefficients,
-            packed_kernel_coefficients=packed_kernel_coefficients,
-            packed_type_coefficients=packed_type_coefficients,
-            type_indices=type_indices,
-            type_indexed_identity=type_indexed_identity,
-            require_type_indexed_coefficients=require_type_indexed_coefficients,
-            fuse_history=True,
-        )
-    return _fused_nest_state_base(
-        voltage, refractory, asc, psc_rise, psc, currents, history,
-        syn_decay=syn_decay, psc_initial=psc_initial, asc_decay=asc_decay,
-        asc_amps=asc_amps, decay=decay, current_factor=current_factor,
-        asc_mean=asc_mean, asc_refractory_decay=asc_refractory_decay,
-        psc_voltage=psc_voltage, rise_voltage=rise_voltage,
-        t_ref_steps=t_ref_steps, dt=dt, v_reset=v_reset, v_th=v_th,
-        dampening=dampening, voltage_gradient_dampening=voltage_gradient_dampening,
-        hard_reset=hard_reset, detach_reset=detach_reset,
-        detach_asc_reset=detach_asc_reset, pseudo_gauss=pseudo_gauss,
-        gauss_std=gauss_std, return_pre_reset_voltage=return_pre_reset_voltage,
-        use_fused_event_vjp=use_fused_event_vjp,
-        packed_coefficients=packed_coefficients,
-        packed_kernel_coefficients=packed_kernel_coefficients,
-        packed_type_coefficients=packed_type_coefficients,
-        type_indices=type_indices,
-        type_indexed_identity=type_indexed_identity,
-        require_type_indexed_coefficients=require_type_indexed_coefficients,
-    )
 
 def pack_nest_state_coefficients(
     neurons,

@@ -273,15 +273,33 @@ Qualifications:
 - Packed SM86 performance is **not A100/SM80 qualification**. Do not force the
   public FP16 packed flags on unsupported GPUs; record the supported fallback.
 
+`EMDWeightRegularization` uses one stable grouped implementation with an analytic
+canonical-order VJP. The duplicate TensorArray and Javier-only variants and their
+`use_grouped_custom_gradient` / `use_javier_grouped_emd` switches have been removed.
+Delete those keys when adopting this refactor; explicitly supplying them raises
+`TypeError` rather than silently ignoring a retired option. Cost, grouping, initial
+distribution and evaluation-scoped cache semantics are unchanged. Values and
+gradients are numerically equivalent, not promised bitwise identical.
+
 For every `EMDWeightRegularization` loss, set:
 
 ```json
 {
-  "use_grouped_custom_gradient": true,
-  "use_javier_grouped_emd": true,
   "deduplicate_within_graph": true
 }
 ```
+
+`GLIF3Cell` also no longer accepts `use_unity_lr_scale_fastpath`. Forward
+and adjoint projection always retain the original learning-rate scaling
+operation, including at `lr_scale=1.0`. Removing that identity operation
+changed traced FP16 NEST rollout equivalence despite matching single-step
+projections. Remove the old toggle, not the scientific `lr_scale` setting.
+
+The fused NEST state wrapper shares coefficient packing, dispatch and event
+VJP handling between separate and fused-history execution. Kernel capability
+checks remain specific to the selected path; separate execution preserves
+the history tensor's own dtype. Coefficient layouts, live type-identity checks
+and the compact static type-indexed history path are unchanged.
 
 Deduplication is limited to one training loss/gradient evaluation. Parallel
 conditions can share the calculation; series conditions use independent scopes
