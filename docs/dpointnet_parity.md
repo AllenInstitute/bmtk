@@ -156,6 +156,11 @@ External runners must also apply the resolved external-packed/fixed-four flags
 to every input projection and wire project-specific smoothing compatibility;
 the cell resolver cannot control those independent runner surfaces.
 
+Boolean accelerator flags require actual booleans, not integer or string
+lookalikes. Only documented tri-state options also accept `"auto"`. Their shared
+parser preserves each option's existing NumPy-scalar handling and validation
+errors; consolidating that parser does not change defaults or dispatch.
+
 ### Portable preview adoption
 
 Use the fork's `feature/dpointnet-training-inputs-consolidated` branch and pin

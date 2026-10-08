@@ -3,6 +3,7 @@ from pathlib import Path
 
 import tensorflow as tf
 
+from .._options import validate_bool_option
 from .csr_spike_ops import _gpu_compatibility_error, _read_built_architectures
 
 _LIBRARY_PATH = Path(__file__).with_name("_glif_state_ops.so")
@@ -184,8 +185,7 @@ def _fused_nest_state_base(
             + glif_state_op_status()
         )
     dtype = voltage.dtype
-    if use_fused_event_vjp is not True and use_fused_event_vjp is not False:
-        raise ValueError("use_fused_event_vjp must be true or false.")
+    validate_bool_option(use_fused_event_vjp, "use_fused_event_vjp")
     if use_fused_event_vjp and not fused_nest_event_vjp_available():
         raise RuntimeError("NEST event VJP requires rebuilt CUDA operators.")
     use_type_indexed = packed_type_coefficients is not None
@@ -197,8 +197,7 @@ def _fused_nest_state_base(
         )
     if use_type_indexed and type_indexed_identity is None:
         raise ValueError("type_indexed_identity is required with type-indexed coefficients.")
-    if require_type_indexed_coefficients is not True and require_type_indexed_coefficients is not False:
-        raise ValueError("require_type_indexed_coefficients must be true or false.")
+    validate_bool_option(require_type_indexed_coefficients, "require_type_indexed_coefficients")
     type_indexed_identity_static = None
     if use_type_indexed:
         type_indexed_identity_static = tf.get_static_value(type_indexed_identity)
@@ -506,8 +505,7 @@ def _fused_nest_state_history(
             + glif_state_op_status()
         )
     dtype = voltage.dtype
-    if use_fused_event_vjp is not True and use_fused_event_vjp is not False:
-        raise ValueError("use_fused_event_vjp must be true or false.")
+    validate_bool_option(use_fused_event_vjp, "use_fused_event_vjp")
     if use_fused_event_vjp and not fused_nest_event_vjp_available():
         raise RuntimeError("NEST event VJP requires rebuilt CUDA operators.")
     if fuse_history and not fused_nest_state_history_available():
@@ -523,8 +521,7 @@ def _fused_nest_state_history(
         )
     if use_type_indexed and type_indexed_identity is None:
         raise ValueError("type_indexed_identity is required with type-indexed coefficients.")
-    if require_type_indexed_coefficients is not True and require_type_indexed_coefficients is not False:
-        raise ValueError("require_type_indexed_coefficients must be true or false.")
+    validate_bool_option(require_type_indexed_coefficients, "require_type_indexed_coefficients")
     type_indexed_identity_static = None
     if use_type_indexed:
         type_indexed_identity_static = tf.get_static_value(type_indexed_identity)

@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 import pickle as pkl
 from pathlib import Path
+from .._options import validate_bool_option
 from .nest_dynamics import (
     integration_coefficients,
     active_update,
@@ -566,18 +567,7 @@ def voltage_penalty_mean_step(voltage, n_neurons, penalty_mode="range"):
 
 
 def _validate_fused_cuda_option(value):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    if isinstance(value, (bytes, np.bytes_)):
-        try:
-            value = value.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-    if isinstance(value, (str, np.str_)) and value == "auto":
-        return "auto"
-    raise ValueError('use_fused_cuda must be true, false, or "auto".')
+    return validate_bool_option(value, "use_fused_cuda", allow_auto=True, unwrap_numpy=True)
 
 
 def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
@@ -594,42 +584,19 @@ def _fused_cuda_dtype_error(compute_dtype, variable_dtype):
 
 
 def _validate_pair_projection_option(value):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    if isinstance(value, (bytes, np.bytes_)):
-        try:
-            value = value.decode("utf-8")
-        except UnicodeDecodeError:
-            pass
-    if isinstance(value, (str, np.str_)) and value == "auto":
-        return "auto"
-    raise ValueError('use_pair_projection must be true, false, or "auto".')
+    return validate_bool_option(value, "use_pair_projection", allow_auto=True, unwrap_numpy=True)
 
 
 def _validate_fixed4_forward_option(value):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    raise ValueError("use_fixed4_input_forward must be true or false.")
+    return validate_bool_option(value, "use_fixed4_input_forward", unwrap_numpy=True)
 
 
 def _validate_fused_current_accumulation_option(value):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    raise ValueError("use_fused_current_accumulation must be true or false.")
+    return validate_bool_option(value, "use_fused_current_accumulation", unwrap_numpy=True)
 
 
 def _validate_direct_csr_gradient_option(value):
-    if isinstance(value, np.ndarray) and value.ndim == 0:
-        value = value.item()
-    if value is True or value is False:
-        return value
-    raise ValueError("use_direct_csr_recurrent_gradient must be true or false.")
+    return validate_bool_option(value, "use_direct_csr_recurrent_gradient", unwrap_numpy=True)
 
 
 def _resolve_pair_projection(option, fused_cuda, batch_size, n_syn_basis):
@@ -813,8 +780,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             ("use_unity_lr_scale_fastpath", use_unity_lr_scale_fastpath),
             ("use_native_voltage_penalty", use_native_voltage_penalty),
         ):
-            if value is not True and value is not False:
-                raise ValueError(f"{name} must be true or false.")
+            validate_bool_option(value, name)
         if not np.isfinite(gauss_std) or gauss_std <= 0:
             raise ValueError("gauss_std must be finite and positive.")
         if not np.isfinite(dampening_factor) or dampening_factor < 0:
@@ -859,11 +825,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 "temporal_checkpoint_chunk_size must be a positive integer."
             )
         self.temporal_gradient_precision = temporal_gradient_precision
-        if (
-            use_fused_recurrent_accumulation is not True
-            and use_fused_recurrent_accumulation is not False
-        ):
-            raise ValueError("use_fused_recurrent_accumulation must be true or false.")
+        validate_bool_option(use_fused_recurrent_accumulation, "use_fused_recurrent_accumulation")
         self.use_fused_recurrent_accumulation = use_fused_recurrent_accumulation
         self.use_javier_recurrent_vjp = use_javier_recurrent_vjp
         if use_javier_recurrent_vjp and not use_fused_recurrent_accumulation:
@@ -909,11 +871,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
         self.current_replay_mode = current_replay_mode
         self.temporal_checkpoint_chunk_size = int(temporal_checkpoint_chunk_size)
-        if (
-            temporal_pack_spike_checkpoints is not True
-            and temporal_pack_spike_checkpoints is not False
-        ):
-            raise ValueError("temporal_pack_spike_checkpoints must be true or false.")
+        validate_bool_option(temporal_pack_spike_checkpoints, "temporal_pack_spike_checkpoints")
         self.temporal_pack_spike_checkpoints = bool(temporal_pack_spike_checkpoints)
         self._temporal_continuous_inputs = any(
             item.get("options", {}).get("input_type", item["input_type"]) == "current"
@@ -938,36 +896,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
             raise ValueError("dt must be finite and positive")
         if hard_reset is None:
             hard_reset = dynamics_mode == "nest"
-        if (
-            use_small_batch_recurrent_backward is not True
-            and use_small_batch_recurrent_backward is not False
-        ):
-            raise ValueError(
-                "use_small_batch_recurrent_backward must be true or false."
-            )
+        validate_bool_option(use_small_batch_recurrent_backward, "use_small_batch_recurrent_backward")
         self._use_small_batch_recurrent_backward = use_small_batch_recurrent_backward
-        if use_active_row_forward is not True and use_active_row_forward is not False:
-            raise ValueError("use_active_row_forward must be true or false.")
+        validate_bool_option(use_active_row_forward, "use_active_row_forward")
         self._use_active_row_forward = use_active_row_forward
-        if (
-            use_forward_run_aggregation is not True
-            and use_forward_run_aggregation is not False
-        ):
-            raise ValueError("use_forward_run_aggregation must be true or false.")
+        validate_bool_option(use_forward_run_aggregation, "use_forward_run_aggregation")
         self._use_forward_run_aggregation = use_forward_run_aggregation
-        if (
-            use_device_active_queue_forward is not True
-            and use_device_active_queue_forward is not False
-        ):
-            raise ValueError("use_device_active_queue_forward must be true or false.")
+        validate_bool_option(use_device_active_queue_forward, "use_device_active_queue_forward")
         self._use_device_active_queue_forward = use_device_active_queue_forward
-        if (
-            use_uniform_input_delay_projection is not True
-            and use_uniform_input_delay_projection is not False
-        ):
-            raise ValueError(
-                "use_uniform_input_delay_projection must be true or false."
-            )
+        validate_bool_option(use_uniform_input_delay_projection, "use_uniform_input_delay_projection")
         self._use_uniform_input_delay_projection = (
             use_uniform_input_delay_projection
         )
