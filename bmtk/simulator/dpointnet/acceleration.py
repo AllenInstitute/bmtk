@@ -78,16 +78,19 @@ def resolve_acceleration_options(
     state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not pascal_nest
     select("use_pair_projection", currents and known_batch,
            "compatible CSR library and known positive batch")
-    select("use_fixed4_input_forward", currents,
-           "compatible CSR library; each input checks exactly four incoming edges")
+    select("use_fixed4_input_forward", currents and four_basis,
+           "compatible CSR library and four bases; each input checks exactly four incoming edges")
     select("use_fused_current_accumulation", currents and four_basis and batch_size == 32,
            "compatible CSR library, four bases and batch32")
-    select("use_direct_csr_recurrent_gradient", currents,
-           "compatible CSR library; canonical master ordering retained")
-    select("use_active_row_forward", currents and small_batch,
-           "compatible CSR library and batch1..32")
-    select("use_device_active_queue_forward", currents and small_batch,
-           "compatible CSR library and batch1..32")
+    per_edge_training = options.get("train_recurrent", True) and not options.get(
+        "train_recurrent_per_type", train_recurrent_per_type
+    )
+    select("use_direct_csr_recurrent_gradient", currents and per_edge_training,
+           "compatible CSR library and trainable per-edge recurrent weights; canonical master ordering retained")
+    select("use_active_row_forward", currents and small_batch and four_basis,
+           "compatible CSR library, batch1..32 and four bases")
+    select("use_device_active_queue_forward", currents and small_batch and four_basis,
+           "compatible CSR library, batch1..32 and four bases")
     pair_projection = options["use_pair_projection"] is True or (
         options["use_pair_projection"] == "auto" and batch_size == 32 and four_basis
     )
@@ -122,8 +125,7 @@ def resolve_acceleration_options(
         and csr_spike_ops._auto_native_architecture(architecture)
         and (architecture != 75 or fp16_backward)
         and options["use_direct_csr_recurrent_gradient"] is True
-        and options.get("train_recurrent", True)
-        and not options.get("train_recurrent_per_type", train_recurrent_per_type)
+        and per_edge_training
         and pair_projection and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     select("use_fused_recurrent_accumulation", accumulator,
@@ -174,6 +176,7 @@ def resolve_weight_carry_options(
     architecture = csr_spike_ops._gpu_compute_architecture()
     available = (
         architecture is not None and architecture >= 61
+        and csr_spike_ops.fused_cuda_available()
         and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     native = available and cell_options.get("use_fused_recurrent_accumulation") is True

@@ -123,7 +123,13 @@ missing/incompatible operators select the documented TensorFlow fallback with
 a warning. General NEST/Pascal is not automatically admitted. Fixed-four inputs
 and packed metadata retain per-connectivity validation/fallback. Recurrent
 accumulation additionally requires an explicitly selected direct-state loop or
-FP32 replay route, direct CSR and trainable per-edge weights.
+FP32 replay route, direct CSR and trainable per-edge weights. Automatic direct-CSR
+recurrent gradients stay off for frozen or per-type recurrent weights; the profile
+preserves the configured parameter sharing. Active-row, device-active-queue and
+fixed-four input forward specializations require four basis columns. Five-basis
+fits retain general projection rather than those specialized paths.
+An explicitly requested direct-state loop also selects the explicit-state RNN
+wrapper for legacy dynamics with compute-precision state.
 
 The profile does not change dynamics, reset semantics, precision, temporal
 credit, loss functions, optimizer, allocator, random sampler or scientific
@@ -138,7 +144,8 @@ External weight-carrier runners can additionally use
 `resolve_weight_carry_options` and `project_weight_carry` from the same module.
 Rebuilt native operators support SM61+ independently of the narrower automatic
 policy. External carrier selection also checks the admitted cell route:
-compatible hardware alone does not turn on native accumulation. The compatible generic
+compatible hardware alone does not turn on native accumulation: the loaded CSR
+architecture manifest must also cover the GPU. The compatible generic
 route combines direct-CSR values/gradients with a TensorFlow identity carrier,
 retaining live recurrent spike credit, including silent-neuron adjoints.
 Explicit stopped external inputs retain a zero-scaled unused spike VJP on the

@@ -21,6 +21,7 @@ from bmtk.simulator.dpointnet.cell_models.nest_dynamics import (
     spike_reset,
 )
 from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+from bmtk.simulator.dpointnet.custom_ops import fused_cuda_available
 from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
     fused_glif_state_available,
     fused_spike_shift,
@@ -662,6 +663,115 @@ def test_rnn_model_selective_factory_and_extractor(mode, state_input, full_volta
         if not full_voltage:
             assert outputs[0][0].dtype == tf.float16
             assert outputs[0][1].dtype == tf.float32
+    finally:
+        rnn.cleanup()
+
+
+@pytest.mark.parametrize("direct", [False, True])
+@pytest.mark.parametrize("profile", [None, "auto"])
+@pytest.mark.parametrize("state_input", [False, True])
+def test_legacy_compute_factory_honors_direct_loop(direct, profile, state_input):
+    from bmtk.simulator.dpointnet.rnn_model import RNN
+
+    network, inputs, options = make_cell(
+        selective=False, return_spec=True, track_voltage_penalty=False,
+        return_voltage_sequences=True, use_direct_state_rnn_loop=direct,
+        acceleration_profile=profile,
+    )
+    options.pop("train_recurrent_per_type")
+    rnn = RNN(seq_len=3, batch_size=2, cell_params=options)
+    rnn._recurrent_networks["test"] = SimpleNamespace(
+        to_dict=lambda: copy.deepcopy(network)
+    )
+    rnn._input_networks["drive"] = SimpleNamespace(
+        name="drive", n_spiking_nodes=2,
+        to_dict=lambda: copy.deepcopy(inputs["drive"]),
+    )
+    try:
+        rnn.build(training=True, use_state_input=state_input)
+        assert rnn.cell.dynamics_mode == "legacy"
+        assert rnn.cell.state_precision == "compute"
+        assert not rnn.cell._online_voltage_losses
+        assert isinstance(rnn.rsnn_layer, ExplicitStateRNN) == direct
+        sequence = tf.ones((2, 3, 2), tf.float32)
+        outputs = rnn.rsnn_layer(sequence, initial_state=rnn.zero_state)
+        state = rnn.zero_state
+        steps = []
+        for step in range(3):
+            output, state = rnn.cell(sequence[:, step], state)
+            steps.append(output)
+        expected = tf.stack(steps, axis=1)
+        np.testing.assert_allclose(outputs[0], expected, rtol=1e-6, atol=1e-6)
+        for actual_state, expected_state in zip(outputs[1:], state):
+            np.testing.assert_allclose(actual_state, expected_state, rtol=1e-6, atol=1e-6)
+    finally:
+        rnn.cleanup()
+
+
+@pytest.mark.skipif(
+    not fused_cuda_available(),
+    reason="Actual compatible GPU operator required",
+)
+@pytest.mark.parametrize("trainable,per_type", [(False, False), (True, True), (True, False)])
+def test_actual_auto_cell_preserves_recurrent_parameter_sharing(trainable, per_type):
+    from bmtk.simulator.dpointnet.acceleration import resolve_acceleration_options
+
+    network, inputs, options = make_cell(selective=False, return_spec=True)
+    options.update(train_recurrent=trainable, train_recurrent_per_type=per_type)
+    options, _ = resolve_acceleration_options(
+        {"acceleration_profile": "auto", **options},
+        compute_dtype=tf.float32, variable_dtype=tf.float32,
+        batch_size=2, basis_width=4,
+    )
+    cell = GLIF3Cell(network, inputs, **options)
+    try:
+        assert cell._use_direct_csr_recurrent_gradient == (trainable and not per_type)
+        assert cell.recurrent_weight_values.trainable == (trainable and not per_type)
+        output, _ = cell(tf.ones((2, 2)), cell.zero_state(2, tf.float32))
+        assert all(np.all(np.isfinite(value.numpy())) for value in tf.nest.flatten(output))
+    finally:
+        cell.close_fused_cuda()
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Actual compatible GPU operator required")
+def test_actual_legacy_compute_factory_executes_auto_weight_carrier(monkeypatch):
+    from bmtk.simulator.dpointnet.acceleration import csr_spike_ops
+    from bmtk.simulator.dpointnet.rnn_model import RNN
+
+    if not csr_spike_ops._auto_native_architecture(csr_spike_ops._gpu_compute_architecture()):
+        pytest.skip("Published automatic native policy requires SM75/SM86+")
+    network, inputs, options = make_cell(
+        selective=False, return_spec=True, track_voltage_penalty=False,
+        return_voltage_sequences=True, use_direct_state_rnn_loop=True,
+        acceleration_profile="auto",
+    )
+    tf.keras.mixed_precision.set_global_policy("mixed_float16")
+    options.pop("train_recurrent_per_type")
+    original = GLIF3Cell._call_impl
+    observed_carriers = []
+
+    def call_impl(self, *args, **kwargs):
+        observed_carriers.append(kwargs.get("recurrent_weight_carrier") is not None)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(GLIF3Cell, "_call_impl", call_impl)
+    rnn = RNN(seq_len=3, batch_size=2, dtype="float16", cell_params=options)
+    rnn._recurrent_networks["test"] = SimpleNamespace(to_dict=lambda: copy.deepcopy(network))
+    rnn._input_networks["drive"] = SimpleNamespace(
+        name="drive", n_spiking_nodes=2, to_dict=lambda: copy.deepcopy(inputs["drive"]),
+    )
+    try:
+        rnn.build(training=True)
+        assert isinstance(rnn.rsnn_layer, ExplicitStateRNN)
+        assert rnn.cell.state_precision == "compute"
+        assert rnn.acceleration_report["selected"]["use_fused_recurrent_accumulation"] is True
+        assert any(observed_carriers)
+        with tf.GradientTape() as tape:
+            output = rnn.rsnn_layer(tf.ones((2, 3, 2), tf.float16), initial_state=rnn.zero_state)
+            loss = tf.reduce_sum(tf.cast(output[0], tf.float32))
+        gradient = tape.gradient(loss, rnn.cell.recurrent_weight_values)
+        assert gradient is not None
+        assert np.all(np.isfinite(gradient.numpy()))
     finally:
         rnn.cleanup()
 

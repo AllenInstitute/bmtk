@@ -516,6 +516,7 @@ class RNN:
                     self._cell.dynamics_mode == "nest"
                     or self._cell.state_precision == "selective"
                     or self._cell._online_voltage_losses
+                    or self._cell._use_direct_state_rnn_loop
                 )
                 else tf.keras.layers.RNN
             )
