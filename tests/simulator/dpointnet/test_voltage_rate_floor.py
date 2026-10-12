@@ -288,7 +288,8 @@ def test_model_weight_save_restores_history_and_config(tmp_path):
     rnn.cleanup()
 
 
-def test_native_json_registration_precedes_building_losses(monkeypatch):
+@pytest.mark.parametrize("checkpoint_chunk_size", [None, 3])
+def test_native_json_registration_precedes_building_losses(monkeypatch, checkpoint_chunk_size):
     from bmtk.simulator.core.simulation_config import SimulationConfig
     from bmtk.simulator.dpointnet.network_adaptor import NetworkAdaptor
 
@@ -325,7 +326,12 @@ def test_native_json_registration_precedes_building_losses(monkeypatch):
             ],
         },
     })
+    if checkpoint_chunk_size is not None:
+        config["training"]["gradient_checkpoint_chunk_size"] = checkpoint_chunk_size
     rnn = RNN.from_config(config)
+    assert rnn.training_engine.gradient_checkpoint_chunk_size == (
+        6 if checkpoint_chunk_size is None else checkpoint_chunk_size
+    )
     first, second = rnn.training_engine.parameters
     assert first.loss_functions["floor"] is second.loss_functions["floor"]
     assert len(rnn._online_voltage_losses) == 1

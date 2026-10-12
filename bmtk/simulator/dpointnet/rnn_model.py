@@ -18,6 +18,7 @@ from .loss_functions import LossModules
 from .learning_rules import LearningRules
 from . import optimizers
 from .training import TrainingEngine
+from ._options import UNSET
 from .callbacks import callback_classes
 from .id_maps import TFIDMap
 from .weights import ModelWeights
