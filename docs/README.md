@@ -1,26 +1,35 @@
-## BMTK documentation, guides, and examples
+## BMTK documentation
 
-### DPointNet user and configuration guides
+### For users
 
-- [DPointNet user guide](autodocs/source/dpointnet_guide.rst)
-- [Recommended multi-GPU build and automatic acceleration workflow](dpointnet_parity.md#recommended-workflow-for-new-projects)
-- [Performance configuration and precision](dpointnet_parity.md#precision-profiles)
-- [Variable-batch acceleration and device Poisson sampling](dpointnet_variable_batch.md)
-- [Automatic alpha-basis fitting](dpointnet_alpha_basis.md)
-- [Per-device LGN input generation](dpointnet_lgn_pipeline.md)
-- [Pascal GPU compatibility and limitations](dpointnet_pascal.md)
-- [Initial-state input recovery diagnostics](dpointnet_input_recovery.md)
+Start with the [DPointNet guide](autodocs/source/dpointnet_guide.rst) for a
+complete small simulation and configuration overview. Continue with
+[training](autodocs/source/dpointnet_training.rst) and
+[defaults and migration](autodocs/source/dpointnet_training_standards.rst).
+Define your own objectives and training hooks with
+[custom losses and callbacks](autodocs/source/dpointnet_custom_training.rst).
+The runnable [300-neuron example](../examples/dpointnet_all2all/) includes
+network/component files and target rates. Optional visual inputs, network
+import, performance and troubleshooting are linked from the guide.
 
-These Markdown supplements can be read directly on GitHub. They are not currently
-included in the [published user guide](https://alleninstitute.github.io/bmtk/dpointnet_guide.html)
-navigation. Consult documentation from the same revision as your installed BMTK.
+Use documentation from the same revision as your installed BMTK. General
+BMTK notebooks are in [tutorial/](tutorial/); examples for the other simulators
+are in the repository's [examples/](../examples/).
 
-### DPointNet developer notes
+### For documentation contributors
 
-- [Startup preprocessing and ordering invariants](dpointnet_startup.md)
+The Sphinx website uses reStructuredText pages in
+[autodocs/source/](autodocs/source/). Add pages to the appropriate toctree.
+Keep runnable user workflows separate from
+[DPointNet implementation notes](autodocs/source/dpointnet_development.rst).
 
-#### directory structure
+Install the repository's `doc_requirements.txt`, then run `make html` from
+`docs/autodocs`. To render without executing tutorial notebooks:
 
-- autodocs/ - scripts and pages for the generation of github-pages html files.
-- tutorial/ - Tutorials and guides for using bmtk and its different parts. **New users should start here**.
-- examples/ - Various examples of how to build networks, run various simulations, and plot their results. A good place to start for users wanting a quick and dirty introduction (warning: many of these examples are not as well documented as the tutorials).
+```bash
+make html SPHINXOPTS="-D nbsphinx_execute=never"
+```
+
+The build copies tutorial notebooks and static assets into its source tree.
+Use a disposable copy when validating without generated source changes.
+Inspect the rendered navigation, tables and examples as well as build warnings.

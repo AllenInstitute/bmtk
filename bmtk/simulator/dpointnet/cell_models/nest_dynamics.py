@@ -1,6 +1,42 @@
 import numpy as np
 from scipy.special import exprel
 import tensorflow as tf
+from .._options import UNSET, validate_bool_option
+
+
+def resolve_hard_reset_options(
+    hard_reset=UNSET, gradient_mode=UNSET, *, dynamics_mode="nest", training=False
+):
+    omitted_reset = hard_reset is UNSET
+    if omitted_reset:
+        hard_reset = dynamics_mode == "nest"
+    elif hard_reset is None:
+        hard_reset = dynamics_mode == "nest" and not training
+    validate_bool_option(hard_reset, "hard_reset")
+    if gradient_mode is UNSET:
+        gradient_mode = "soft_surrogate" if omitted_reset and dynamics_mode == "nest" else "exact"
+    validate_hard_reset_gradient_mode(
+        gradient_mode, hard_reset=hard_reset, dynamics_mode=dynamics_mode
+    )
+    return hard_reset, gradient_mode
+
+
+def validate_hard_reset_gradient_mode(mode, *, hard_reset, dynamics_mode="nest"):
+    if mode not in ("exact", "soft_surrogate"):
+        raise ValueError("hard_reset_gradient_mode must be 'exact' or 'soft_surrogate'.")
+    if mode == "soft_surrogate" and (hard_reset is not True or dynamics_mode != "nest"):
+        raise ValueError(
+            "hard_reset_gradient_mode='soft_surrogate' requires explicit "
+            "hard_reset=True and dynamics_mode='nest'."
+        )
+
+
+@tf.custom_gradient
+def _hard_forward_surrogate_backward(hard_value, surrogate_value):
+    def grad(dy):
+        return None, dy
+
+    return tf.identity(hard_value), grad
 
 
 def time_steps(milliseconds, dt):
@@ -59,6 +95,7 @@ def active_update(
     reset_voltage,
     hard_reset,
     direct_current=0.0,
+    hard_reset_gradient_mode="exact",
 ):
     active = refractory <= 0
     mean_adaptation = tf.reduce_sum(adaptation * asc_mean, axis=-1)
@@ -68,6 +105,8 @@ def active_update(
         + tf.reduce_sum(psc * psc_voltage + psc_rise * rise_voltage, axis=-1)
     )
     voltage = tf.where(active, candidate, reset_voltage) if hard_reset else candidate
+    if hard_reset_gradient_mode == "soft_surrogate":
+        voltage = _hard_forward_surrogate_backward(voltage, candidate)
     adaptation = tf.where(active[..., None], adaptation * asc_decay, adaptation)
     remaining = tf.maximum(refractory - tf.cast(1, refractory.dtype), 0)
     return voltage, remaining, adaptation, active
@@ -103,9 +142,11 @@ def spike_reset(
     hard_reset,
     detach_reset=True,
     detach_asc_reset=True,
+    hard_reset_gradient_mode="exact",
 ):
     fired = tf.stop_gradient(spikes) > 0
     reset_event = tf.stop_gradient(spikes) if detach_reset else spikes
+    voltage_before_reset = voltage
     voltage = (
         _event_select(
             voltage,
@@ -116,6 +157,9 @@ def spike_reset(
         if hard_reset
         else voltage - reset_event * (1 - reset_voltage)
     )
+    if hard_reset_gradient_mode == "soft_surrogate":
+        soft_voltage = voltage_before_reset - reset_event * (1 - reset_voltage)
+        voltage = _hard_forward_surrogate_backward(voltage, soft_voltage)
     refractory = tf.where(
         fired, tf.cast(refractory_steps, refractory.dtype), refractory
     )

@@ -1,9 +1,13 @@
 import argparse
 import json
+import os
 import tempfile
 from pathlib import Path
 
 import numpy as np
+
+os.environ.pop("TF_GPU_ALLOCATOR", None)
+
 import tensorflow as tf
 
 from bmtk.simulator import dpointnet

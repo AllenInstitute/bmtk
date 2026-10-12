@@ -207,6 +207,9 @@ def test_synchronization_loss_matches_loop_reference_value_and_gradient(monkeypa
     with tf.GradientTape() as actual_tape:
         actual_value = actual_loss(spikes)
     actual_gradient = actual_tape.gradient(actual_value, spikes)
+    if tf.config.list_logical_devices("GPU"):
+        assert "GPU:" in actual_value.device
+        assert "GPU:" in actual_gradient.device
 
     with tf.GradientTape() as reference_tape:
         plan = reference_loss._plan(2)
@@ -225,12 +228,14 @@ def test_synchronization_loss_matches_loop_reference_value_and_gradient(monkeypa
         selected_spikes = tf.stack(samples)
         reference_fanos = []
         for bin_size in reference_loss._bin_sizes_ms:
-            counts = tf.nn.conv1d(
-                selected_spikes[..., None],
-                tf.ones((bin_size, 1, 1), dtype=tf.float32),
-                stride=bin_size,
-                padding="VALID",
-            )[..., 0]
+            # Keep the independent convolution oracle usable with cuDNN on Pascal.
+            with tf.device("/CPU:0"):
+                counts = tf.nn.conv1d(
+                    selected_spikes[..., None],
+                    tf.ones((bin_size, 1, 1), dtype=tf.float32),
+                    stride=bin_size,
+                    padding="VALID",
+                )[..., 0]
             mean_count = tf.maximum(
                 tf.reduce_mean(counts, axis=1), tf.constant(1e-7, tf.float32)
             )
@@ -241,7 +246,9 @@ def test_synchronization_loss_matches_loop_reference_value_and_gradient(monkeypa
         reference_value = reference_loss._sync_cost * tf.reduce_mean(
             tf.square(reference_loss.experimental_fanos_mean - reference_fanos)
         )
-    reference_gradient = reference_tape.gradient(reference_value, spikes)
+    with tf.device("/CPU:0"):
+        reference_gradient = reference_tape.gradient(reference_value, spikes)
+    assert "CPU:" in reference_gradient.device
 
     np.testing.assert_allclose(actual_value, reference_value, rtol=1e-4, atol=1e-5)
     gradient_max_absolute_error = np.max(

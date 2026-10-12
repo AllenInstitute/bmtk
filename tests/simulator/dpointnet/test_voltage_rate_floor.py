@@ -1,4 +1,5 @@
 import copy
+import warnings
 from types import SimpleNamespace
 
 import numpy as np
@@ -288,7 +289,11 @@ def test_model_weight_save_restores_history_and_config(tmp_path):
     rnn.cleanup()
 
 
-def test_native_json_registration_precedes_building_losses(monkeypatch):
+@pytest.mark.parametrize("checkpoint_chunk_size", [None, 3])
+@pytest.mark.parametrize("legacy_gradient_names", [False, True])
+def test_native_json_registration_precedes_building_losses(
+    monkeypatch, checkpoint_chunk_size, legacy_gradient_names
+):
     from bmtk.simulator.core.simulation_config import SimulationConfig
     from bmtk.simulator.dpointnet.network_adaptor import NetworkAdaptor
 
@@ -325,7 +330,34 @@ def test_native_json_registration_precedes_building_losses(monkeypatch):
             ],
         },
     })
-    rnn = RNN.from_config(config)
+    if checkpoint_chunk_size is not None:
+        config["training"]["gradient_checkpoint_chunk_size"] = checkpoint_chunk_size
+    if legacy_gradient_names:
+        config["rnn_cell_params"].update(
+            gauss_std=0.4, dampening_factor=0.2, recurrent_dampening_factor=0.3,
+            voltage_gradient_dampening=0.25, pseudo_gauss=False,
+        )
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", FutureWarning)
+        rnn = RNN.from_config(config)
+    alias_warnings = [warning for warning in caught if issubclass(warning.category, FutureWarning)]
+    if legacy_gradient_names:
+        for legacy_name, name, expected in (
+            ("gauss_std", "spike_surrogate_width", 0.4),
+            ("dampening_factor", "spike_surrogate_gain", 0.2),
+            ("recurrent_dampening_factor", "recurrent_spike_gradient_scale", 0.3),
+            ("voltage_gradient_dampening", "voltage_state_gradient_scale", 0.75),
+            ("pseudo_gauss", "spike_surrogate", "triangular"),
+        ):
+            assert any(f"{legacy_name} is deprecated; use {name}" in str(warning.message)
+                       for warning in alias_warnings)
+            assert getattr(rnn.cell, name) == expected
+        assert len(alias_warnings) == 5
+    else:
+        assert not alias_warnings
+    assert rnn.training_engine.gradient_checkpoint_chunk_size == (
+        6 if checkpoint_chunk_size is None else checkpoint_chunk_size
+    )
     first, second = rnn.training_engine.parameters
     assert first.loss_functions["floor"] is second.loss_functions["floor"]
     assert len(rnn._online_voltage_losses) == 1

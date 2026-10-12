@@ -18,11 +18,11 @@ from .loss_functions import LossModules
 from .learning_rules import LearningRules
 from . import optimizers
 from .training import TrainingEngine
+from ._options import UNSET
 from .callbacks import callback_classes
 from .id_maps import TFIDMap
 from .weights import ModelWeights
 from .data_iterator import DataIterator
-from .acceleration import resolve_acceleration_options
 
 
 class Inference:
@@ -81,7 +81,7 @@ class RNN:
     
     """
 
-    def __init__(self, seq_len=None, batch_size=None, dtype='float32', dt=1.0, default_seed=None, cell_cls=None, cell_params=None, **kwargs):
+    def __init__(self, seq_len=None, batch_size=None, dtype=None, dt=1.0, default_seed=None, cell_cls=None, cell_params=None, precision=None, **kwargs):
         if cell_cls is None:
             self.cell_cls = cell_models['default']
         elif isinstance(cell_cls, str):
@@ -92,6 +92,19 @@ class RNN:
             self.cell_cls = cell_cls
 
         self.cell_params = {} if cell_params is None else dict(cell_params)
+        from ._options import UNSET, resolve_precision_options
+
+        requested_dtype = UNSET if dtype is None else tf.dtypes.as_dtype(dtype).name
+        if issubclass(self.cell_cls, GLIF3Cell):
+            dtype, self.cell_params, self.precision_report = resolve_precision_options(
+                requested_dtype, precision, self.cell_params
+            )
+            self.cell_params.setdefault("acceleration_profile", "auto")
+        else:
+            if precision is not None:
+                raise ValueError("run.precision switches require a GLIF3Cell model.")
+            dtype = "float32" if dtype is None else dtype
+            self.precision_report = None
         self._alpha_basis_options = self.cell_params.pop("alpha_basis", None)
         self.alpha_basis_fit = None
         self.acceleration_report = None
@@ -123,6 +136,8 @@ class RNN:
         # self._inference_inputs = {}
 
         self.precision_module, self.dtype = tf_utils.get_precision_policy_and_dtype(dtype)
+        if self.precision_report is not None:
+            io.log_info(f"DPointNet resolved precision: {self.precision_report}")
         self.seq_len = seq_len
         self.dt = dt
         self.default_seed = default_seed
@@ -330,21 +345,50 @@ class RNN:
 
     def _resolve_cell_params(self, training=False, check_built=True):
         cell_params = {} if self.cell_params is None else dict(self.cell_params)
+        if issubclass(self.cell_cls, GLIF3Cell):
+            from ._options import UNSET
+            from .cell_models.nest_dynamics import resolve_hard_reset_options
+
+            hard_reset, mode = resolve_hard_reset_options(
+                cell_params.get("hard_reset", UNSET),
+                cell_params.get("hard_reset_gradient_mode", UNSET),
+                dynamics_mode=cell_params.get("dynamics_mode", "nest"),
+                training=training,
+            )
+            cell_params.update(hard_reset=hard_reset, hard_reset_gradient_mode=mode)
         if training and issubclass(self.cell_cls, GLIF3Cell):
-            if cell_params.get("hard_reset"):
+            surrogate = cell_params.get("hard_reset_gradient_mode", "exact") == "soft_surrogate"
+            if surrogate:
+                from .cell_models.nest_dynamics import validate_hard_reset_gradient_mode
+
+                validate_hard_reset_gradient_mode(
+                    "soft_surrogate", hard_reset=cell_params.get("hard_reset"),
+                    dynamics_mode=cell_params.get("dynamics_mode", "nest"),
+                )
+            if cell_params.get("hard_reset") and not surrogate:
                 raise ValueError(
                     "GLIF training requires hard_reset=False. Hard reset blocks the "
                     "voltage-state gradient at spikes and during refractory clamping; "
                     "the spike surrogate does not restore that path. Set "
-                    "rnn_cell_params.hard_reset=False or omit it for training."
+                    "rnn_cell_params.hard_reset=False for soft-reset training, "
+                    "or explicitly opt into hard_reset_gradient_mode='soft_surrogate'."
                 )
-            if check_built and self._model_built and self._cell._hard_reset:
+            if check_built and self._model_built and surrogate and not self._cell._hard_reset:
+                raise ValueError(
+                    "Cannot enable hard-reset surrogate training on a model already "
+                    "built with soft reset; rebuild explicitly before training."
+                )
+            if check_built and self._model_built and self._cell._hard_reset and (
+                not surrogate
+                or getattr(self._cell, "hard_reset_gradient_mode", "exact") != "soft_surrogate"
+            ):
                 raise ValueError(
                     "Cannot train a model already built with hard reset. Build a "
                     "separate soft-reset training model and transfer weights explicitly; "
                     "changing cell_params does not change an existing traced graph."
                 )
-            cell_params["hard_reset"] = False
+            if not surrogate:
+                cell_params["hard_reset"] = False
         return cell_params
 
     def _prepare_training_model(self):
@@ -465,7 +509,12 @@ class RNN:
         # while_loop instead of stacked per timestep (the cause of full-network OOM). Mirrors
         # the reference V1_GLIF_model, which builds create_model() within strategy.scope().
         if issubclass(self.cell_cls, GLIF3Cell):
+            cell_params["_canonical_gradient_boundary"] = (
+                self.training_engine is not None
+                or cell_params.get("temporal_gradient_precision") == "float32"
+            )
             cell_params.setdefault('batch_size', _batch_size)
+            cell_params.setdefault("train_recurrent_per_type", False)
             if getattr(self, "_online_voltage_losses", None):
                 cell_params["online_voltage_losses"] = self._online_voltage_losses
             if cell_params.get("temporal_gradient_precision") == "float32" and self.training_engine is not None:
@@ -475,24 +524,12 @@ class RNN:
                         raise ValueError("Cell temporal and training checkpoint chunk sizes conflict.")
                     cell_params["temporal_checkpoint_chunk_size"] = size
                 cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
-            tau_basis = cell_params.get("tau_basis")
-            basis_width = None
-            if cell_params.get("acceleration_profile") is not None and tau_basis is not None:
-                if isinstance(tau_basis, (str, Path)):
-                    tau_basis = np.load(tau_basis)
-                basis_width = np.asarray(tau_basis).size
-            cell_params, self.acceleration_report = resolve_acceleration_options(
-                cell_params,
-                compute_dtype=tf_utils._get_active_policy(self.precision_module).compute_dtype,
-                variable_dtype=tf_utils._get_active_policy(self.precision_module).variable_dtype,
-                batch_size=cell_params["batch_size"],
-                basis_width=basis_width,
-                train_recurrent_per_type=False,
-            )
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
         with self.strategy.scope():
-            self._cell = self.cell_cls(network, inputs=inputs_dicts, train_recurrent_per_type=False, **cell_params)
+            self._cell = self.cell_cls(network, inputs=inputs_dicts, **cell_params)
+            if isinstance(self._cell, GLIF3Cell):
+                self.acceleration_report = self._cell.acceleration_report
             for loss in getattr(self, "_online_voltage_losses", ()):
                 loss.build(self._cell)
             self.zero_state, state_names = self._cell.zero_state(self.batch_size, self.dtype, with_names=True)
@@ -1184,9 +1221,9 @@ class RNN:
             n_epochs = train_dict["n_epochs"]
             steps_per_epoch = train_dict["steps_per_epoch"]
             training_approach = train_dict.get("training_approach", None)
-            gradient_checkpointing = train_dict.get("gradient_checkpointing", False)
+            gradient_checkpointing = train_dict.get("gradient_checkpointing", True)
             gradient_checkpoint_chunk_size = train_dict.get(
-                "gradient_checkpoint_chunk_size", 25
+                "gradient_checkpoint_chunk_size", UNSET
             )
             pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", False)
             regenerate_initial_state_each_epoch = train_dict.get(

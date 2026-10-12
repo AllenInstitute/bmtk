@@ -48,6 +48,7 @@ Status NestTypeIndexedCoefficientShape(shape_inference::InferenceContext* contex
 }  // namespace
 
 REGISTER_OP("DpointnetNestStateForward")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
@@ -82,6 +83,7 @@ REGISTER_OP("DpointnetNestStateForward")
     });
 
 REGISTER_OP("DpointnetNestStateHistoryForward")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
@@ -125,6 +127,7 @@ REGISTER_OP("DpointnetNestStateHistoryForward")
     });
 
 REGISTER_OP("DpointnetNestStateBackward")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
@@ -156,6 +159,7 @@ REGISTER_OP("DpointnetNestStateBackward")
     });
 
 REGISTER_OP("DpointnetNestStateHistoryBackward")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
@@ -198,6 +202,7 @@ REGISTER_OP("DpointnetNestStateHistoryBackward")
     });
 
 REGISTER_OP("DpointnetNestStateBackwardEvents")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")
@@ -484,6 +489,7 @@ REGISTER_OP("DpointnetNestStateHistoryBackwardEventsTypeIndexed")
       return OkStatus();
     });
 REGISTER_OP("DpointnetNestStateHistoryBackwardEvents")
+    .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
     .Attr("S: {half, float}")
     .Attr("R: {int8, int16}")

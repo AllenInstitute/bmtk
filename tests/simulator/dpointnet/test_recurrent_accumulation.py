@@ -276,9 +276,9 @@ def test_accumulation_option_rejects_unknown(value):
 
 
 def test_accumulation_requires_supported_route():
-    assert make_cell().use_fused_recurrent_accumulation is False
+    assert make_cell(acceleration_profile=None).use_fused_recurrent_accumulation is False
     with pytest.raises(ValueError, match="Fused recurrent accumulation requires"):
-        make_cell(use_fused_recurrent_accumulation=True)
+        make_cell(acceleration_profile=None, use_fused_recurrent_accumulation=True)
 
 
 @gpu

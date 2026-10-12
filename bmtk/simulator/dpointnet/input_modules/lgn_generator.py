@@ -22,7 +22,9 @@ class LGNGenerator(InputsGeneratorMod):
         self.row_size = self.stimulus_opts['row_size']
         self.col_size = self.stimulus_opts['col_size']
         self._cache_paths = self._resolve_cache_paths(kwargs)
-        self.use_device_generation = kwargs.get("use_device_generation", False)
+        self.use_device_generation = kwargs.get(
+            "use_device_generation", self.stimulus_type == "drifting_gratings"
+        )
         if (
             self.use_device_generation is not True
             and self.use_device_generation is not False

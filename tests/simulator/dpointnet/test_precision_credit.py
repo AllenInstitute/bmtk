@@ -89,6 +89,7 @@ def make_cell(
         inputs["background"] = copy.deepcopy(inputs["drive"])
         inputs["background"]["weights"] *= 0.5
     arguments = dict(
+        acceleration_profile=None,
         dynamics_mode=mode,
         state_precision="selective" if selective else "compute",
         hard_reset=False,
@@ -713,19 +714,26 @@ def test_legacy_compute_factory_honors_direct_loop(direct, profile, state_input)
     reason="Actual compatible GPU operator required",
 )
 @pytest.mark.parametrize("trainable,per_type", [(False, False), (True, True), (True, False)])
-def test_actual_auto_cell_preserves_recurrent_parameter_sharing(trainable, per_type):
+@pytest.mark.parametrize("canonical_boundary", [False, True])
+def test_actual_auto_cell_preserves_recurrent_parameter_sharing(trainable, per_type, canonical_boundary):
     from bmtk.simulator.dpointnet.acceleration import resolve_acceleration_options
 
     network, inputs, options = make_cell(selective=False, return_spec=True)
-    options.update(train_recurrent=trainable, train_recurrent_per_type=per_type)
+    options.update(
+        train_recurrent=trainable, train_recurrent_per_type=per_type,
+        acceleration_profile="auto",
+    )
     options, _ = resolve_acceleration_options(
         {"acceleration_profile": "auto", **options},
         compute_dtype=tf.float32, variable_dtype=tf.float32,
         batch_size=2, basis_width=4,
+        canonical_gradient_boundary=canonical_boundary,
     )
     cell = GLIF3Cell(network, inputs, **options)
     try:
-        assert cell._use_direct_csr_recurrent_gradient == (trainable and not per_type)
+        assert cell._use_direct_csr_recurrent_gradient == (
+            trainable and not per_type and canonical_boundary
+        )
         assert cell.recurrent_weight_values.trainable == (trainable and not per_type)
         output, _ = cell(tf.ones((2, 2)), cell.zero_state(2, tf.float32))
         assert all(np.all(np.isfinite(value.numpy())) for value in tf.nest.flatten(output))
@@ -737,6 +745,7 @@ def test_actual_auto_cell_preserves_recurrent_parameter_sharing(trainable, per_t
 def test_actual_legacy_compute_factory_executes_auto_weight_carrier(monkeypatch):
     from bmtk.simulator.dpointnet.acceleration import csr_spike_ops
     from bmtk.simulator.dpointnet.rnn_model import RNN
+    from bmtk.simulator.dpointnet.training import TrainingEngine
 
     if not csr_spike_ops._auto_native_architecture(csr_spike_ops._gpu_compute_architecture()):
         pytest.skip("Published automatic native policy requires SM75/SM86+")
@@ -756,17 +765,21 @@ def test_actual_legacy_compute_factory_executes_auto_weight_carrier(monkeypatch)
 
     monkeypatch.setattr(GLIF3Cell, "_call_impl", call_impl)
     rnn = RNN(seq_len=3, batch_size=2, dtype="float16", cell_params=options)
+    engine = TrainingEngine(rnn, n_epochs=1, steps_per_epoch=1, gradient_checkpointing=False)
+    rnn._training_engine = engine
     rnn._recurrent_networks["test"] = SimpleNamespace(to_dict=lambda: copy.deepcopy(network))
     rnn._input_networks["drive"] = SimpleNamespace(
         name="drive", n_spiking_nodes=2, to_dict=lambda: copy.deepcopy(inputs["drive"]),
     )
     try:
-        rnn.build(training=True)
+        rnn.build(training=True, batch_size=2, seq_len=3)
         assert isinstance(rnn.rsnn_layer, ExplicitStateRNN)
         assert rnn.cell.state_precision == "compute"
         assert rnn.acceleration_report["selected"]["use_fused_recurrent_accumulation"] is True
+        rnn.extractor_model = rnn._build_extractor_model()
+        engine.prepare_gradient_checkpointing()
         with tf.GradientTape() as tape:
-            output = rnn.rsnn_layer(tf.ones((2, 3, 2), tf.float16), initial_state=rnn.zero_state)
+            output = engine._extractor_forward(tf.ones((2, 3, 2), tf.float16), rnn.zero_state)
             loss = tf.reduce_sum(tf.cast(output[0], tf.float32))
         assert any(observed_carriers)
         gradient = tape.gradient(loss, rnn.cell.recurrent_weight_values)

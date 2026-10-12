@@ -1,4 +1,8 @@
 import argparse
+import os
+
+os.environ.pop("TF_GPU_ALLOCATOR", None)
+
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import pandas as pd

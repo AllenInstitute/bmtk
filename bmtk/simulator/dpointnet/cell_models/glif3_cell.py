@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 import pickle as pkl
 from pathlib import Path
-from .._options import validate_bool_option
+from .._options import UNSET, resolve_renamed_option, validate_bool_option
 from .nest_dynamics import (
     integration_coefficients,
     active_update,
@@ -34,10 +34,14 @@ from bmtk.simulator.dpointnet.custom_ops import (
     restore_csr_values,
 )
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
+    _gpu_compute_architecture,
     _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
     fused_recurrent_accumulation_available,
     fused_recurrent_weight_carry,
+)
+from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
+    fused_pascal_nest_launch_available,
 )
 
 try:
@@ -641,6 +645,13 @@ def _resolve_fused_state(
             f"{dynamics_mode} state operator unavailable; rebuild CUDA operators: "
             + glif_state_op_status()
         )
+    if (
+        dynamics_mode == "nest" and _gpu_compute_architecture() == 61
+        and not fused_pascal_nest_launch_available()
+    ):
+        incompatibilities.append(
+            "SM61 NEST requires rebuilt occupancy-aware launch capability"
+        )
     if n_syn_basis != 4:
         incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")
     if option is True and incompatibilities:
@@ -665,6 +676,43 @@ def _resolve_fused_state_history(option, dynamics_mode, fused_state):
 
 
 class GLIF3Cell(tf.keras.layers.Layer):
+    """GLIF3 neuron population with compatible legacy gradient controls.
+
+    Parameters
+    ----------
+    spike_surrogate : {"gaussian", "triangular"}, optional
+        Preferred surrogate selector; defaults to ``"gaussian"``.
+    spike_surrogate_width : float, optional
+        Preferred Gaussian width; defaults to 0.28.
+    spike_surrogate_gain : float, optional
+        Preferred surrogate gain; defaults to 0.05.
+    recurrent_spike_gradient_scale : float, optional
+        Preferred recurrent spike-gradient retention; defaults to 1.0.
+    voltage_state_gradient_scale : float, optional
+        Preferred voltage state-gradient retention in [0, 1]; defaults to 1.0.
+    gauss_std : float, optional
+        Deprecated compatibility alias for ``spike_surrogate_width``.
+    dampening_factor : float, optional
+        Deprecated compatibility alias for ``spike_surrogate_gain``.
+    recurrent_dampening_factor : float, optional
+        Deprecated compatibility alias for ``recurrent_spike_gradient_scale``.
+    voltage_gradient_dampening : float, optional
+        Deprecated removed-fraction control. Convert using
+        ``voltage_state_gradient_scale = 1 - clip(value, 0, 1)``.
+    pseudo_gauss : bool, optional
+        Deprecated selector: True maps to ``spike_surrogate="gaussian"``,
+        False to ``spike_surrogate="triangular"``.
+
+    Notes
+    -----
+    Explicit legacy arguments emit a visible ``FutureWarning``. They remain
+    supported, including their original positional slots and value conversions;
+    no removal version is scheduled. Omitted legacy arguments do not warn.
+    Supplying both names for one control raises ``ValueError``.
+    See :ref:`dpointnet_training_standards--clear-names-for-gradient-controls`
+    for migration guidance.
+    """
+
     noise_state_index = 6
 
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
@@ -692,64 +740,169 @@ class GLIF3Cell(tf.keras.layers.Layer):
         glif_network,
         inputs,
         dt=1.0,
-        gauss_std=0.5,
-        dampening_factor=0.3,
-        recurrent_dampening_factor=0.5,
-        voltage_gradient_dampening=0.5,
+        gauss_std=UNSET,
+        dampening_factor=UNSET,
+        recurrent_dampening_factor=UNSET,
+        voltage_gradient_dampening=UNSET,
         # input_weight_scale=1.0,
         recurrent_weight_scale=1.0,
         lr_scale=1.0,
         max_delay=5,
         # bkg_firing_rate=250,
-        pseudo_gauss=False,
+        pseudo_gauss=UNSET,
         train_recurrent=True,
-        train_recurrent_per_type=True,
+        train_recurrent_per_type=False,
         # train_input=False,
         # train_noise=True,
         noise_seed=0,
-        hard_reset=None,
+        hard_reset=UNSET,
         tau_basis=None,
         synaptic_basis_weights=None,
-        use_fused_cuda=False,
-        use_fused_state=False,
-        use_fused_nest_event_vjp=False,
-        use_pair_projection="auto",
-        use_packed_sm120_backward="auto",
-        use_packed_sm120_external_backward="auto",
-        use_fixed4_input_forward=False,
-        use_fused_current_accumulation=False,
-        use_direct_csr_recurrent_gradient=False,
+        use_fused_cuda=UNSET,
+        use_fused_state=UNSET,
+        use_fused_nest_event_vjp=UNSET,
+        use_pair_projection=UNSET,
+        use_packed_sm120_backward=UNSET,
+        use_packed_sm120_external_backward=UNSET,
+        use_fixed4_input_forward=UNSET,
+        use_fused_current_accumulation=UNSET,
+        use_direct_csr_recurrent_gradient=UNSET,
         use_small_batch_recurrent_backward=False,
-        use_active_row_forward=False,
-        use_forward_run_aggregation=False,
-        use_device_active_queue_forward=False,
+        use_active_row_forward=UNSET,
+        use_forward_run_aggregation=UNSET,
+        use_device_active_queue_forward=UNSET,
         use_uniform_input_delay_projection=False,
         batch_size=None,
-        track_voltage_penalty=False,
+        track_voltage_penalty=True,
         voltage_penalty_mode="range",
-        return_voltage_sequences=True,
-        dynamics_mode="legacy",
-        state_precision="compute",
+        return_voltage_sequences=False,
+        dynamics_mode="nest",
+        state_precision=None,
         detach_reset=True,
-        detach_asc_reset=True,
+        detach_asc_reset=False,
         temporal_gradient_precision="compute",
         temporal_checkpoint_chunk_size=25,
         temporal_pack_spike_checkpoints=False,
         current_replay_mode=None,
-        use_fused_recurrent_accumulation=False,
-        use_javier_recurrent_vjp=False,
-        use_prepacked_nest_coefficients=False,
-        use_type_indexed_nest_coefficients=False,
+        use_fused_recurrent_accumulation=UNSET,
+        use_javier_recurrent_vjp=UNSET,
+        use_prepacked_nest_coefficients=UNSET,
+        use_type_indexed_nest_coefficients=UNSET,
         require_type_indexed_nest_coefficients=False,
-        use_static_type_indexed_nest_dispatch=False,
-        use_direct_state_rnn_loop=False,
-        use_native_voltage_penalty=False,
+        use_static_type_indexed_nest_dispatch=UNSET,
+        use_direct_state_rnn_loop=UNSET,
+        use_native_voltage_penalty=UNSET,
         online_voltage_losses=None,
-        use_fused_state_history=False,
+        use_fused_state_history=UNSET,
         use_device_poisson=False,
         # current_input=False,
+        *,
+        spike_surrogate=UNSET,
+        spike_surrogate_width=UNSET,
+        spike_surrogate_gain=UNSET,
+        recurrent_spike_gradient_scale=UNSET,
+        voltage_state_gradient_scale=UNSET,
+        hard_reset_gradient_mode=UNSET,
+        acceleration_profile="auto",
+        _canonical_gradient_boundary=False,
     ):
+        execution = {
+            name: value for name, value in locals().items()
+            if name.startswith("use_") and value is not UNSET
+        }
         super().__init__()
+        validate_bool_option(_canonical_gradient_boundary, "_canonical_gradient_boundary")
+        from .nest_dynamics import resolve_hard_reset_options
+
+        hard_reset, hard_reset_gradient_mode = resolve_hard_reset_options(
+            hard_reset, hard_reset_gradient_mode, dynamics_mode=dynamics_mode
+        )
+        self.hard_reset_gradient_mode = hard_reset_gradient_mode
+        if hard_reset_gradient_mode == "soft_surrogate":
+            io.log_info(
+                "Hard-reset soft-surrogate gradients: forward reset "
+                "and refractory clamping remain hard; voltage derivatives follow "
+                "the unclamped integration and soft-reset rule."
+            )
+        gauss_std = resolve_renamed_option(
+            "spike_surrogate_width", spike_surrogate_width, "gauss_std", gauss_std, 0.28,
+            stacklevel=3,
+        )
+        dampening_factor = resolve_renamed_option(
+            "spike_surrogate_gain", spike_surrogate_gain, "dampening_factor", dampening_factor, 0.05,
+            stacklevel=3,
+        )
+        recurrent_dampening_factor = resolve_renamed_option(
+            "recurrent_spike_gradient_scale", recurrent_spike_gradient_scale,
+            "recurrent_dampening_factor", recurrent_dampening_factor, 1.0,
+            stacklevel=3,
+        )
+        voltage_scale = resolve_renamed_option(
+            "voltage_state_gradient_scale", voltage_state_gradient_scale,
+            "voltage_gradient_dampening", voltage_gradient_dampening, 1.0,
+            transform=lambda value: 1.0 - np.clip(value, 0.0, 1.0),
+            stacklevel=3,
+        )
+        if not np.isfinite(voltage_scale) or not 0.0 <= voltage_scale <= 1.0:
+            raise ValueError("voltage_state_gradient_scale must be finite and between 0 and 1.")
+        if voltage_gradient_dampening is UNSET:
+            voltage_gradient_dampening = 1.0 - voltage_scale
+        surrogate = resolve_renamed_option(
+            "spike_surrogate", spike_surrogate, "pseudo_gauss", pseudo_gauss, "gaussian",
+            transform=lambda value: "gaussian" if validate_bool_option(value, "pseudo_gauss") else "triangular",
+            stacklevel=3,
+        )
+        if surrogate not in ("gaussian", "triangular"):
+            raise ValueError('spike_surrogate must be "gaussian" or "triangular".')
+        pseudo_gauss = surrogate == "gaussian"
+        self.spike_surrogate = surrogate
+        self.spike_surrogate_width = gauss_std
+        self.spike_surrogate_gain = dampening_factor
+        self.recurrent_spike_gradient_scale = recurrent_dampening_factor
+        self.voltage_state_gradient_scale = voltage_scale
+        if state_precision is None:
+            state_precision = "selective" if self.compute_dtype == "float16" and self.variable_dtype == "float32" else "compute"
+        from ..acceleration import resolve_acceleration_options
+
+        if isinstance(tau_basis, (str, Path)):
+            tau_basis = np.load(tau_basis)
+        execution.update(
+            acceleration_profile=acceleration_profile,
+            dynamics_mode=dynamics_mode,
+            state_precision=state_precision,
+            temporal_gradient_precision=temporal_gradient_precision,
+            train_recurrent=train_recurrent,
+            train_recurrent_per_type=train_recurrent_per_type,
+            track_voltage_penalty=track_voltage_penalty,
+            hard_reset_gradient_mode=hard_reset_gradient_mode,
+        )
+        execution, self.acceleration_report = resolve_acceleration_options(
+            execution, compute_dtype=self.compute_dtype, variable_dtype=self.variable_dtype,
+            batch_size=batch_size,
+            basis_width=None if tau_basis is None else np.asarray(tau_basis).size,
+            train_recurrent_per_type=train_recurrent_per_type,
+            canonical_gradient_boundary=_canonical_gradient_boundary,
+        )
+        use_fused_cuda = execution.get("use_fused_cuda", False)
+        use_fused_state = execution.get("use_fused_state", False)
+        use_fused_nest_event_vjp = execution.get("use_fused_nest_event_vjp", False)
+        use_fixed4_input_forward = execution.get("use_fixed4_input_forward", False)
+        use_fused_current_accumulation = execution.get("use_fused_current_accumulation", False)
+        use_direct_csr_recurrent_gradient = execution.get("use_direct_csr_recurrent_gradient", False)
+        use_active_row_forward = execution.get("use_active_row_forward", False)
+        use_forward_run_aggregation = execution.get("use_forward_run_aggregation", False)
+        use_device_active_queue_forward = execution.get("use_device_active_queue_forward", False)
+        use_fused_recurrent_accumulation = execution.get("use_fused_recurrent_accumulation", False)
+        use_javier_recurrent_vjp = execution.get("use_javier_recurrent_vjp", False)
+        use_prepacked_nest_coefficients = execution.get("use_prepacked_nest_coefficients", False)
+        use_type_indexed_nest_coefficients = execution.get("use_type_indexed_nest_coefficients", False)
+        use_static_type_indexed_nest_dispatch = execution.get("use_static_type_indexed_nest_dispatch", False)
+        use_direct_state_rnn_loop = execution.get("use_direct_state_rnn_loop", False)
+        use_native_voltage_penalty = execution.get("use_native_voltage_penalty", False)
+        use_fused_state_history = execution.get("use_fused_state_history", False)
+        use_pair_projection = execution.get("use_pair_projection", "auto")
+        use_packed_sm120_backward = execution.get("use_packed_sm120_backward", "auto")
+        use_packed_sm120_external_backward = execution.get("use_packed_sm120_external_backward", "auto")
         self._online_voltage_losses = list(online_voltage_losses or ())
 
         if state_precision not in ("compute", "selective"):
@@ -1351,10 +1504,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
             or not self.recurrent_fused_connectivity["n_pairs"]
             or not fused_recurrent_accumulation_available()
         ):
-            raise ValueError(
-                "Fused recurrent accumulation requires rebuilt SM86+ CUDA operators "
-                "and four-basis uint32 compact-pair connectivity."
+            reason = (
+                "Fused recurrent accumulation requires compatible CUDA operators "
+                "and nonempty four-basis uint32 compact-pair connectivity."
             )
+            names = ("use_fused_recurrent_accumulation", "use_javier_recurrent_vjp")
+            if self.acceleration_report is None or any(
+                self.acceleration_report["requested"].get(name) is True for name in names
+            ):
+                raise ValueError(reason)
+            use_fused_recurrent_accumulation = False
+            use_javier_recurrent_vjp = False
+            self.use_fused_recurrent_accumulation = False
+            self.use_javier_recurrent_vjp = False
+            for name in names:
+                self.acceleration_report["selected"][name] = False
+                self.acceleration_report["reasons"][name] = reason
+            io.log_warning(reason + " Automatic selection retains the generic gradient route.")
 
         if train_recurrent:
             if train_recurrent_per_type:
@@ -1797,10 +1963,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def restore_segmented_variable_gradients(self, variables, gradients):
         master = self.recurrent_weight_values
         master_value = master.value
+        master_candidates = (master, master_value)
+        for value in (master, master_value):
+            if isinstance(value, tf.distribute.DistributedValues):
+                master_candidates += tuple(value.values)
         transformed = []
         found_recurrent = False
         for variable, gradient in zip(variables, gradients):
-            if variable is master or variable is master_value:
+            if any(variable is candidate for candidate in master_candidates):
                 gradient = restore_csr_values(
                     gradient, self.recurrent_fused_connectivity
                 )
@@ -2694,6 +2864,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     dampening=self._dampening_factor,
                     voltage_gradient_dampening=self._voltage_gradient_dampening,
                     hard_reset=self._hard_reset,
+                    hard_reset_gradient_mode=self.hard_reset_gradient_mode,
                     detach_reset=self.detach_reset,
                     detach_asc_reset=self.detach_asc_reset,
                     pseudo_gauss=self._pseudo_gauss,
@@ -2729,6 +2900,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 rise_voltage=self.rise_voltage,
                 reset_voltage=self.v_reset,
                 hard_reset=self._hard_reset,
+                hard_reset_gradient_mode=self.hard_reset_gradient_mode,
             )
             new_z = (
                 spike_gauss(new_v - self.v_th, self._gauss_std, self._dampening_factor)
@@ -2750,6 +2922,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 hard_reset=self._hard_reset,
                 detach_reset=self.detach_reset,
                 detach_asc_reset=self.detach_asc_reset,
+                hard_reset_gradient_mode=self.hard_reset_gradient_mode,
             )
             new_asc = tf.reshape(adaptation, [batch_size, self._n_neurons * 2])
             new_z = tf.cast(new_z, z_buf.dtype)

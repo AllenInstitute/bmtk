@@ -184,10 +184,9 @@ def test_learning_rate_schedule_with_clipping(name):
     assert optimizer._learning_rate is schedule
 
 
-def test_documented_parity_optimizer_overlay_is_accepted():
-    root = Path(__file__).resolve().parents[3]
+def test_historical_parity_optimizer_fixture_is_accepted():
     training = json.loads(
-        (root / "docs/dpointnet_parity_overlay.json").read_text()
+        (Path(__file__).parent / "fixtures/historical_parity_overlay.json").read_text()
     )["training"]
     params = training["optimizer"]
     optimizer = create_optimizer(params["name"], training["learning_rate"], params)

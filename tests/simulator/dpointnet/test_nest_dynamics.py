@@ -338,6 +338,14 @@ def make_cell(
         hard_reset=hard_reset,
         train_recurrent_per_type=False,
         use_fused_cuda=use_fused_cuda,
+        acceleration_profile=None,
+        return_voltage_sequences=True,
+        track_voltage_penalty=False,
+        spike_surrogate="triangular",
+        spike_surrogate_gain=0.3,
+        recurrent_spike_gradient_scale=0.5,
+        voltage_state_gradient_scale=0.5,
+        detach_asc_reset=True,
         **cell_options,
     )
 
@@ -349,6 +357,7 @@ def make_cell(
 def test_rnn_build_resolves_reset_for_training_and_inference(build_mode, mode):
     from bmtk.simulator.dpointnet.rnn_model import RNN
 
+    policy = tf.keras.mixed_precision.global_policy()
     network, inputs = make_network_inputs()
     rnn = RNN(
         seq_len=4,
@@ -369,24 +378,24 @@ def test_rnn_build_resolves_reset_for_training_and_inference(build_mode, mode):
             rnn.build(training=True)
         else:
             rnn.build()
-        expected_hard_reset = mode == "nest" and build_mode == "inference"
+        expected_hard_reset = mode == "nest"
         assert rnn.cell._hard_reset is expected_hard_reset
         assert "hard_reset" not in rnn.cell_params
-        if expected_hard_reset:
-            with pytest.raises(ValueError, match="already built with hard reset"):
-                rnn._prepare_training_model()
-        else:
-            rnn._prepare_training_model()
-            assert rnn.cell._hard_reset is False
+        rnn._prepare_training_model()
+        assert rnn.cell._hard_reset is expected_hard_reset
+        assert rnn.cell.hard_reset_gradient_mode == (
+            "soft_surrogate" if expected_hard_reset else "exact"
+        )
     finally:
         rnn.cleanup()
+        tf.keras.mixed_precision.set_global_policy(policy)
 
 
-def test_default_dynamics_mode_preserves_legacy_behavior():
+def test_default_dynamics_mode_selects_nest_and_explicit_null_reset():
     cell = make_cell(mode=None, hard_reset=None)
 
-    assert cell.dynamics_mode == "legacy"
-    assert cell._hard_reset is False
+    assert cell.dynamics_mode == "nest"
+    assert cell._hard_reset is True
     assert len(cell.zero_state(1, tf.float32)) == 7
 
 
@@ -656,6 +665,10 @@ def test_fused_state_selection_respects_cell_dtype(monkeypatch, mode, policy, op
             tau_basis=[2, 6, 10, 20],
             dynamics_mode=mode,
             hard_reset=False,
+            acceleration_profile=None,
+            state_precision="compute",
+            track_voltage_penalty=False,
+            return_voltage_sequences=True,
             use_fused_cuda=False,
             use_fused_state=option,
             train_recurrent_per_type=False,
@@ -762,6 +775,15 @@ def test_nest_cuda_matches_cpu_and_gpu_fallback(
                     tau_basis=[2.0, 6.0, 10.0, 20.0],
                     dynamics_mode="nest",
                     hard_reset=hard_reset,
+                    acceleration_profile=None,
+                    state_precision="compute",
+                    pseudo_gauss=False,
+                    dampening_factor=0.3,
+                    recurrent_dampening_factor=0.5,
+                    voltage_gradient_dampening=0.5,
+                    detach_asc_reset=True,
+                    return_voltage_sequences=True,
+                    track_voltage_penalty=False,
                     use_fused_cuda=fused,
                     use_fused_state=fused_state,
                     train_recurrent_per_type=False,
@@ -925,6 +947,13 @@ def test_nest_fused_state_checkpointed_poisson_replay(policy):
                     tau_basis=[2, 6, 10, 20],
                     dynamics_mode="nest",
                     hard_reset=False,
+                    acceleration_profile=None,
+                    state_precision="compute",
+                    pseudo_gauss=False,
+                    dampening_factor=0.3,
+                    recurrent_dampening_factor=0.5,
+                    voltage_gradient_dampening=0.5,
+                    detach_asc_reset=True,
                     batch_size=32,
                     train_recurrent_per_type=False,
                     use_fused_cuda=True,

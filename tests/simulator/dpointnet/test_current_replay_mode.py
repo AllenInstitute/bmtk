@@ -227,7 +227,10 @@ def test_json_config_routes_replay_mode_unchanged(replay_mode, monkeypatch):
     })))
     monkeypatch.setattr(NetworkAdaptor, "from_dict", lambda _: ([], []))
     rnn = RNN.from_config(config)
-    assert rnn.cell_params == {k: v for k, v in options.items() if k != "cell_model"}
+    assert rnn.cell_params == {
+        **{k: v for k, v in options.items() if k != "cell_model"},
+        "acceleration_profile": "auto",
+    }
     assert config["rnn_cell_params"] == options
 
 

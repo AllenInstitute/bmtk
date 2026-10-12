@@ -10,15 +10,15 @@ from .io_tools import io
 
 def resolve_acceleration_options(
     cell_params, *, compute_dtype, variable_dtype, batch_size, basis_width,
-    train_recurrent_per_type=True,
+    train_recurrent_per_type=False, canonical_gradient_boundary=True,
 ):
     """Resolve ``acceleration_profile="auto"`` without overriding explicit flags.
 
     The returned report is suitable for recording with execution provenance.
-    Omitting the profile preserves existing constructor defaults.
+    Omitting the profile selects auto; explicit None disables profile expansion.
     """
     options = dict(cell_params)
-    profile = options.pop("acceleration_profile", None)
+    profile = options.pop("acceleration_profile", "auto")
     if profile is None:
         return options, None
     if profile != "auto":
@@ -50,13 +50,15 @@ def resolve_acceleration_options(
         report["selected"][name] = options[name]
 
     numeric = compute_dtype in (tf.float16, tf.float32) and variable_dtype == tf.float32
-    nest = options.get("dynamics_mode", "legacy") == "nest"
-    pascal_nest = nest and architecture is not None and architecture < 70
-    currents = numeric and csr_spike_ops.fused_cuda_available() and not pascal_nest
+    nest = options.get("dynamics_mode", "nest") == "nest"
+    pascal = architecture == 61
+    unsupported_nest = nest and architecture is not None and architecture < 70 and not pascal
+    currents = numeric and csr_spike_ops.fused_cuda_available() and not unsupported_nest
     select(
         "use_fused_cuda", currents,
         "compatible loaded CSR library and FP16/FP32 compute with FP32 masters; "
-        "general NEST/Pascal and multiple visible GPUs excluded",
+        "SM61-compatible CSR currents; matching loaded library, FP16/FP32 compute "
+        "and FP32 masters; multiple visible GPUs excluded",
     )
     currents = currents and options["use_fused_cuda"] is not False
     known_batch = isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0
@@ -69,13 +71,29 @@ def resolve_acceleration_options(
         glif_state_ops.fused_nest_state_available()
         if nest else glif_state_ops.fused_glif_state_available()
     )
+    if nest and pascal:
+        state_available = state_available and glif_state_ops.fused_pascal_nest_launch_available()
     select(
         "use_fused_state",
-        numeric and four_basis and state_available and not pascal_nest,
+        numeric and four_basis and state_available and not unsupported_nest,
         "compatible mode-specific state library, FP32 masters and four bases; "
-        "general NEST/Pascal excluded",
+        "SM61 NEST requires rebuilt occupancy-aware launch capability",
     )
-    state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not pascal_nest
+    state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not unsupported_nest
+    select("use_direct_state_rnn_loop", state and currents,
+           "compatible fused state/currents and explicit-state loop")
+    select("use_fused_nest_event_vjp",
+           nest and state and glif_state_ops.fused_nest_event_vjp_available(),
+           "compatible NEST state and loaded event-gradient operator")
+    select("use_fused_state_history",
+           nest and state and glif_state_ops.fused_nest_state_history_available(),
+           "compatible NEST state and loaded history operators")
+    select("use_native_voltage_penalty",
+           state and options.get("track_voltage_penalty", True)
+           and glif_state_ops.fused_voltage_penalty_available(),
+           "compatible state, enabled penalty tracking and loaded penalty operators")
+    select("use_forward_run_aggregation", currents and small_batch and four_basis,
+           "compatible batch1..32/four-basis CSR route")
     select("use_pair_projection", currents and known_batch,
            "compatible CSR library and known positive batch")
     select("use_fixed4_input_forward", currents and four_basis,
@@ -85,8 +103,8 @@ def resolve_acceleration_options(
     per_edge_training = options.get("train_recurrent", True) and not options.get(
         "train_recurrent_per_type", train_recurrent_per_type
     )
-    select("use_direct_csr_recurrent_gradient", currents and per_edge_training,
-           "compatible CSR library and trainable per-edge recurrent weights; canonical master ordering retained")
+    select("use_direct_csr_recurrent_gradient", currents and per_edge_training and canonical_gradient_boundary,
+           "compatible CSR library, per-edge weights and an enclosing canonical-gradient boundary")
     select("use_active_row_forward", currents and small_batch and four_basis,
            "compatible CSR library, batch1..32 and four bases")
     select("use_device_active_queue_forward", currents and small_batch and four_basis,
@@ -114,22 +132,28 @@ def resolve_acceleration_options(
            "NEST and compatible fused state")
     select(
         "use_type_indexed_nest_coefficients",
-        nest and state and glif_state_ops.fused_nest_type_indexed_coefficients_available(),
-        "NEST and compatible type-indexed state entry points",
+        nest and state and (
+            glif_state_ops.fused_nest_state_history_type_indexed_available()
+            if options["use_fused_state_history"] is True
+            else glif_state_ops.fused_nest_type_indexed_coefficients_available()
+        ),
+        "NEST and compatible type-indexed entry points for the selected state/history route",
     )
+    select("use_static_type_indexed_nest_dispatch", False,
+           "static coefficient identity requires explicit opt-in; auto rechecks live coefficients")
     carry_route = options.get("temporal_gradient_precision") == "float32" or options.get(
         "use_direct_state_rnn_loop", False
     )
     accumulator = (
         currents and small_batch and four_basis and carry_route
-        and csr_spike_ops._auto_native_architecture(architecture)
+        and (pascal or csr_spike_ops._auto_native_architecture(architecture))
         and (architecture != 75 or fp16_backward)
         and options["use_direct_csr_recurrent_gradient"] is True
         and per_edge_training
         and pair_projection and csr_spike_ops.fused_recurrent_accumulation_available()
     )
     select("use_fused_recurrent_accumulation", accumulator,
-           "Automatic policy SM75 FP16 temporal backward or SM86+ accumulator library, "
+           "Automatic policy SM61, SM75 FP16 temporal backward or SM86+ accumulator library, "
            "batch1..32/four bases, per-edge training, direct CSR "
            "and explicitly selected direct-loop or FP32 replay route")
     select(
@@ -139,7 +163,7 @@ def resolve_acceleration_options(
     )
     if options["use_fused_recurrent_accumulation"] is True and not accumulator:
         raise ValueError(
-            "use_fused_recurrent_accumulation=True with auto requires admitted SM75/SM86+ "
+            "use_fused_recurrent_accumulation=True with auto requires admitted SM61/SM75/SM86+ "
             "operators and the declared per-edge/direct-CSR carrier route."
         )
     if options["use_javier_recurrent_vjp"] is True and not (

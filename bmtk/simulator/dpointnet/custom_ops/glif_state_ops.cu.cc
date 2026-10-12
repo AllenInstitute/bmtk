@@ -662,8 +662,9 @@ class NestStateOp : public OpKernel {
   void Launch(OpKernelContext* context, const Tensor& voltage, int neurons,
               Tensor** outputs) {
     auto& device = context->eigen_device<GPUDevice>();
-    auto config = GetGpuLaunchConfig(voltage.NumElements(), device);
     if constexpr (Backward) {
+      auto config = GetGpuLaunchConfig(
+          voltage.NumElements(), device, NestBackwardKernel<T, R, S, SoA, Events>, 0, 0);
       OP_REQUIRES_OK(context, GpuLaunchKernel(
           NestBackwardKernel<T, R, S, SoA, Events>, config.block_count, config.thread_per_block, 0,
           device.stream(), voltage.NumElements(), neurons, voltage.flat<T>().data(),
@@ -680,6 +681,9 @@ class NestStateOp : public OpKernel {
           outputs[0]->flat<T>().data(), outputs[1]->flat<T>().data(),
           outputs[2]->flat<S>().data(), outputs[3]->flat<S>().data(), outputs[4]->flat<S>().data()));
     } else {
+      auto config = GetGpuLaunchConfig(
+          voltage.NumElements(), device,
+          NestForwardKernel<T, R, S, SoA, EmitPreResetVoltage, History>, 0, 0);
       int64 history_width = 0;
       const S* history = nullptr;
       S* spikes = nullptr;
@@ -938,7 +942,8 @@ class NestStateHistoryBackwardOp : public OpKernel {
   void Launch(OpKernelContext* context, const Tensor& voltage, int neurons,
               int64 history_width, int spike_index, Tensor** outputs) {
     auto& device = context->eigen_device<GPUDevice>();
-    auto config = GetGpuLaunchConfig(voltage.NumElements(), device);
+    auto config = GetGpuLaunchConfig(
+        voltage.NumElements(), device, NestHistoryBackwardKernel<T, R, S, SoA, Events>, 0, 0);
     const int history_index = spike_index + 1;
     OP_REQUIRES_OK(context, GpuLaunchKernel(
         NestHistoryBackwardKernel<T, R, S, SoA, Events>,

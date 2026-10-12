@@ -1,3 +1,4 @@
+import inspect
 import os
 from pathlib import Path
 
@@ -60,6 +61,21 @@ def fused_nest_state_available():
     return fused_glif_state_available() and all(
         hasattr(_OPS, name)
         for name in ("dpointnet_nest_state_forward", "dpointnet_nest_state_backward")
+    )
+
+def fused_pascal_nest_launch_available():
+    """Require the occupancy-aware generic launches, including fallback VJPs."""
+    return fused_nest_state_available() and all(
+        callable(operation := getattr(_OPS, name, None))
+        and "launch_geometry_version" in inspect.signature(operation).parameters
+        for name in (
+            "dpointnet_nest_state_forward",
+            "dpointnet_nest_state_backward",
+            "dpointnet_nest_state_backward_events",
+            "dpointnet_nest_state_history_forward",
+            "dpointnet_nest_state_history_backward",
+            "dpointnet_nest_state_history_backward_events",
+        )
     )
 
 
@@ -165,6 +181,7 @@ def fused_nest_state(
     dampening,
     voltage_gradient_dampening,
     hard_reset=False,
+    hard_reset_gradient_mode="exact",
     detach_reset=True,
     detach_asc_reset=True,
     pseudo_gauss=False,
@@ -180,6 +197,14 @@ def fused_nest_state(
     fuse_history=False,
 ):
     """Four-basis NEST transition with live frozen coefficients and event VJPs."""
+    from ..cell_models.nest_dynamics import validate_hard_reset_gradient_mode
+
+    validate_hard_reset_gradient_mode(
+        hard_reset_gradient_mode, hard_reset=hard_reset, dynamics_mode="nest"
+    )
+    # The existing soft VJP restores integration/reset credit at hard-forward
+    # states; its event eligibility and ASC derivatives still use those states.
+    backward_hard_reset = hard_reset and hard_reset_gradient_mode == "exact"
     if not fused_nest_state_available():
         raise RuntimeError(
             "Fused NEST state requires rebuilt CUDA operators: "
@@ -344,7 +369,7 @@ def fused_nest_state(
                 if not detach_reset:
                     reset_sensitivity = (
                         params[:, 26] - (threshold_for_backward + arguments[10])
-                        if hard_reset
+                        if backward_hard_reset
                         else -(1 - params[:, 26])
                     )
                     event_grad += grad_v * reset_sensitivity
@@ -418,7 +443,7 @@ def fused_nest_state(
                     *gradient_inputs,
                     *event_inputs,
                     *extra_inputs,
-                    hard_reset=hard_reset,
+                    hard_reset=backward_hard_reset,
                     coefficients_layout=layout,
                     **event_options,
                 ))
@@ -456,7 +481,7 @@ def fused_nest_state(
                         *gradient_inputs,
                         *type_event_inputs,
                         *type_extra_inputs,
-                        hard_reset=hard_reset,
+                        hard_reset=backward_hard_reset,
                         **event_options,
                     ))
 
@@ -541,7 +566,7 @@ def fused_nest_state(
                 if not detach_reset:
                     reset_sensitivity = (
                         params[:, 26] - (threshold_for_backward + v_th_arg)
-                        if hard_reset
+                        if backward_hard_reset
                         else -(1 - params[:, 26])
                     )
                     event_grad += grad_v * reset_sensitivity
@@ -597,7 +622,7 @@ def fused_nest_state(
                 *type_event_inputs,
                 _gradient_like(spike_gradient, outputs[6]),
                 _gradient_like(history_gradient, outputs[7]),
-                hard_reset=hard_reset,
+                hard_reset=backward_hard_reset,
                 **event_options,
             ))
             return (

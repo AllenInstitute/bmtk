@@ -19,17 +19,23 @@
   },
   "rnn_cell_params": {
     "cell_model": "GLIF3Cell",
-    "gauss_std": 0.5,
-    "dampening_factor": 0.3,
-    "recurrent_dampening_factor": 0.5,
-    "voltage_gradient_dampening": 0.5,
     "recurrent_weight_scale": 1.0,
-    "pseudo_gauss": false,
     "lr_scale": 1.0,
     "max_delay": 5,
     "hard_reset": false,
     "tau_basis": "$MODELS_DIR/synaptic_data/tau_basis.npy",
-    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv"
+    "basis_weights_file": "$MODELS_DIR/synaptic_data/basis_function_weights.csv",
+    "state_precision": "compute",
+    "spike_surrogate_width": 0.5,
+    "spike_surrogate_gain": 0.3,
+    "recurrent_spike_gradient_scale": 0.5,
+    "voltage_state_gradient_scale": 0.5,
+    "spike_surrogate": "triangular",
+    "dynamics_mode": "legacy",
+    "detach_asc_reset": true,
+    "track_voltage_penalty": false,
+    "return_voltage_sequences": true,
+    "acceleration_profile": "auto"
   },
   "inputs": {
     "lgn_random": {

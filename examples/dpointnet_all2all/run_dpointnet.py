@@ -1,4 +1,7 @@
 import argparse
+import os
+
+os.environ.pop("TF_GPU_ALLOCATOR", None)
 
 from bmtk.simulator import dpointnet
 

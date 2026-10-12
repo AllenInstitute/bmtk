@@ -20,6 +20,13 @@ Other important directories
 - **point_components/** - External files shared by PointNet models and simulations
 - **pop_components/** - External files shared by PopNet models and simulations
 
+### DPointNet
+
+- [dpointnet_all2all](dpointnet_all2all/): a small GLIF simulation and training network.
+- [dpointnet_nest_comparison](dpointnet_nest_comparison/): matched 300-neuron
+  NEST, FP32/mixed-precision and hard/soft-reset simulation comparisons.
+- [dpointnet_learning_rules](dpointnet_learning_rules/): configurable local learning rules.
+
 ## Running Simulations
 
 ### BioNet

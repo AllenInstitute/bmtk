@@ -4,6 +4,7 @@ import pandas as pd
 import copy
 
 from . import optimizers
+from ._options import UNSET
 from .callbacks import Callbacks
 from .callbacks import callback_classes
 from .io_tools import io
@@ -140,12 +141,13 @@ class TrainingEngine:
         self._training_fnc = None
         self._learning_rule = BPTTLearningRule()
 
-        self.gradient_checkpointing = kwargs.get("gradient_checkpointing", False)
-        self.gradient_checkpoint_chunk_size = int(
-            kwargs.get("gradient_checkpoint_chunk_size", 25)
+        self.gradient_checkpointing = kwargs.get("gradient_checkpointing", True)
+        chunk_size = kwargs.get("gradient_checkpoint_chunk_size", UNSET)
+        self._gradient_checkpoint_chunk_size = (
+            UNSET if chunk_size is UNSET else int(chunk_size)
         )
         self.pack_spike_checkpoints = bool(kwargs.get("pack_spike_checkpoints", False))
-        if self.gradient_checkpoint_chunk_size < 1:
+        if chunk_size is not UNSET and self._gradient_checkpoint_chunk_size < 1:
             raise ValueError("gradient_checkpoint_chunk_size must be positive.")
         self.regenerate_initial_state_each_epoch = kwargs.get(
             "regenerate_initial_state_each_epoch", True
@@ -212,6 +214,23 @@ class TrainingEngine:
 
         else:
             raise ValueError(f'Unknown "training_approach" {self._training_approach}')
+
+    @property
+    def gradient_checkpoint_chunk_size(self):
+        if self._gradient_checkpoint_chunk_size is not UNSET:
+            return self._gradient_checkpoint_chunk_size
+        sequence_length = (
+            self.adjusted_seq_len if self._parameters
+            else getattr(self.rnn, "seq_len", None)
+        )
+        return min(25, sequence_length) if sequence_length is not None else 25
+
+    @gradient_checkpoint_chunk_size.setter
+    def gradient_checkpoint_chunk_size(self, value):
+        value = int(value)
+        if value < 1:
+            raise ValueError("gradient_checkpoint_chunk_size must be positive.")
+        self._gradient_checkpoint_chunk_size = value
 
     def set_learning_rate(self, learning_rate):
         self._learning_rate = learning_rate

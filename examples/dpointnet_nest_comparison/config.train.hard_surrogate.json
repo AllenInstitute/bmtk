@@ -1,0 +1,40 @@
+{
+  "run": {
+    "precision": {"mixed_precision": false, "fp32_voltage_and_asc": false, "fp32_temporal_gradients": false}
+  },
+  "rnn_cell_params": {
+    "hard_reset": true,
+    "hard_reset_gradient_mode": "soft_surrogate",
+    "detach_reset": false,
+    "detach_asc_reset": false,
+    "voltage_state_gradient_scale": 1.0,
+    "recurrent_spike_gradient_scale": 1.0,
+    "train_recurrent": true
+  },
+  "inputs": {"replay": {"trainable": true}},
+  "training": {
+    "n_epochs": 2,
+    "steps_per_epoch": 3,
+    "training_approach": "single",
+    "learning_rate": 0.001,
+    "optimizer": {"name": "adam", "epsilon": 0.000001},
+    "gradient_checkpointing": true,
+    "gradient_checkpoint_chunk_size": 25,
+    "initial_state": {"module": "zero_state"},
+    "callbacks": {
+      "class": "Callbacks",
+      "callbacks_dir": "output_train_hard_surrogate/callbacks",
+      "epoch_store_weights": "latest",
+      "verbose": "on_step",
+      "memory_report": "off"
+    },
+    "parameters": [
+      {
+        "name": "rates",
+        "inputs": ["replay"],
+        "loss_functions": {"rate_fit": {"module": "TargetFiringRate", "firing_rate": 30.0}}
+      }
+    ]
+  },
+  "output": {"output_dir": "output_train_hard_surrogate"}
+}

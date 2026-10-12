@@ -3,6 +3,8 @@ import os
 import sys
 import traceback
 
+os.environ.pop("TF_GPU_ALLOCATOR", None)
+
 from bmtk.simulator import dpointnet
 
 
