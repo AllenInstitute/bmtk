@@ -1,0 +1,846 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DPointNet training &#8212; Brain Modeling Toolkit 1.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="_static/documentation_options.js?v=6efca38a"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dpointnet_training';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DPointNet custom losses and callbacks" href="dpointnet_custom_training.html" />
+    <link rel="prev" title="DPointNet" href="dpointnet_guide.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="builder_features.html">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="simulators_guide.html">Running Network Simulations with BMTK</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">DPointNet training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_hard_reset_training.html">Hard-forward, soft-surrogate training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_alpha_basis.html">Import synaptic kinetics with alpha-basis fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_lgn_pipeline.html">Visual input from an LGN model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_performance.html">DPointNet performance and GPU setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_input_recovery.html">Troubleshoot initial-state input generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_pascal.html">Pascal GPU compatibility</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="simulators_guide.html" class="nav-link">Running Network Simulations with BMTK</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="dpointnet_guide.html" class="nav-link">DPointNet</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">DPointNet training</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dpointnet-training">
+<h1>DPointNet training<a class="headerlink" href="#dpointnet-training" title="Link to this heading">#</a></h1>
+<p>First run the small simulation in <a class="reference internal" href="dpointnet_guide.html"><span class="doc">DPointNet</span></a>. Training adds an
+objective and an update protocol to the same network. Use
+<code class="docutils literal notranslate"><span class="pre">examples/dpointnet_all2all/config.train.all.json</span></code> as a complete
+starting configuration, including its network, input and target files.</p>
+<p>Custom objectives and callbacks are regular user extension points, not
+changes to BMTK itself. Follow <a class="reference internal" href="dpointnet_custom_training.html"><span class="doc">DPointNet custom losses and callbacks</span></a> for complete
+Python definitions, registration, JSON configuration and a runnable launcher.</p>
+<p>New NEST GLIF configurations default to hard-reset forward dynamics with
+approximate soft-reset-style voltage derivatives; see
+<a class="reference internal" href="dpointnet_hard_reset_training.html"><span class="doc">Hard-forward, soft-surrogate training</span></a>. Explicit <code class="docutils literal notranslate"><span class="pre">hard_reset=false</span></code> retains
+soft-reset training. Existing examples preserve their original reset policies.</p>
+<section id="choose-an-experiment">
+<h2>Choose an experiment<a class="headerlink" href="#choose-an-experiment" title="Link to this heading">#</a></h2>
+<p>Before training, decide:</p>
+<ul class="simple">
+<li><p><strong>Target and units:</strong> for example, each neuron’s firing rate in Hz.</p></li>
+<li><p><strong>Trainable weights:</strong> recurrent connections, input connections, or both.</p></li>
+<li><p><strong>Input conditions:</strong> named generators and the trials used for fitting.</p></li>
+<li><p><strong>Batch and window:</strong> parallel trials per update and timesteps per trial.</p></li>
+<li><p><strong>Optimizer and learning rate:</strong> chosen for the network and objective.</p></li>
+<li><p><strong>Duration:</strong> <code class="docutils literal notranslate"><span class="pre">n_epochs</span></code> and <code class="docutils literal notranslate"><span class="pre">steps_per_epoch</span></code>; a step executes the
+selected condition-update protocol, not one simulation timestep.</p></li>
+<li><p><strong>Evaluation:</strong> held-out inputs, evaluation frequency and the score used
+to choose saved weights. A lower training loss alone is not generalization.</p></li>
+</ul>
+<p>The following <strong>JSON fragment</strong> replaces <code class="docutils literal notranslate"><span class="pre">training</span></code> in the small example.
+It uses that example’s <code class="docutils literal notranslate"><span class="pre">rand_inputs</span></code> generator and a synthetic 15-Hz target:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"training"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"n_epochs"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps_per_epoch"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"training_approach"</span><span class="p">:</span><span class="w"> </span><span class="s2">"single"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"gradient_checkpointing"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"learning_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"optimizer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adam"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"epsilon"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000001</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"initial_state"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"zero_state"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"callbacks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Callbacks"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"callbacks_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"training_outputs"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verbose"</span><span class="p">:</span><span class="w"> </span><span class="s2">"on_step"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"epoch_store_weights"</span><span class="p">:</span><span class="w"> </span><span class="s2">"latest"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"sonata_output_dir"</span><span class="p">:</span><span class="w"> </span><span class="s2">"trained_network"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"losses_table_csv"</span><span class="p">:</span><span class="w"> </span><span class="s2">"losses.csv"</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"parameters"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rate_fit"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"rand_inputs"</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">"loss_functions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"rates"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TargetFiringRate"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"firing_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">15.0</span>
+<span class="w">          </span><span class="p">},</span>
+<span class="w">          </span><span class="nt">"voltage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VoltageRegularization"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"voltage_cost"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.5</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"penalty_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"range"</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The learning rate and coefficients above are illustrative, not defaults or a
+convergence recommendation. In the supplied complete example, full voltage
+output is explicitly enabled. For compact voltage output in a new config, see
+the voltage-regularization section below.</p>
+<p>This small legacy example explicitly disables activation checkpointing because
+its refractory-state dtype is incompatible with the segmented legacy loop in
+this revision. It still uses full BPTT. The general default remains enabled;
+this example’s exception is not a recommendation for large NEST models.</p>
+<p>Each entry in <code class="docutils literal notranslate"><span class="pre">training.parameters</span></code> defines a named condition: its inputs,
+losses and optional <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>/<code class="docutils literal notranslate"><span class="pre">seq_len</span></code> overrides. The condition refers
+to input names in top-level <code class="docutils literal notranslate"><span class="pre">inputs</span></code>. Callbacks belong inside <code class="docutils literal notranslate"><span class="pre">training</span></code>,
+not at the top level.</p>
+<p><code class="docutils literal notranslate"><span class="pre">training_approach=&quot;single&quot;</span></code> uses one condition. With multiple conditions,
+<code class="docutils literal notranslate"><span class="pre">series</span></code> applies an update per condition, <code class="docutils literal notranslate"><span class="pre">parallel</span></code> combines conditions
+into one model batch, and <code class="docutils literal notranslate"><span class="pre">series_accumulate</span></code> accumulates them before one
+update. These protocols are not interchangeable: two sequential batch-16
+updates differ from one combined batch-32 update.</p>
+</section>
+<section id="weights-and-objectives">
+<h2>Weights and objectives<a class="headerlink" href="#weights-and-objectives" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">rnn_cell_params.train_recurrent</span></code> controls recurrent-weight training.
+For an input population, set <code class="docutils literal notranslate"><span class="pre">inputs.&lt;input_name&gt;.trainable</span></code> explicitly
+to true or false. Do not assume all inputs are trainable just because
+recurrent training is enabled.
+Freezing a weight group and changing its learning rate are different choices.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Common loss modules</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TargetFiringRate</span></code></p></td>
+<td><p>Fit numeric rates in Hz: a scalar target or a model-ordered vector.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SpikeRateDistributionTarget</span></code></p></td>
+<td><p>Fit a population firing-rate distribution instead of individual neuron targets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OrientationSelectivityLoss</span></code></p></td>
+<td><p>Visual-response selectivity objective for appropriately configured stimulus conditions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VoltageRegularization</span></code></p></td>
+<td><p>Penalize voltages outside a range or their distance from threshold.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SynchronizationLoss</span></code></p></td>
+<td><p>Penalize the configured population synchrony measure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EMDWeightRegularization</span></code></p></td>
+<td><p>Compare weight distributions; this is not a firing-rate target.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Loss coefficients and selected populations determine the experiment. Inspect
+individual loss terms, firing-rate distributions and voltage behavior, not
+only their sum. The visual-cortex example in <code class="docutils literal notranslate"><span class="pre">examples/dpointnet_v1</span></code> needs
+its own model/data preparation and is not the first-run tutorial.</p>
+<p>The built-in <code class="docutils literal notranslate"><span class="pre">TargetFiringRate</span></code> does not load CSV filenames.
+The separate <code class="docutils literal notranslate"><span class="pre">run_dpointnet.firing_rate_reg.py</span></code> example registers a custom
+CSV-aware loss for the individual/grouped CSV configurations. Use that
+entrypoint when following those examples; it is not an automatic extension
+of the generic JSON loader.</p>
+<p>For your own target format or objective, use the loss interface and
+registration workflow in <a class="reference internal" href="dpointnet_custom_training.html"><span class="doc">DPointNet custom losses and callbacks</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">training.optimizer.name</span></code> accepts <code class="docutils literal notranslate"><span class="pre">adam</span></code>, <code class="docutils literal notranslate"><span class="pre">exp_adam</span></code> or <code class="docutils literal notranslate"><span class="pre">sgd</span></code>.
+Adam uses additive updates; <code class="docutils literal notranslate"><span class="pre">exp_adam</span></code> uses exponentiated updates, so the
+same learning rate is not necessarily comparable. A numeric
+<code class="docutils literal notranslate"><span class="pre">training.learning_rate</span></code> is constant; a dictionary selects a registered
+schedule, as in the supplied example. There is no universally suitable
+optimizer or learning rate.</p>
+<p>Optional optimizer clipping accepts at most one of <code class="docutils literal notranslate"><span class="pre">clipnorm</span></code>,
+<code class="docutils literal notranslate"><span class="pre">clipvalue</span></code> and <code class="docutils literal notranslate"><span class="pre">global_clipnorm</span></code>, each finite and positive. Clipping is
+disabled when omitted. It acts on unscaled gradients and does not repair
+overflow that already occurred during backpropagation.</p>
+</section>
+<section id="memory-saving-checkpointing">
+<h2>Memory-saving checkpointing<a class="headerlink" href="#memory-saving-checkpointing" title="Link to this heading">#</a></h2>
+<p><strong>Activation checkpointing</strong> recomputes intermediate states during BPTT to
+save memory. It does not shorten the time window over which gradients are
+calculated. It is enabled by default:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field under <code class="docutils literal notranslate"><span class="pre">training</span></code></p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gradient_checkpointing</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Recompute chunks during the backward pass.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gradient_checkpoint_chunk_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">min(25,</span> <span class="pre">sequence</span> <span class="pre">length)</span></code></p></td>
+<td><p>Chunk length in simulation steps, not always milliseconds.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pack_spike_checkpoints</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Additional packing of binary spike-history states.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">regenerate_initial_state_each_epoch</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Regenerate the configured initial state at epoch boundaries.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">learning_rule</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;bptt&quot;</span></code></p></td>
+<td><p>Learning method; the separate learning-rule example describes alternatives.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">gradient_checkpointing=false</span></code> to disable recomputation. The chunk size
+must be between one and the sequence length. Smaller chunks change memory and
+recomputation costs, not the intended temporal derivative. Spike packing is
+optional and leaves continuous neuron states unpacked.
+The omitted chunk size follows the effective training-parameter sequence length,
+including a shorter per-condition length; an explicit size is not silently
+clamped. Existing legacy examples pin checkpointing off to preserve their
+integer-refractory-state training route.</p>
+<p>This is different from <strong>saved checkpoints</strong>, which store weights and, when
+explicitly included, optimizer/state variables for later restoration.</p>
+</section>
+<section id="voltage-regularization-without-full-voltage-output">
+<h2>Voltage regularization without full voltage output<a class="headerlink" href="#voltage-regularization-without-full-voltage-output" title="Link to this heading">#</a></h2>
+<p>By default, GLIF returns spikes and a compact voltage-penalty statistic rather
+than every neuron’s voltage at every timestep. Tracking that statistic does
+<strong>not</strong> add a loss, clamp voltage or change the neuron dynamics.</p>
+<p>For a configured <code class="docutils literal notranslate"><span class="pre">VoltageRegularization</span></code> loss, the high-level training
+adapter uses an eligible compact statistic automatically. To request it
+explicitly, merge this <strong>fragment</strong> into a complete config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"rnn_cell_params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"track_voltage_penalty"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"voltage_penalty_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"range"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"return_voltage_sequences"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the loss entry under
+<code class="docutils literal notranslate"><span class="pre">training.parameters[i].loss_functions</span></code>, set <code class="docutils literal notranslate"><span class="pre">penalty_mode=&quot;range&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">online=true</span></code>. Cell and loss modes must match. Compact mode supports
+<code class="docutils literal notranslate"><span class="pre">range</span></code> and <code class="docutils literal notranslate"><span class="pre">threshold</span></code>, but not a spatial core mask.</p>
+<p>If a loss, learning rule or analysis needs neuron-resolved voltages, set
+<code class="docutils literal notranslate"><span class="pre">return_voltage_sequences=true</span></code> instead. Full voltage tensors have shape
+<code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">time,</span> <span class="pre">neurons]</span></code> and can be expensive for large models.</p>
+</section>
+<section id="monitor-save-and-evaluate">
+<h2>Monitor, save and evaluate<a class="headerlink" href="#monitor-save-and-evaluate" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">training.callbacks</span></code> controls loss tables, console messages and trained
+weight exports. <code class="docutils literal notranslate"><span class="pre">epoch_store_weights=&quot;latest&quot;</span></code> stores the latest epoch;
+<code class="docutils literal notranslate"><span class="pre">&quot;best&quot;</span></code> selects the lowest reported validation loss.
+That score includes configured regularizers. Verify that the evaluation
+conditions represent your intended held-out objective before interpreting
+the saved weights as the best biological fit.</p>
+<p>To add metrics, plots, experiment logging or early stopping, subclass
+DPointNet’s <code class="docutils literal notranslate"><span class="pre">Callbacks</span></code> rather than a Keras callback. The hook signatures,
+registration and configuration are shown in <a class="reference internal" href="dpointnet_custom_training.html"><span class="doc">DPointNet custom losses and callbacks</span></a>.</p>
+<p>For simulation with learned weights, copy the original inference config and
+replace each <code class="docutils literal notranslate"><span class="pre">networks.edges[i].edges_file</span></code> with the corresponding exported
+HDF5 file. In the small example these are <code class="docutils literal notranslate"><span class="pre">glifs_glifs_edges.h5</span></code> and
+<code class="docutils literal notranslate"><span class="pre">virts_glifs_edges.h5</span></code> under the callback’s trained-weight directory.
+Keep the original node files, edge-type CSVs and component directories:
+the callback exports edge weights, not a self-contained replacement of all
+network assets. Retain compatible dynamics and reset settings, then run the
+new inference config in the original example working directory.</p>
+<p>A SONATA weight export is not a complete optimizer checkpoint and cannot by
+itself reproduce a resumed training trajectory.</p>
+<p>For a custom Python workflow, <code class="docutils literal notranslate"><span class="pre">tf.train.Checkpoint</span></code> can include the model,
+optimizer and experiment state. Reconstruct the same model and loss
+configuration before restoration, check that all requested objects were
+restored, and refresh compute-weight copies when using custom update code.
+The JSON loader does not automatically create an experiment-specific
+train/validation split or restore a complete training run.</p>
+<p><code class="docutils literal notranslate"><span class="pre">training.callbacks.memory_report</span></code> accepts <code class="docutils literal notranslate"><span class="pre">epoch</span></code> (default), <code class="docutils literal notranslate"><span class="pre">step</span></code> or
+<code class="docutils literal notranslate"><span class="pre">off</span></code>. Reports distinguish TensorFlow allocations, driver process usage and
+whole-device memory. Driver usage includes reservations; it is not a
+TensorFlow live-allocation measurement. See <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a> when
+diagnosing resource use.</p>
+</section>
+<section id="optional-low-activity-regularizers">
+<h2>Optional low-activity regularizers<a class="headerlink" href="#optional-low-activity-regularizers" title="Link to this heading">#</a></h2>
+<p>Neither of the following losses is enabled automatically. They alter the
+objective and can bias biologically appropriate silent neurons; assess the
+original fit and rate distribution as well as the added penalty.</p>
+<p><code class="docutils literal notranslate"><span class="pre">LowRateFloor</span></code> penalizes the squared deficit below <code class="docutils literal notranslate"><span class="pre">floor_hz</span></code> (default
+0.1 Hz), with <code class="docutils literal notranslate"><span class="pre">cost</span></code> default 1.0. Rates are pooled across the full batch and
+time window. It does not replace a target-rate loss. Optional <code class="docutils literal notranslate"><span class="pre">neuron_ids</span></code>
+refer to model output columns, not arbitrary SONATA IDs. Other population/core
+selection uses the visual-cortex helpers and requires the matching data.</p>
+<p><code class="docutils literal notranslate"><span class="pre">VoltageRateFloor</span></code> gives subthreshold voltage credit to low-rate neurons,
+using a detached moving average of firing rates. It selects all model neurons;
+subset arguments are unsupported. Defaults are <code class="docutils literal notranslate"><span class="pre">cost=1.0</span></code>, normalized
+<code class="docutils literal notranslate"><span class="pre">target=0.9</span></code> (threshold is one), <code class="docutils literal notranslate"><span class="pre">floor_hz=0.1</span></code> and <code class="docutils literal notranslate"><span class="pre">ema_decay=0.95</span></code>.
+These are constructor defaults, not a generally qualified rescue recipe.</p>
+<p>For either loss, add an entry to each participating condition’s
+<code class="docutils literal notranslate"><span class="pre">loss_functions</span></code>. This <strong>fragment</strong> is one such entry:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"voltage_floor"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"module"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VoltageRateFloor"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"cost"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"target"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"floor_hz"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ema_decay"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.95</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The voltage-rate gate starts inactive. The first accepted update initializes
+it from measured rates; validation, replay and rejected updates do not update
+its history. Programmatic callers must construct this loss before building
+the model; JSON configuration registers its state channels automatically.
+Restore the same loss configuration and history to resume it. Fused CUDA use
+requires operators supporting pre-reset voltage output; older operators raise
+a rebuild error. This loss requires BPTT.</p>
+<p>Configured regularizers enter training and validation totals. If checkpoint
+selection should exclude them, define that experiment policy explicitly.
+They do not establish convergence for either NEST or legacy dynamics.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-an-experiment">Choose an experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-objectives">Weights and objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-saving-checkpointing">Memory-saving checkpointing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#voltage-regularization-without-full-voltage-output">Voltage regularization without full voltage output</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monitor-save-and-evaluate">Monitor, save and evaluate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-low-activity-regularizers">Optional low-activity regularizers</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/dpointnet_training.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

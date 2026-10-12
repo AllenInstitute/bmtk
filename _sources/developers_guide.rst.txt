@@ -7,3 +7,4 @@ For Developers
     
     bmtk/modules
     contributors
+    dpointnet_development

@@ -1,0 +1,928 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Hard-forward, soft-surrogate training &#8212; Brain Modeling Toolkit 1.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="_static/documentation_options.js?v=6efca38a"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dpointnet_hard_reset_training';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Import synaptic kinetics with alpha-basis fitting" href="dpointnet_alpha_basis.html" />
+    <link rel="prev" title="DPointNet defaults and configuration migration" href="dpointnet_training_standards.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="builder_features.html">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="simulators_guide.html">Running Network Simulations with BMTK</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_training.html">DPointNet training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Hard-forward, soft-surrogate training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_alpha_basis.html">Import synaptic kinetics with alpha-basis fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_lgn_pipeline.html">Visual input from an LGN model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_performance.html">DPointNet performance and GPU setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_input_recovery.html">Troubleshoot initial-state input generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_pascal.html">Pascal GPU compatibility</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="simulators_guide.html" class="nav-link">Running Network Simulations with BMTK</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="dpointnet_guide.html" class="nav-link">DPointNet</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Hard-forward, soft-surrogate training</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="hard-forward-soft-surrogate-training">
+<h1>Hard-forward, soft-surrogate training<a class="headerlink" href="#hard-forward-soft-surrogate-training" title="Link to this heading">#</a></h1>
+<p>New NEST GLIF configurations default to <strong>hard-reset forward dynamics with
+soft-surrogate voltage gradients</strong>. This retains hard reset and the refractory
+voltage clamp during both training and reporting, without switching reset rules
+after fitting. Explicit soft-reset configurations remain supported.</p>
+<p>The forward reset still assigns the reset voltage, and the forward refractory
+steps still clamp voltage there. The backward rule instead carries voltage
+credit through the unclamped membrane integration and subtractive reset.
+The hard-forward values are returned directly: the implementation does not
+approximate them by cancelling floating-point additions.</p>
+<section id="pin-the-learning-rule">
+<h2>Pin the learning rule<a class="headerlink" href="#pin-the-learning-rule" title="Link to this heading">#</a></h2>
+<p>Merge this fragment into a complete GLIF training configuration:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"rnn_cell_params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dynamics_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hard_reset"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hard_reset_gradient_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soft_surrogate"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"detach_reset"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"detach_asc_reset"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"voltage_state_gradient_scale"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"recurrent_spike_gradient_scale"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">hard_reset_gradient_mode</span></code> accepts:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 75.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Value</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;exact&quot;</span></code></p></td>
+<td><p>Preserve the existing voltage derivatives for the selected reset policy.
+High-level hard-reset training is still rejected in this mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;soft_surrogate&quot;</span></code></p></td>
+<td><p>Default when NEST reset and derivative options are both omitted. Requires
+<code class="docutils literal notranslate"><span class="pre">hard_reset=true</span></code> and <code class="docutils literal notranslate"><span class="pre">dynamics_mode=&quot;nest&quot;</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Here <code class="docutils literal notranslate"><span class="pre">exact</span></code> describes the voltage reset/clamp derivative, not an exact
+derivative of threshold spiking: the separately configured spike surrogate
+still applies.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">detach_reset=false</span></code> attaches the spike-event derivative of the
+subtractive backward reset. With <code class="docutils literal notranslate"><span class="pre">detach_reset=true</span></code>, the voltage-state
+path is still retained, but that spike-to-reset contribution is detached.
+The ASC event and recurrent spike credit retain their existing controls.
+Scale one means full configured retention, not removal of physical membrane decay.</p>
+</section>
+<section id="what-the-backward-rule-means">
+<h2>What the backward rule means<a class="headerlink" href="#what-the-backward-rule-means" title="Link to this heading">#</a></h2>
+<p>For normalized voltage, reset at zero and threshold at one, the surrogate
+reset is differentiated as <code class="docutils literal notranslate"><span class="pre">v_after</span> <span class="pre">=</span> <span class="pre">v_before</span> <span class="pre">-</span> <span class="pre">spike</span></code> while the forward
+value remains the hard reset. With reset events attached, this gives a
+voltage derivative <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">surrogate_spike_derivative</span></code> rather than zero
+at a fired neuron.</p>
+<p>During refractory steps, voltage credit follows the usual membrane candidate,
+including its physical decay and continuous-current dependence. It does not
+differentiate the integer refractory counter, the Boolean active mask, or
+the discrete choice of refractory duration. Spikes remain suppressed during
+refractory steps. This restores continuous voltage credit, not every possible
+derivative of a discrete hybrid system.</p>
+<p>These are <strong>deliberately approximate learning derivatives</strong>, evaluated along
+the hard-forward trajectory. They are neither the ordinary hard-reset Jacobian
+nor the gradients of a separately simulated soft-reset trajectory. Finite
+differences of the hard-forward map will therefore not validate the surrogate
+rule; use its stated Jacobian as the backward reference.</p>
+</section>
+<section id="execution-and-compatibility">
+<h2>Execution and compatibility<a class="headerlink" href="#execution-and-compatibility" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Compatible native NEST state, event-VJP and state-history routes pair the
+existing hard-forward kernel with its soft-style backward kernel. The latter
+uses the actual hard-forward states and spike eligibility, not a second
+soft-forward simulation. Packed/type-indexed coefficients, direct state loops
+and voltage tracking retain their ordinary compatibility checks.</p></li>
+<li><p>Automatic acceleration uses the same hardware/ABI/precision eligibility as
+ordinary NEST dynamics. Pascal supports native CSR currents and eligible
+occupancy-aware state routes; old unmarked state binaries retain a guarded
+fallback. Packed options are not automatically forced on Pascal.</p></li>
+<li><p>No additional state-transition kernel is introduced for the surrogate.
+The Pascal launch repair adds defaulted capability attributes to generic
+NEST operators; rebuild both fat operators from this source for those routes.
+Missing requested native capabilities still raise.</p></li>
+<li><p>Ordinary FP32 and selective mixed FP16, activation checkpointing and the
+FP32 temporal-gradient reference have focused CPU value/gradient tests.
+Focused Titan Xp/SM61 and RTX 8000/SM75 tests also cover native values/VJPs, independent event
+attachment, static/live type-indexed dispatch, checkpoint/Poisson replay,
+pre-reset voltage credit and FP32 temporal event VJPs.</p></li>
+<li><p>Generic FP32 NEST launches on Pascal require the kernel-specific occupancy
+repair in this source. Rebuild both cluster-fat operators after
+that CUDA change; an older binary can fail with <code class="docutils literal notranslate"><span class="pre">too</span> <span class="pre">many</span> <span class="pre">resources</span>
+<span class="pre">requested</span> <span class="pre">for</span> <span class="pre">launch</span></code> despite advertising SM61 compilation coverage.</p></li>
+<li><p>The same mode and attachment settings must be used for checkpoint replay
+and resumed training. A previously built model must be rebuilt explicitly
+before changing reset policy or enabling this mode; changing its config
+dictionary does not change an already traced graph.</p></li>
+<li><p>For inference at fixed weights, <code class="docutils literal notranslate"><span class="pre">exact</span></code> and <code class="docutils literal notranslate"><span class="pre">soft_surrogate</span></code> have the
+same hard-forward dynamics on either state route. The latter does
+not turn inference into soft-reset simulation.</p></li>
+</ul>
+</section>
+<section id="measured-native-overhead">
+<h2>Measured native overhead<a class="headerlink" href="#measured-native-overhead" title="Link to this heading">#</a></h2>
+<p>The focused Titan Xp and RTX 8000 tests used three excluded warmups and twenty synchronized
+measurements per route. All comparisons kept the same hard-forward input,
+initial state and loss. The applied-update test restored identical canonical
+masters and optimizer slots outside the timed region.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Titan Xp median time in milliseconds</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head"><p>Native exact-hard VJP control</p></th>
+<th class="head"><p>Native hard-surrogate</p></th>
+<th class="head"><p>TensorFlow hard-surrogate</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Synthetic 66,658-neuron BS8 state, 25 steps, forward and backward</p></td>
+<td><p>18.125</p></td>
+<td><p>18.047</p></td>
+<td><p>70.045</p></td>
+</tr>
+<tr class="row-odd"><td><p>Two-neuron 25-step applied Adam update</p></td>
+<td><p>60.760</p></td>
+<td><p>61.105</p></td>
+<td><p>74.677</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">RTX 8000 median time in milliseconds</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head"><p>Native exact-hard VJP control</p></th>
+<th class="head"><p>Native hard-surrogate</p></th>
+<th class="head"><p>TensorFlow hard-surrogate</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Synthetic 66,658-neuron BS8 state, 25 steps, forward and backward</p></td>
+<td><p>11.568</p></td>
+<td><p>11.724</p></td>
+<td><p>49.539</p></td>
+</tr>
+<tr class="row-odd"><td><p>Two-neuron 25-step applied Adam update</p></td>
+<td><p>63.123</p></td>
+<td><p>61.769</p></td>
+<td><p>79.871</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Relative to the existing native derivative path, the state/update medians
+changed by -0.43%/+0.57% on Titan Xp and +1.35%/-2.14% on RTX 8000.
+These measurements support approximately stock native speed, not an exactly
+zero-overhead claim. The implementation uses the existing backward kernel,
+not an extra CUDA pass. The large state benchmark used selective FP32 voltage/ASC and FP16
+synaptic state, but synthetic coefficients and fixed currents: it is <strong>not</strong>
+full V1 connectivity or a V1 training-memory/convergence qualification.
+The small update retained TensorFlow current projection. These timing ratios
+must not be extrapolated to complete V1 training.</p>
+</section>
+<section id="bounded-v1-training-startup">
+<h2>Bounded V1 training startup<a class="headerlink" href="#bounded-v1-training-startup" title="Link to this heading">#</a></h2>
+<p>A separate RTX 8000 execution test used the actual 66,658-neuron V1
+<code class="docutils literal notranslate"><span class="pre">core_nll_0</span></code> network, batch eight (six evoked/two spontaneous), 500 steps
+and checkpoint interval 25. It retained the original objectives and ExpAdam
+settings (learning rate 0.01, epsilon 1e-11), selective mixed FP16,
+compute temporal gradients, attached reset/ASC events and gradient retention
+one. Automatic native state, event-VJP and current routes were verified.</p>
+<p>All three requested updates were accepted and finite, changed canonical
+masters and passed configured constraints. Strict full model/optimizer
+checkpoint restoration passed, with zero loss-scale rejections.
+TensorFlow peak memory was 6,078,557,696 bytes (5.66 GiB) on the 48-GiB GPU.
+The first update took 41.09 seconds including tracing; the next two took
+2.125 and 2.127 seconds. Those two startup timings are not a twenty-sample
+whole-training benchmark.</p>
+<p>This startup establishes execution and checkpoint qualification for that specific
+recipe and hardware, not general convergence.</p>
+</section>
+<section id="completed-v1-fitting-and-endpoint-comparison">
+<h2>Completed V1 fitting and endpoint comparison<a class="headerlink" href="#completed-v1-fitting-and-endpoint-comparison" title="Link to this heading">#</a></h2>
+<p>A subsequent 66,658-neuron V1 run on RTX 8000 completed 20 epochs of 64 accepted
+updates (1,280 total), batch 32 (24 evoked/eight spontaneous), 500-ms windows and
+exact 25-ms checkpoints. It used detached reset, attached ASC, Gaussian
+width/gain 0.28/0.05, full recurrent/voltage gradient retention, selective mixed
+FP16 and the original Normal objectives and ExpAdam learning rate 0.01.
+These scientific settings are evidence for that recipe, not library defaults.</p>
+<p>Epoch-20 hard-trained/hard-reset and historical soft-trained/soft-reset models
+were evaluated with eight grating directions and ten repeats per direction,
+500-ms gray plus 2,000-ms gratings. Metrics used core neurons within 200 um;
+OSI/DSI required preferred rate at least 0.5 Hz. A third arm reused the same
+soft-trained endpoint with hard reset after exact input/master/source verification.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text">Mean per-cell-class Neuropixels similarity (1-KS; descriptive)</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 36.0%" />
+<col style="width: 16.0%" />
+<col style="width: 16.0%" />
+<col style="width: 16.0%" />
+<col style="width: 16.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Training / inference</p></th>
+<th class="head"><p>Spontaneous FR</p></th>
+<th class="head"><p>Preferred FR</p></th>
+<th class="head"><p>OSI</p></th>
+<th class="head"><p>DSI</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Hard / hard</p></td>
+<td><p>0.817</p></td>
+<td><p>0.752</p></td>
+<td><p>0.654</p></td>
+<td><p>0.670</p></td>
+</tr>
+<tr class="row-odd"><td><p>Soft / soft</p></td>
+<td><p>0.815</p></td>
+<td><p>0.770</p></td>
+<td><p>0.635</p></td>
+<td><p>0.666</p></td>
+</tr>
+<tr class="row-even"><td><p>Soft / hard</p></td>
+<td><p>0.815</p></td>
+<td><p>0.724</p></td>
+<td><p>0.643</p></td>
+<td><p>0.651</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The distributions are broadly similar, with modest, cell-type-dependent gains
+for hard-trained/hard-reset versus soft-trained/hard-reset. This is one fixed
+network seed, not independent training replication or proof of superiority.
+Historical training source/hardware differ; the reused third inference arm ran
+on V100 while the new pair ran on GTX1080Ti. Common inference source, operators,
+precision, stimulus realizations and soft-trained physical masters were verified,
+not bitwise cross-GPU trajectory identity.</p>
+<p>The paired GTX1080Ti inference smoke peaked at 5.16/5.18 GiB after selecting
+native CSR currents. The old unaccelerated Pascal input projection exceeded
+headroom or ran out of memory. This is an inference-memory result, not a
+qualification of batch-32 training on an 11-GiB device.</p>
+<p>The consolidated automatic Pascal route also passed actual V1 startup on
+GTX1080Ti: three accepted hard-surrogate updates, finite/changed masters,
+constraints and strict model/optimizer restoration at batch eight,
+500 steps and 25-step checkpoints. Peak TensorFlow allocation was 6.12 GiB.
+The matched soft-reset control also passed. See <a class="reference internal" href="dpointnet_pascal.html"><span class="doc">Pascal GPU compatibility</span></a>
+for complete test coverage, timing boundaries and memory scope.
+This is separate from the completed batch-32, twenty-epoch training above.</p>
+</section>
+<section id="small-runnable-demonstration">
+<h2>Small runnable demonstration<a class="headerlink" href="#small-runnable-demonstration" title="Link to this heading">#</a></h2>
+<p>The repository example <code class="docutils literal notranslate"><span class="pre">examples/dpointnet_nest_comparison</span></code> includes
+<code class="docutils literal notranslate"><span class="pre">config.train.hard_surrogate.json</span></code> alongside the fixed-weight comparison.
+It uses the same 300 neurons and saved inputs, trains recurrent and input
+weights, and uses exact activation checkpointing.</p>
+<p>From a writable copy of that example, after building the assets:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span>python<span class="w"> </span>run_dpointnet.py<span class="w"> </span>config.fp32.hard.json
+<span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span>python<span class="w"> </span>probe_hard_reset_gradients.py
+<span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span>python<span class="w"> </span>run_dpointnet.py<span class="w"> </span>config.train.hard_surrogate.json
+<span class="nv">MPLBACKEND</span><span class="o">=</span>Agg<span class="w"> </span>python<span class="w"> </span>plot_hard_reset_training.py
+</pre></div>
+</div>
+<p>The probe compares both backward modes at fixed weights and checks identical
+hard-forward states. It separately forces a spike in all neurons followed by
+a refractory step, so restored voltage credit is measured directly rather
+than inferred from nonzero weight gradients.</p>
+<p>In the measured FP32 CPU demonstration, both fixed-weight modes emitted the
+same 2,397 spikes. The forced-reset initial-voltage gradient norm changed
+from zero to approximately 14.63. Six accepted Adam updates reduced the
+30-Hz target-rate MSE from 18.11 to 4.15 Hz squared after the last epoch.
+These are startup-learning results on one replayed toy input, not a convergence
+or generalization result.</p>
+<p>Outputs include <code class="docutils literal notranslate"><span class="pre">output_gradient_probe/gradient_probe.json</span></code>,
+<code class="docutils literal notranslate"><span class="pre">output_gradient_probe/hard_reset_training.png</span></code>, and trained SONATA edge
+files under <code class="docutils literal notranslate"><span class="pre">output_train_hard_surrogate/callbacks/trained_weights</span></code>.
+The coefficients, target and learning rate are explicitly chosen for the demo,
+not new defaults. For new experiments, assess loss, rates, finite gradients and
+the behavior of exported weights in the intended hard-reset inference model.</p>
+</section>
+<section id="compare-with-soft-reset-training">
+<h2>Compare with soft-reset training<a class="headerlink" href="#compare-with-soft-reset-training" title="Link to this heading">#</a></h2>
+<p>The companion <code class="docutils literal notranslate"><span class="pre">config.train.soft.json</span></code> matches the hard-surrogate profile
+except for reset/derivative policy and output paths. Both use FP32, attached
+reset and ASC events, the same network and saved input, the same 30-Hz target
+and optimizer, and six checkpointed updates:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span>python<span class="w"> </span>run_dpointnet.py<span class="w"> </span>config.train.hard_surrogate.json
+<span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span>python<span class="w"> </span>run_dpointnet.py<span class="w"> </span>config.train.soft.json
+<span class="nv">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span><span class="w"> </span><span class="nv">MPLBACKEND</span><span class="o">=</span>Agg<span class="w"> </span>python<span class="w"> </span>compare_reset_training.py
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-text">Measured learning on the fixed input (MSE in Hz squared)</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Training policy</p></th>
+<th class="head"><p>Initial rate MSE</p></th>
+<th class="head"><p>Final rate MSE in its training policy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Hard forward, soft-surrogate backward</p></td>
+<td><p>18.11</p></td>
+<td><p>4.15</p></td>
+</tr>
+<tr class="row-odd"><td><p>Soft reset</p></td>
+<td><p>19.07</p></td>
+<td><p>4.85</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For this replay and learning rate, hard-surrogate loss decreased smoothly,
+whereas soft-reset loss oscillated before reaching a similar final value.
+This short run does not establish a generally superior method.</p>
+<p>The script also reloads each trained SONATA export under both inference reset
+policies:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Cross-reset inference (rate MSE in Hz squared)</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Trained weights</p></th>
+<th class="head"><p>Hard-reset inference</p></th>
+<th class="head"><p>Soft-reset inference</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Hard-surrogate training</p></td>
+<td><p>4.15</p></td>
+<td><p>7.63</p></td>
+</tr>
+<tr class="row-odd"><td><p>Soft-reset training</p></td>
+<td><p>4.15</p></td>
+<td><p>4.85</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The matching hard-inference MSE values do not imply identical weights or
+spike timing. Switching reset at the same trained weights gave exact
+neuron/time event F1 of 0.482 for hard-trained weights and 0.231 for
+soft-trained weights. This rate objective does not constrain event timing.
+The cross-reset test is an explicit comparison, not an automatic inference
+policy change.</p>
+<p>Both methods restored the same voltage-gradient norm in the isolated
+forced-reset/refractory probe, but their initial recurrent and input-weight
+gradient cosine similarities were only about 0.628 and 0.666. Their different
+forward trajectories therefore produce different learning directions despite
+the shared local voltage-credit rule.</p>
+<p><code class="docutils literal notranslate"><span class="pre">output_training_comparison/comparison.png</span></code> shows the learning curves,
+cross-reset losses and final rasters. The adjacent <code class="docutils literal notranslate"><span class="pre">comparison.json</span></code> records
+the matched asset hashes, probes and unshifted event-agreement metrics.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pin-the-learning-rule">Pin the learning rule</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-the-backward-rule-means">What the backward rule means</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-and-compatibility">Execution and compatibility</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measured-native-overhead">Measured native overhead</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bounded-v1-training-startup">Bounded V1 training startup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#completed-v1-fitting-and-endpoint-comparison">Completed V1 fitting and endpoint comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#small-runnable-demonstration">Small runnable demonstration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-with-soft-reset-training">Compare with soft-reset training</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/dpointnet_hard_reset_training.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

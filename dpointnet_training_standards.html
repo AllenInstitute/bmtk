@@ -1,0 +1,960 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DPointNet defaults and configuration migration &#8212; Brain Modeling Toolkit 1.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f64e6960" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+
+    <script src="_static/documentation_options.js?v=6efca38a"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dpointnet_training_standards';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Hard-forward, soft-surrogate training" href="dpointnet_hard_reset_training.html" />
+    <link rel="prev" title="DPointNet custom losses and callbacks" href="dpointnet_custom_training.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+     
+  
+
+<a class="navbar-brand logo" href="https://alleninstitute.org/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/allen-logo.svg" class="logo__image only-light" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+    <img src="_static/allen-logo.svg" class="logo__image only-dark pst-js-only" alt="Brain Modeling Toolkit 1.2.0 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    About BMTK
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="news_and_events.html">
+    News and Events
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contact_us.html">
+    Contact Us
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="installation.html">
+    Installation Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="user_guide.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials and Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="how_to_cite.html">
+    How to Cite
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developers_guide.html">
+    For Developers
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Overview of BMTK</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="builder.html">Building brain network models with BMTK Network Builder</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="builder_features.html">Network Builder Features and Options</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="simulators_guide.html">Running Network Simulations with BMTK</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_training.html">DPointNet training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">DPointNet defaults and configuration migration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_hard_reset_training.html">Hard-forward, soft-surrogate training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_alpha_basis.html">Import synaptic kinetics with alpha-basis fitting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_lgn_pipeline.html">Visual input from an LGN model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_performance.html">DPointNet performance and GPU setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_input_recovery.html">Troubleshoot initial-state input generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_pascal.html">Pascal GPU compatibility</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="filternet.html">FilterNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="filternet_visual_models.html">Visual Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="filternet_auditory_models.html">Auditory Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="simulators_guide.html" class="nav-link">Running Network Simulations with BMTK</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="dpointnet_guide.html" class="nav-link">DPointNet</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">DPointNet defaults and configuration migration</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dpointnet-defaults-and-configuration-migration">
+<span id="dpointnet-training-standards-dpointnet-training-standards-and-configuration-migration"></span><h1>DPointNet defaults and configuration migration<a class="headerlink" href="#dpointnet-defaults-and-configuration-migration" title="Link to this heading">#</a></h1>
+<p>This page explains the GLIF defaults in this source revision. For a first run,
+start with <a class="reference internal" href="dpointnet_guide.html"><span class="doc">DPointNet</span></a>; for objectives and update protocols, use
+<a class="reference internal" href="dpointnet_training.html"><span class="doc">DPointNet training</span></a>. The migration section at the end is only needed
+when updating an older configuration.</p>
+<section id="current-defaults">
+<span id="dpointnet-training-standards-standard-defaults"></span><span id="dpointnet-training-standards-at-a-glance"></span><h2>Current defaults<a class="headerlink" href="#current-defaults" title="Link to this heading">#</a></h2>
+<p>These are the defaults for new GLIF configurations. Explicit supported
+settings override them; targets and the training protocol are chosen separately.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 30.0%" />
+<col style="width: 45.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Area</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>What it means</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dynamics / reset</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nest</span></code> / hard forward, soft-surrogate backward</p></td>
+<td><p>Hard voltage reset and refractory clamping in training and inference;
+approximate derivatives retain voltage credit during learning.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Spike derivative</p></td>
+<td><p>Gaussian, width <code class="docutils literal notranslate"><span class="pre">0.28</span></code>, gain <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></td>
+<td><p>Smooth derivative used for learning, not a different forward spike threshold.</p></td>
+</tr>
+<tr class="row-even"><td><p>Recurrent / voltage gradient scales</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code> / <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+<td><p>Retain both learning paths; physical membrane decay still applies.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Spike-triggered event derivatives</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">detach_reset=true</span></code>, <code class="docutils literal notranslate"><span class="pre">detach_asc_reset=false</span></code></p></td>
+<td><p>Block the spike-to-voltage-reset derivative but retain the after-spike-current event derivative.</p></td>
+</tr>
+<tr class="row-even"><td><p>Recurrent weight training</p></td>
+<td><p>Individual edges when enabled</p></td>
+<td><p>Each trainable recurrent edge has its own weight.</p></td>
+</tr>
+<tr class="row-odd"><td><p>High-level GLIF RNN precision</p></td>
+<td><p>Mixed FP16, selective FP32 voltage/ASC</p></td>
+<td><p>See the precision section below.</p></td>
+</tr>
+<tr class="row-even"><td><p>Activation checkpointing</p></td>
+<td><p>On, chunk size <code class="docutils literal notranslate"><span class="pre">min(25,</span> <span class="pre">sequence</span> <span class="pre">length)</span></code> steps</p></td>
+<td><p>Save memory by recomputing intermediates, without truncating BPTT.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Voltage output</p></td>
+<td><p>Compact penalty tracking, not full voltage sequences</p></td>
+<td><p>Tracking alone adds no loss and does not clamp voltage.</p></td>
+</tr>
+<tr class="row-even"><td><p>Acceleration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></td>
+<td><p>Select compatible implementations without changing the requested precision or dynamics.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Drifting-grating LGN generation</p></td>
+<td><p>Device generation for supported seeded inputs</p></td>
+<td><p>See <a class="reference internal" href="dpointnet_lgn_pipeline.html"><span class="doc">Visual input from an LGN model</span></a> if using this optional visual-input model.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dynamics_mode=&quot;nest&quot;</span></code> selects DPointNet’s NEST-compatible implementation,
+not the NEST simulator. It is the default for new training and simulation.
+Preserve explicit legacy dynamics when reproducing a
+legacy experiment. The supplied examples explicitly preserve their original
+scientific settings rather than silently adopting new ones.</p>
+<p>Choose batch size, sequence length, seed, optimizer, learning rate, epochs,
+condition layout, targets and loss coefficients for your experiment.
+Visual-cortex (V1) recipe values are not automatically imposed on other models.
+No activity-rescue loss is enabled automatically.</p>
+</section>
+<section id="reset-defaults-and-compatibility">
+<h2>Reset defaults and compatibility<a class="headerlink" href="#reset-defaults-and-compatibility" title="Link to this heading">#</a></h2>
+<p>When both reset options are omitted, NEST GLIF cells and high-level RNNs resolve
+to <code class="docutils literal notranslate"><span class="pre">hard_reset=true</span></code> and <code class="docutils literal notranslate"><span class="pre">hard_reset_gradient_mode=&quot;soft_surrogate&quot;</span></code>.
+This is an intentional forward-dynamics change for new configurations.
+The forward trajectory is hard even during training; the learning derivative
+is approximate, not the exact derivative of the discrete hard-reset map.</p>
+<p>Explicit historical configurations remain authoritative:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 45.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Request</p></th>
+<th class="head"><p>Resolution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Omit both options with NEST dynamics</p></td>
+<td><p>Hard forward / soft-surrogate backward</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hard_reset=false</span></code></p></td>
+<td><p>Soft forward / existing exact reset derivatives</p></td>
+</tr>
+<tr class="row-even"><td><p>Historical <code class="docutils literal notranslate"><span class="pre">hard_reset=null</span></code></p></td>
+<td><p>Preserve soft reset for high-level training and exact hard NEST reset for inference/direct cells;
+prefer an explicit Boolean for new scientific configs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hard_reset=true</span></code> with mode omitted</p></td>
+<td><p>Hard forward / historical exact clamp derivatives; high-level BPTT rejects it</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hard_reset=true</span></code>, <code class="docutils literal notranslate"><span class="pre">hard_reset_gradient_mode=&quot;soft_surrogate&quot;</span></code></p></td>
+<td><p>Trainable hard-forward NEST configuration</p></td>
+</tr>
+<tr class="row-odd"><td><p>Explicit <code class="docutils literal notranslate"><span class="pre">dynamics_mode=&quot;legacy&quot;</span></code> with reset omitted</p></td>
+<td><p>Existing soft reset and exact derivatives</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The explicit reset fragment is recommended when sharing a scientific configuration
+so it does not depend on future defaults:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"rnn_cell_params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"dynamics_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nest"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hard_reset"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hard_reset_gradient_mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"soft_surrogate"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Keep <code class="docutils literal notranslate"><span class="pre">detach_reset=true</span></code> and <code class="docutils literal notranslate"><span class="pre">detach_asc_reset=false</span></code> unless deliberately
+studying a different event derivative. Reset selection does not add a voltage
+loss or bound all voltage excursions. Existing pinned jobs and checkpoints must
+retain their declared source, reset, precision and derivative settings.</p>
+</section>
+<section id="choose-precision">
+<span id="dpointnet-training-standards-precision-switches"></span><h2>Choose precision<a class="headerlink" href="#choose-precision" title="Link to this heading">#</a></h2>
+<p><strong>FP32</strong> uses 32-bit floating point. <strong>FP16</strong> uses 16-bit floating point, saving
+memory but representing a narrower range of values. Mixed precision uses FP16
+for much of the computation while retaining FP32 trainable weights and
+optimizer variables. The selective state policy also retains FP32 membrane
+voltage and after-spike currents (ASC); other floating state remains compact.</p>
+<p>Merge this <strong>JSON fragment</strong> into top-level <code class="docutils literal notranslate"><span class="pre">run</span></code> in a complete config:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"run"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"precision"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"mixed_precision"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"fp32_voltage_and_asc"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"fp32_temporal_gradients"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 15.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Switch</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mixed_precision</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>FP16 compute with FP32 trainable weights/optimizer variables; false selects full FP32.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fp32_voltage_and_asc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>FP32 voltage/ASC under mixed precision.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fp32_temporal_gradients</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Wider derivatives across time, for checking accuracy under mixed precision.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Precision profiles</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 15.0%" />
+<col style="width: 20.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Profile</p></th>
+<th class="head"><p>Compute</p></th>
+<th class="head"><p>Voltage / ASC</p></th>
+<th class="head"><p>Derivatives across time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>FP16</p></td>
+<td><p>FP32</p></td>
+<td><p>FP16</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">fp32_temporal_gradients=true</span></code></p></td>
+<td><p>FP16</p></td>
+<td><p>FP32</p></td>
+<td><p>FP32 replay path</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fp32_voltage_and_asc=false</span></code></p></td>
+<td><p>FP16</p></td>
+<td><p>FP16</p></td>
+<td><p>FP16</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mixed_precision=false</span></code></p></td>
+<td><p>FP32</p></td>
+<td><p>FP32</p></td>
+<td><p>FP32 compute path</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For a simple CPU run, explicitly select <code class="docutils literal notranslate"><span class="pre">mixed_precision=false</span></code> as in the
+small example. Precision is not automatically changed when no GPU is present.
+Under mixed precision, FP32 temporal gradients require FP32 voltage/ASC.
+All switches must be booleans; invalid combinations raise an error.</p>
+<p>Full FP32 is never narrowed by the other switches. The mixed FP32-temporal
+route preserves the original forward precision and requires a supported
+temporal runner; see <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a> for its replay/storage costs.
+A direct <code class="docutils literal notranslate"><span class="pre">GLIF3Cell</span></code> inherits its Keras dtype policy rather than installing
+the high-level RNN’s policy itself.</p>
+</section>
+<section id="gradient-controls-and-old-names">
+<span id="dpointnet-training-standards-clear-names-for-gradient-controls"></span><h2>Gradient controls and old names<a class="headerlink" href="#gradient-controls-and-old-names" title="Link to this heading">#</a></h2>
+<p>Put these fields in <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>. A surrogate is the smooth derivative
+used to learn through spikes; a gradient scale adjusts a particular learning
+path without changing the forward neuron equations.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+<col style="width: 25.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Standard name</p></th>
+<th class="head"><p>Deprecated compatibility alias</p></th>
+<th class="head"><p>Translation</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spike_surrogate_gain</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dampening_factor</span></code></p></td>
+<td><p>Same value</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">recurrent_spike_gradient_scale</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">recurrent_dampening_factor</span></code></p></td>
+<td><p>Same value</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">voltage_state_gradient_scale</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">voltage_gradient_dampening</span></code></p></td>
+<td><p>Complement of the clipped old removed fraction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">spike_surrogate_width</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gauss_std</span></code></p></td>
+<td><p>Same value</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.28</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">spike_surrogate</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pseudo_gauss</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code> means Gaussian, <code class="docutils literal notranslate"><span class="pre">false</span></code> triangular</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;gaussian&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For recurrent and voltage scales, zero blocks that learning route and one
+retains it. The recurrent scale does not block the direct weight gradient.
+The voltage scale is not the biological membrane-decay constant.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The old voltage option describes the fraction <strong>removed</strong>, not retained:
+<code class="docutils literal notranslate"><span class="pre">voltage_state_gradient_scale</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">clip(voltage_gradient_dampening,</span> <span class="pre">0,</span> <span class="pre">1)</span></code>.
+Old values 0, 0.5 and 1 therefore map to new values 1, 0.5 and 0.
+Supplying both an old name and its new name is an error, even if equivalent.</p>
+</div>
+<p>Explicit use of any alias in the table emits a visible Python <code class="docutils literal notranslate"><span class="pre">FutureWarning</span></code>,
+whether supplied directly to <code class="docutils literal notranslate"><span class="pre">GLIF3Cell</span></code> or through a JSON configuration.
+Omitted legacy arguments and standard-name usage do not emit this warning.
+The aliases remain supported with their existing conversions and positional
+argument slots; no removal version is scheduled. They stay visible in the
+constructor signature for compatibility, but new code and configurations should
+use the standard names. Python’s usual warning filters control repeated messages.</p>
+<p>Do not simply rename <code class="docutils literal notranslate"><span class="pre">voltage_gradient_dampening</span></code> or <code class="docutils literal notranslate"><span class="pre">pseudo_gauss</span></code> without
+converting their values as shown above.</p>
+<p>Surrogate gain is not a retention fraction. Width and gain jointly affect
+learning; choose them together and record changes. Gaussian width does not
+affect the fixed-width triangular surrogate.</p>
+</section>
+<section id="automatic-acceleration">
+<span id="dpointnet-training-standards-automatic-acceleration"></span><h2>Automatic acceleration<a class="headerlink" href="#automatic-acceleration" title="Link to this heading">#</a></h2>
+<p>Omitting <code class="docutils literal notranslate"><span class="pre">rnn_cell_params.acceleration_profile</span></code> selects <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>.
+Leave individual kernel flags unspecified for ordinary use. Explicit flags
+override automatic choices and are checked for compatibility; unsupported
+explicit requests raise. Explicit <code class="docutils literal notranslate"><span class="pre">acceleration_profile=null</span></code> disables
+profile expansion, not separately requested options.</p>
+<p>CPU execution does not require custom CUDA operators. On GPUs, selection
+depends on hardware, available operators, precision and network structure,
+not just the CUDA version. See <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a> for setup and
+<a class="reference internal" href="dpointnet_pascal.html"><span class="doc">Pascal GPU compatibility</span></a> for older NVIDIA hardware limitations.</p>
+</section>
+<section id="updating-an-older-configuration">
+<span id="dpointnet-training-standards-existing-examples-and-migration"></span><h2>Updating an older configuration<a class="headerlink" href="#updating-an-older-configuration" title="Link to this heading">#</a></h2>
+<p><strong>Omitted settings now change behavior.</strong> Accepting old parameter names does
+not freeze the old defaults of other fields. If reproducing an old experiment,
+make its settings explicit before updating BMTK.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Changes from the previous GLIF defaults</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Previous</p></th>
+<th class="head"><p>Current</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dynamics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">legacy</span></code></p></td>
+<td><p><strong>nest</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Surrogate</p></td>
+<td><p>Triangular</p></td>
+<td><p><strong>Gaussian</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Gaussian width / gain</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.5</span></code> / <code class="docutils literal notranslate"><span class="pre">0.3</span></code></p></td>
+<td><p><strong>0.28 / 0.05</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Recurrent / voltage gradient retention</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.5</span></code> / <code class="docutils literal notranslate"><span class="pre">0.5</span></code></p></td>
+<td><p><strong>1.0 / 1.0</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>ASC-event derivative</p></td>
+<td><p>Detached</p></td>
+<td><p><strong>Attached</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Individual recurrent weights in direct GLIF3Cell construction, when training is enabled</p></td>
+<td><p>Not trainable by the old per-type flag</p></td>
+<td><p><strong>Trainable</strong>; high-level RNN already used individual edges</p></td>
+</tr>
+<tr class="row-even"><td><p>High-level RNN compute / mixed state</p></td>
+<td><p>FP32 / compute state</p></td>
+<td><p><strong>Mixed FP16 / selective voltage-ASC state</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Activation checkpointing</p></td>
+<td><p>Off</p></td>
+<td><p><strong>On</strong>; 25 steps, capped by effective sequence length when omitted</p></td>
+</tr>
+<tr class="row-even"><td><p>Full voltage output / penalty tracking</p></td>
+<td><p>On / off</p></td>
+<td><p><strong>Off / on</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Acceleration profile</p></td>
+<td><p>Opt-in</p></td>
+<td><p><strong>Automatic</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Drifting-grating LGN generation</p></td>
+<td><p>Host</p></td>
+<td><p><strong>Device</strong> for supported seeded inputs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The historical <code class="docutils literal notranslate"><span class="pre">train_recurrent_per_type=true</span></code> flag does not implement
+trainable type-shared recurrent weights; it disables individual recurrent
+weight training. Do not use it to request weight tying.</p>
+<p>The helper below returns a copy with previous scientific defaults made
+explicit and automatic acceleration selected:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bmtk.simulator.dpointnet.migration</span><span class="w"> </span><span class="kn">import</span> <span class="n">preserve_previous_defaults</span>
+
+<span class="n">migrated</span> <span class="o">=</span> <span class="n">preserve_previous_defaults</span><span class="p">(</span><span class="n">old_config_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The helper recognizes <code class="docutils literal notranslate"><span class="pre">GLIF3Cell</span></code>, its historical <code class="docutils literal notranslate"><span class="pre">GLIF3</span></code> selector and
+<code class="docutils literal notranslate"><span class="pre">default</span></code>. It pins omitted training checkpointing off, preserving the previous
+non-recomputed route; explicit checkpoint choices remain unchanged.</p>
+<p>Review the result against the original experiment, including precision and
+outputs. Explicit legacy <code class="docutils literal notranslate"><span class="pre">run.dtype</span></code> and cell precision fields remain
+supported; conflicting requests with the new switches raise. To preserve a
+historical all-FP16-state setup, specify <code class="docutils literal notranslate"><span class="pre">state_precision=&quot;compute&quot;</span></code> as well
+as its compute dtype.</p>
+<p>Acceleration may change floating-point reduction order, so preserved scientific
+settings do not imply bitwise-identical results. Check your application’s
+numerical tolerances and learning behavior rather than relaxing them to pass.</p>
+</section>
+<section id="scope">
+<span id="dpointnet-training-standards-validation-and-scope"></span><h2>Scope<a class="headerlink" href="#scope" title="Link to this heading">#</a></h2>
+<p>CPU/older-Keras compatibility and RTX3090 execution have been tested for this
+defaults change. These tests do not cover every GPU family or establish
+physical multi-GPU equivalence. Source/build validation procedures
+belong in <a class="reference internal" href="dpointnet_development.html"><span class="doc">DPointNet contributor reference</span></a>; they are not additional settings needed
+to run a model.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-defaults">Current defaults</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reset-defaults-and-compatibility">Reset defaults and compatibility</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-precision">Choose precision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gradient-controls-and-old-names">Gradient controls and old names</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-acceleration">Automatic acceleration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-an-older-configuration">Updating an older configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scope">Scope</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/dpointnet_training_standards.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
