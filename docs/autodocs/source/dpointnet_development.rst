@@ -6,6 +6,32 @@ first-run configuration recipe.
 Current user guidance lives in :doc:`dpointnet_guide`,
 :doc:`dpointnet_training_standards` and :doc:`dpointnet_performance`.
 
+GLIF3Cell gradient-control API
+----------------------------------------
+
+The constructor retains old positional argument slots for compatibility.
+Its parameter documentation marks deprecated aliases and their replacements;
+the :ref:`migration table <dpointnet_training_standards--clear-names-for-gradient-controls>`
+also covers JSON configurations.
+
+.. py:class:: bmtk.simulator.dpointnet.cell_models.glif3_cell.GLIF3Cell
+   :noindex:
+
+   :param spike_surrogate: Preferred selector: ``"gaussian"`` (default) or ``"triangular"``.
+   :param spike_surrogate_width: Preferred Gaussian width (default ``0.28``).
+   :param spike_surrogate_gain: Preferred surrogate gain (default ``0.05``).
+   :param recurrent_spike_gradient_scale: Preferred recurrent gradient retention (default ``1.0``).
+   :param voltage_state_gradient_scale: Preferred voltage gradient retention in [0, 1] (default ``1.0``).
+   :param gauss_std: Deprecated compatibility alias for ``spike_surrogate_width``.
+   :param dampening_factor: Deprecated compatibility alias for ``spike_surrogate_gain``.
+   :param recurrent_dampening_factor: Deprecated compatibility alias for ``recurrent_spike_gradient_scale``.
+   :param voltage_gradient_dampening: Deprecated removed fraction; convert to ``voltage_state_gradient_scale = 1 - clip(value, 0, 1)``.
+   :param pseudo_gauss: Deprecated Boolean selector; True maps to ``"gaussian"``, False to ``"triangular"``.
+
+   Explicit aliases emit ``FutureWarning``; omitted aliases do not warn.
+   Existing values and positional slots remain supported, with no scheduled
+   removal version. Supplying both names for one control raises ``ValueError``.
+
 Terminology
 -----------
 

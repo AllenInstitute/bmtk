@@ -676,6 +676,43 @@ def _resolve_fused_state_history(option, dynamics_mode, fused_state):
 
 
 class GLIF3Cell(tf.keras.layers.Layer):
+    """GLIF3 neuron population with compatible legacy gradient controls.
+
+    Parameters
+    ----------
+    spike_surrogate : {"gaussian", "triangular"}, optional
+        Preferred surrogate selector; defaults to ``"gaussian"``.
+    spike_surrogate_width : float, optional
+        Preferred Gaussian width; defaults to 0.28.
+    spike_surrogate_gain : float, optional
+        Preferred surrogate gain; defaults to 0.05.
+    recurrent_spike_gradient_scale : float, optional
+        Preferred recurrent spike-gradient retention; defaults to 1.0.
+    voltage_state_gradient_scale : float, optional
+        Preferred voltage state-gradient retention in [0, 1]; defaults to 1.0.
+    gauss_std : float, optional
+        Deprecated compatibility alias for ``spike_surrogate_width``.
+    dampening_factor : float, optional
+        Deprecated compatibility alias for ``spike_surrogate_gain``.
+    recurrent_dampening_factor : float, optional
+        Deprecated compatibility alias for ``recurrent_spike_gradient_scale``.
+    voltage_gradient_dampening : float, optional
+        Deprecated removed-fraction control. Convert using
+        ``voltage_state_gradient_scale = 1 - clip(value, 0, 1)``.
+    pseudo_gauss : bool, optional
+        Deprecated selector: True maps to ``spike_surrogate="gaussian"``,
+        False to ``spike_surrogate="triangular"``.
+
+    Notes
+    -----
+    Explicit legacy arguments emit a visible ``FutureWarning``. They remain
+    supported, including their original positional slots and value conversions;
+    no removal version is scheduled. Omitted legacy arguments do not warn.
+    Supplying both names for one control raises ``ValueError``.
+    See :ref:`dpointnet_training_standards--clear-names-for-gradient-controls`
+    for migration guidance.
+    """
+
     noise_state_index = 6
 
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
@@ -788,19 +825,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 "the unclamped integration and soft-reset rule."
             )
         gauss_std = resolve_renamed_option(
-            "spike_surrogate_width", spike_surrogate_width, "gauss_std", gauss_std, 0.28
+            "spike_surrogate_width", spike_surrogate_width, "gauss_std", gauss_std, 0.28,
+            stacklevel=3,
         )
         dampening_factor = resolve_renamed_option(
-            "spike_surrogate_gain", spike_surrogate_gain, "dampening_factor", dampening_factor, 0.05
+            "spike_surrogate_gain", spike_surrogate_gain, "dampening_factor", dampening_factor, 0.05,
+            stacklevel=3,
         )
         recurrent_dampening_factor = resolve_renamed_option(
             "recurrent_spike_gradient_scale", recurrent_spike_gradient_scale,
-            "recurrent_dampening_factor", recurrent_dampening_factor, 1.0
+            "recurrent_dampening_factor", recurrent_dampening_factor, 1.0,
+            stacklevel=3,
         )
         voltage_scale = resolve_renamed_option(
             "voltage_state_gradient_scale", voltage_state_gradient_scale,
             "voltage_gradient_dampening", voltage_gradient_dampening, 1.0,
             transform=lambda value: 1.0 - np.clip(value, 0.0, 1.0),
+            stacklevel=3,
         )
         if not np.isfinite(voltage_scale) or not 0.0 <= voltage_scale <= 1.0:
             raise ValueError("voltage_state_gradient_scale must be finite and between 0 and 1.")
@@ -809,6 +850,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         surrogate = resolve_renamed_option(
             "spike_surrogate", spike_surrogate, "pseudo_gauss", pseudo_gauss, "gaussian",
             transform=lambda value: "gaussian" if validate_bool_option(value, "pseudo_gauss") else "triangular",
+            stacklevel=3,
         )
         if surrogate not in ("gaussian", "triangular"):
             raise ValueError('spike_surrogate must be "gaussian" or "triangular".')

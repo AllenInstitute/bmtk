@@ -208,7 +208,7 @@ path without changing the forward neuron equations.
    :widths: 30 30 25 15
 
    * - Standard name
-     - Accepted old name
+     - Deprecated compatibility alias
      - Translation
      - Default
    * - ``spike_surrogate_gain``
@@ -242,6 +242,17 @@ The voltage scale is not the biological membrane-decay constant.
    ``voltage_state_gradient_scale = 1 - clip(voltage_gradient_dampening, 0, 1)``.
    Old values 0, 0.5 and 1 therefore map to new values 1, 0.5 and 0.
    Supplying both an old name and its new name is an error, even if equivalent.
+
+Explicit use of any alias in the table emits a visible Python ``FutureWarning``,
+whether supplied directly to ``GLIF3Cell`` or through a JSON configuration.
+Omitted legacy arguments and standard-name usage do not emit this warning.
+The aliases remain supported with their existing conversions and positional
+argument slots; no removal version is scheduled. They stay visible in the
+constructor signature for compatibility, but new code and configurations should
+use the standard names. Python's usual warning filters control repeated messages.
+
+Do not simply rename ``voltage_gradient_dampening`` or ``pseudo_gauss`` without
+converting their values as shown above.
 
 Surrogate gain is not a retention fraction. Width and gain jointly affect
 learning; choose them together and record changes. Gaussian width does not

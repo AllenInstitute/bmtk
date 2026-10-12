@@ -1,5 +1,6 @@
 import copy
 import json
+import warnings
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -172,8 +173,78 @@ def test_direct_cell_omitted_reset_matches_rnn_default():
 
 
 def test_renamed_aliases_reject_ambiguous_configurations():
-    with pytest.raises(ValueError, match="Specify only"):
-        resolve_renamed_option("new", 1.0, "old", 1.0, 0.5)
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        with pytest.raises(ValueError, match="Specify only"):
+            resolve_renamed_option("new", 1.0, "old", 1.0, 0.5)
+    assert not caught
+
+
+@pytest.mark.parametrize("value,expected", [(UNSET, 0.5), (0.0, 0.0), (1.0, 1.0)])
+def test_standard_or_omitted_option_does_not_warn(value, expected):
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always")
+        assert resolve_renamed_option("new", value, "old", UNSET, 0.5) == expected
+    assert not caught
+
+
+@pytest.mark.parametrize("value,transform,expected", [
+    (0.0, None, 0.0),
+    (0.25, lambda value: 1 - np.clip(value, 0, 1), 0.75),
+    (False, lambda value: "gaussian" if value else "triangular", "triangular"),
+])
+def test_legacy_option_warning_keeps_value_conversion(value, transform, expected):
+    with pytest.warns(FutureWarning, match="old is deprecated; use new instead") as caught:
+        actual = resolve_renamed_option("new", UNSET, "old", value, 0.5, transform)
+    assert actual == expected
+    assert caught[0].filename == __file__
+    assert "No removal version is scheduled" in str(caught[0].message)
+
+
+ALIASES = (
+    ("gauss_std", "spike_surrogate_width", 0.4, 0.4),
+    ("dampening_factor", "spike_surrogate_gain", 0.2, 0.2),
+    ("recurrent_dampening_factor", "recurrent_spike_gradient_scale", 0.3, 0.3),
+    ("voltage_gradient_dampening", "voltage_state_gradient_scale", 0.25, 0.75),
+    ("pseudo_gauss", "spike_surrogate", False, "triangular"),
+)
+
+
+@pytest.mark.parametrize("legacy_name,name,value,expected", ALIASES)
+def test_direct_cell_alias_warning_points_to_caller(legacy_name, name, value, expected):
+    network, inputs, args = make_cell(mode="nest", return_spec=True)
+    for old, _, _, _ in ALIASES:
+        args.pop(old, None)
+    args[legacy_name] = value
+    with pytest.warns(FutureWarning, match=f"{legacy_name} is deprecated; use {name}") as caught:
+        cell = GLIF3Cell(network, inputs, **args)
+    assert len(caught) == 1
+    assert caught[0].filename == __file__
+    assert getattr(cell, name) == expected
+
+
+def test_direct_cell_standard_names_are_silent():
+    network, inputs, args = make_cell(mode="nest", return_spec=True)
+    for old, name, _, expected in ALIASES:
+        args.pop(old, None)
+        args[name] = expected
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", FutureWarning)
+        cell = GLIF3Cell(network, inputs, **args)
+    assert not [warning for warning in caught if issubclass(warning.category, FutureWarning)]
+    for _, name, _, expected in ALIASES:
+        assert getattr(cell, name) == expected
+
+
+def test_legacy_positional_arguments_keep_their_slots_and_warn():
+    network, inputs, args = make_cell(mode="nest", return_spec=True)
+    for old, _, _, _ in ALIASES:
+        args.pop(old, None)
+    with pytest.warns(FutureWarning) as caught:
+        cell = GLIF3Cell(network, inputs, 1.0, 0.4, 0.2, 0.3, 0.25, 1.0, 1.0, 5, False, **args)
+    assert len(caught) == 5
+    for _, name, _, expected in ALIASES:
+        assert getattr(cell, name) == expected
 
 
 @pytest.mark.parametrize("voltage", [0.0, 0.25, 0.5, 1.0, -0.2, 1.2])

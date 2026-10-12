@@ -1,16 +1,29 @@
 """Shared option parsing without changing individual option contracts."""
 
+import warnings
+
 import numpy as np
 
 
 UNSET = object()
 
 
-def resolve_renamed_option(name, value, legacy_name, legacy_value, default, transform=None):
+def resolve_renamed_option(
+    name, value, legacy_name, legacy_value, default, transform=None, *, stacklevel=2
+):
     if value is not UNSET and legacy_value is not UNSET:
         raise ValueError(f"Specify only {name} or its legacy alias {legacy_name}, not both.")
     if legacy_value is not UNSET:
-        return transform(legacy_value) if transform else legacy_value
+        resolved = transform(legacy_value) if transform else legacy_value
+        warnings.warn(
+            f"{legacy_name} is deprecated; use {name} instead. "
+            "The legacy alias retains its existing value-conversion semantics; "
+            "see the gradient-control migration table before renaming it. "
+            "No removal version is scheduled.",
+            FutureWarning,
+            stacklevel=stacklevel,
+        )
+        return resolved
     return default if value is UNSET else value
 
 
