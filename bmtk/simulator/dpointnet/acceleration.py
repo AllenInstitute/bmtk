@@ -82,12 +82,16 @@ def resolve_acceleration_options(
     state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not unsupported_nest
     select("use_direct_state_rnn_loop", state and currents,
            "compatible fused state/currents and explicit-state loop")
-    select("use_fused_nest_event_vjp", nest and state,
-           "compatible NEST state event gradients")
-    select("use_fused_state_history", nest and state,
-           "compatible NEST state/history")
-    select("use_native_voltage_penalty", state and options.get("track_voltage_penalty", True),
-           "compatible state and enabled online voltage penalty tracking")
+    select("use_fused_nest_event_vjp",
+           nest and state and glif_state_ops.fused_nest_event_vjp_available(),
+           "compatible NEST state and loaded event-gradient operator")
+    select("use_fused_state_history",
+           nest and state and glif_state_ops.fused_nest_state_history_available(),
+           "compatible NEST state and loaded history operators")
+    select("use_native_voltage_penalty",
+           state and options.get("track_voltage_penalty", True)
+           and glif_state_ops.fused_voltage_penalty_available(),
+           "compatible state, enabled penalty tracking and loaded penalty operators")
     select("use_forward_run_aggregation", currents and small_batch and four_basis,
            "compatible batch1..32/four-basis CSR route")
     select("use_pair_projection", currents and known_batch,
@@ -128,8 +132,12 @@ def resolve_acceleration_options(
            "NEST and compatible fused state")
     select(
         "use_type_indexed_nest_coefficients",
-        nest and state and glif_state_ops.fused_nest_type_indexed_coefficients_available(),
-        "NEST and compatible type-indexed state entry points",
+        nest and state and (
+            glif_state_ops.fused_nest_state_history_type_indexed_available()
+            if options["use_fused_state_history"] is True
+            else glif_state_ops.fused_nest_type_indexed_coefficients_available()
+        ),
+        "NEST and compatible type-indexed entry points for the selected state/history route",
     )
     select("use_static_type_indexed_nest_dispatch", False,
            "static coefficient identity requires explicit opt-in; auto rechecks live coefficients")

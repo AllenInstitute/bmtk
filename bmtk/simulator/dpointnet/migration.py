@@ -7,8 +7,10 @@ from math import isfinite
 def preserve_previous_defaults(config):
     result = deepcopy(config)
     cell = result.get("rnn_cell_params")
-    if not isinstance(cell, dict) or cell.get("cell_model", "GLIF3Cell") not in ("GLIF3Cell", "default"):
+    if not isinstance(cell, dict) or cell.get("cell_model", "GLIF3Cell") not in ("GLIF3Cell", "GLIF3", "default"):
         return result
+    if result.get("training"):
+        result["training"].setdefault("gradient_checkpointing", False)
     run = result.setdefault("run", {})
     if "dtype" not in run and "precision" not in run:
         run["dtype"] = "float32"

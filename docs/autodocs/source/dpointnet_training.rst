@@ -169,7 +169,7 @@ calculated. It is enabled by default:
      - ``true``
      - Recompute chunks during the backward pass.
    * - ``gradient_checkpoint_chunk_size``
-     - ``25``
+     - ``min(25, sequence length)``
      - Chunk length in simulation steps, not always milliseconds.
    * - ``pack_spike_checkpoints``
      - ``false``
@@ -185,6 +185,10 @@ Set ``gradient_checkpointing=false`` to disable recomputation. The chunk size
 must be between one and the sequence length. Smaller chunks change memory and
 recomputation costs, not the intended temporal derivative. Spike packing is
 optional and leaves continuous neuron states unpacked.
+The omitted chunk size follows the effective training-parameter sequence length,
+including a shorter per-condition length; an explicit size is not silently
+clamped. Existing legacy examples pin checkpointing off to preserve their
+integer-refractory-state training route.
 
 This is different from **saved checkpoints**, which store weights and, when
 explicitly included, optimizer/state variables for later restoration.

@@ -44,7 +44,7 @@ settings override them; targets and the training protocol are chosen separately.
      - Mixed FP16, selective FP32 voltage/ASC
      - See the precision section below.
    * - Activation checkpointing
-     - On, chunk size ``25`` steps
+     - On, chunk size ``min(25, sequence length)`` steps
      - Save memory by recomputing intermediates, without truncating BPTT.
    * - Voltage output
      - Compact penalty tracking, not full voltage sequences
@@ -302,7 +302,7 @@ make its settings explicit before updating BMTK.
      - **Mixed FP16 / selective voltage-ASC state**
    * - Activation checkpointing
      - Off
-     - **On**; interval remains 25 steps
+     - **On**; 25 steps, capped by effective sequence length when omitted
    * - Full voltage output / penalty tracking
      - On / off
      - **Off / on**
@@ -325,6 +325,10 @@ explicit and automatic acceleration selected:
    from bmtk.simulator.dpointnet.migration import preserve_previous_defaults
 
    migrated = preserve_previous_defaults(old_config_dict)
+
+The helper recognizes ``GLIF3Cell``, its historical ``GLIF3`` selector and
+``default``. It pins omitted training checkpointing off, preserving the previous
+non-recomputed route; explicit checkpoint choices remain unchanged.
 
 Review the result against the original experiment, including precision and
 outputs. Explicit legacy ``run.dtype`` and cell precision fields remain

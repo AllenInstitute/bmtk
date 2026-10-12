@@ -27,6 +27,12 @@ automatic selection retains supported TensorFlow paths. Explicit unsupported
 kernel requests raise rather than silently switching implementations.
 Explicit ``acceleration_profile=null`` disables profile expansion.
 
+Automatic state selection checks optional event-gradient, history, voltage-penalty
+and type-indexed entry points individually, retaining compatible fallbacks when
+a loaded library lacks them. Explicit fused NEST state requests on Pascal also
+require the rebuilt occupancy-aware launch capability; disabling automatic
+selection does not bypass this safety check.
+
 Do not copy a long list of flags from a different GPU or benchmark.
 For Pascal hardware, read :doc:`dpointnet_pascal` before adopting a model.
 A visible NVIDIA GPU alone does not establish compatibility with every

@@ -1222,7 +1222,7 @@ class RNN:
             training_approach = train_dict.get("training_approach", None)
             gradient_checkpointing = train_dict.get("gradient_checkpointing", True)
             gradient_checkpoint_chunk_size = train_dict.get(
-                "gradient_checkpoint_chunk_size", 25
+                "gradient_checkpoint_chunk_size", UNSET
             )
             pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", False)
             regenerate_initial_state_each_epoch = train_dict.get(

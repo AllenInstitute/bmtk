@@ -9,6 +9,13 @@ from bmtk.simulator.dpointnet import acceleration
 
 
 @pytest.fixture
+def precision_policy():
+    previous = tf.keras.mixed_precision.global_policy()
+    yield
+    tf.keras.mixed_precision.set_global_policy(previous)
+
+
+@pytest.fixture
 def hardware(monkeypatch):
     csr = acceleration.csr_spike_ops
     state = acceleration.glif_state_ops
@@ -21,6 +28,9 @@ def hardware(monkeypatch):
         "fused_glif_state_available", "fused_nest_state_available",
         "fused_pascal_nest_launch_available",
         "fused_nest_type_indexed_coefficients_available",
+        "fused_nest_event_vjp_available", "fused_nest_state_history_available",
+        "fused_nest_state_history_type_indexed_available",
+        "fused_voltage_penalty_available",
     ):
         monkeypatch.setattr(state, name, lambda: True)
     return csr, state
@@ -90,6 +100,55 @@ def test_pascal_nest_requires_occupancy_aware_state_binary(hardware, monkeypatch
     assert actual["use_fused_recurrent_accumulation"] is safe_binary
     assert actual["use_packed_sm120_backward"] is False
     assert "occupancy" in report["reasons"]["use_fused_state"]
+
+
+@pytest.mark.parametrize("profile", [None, "auto"])
+@pytest.mark.parametrize("safe_binary", [False, True])
+def test_explicit_pascal_state_requires_safe_launches(
+    hardware, monkeypatch, precision_policy, profile, safe_binary
+):
+    from bmtk.simulator.dpointnet.cell_models import glif3_cell
+    from test_precision_credit import make_cell
+
+    csr, state = hardware
+    monkeypatch.setattr(csr, "_gpu_compute_architecture", lambda: 61)
+    monkeypatch.setattr(state, "fused_pascal_nest_launch_available", lambda: safe_binary)
+    monkeypatch.setattr(glif3_cell, "_gpu_compute_architecture", lambda: 61)
+    monkeypatch.setattr(glif3_cell, "fused_nest_state_available", lambda: True)
+    monkeypatch.setattr(glif3_cell, "fused_pascal_nest_launch_available", lambda: safe_binary)
+    network, inputs, args = make_cell(mode="nest", return_spec=True)
+    args.update(acceleration_profile=profile, use_fused_state=True, use_fused_cuda=False)
+    if safe_binary:
+        assert glif3_cell._resolve_fused_state(True, 4, True, "nest") is True
+    else:
+        with pytest.raises(ValueError, match="occupancy-aware"):
+            glif3_cell.GLIF3Cell(network, inputs, **args)
+
+
+@pytest.mark.parametrize("probe,option", [
+    ("fused_nest_event_vjp_available", "use_fused_nest_event_vjp"),
+    ("fused_nest_state_history_available", "use_fused_state_history"),
+    ("fused_voltage_penalty_available", "use_native_voltage_penalty"),
+    ("fused_nest_state_history_type_indexed_available", "use_type_indexed_nest_coefficients"),
+])
+def test_partial_state_library_falls_back_per_optional_operator(
+    hardware, monkeypatch, probe, option
+):
+    _, state = hardware
+    monkeypatch.setattr(state, probe, lambda: False)
+    selected, report = resolve()
+    assert selected["use_fused_state"] is True
+    assert selected[option] is False
+    assert report["selected"][option] is False
+    explicit, _ = resolve({option: True})
+    assert explicit[option] is True
+
+
+def test_type_indexed_state_without_history_keeps_compatible_route(hardware, monkeypatch):
+    _, state = hardware
+    monkeypatch.setattr(state, "fused_nest_state_history_type_indexed_available", lambda: False)
+    actual, _ = resolve({"use_fused_state_history": False})
+    assert actual["use_type_indexed_nest_coefficients"] is True
 
 
 @pytest.mark.parametrize("compute_dtype", [tf.float16, tf.float32])

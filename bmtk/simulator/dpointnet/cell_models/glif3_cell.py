@@ -34,10 +34,14 @@ from bmtk.simulator.dpointnet.custom_ops import (
     restore_csr_values,
 )
 from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
+    _gpu_compute_architecture,
     _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
     fused_recurrent_accumulation_available,
     fused_recurrent_weight_carry,
+)
+from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
+    fused_pascal_nest_launch_available,
 )
 
 try:
@@ -640,6 +644,13 @@ def _resolve_fused_state(
         incompatibilities.append(
             f"{dynamics_mode} state operator unavailable; rebuild CUDA operators: "
             + glif_state_op_status()
+        )
+    if (
+        dynamics_mode == "nest" and _gpu_compute_architecture() == 61
+        and not fused_pascal_nest_launch_available()
+    ):
+        incompatibilities.append(
+            "SM61 NEST requires rebuilt occupancy-aware launch capability"
         )
     if n_syn_basis != 4:
         incompatibilities.append(f"the synaptic basis has {n_syn_basis} columns, not 4")

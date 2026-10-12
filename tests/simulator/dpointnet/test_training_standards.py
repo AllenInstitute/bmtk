@@ -1,4 +1,7 @@
 import copy
+import json
+from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -73,11 +76,89 @@ def test_rnn_and_training_omitted_defaults():
     assert rnn.cell_params["acceleration_profile"] == "auto"
     engine = TrainingEngine(rnn, n_epochs=1, steps_per_epoch=1)
     assert engine.gradient_checkpointing is True
-    assert engine.gradient_checkpoint_chunk_size == 25
+    assert engine.gradient_checkpoint_chunk_size == 5
     assert rnn.batch_size == 2
     assert rnn.seq_len == 5
     assert rnn._resolve_cell_params(training=True)["hard_reset"] is True
     assert rnn._resolve_cell_params(training=True)["hard_reset_gradient_mode"] == "soft_surrogate"
+
+
+@pytest.mark.parametrize("sequence_length", [1, 5, 25, 500])
+def test_omitted_checkpoint_size_tracks_effective_training_length(sequence_length):
+    rnn = RNN(batch_size=2, seq_len=100)
+    engine = TrainingEngine(rnn, 1, 1, training_approach="single")
+    assert engine.gradient_checkpoint_chunk_size == 25
+    engine._parameters = [SimpleNamespace(seq_len=sequence_length)]
+    assert engine.gradient_checkpoint_chunk_size == min(25, sequence_length)
+    engine.gradient_checkpoint_chunk_size = 17
+    assert engine.gradient_checkpoint_chunk_size == 17
+
+
+def test_short_sequence_default_prepares_and_differentiates_checkpoint_runner():
+    inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
+    initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
+    cell = tf.keras.layers.SimpleRNNCell(
+        1, dtype="float32", use_bias=False,
+        kernel_initializer=tf.keras.initializers.Constant(0.7),
+        recurrent_initializer=tf.keras.initializers.Constant(0.4),
+    )
+    sequence, final_state = tf.keras.layers.RNN(
+        cell, return_sequences=True, return_state=True
+    )(inputs, initial_state=[initial_state])
+    model = tf.keras.Model((inputs, initial_state), (sequence, sequence, final_state))
+    rnn = SimpleNamespace(seq_len=100, extractor_model=model, cell=SimpleNamespace())
+    engine = TrainingEngine(rnn, 1, 1, training_approach="single")
+    engine._parameters = [SimpleNamespace(seq_len=5)]
+    engine.prepare_gradient_checkpointing()
+    assert engine.gradient_checkpoint_chunk_size == 5
+    values = tf.constant(np.arange(5, dtype=np.float32).reshape(1, 5, 1) / 10)
+    state = tf.zeros((1, 1), tf.float32)
+
+    def evaluate(checkpointed):
+        with tf.GradientTape() as tape:
+            outputs = (
+                engine._extractor_forward(values, (state,))
+                if checkpointed else model((values, state))
+            )
+            loss = tf.add_n([tf.reduce_sum(value) for value in outputs])
+        return outputs, tape.gradient(loss, model.trainable_variables)
+
+    expected, expected_gradients = evaluate(False)
+    actual, actual_gradients = evaluate(True)
+    for left, right in zip(expected, actual):
+        np.testing.assert_allclose(left, right, rtol=1e-6, atol=1e-6)
+    for left, right in zip(expected_gradients, actual_gradients):
+        assert right is not None
+        np.testing.assert_allclose(left, right, rtol=1e-6, atol=1e-6)
+
+
+@pytest.mark.parametrize("cell_model", ["GLIF3Cell", "GLIF3", "default"])
+@pytest.mark.parametrize("explicit", [None, False, True])
+def test_migration_pins_previous_checkpoint_default(cell_model, explicit):
+    config = {
+        "rnn_cell_params": {"cell_model": cell_model},
+        "training": {"n_epochs": 1},
+    }
+    if explicit is not None:
+        config["training"]["gradient_checkpointing"] = explicit
+    original = copy.deepcopy(config)
+    migrated = preserve_previous_defaults(config)
+    assert config == original
+    assert migrated["training"]["gradient_checkpointing"] is (
+        False if explicit is None else explicit
+    )
+    assert migrated["rnn_cell_params"]["dynamics_mode"] == "legacy"
+
+
+def test_checked_in_legacy_training_examples_pin_checkpointing_off():
+    examples = Path(__file__).resolve().parents[3] / "examples"
+    paths = sorted((examples / "dpointnet_all2all").glob("config.train*.json"))
+    paths.append(examples / "dpointnet_learning_rules/config.base.json")
+    assert len(paths) == 5
+    for path in paths:
+        config = json.loads(path.read_text())
+        assert config["rnn_cell_params"]["dynamics_mode"] == "legacy"
+        assert config["training"]["gradient_checkpointing"] is False
 
 
 def test_direct_cell_omitted_reset_matches_rnn_default():
@@ -166,7 +247,7 @@ def test_cell_omitted_scientific_defaults():
     assert cell.state_precision == "selective"
 
 
-@pytest.mark.parametrize("cell_model", ["GLIF3Cell", "default"])
+@pytest.mark.parametrize("cell_model", ["GLIF3Cell", "GLIF3", "default"])
 @pytest.mark.parametrize("dtype", ["float16", "float32"])
 def test_configuration_migration_preserves_previous_science(cell_model, dtype):
     original = {
