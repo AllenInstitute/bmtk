@@ -259,10 +259,14 @@ uncompressed output. For example:
    {
      "training": {
        "callbacks": {
+         "class": "Callbacks",
          "sonata_compression": "none"
        }
      }
    }
+
+When configuring callbacks explicitly, include ``"class": "Callbacks"`` (or
+the name of your registered custom callback class).
 
 For direct Python exports, pass the same selection as
 ``ModelWeights.to_sonata(output_dir, compression=...)``; Python ``None`` disables
