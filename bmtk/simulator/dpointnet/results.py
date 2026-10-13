@@ -7,6 +7,7 @@ import tensorflow as tf
 
 from .id_maps import TFIDMap
 from .io_tools import io
+from ._options import normalize_sonata_compression
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
@@ -65,7 +66,7 @@ class _SpikesResults:
         else:
             spikes_df.to_csv(file_path, sep=' ', index=False)
 
-    def __to_sonata_helper(self, file_path, spikes_df, overwrite=True):
+    def __to_sonata_helper(self, file_path, spikes_df, overwrite=True, compression='gzip'):
         with h5py.File(file_path, 'a') as h5:
             add_hdf5_magic(h5)
             add_hdf5_version(h5)
@@ -79,29 +80,31 @@ class _SpikesResults:
                         continue
 
                 pop_grp = h5.create_group(f'/spikes/{pop_name}')
-                pop_grp.create_dataset('node_ids', data=pop_spikes['node_ids'])
-                pop_grp.create_dataset('timestamps', data=pop_spikes['timestamps'])
+                pop_grp.create_dataset('node_ids', data=pop_spikes['node_ids'], compression=compression)
+                pop_grp.create_dataset('timestamps', data=pop_spikes['timestamps'], compression=compression)
                 pop_grp['timestamps'].attrs['units'] = 'ms'
                 if 'batch_num' in spikes_df.columns:
-                    pop_grp.create_dataset('batch_num', data=pop_spikes['batch_num'])
+                    pop_grp.create_dataset('batch_num', data=pop_spikes['batch_num'], compression=compression)
 
-    def to_sonata(self, file_path, split_batches=False, sort_by=None, overwrite=True):
+    def to_sonata(self, file_path, split_batches=False, sort_by=None, overwrite=True, compression='gzip'):
+        compression = normalize_sonata_compression(compression)
+        file_path = str(file_path)
         Path(file_path).parent.mkdir(parents=True, exist_ok=True)
         spikes_df = self.to_dataframe()
         if self.parent.batch_size == 1:
             if 'batch_num' in spikes_df.columns:
                 spikes_df = spikes_df.drop(columns=['batch_num'])
-            self.__to_sonata_helper(file_path, spikes_df, overwrite=overwrite)
+            self.__to_sonata_helper(file_path, spikes_df, overwrite=overwrite, compression=compression)
 
         elif split_batches:
             ext = ''.join(Path(file_path).suffixes)
             for batch_num, batch_spikes_df in spikes_df.groupby('batch_num'):
                 bpath = file_path.replace(ext, f'.batch_{batch_num}{ext}')
                 bspikes_df = batch_spikes_df.drop(columns='batch_num')
-                self.__to_sonata_helper(bpath, bspikes_df, overwrite=overwrite)
+                self.__to_sonata_helper(bpath, bspikes_df, overwrite=overwrite, compression=compression)
 
         else:
-            self.__to_sonata_helper(file_path, spikes_df, overwrite=overwrite)
+            self.__to_sonata_helper(file_path, spikes_df, overwrite=overwrite, compression=compression)
 
     def raster(self, batch_nums=None, max_rows=5, show=True):
         import matplotlib.pyplot as plt
@@ -175,7 +178,7 @@ class _VoltageResults:
         self.parent = parent
         self.voltages_table = voltages_table
 
-    def __to_sonata_helper(self, file_path, batch_num=None, overwrite=True):
+    def __to_sonata_helper(self, file_path, batch_num=None, overwrite=True, compression='gzip'):
         tf2bmtk_id_map = TFIDMap().tf2bmtk_id_map()
         with h5py.File(file_path, 'a') as h5:
             for pop_name, pop_df in tf2bmtk_id_map.groupby('population'):
@@ -199,10 +202,10 @@ class _VoltageResults:
 
                 for b_num, b_path in batch_data_paths:
                     data = self.voltages_table.numpy()[b_num, :, node_idxs]
-                    pop_grp.create_dataset(b_path, data=data.T)
+                    pop_grp.create_dataset(b_path, data=data.T, compression=compression)
 
                 mapping_grp = pop_grp.create_group('mapping')
-                mapping_grp.create_dataset('node_id', data=pop_df['node_id'])
+                mapping_grp.create_dataset('node_id', data=pop_df['node_id'], compression=compression)
                 mapping_grp.create_dataset(
                     "time",
                     data=[
@@ -211,20 +214,26 @@ class _VoltageResults:
                         * self.parent.dt,
                         self.parent.dt,
                     ],
+                    compression=compression,
                 )
-                mapping_grp.create_dataset('index_pointer', data=np.arange(len(node_idxs), dtype='int'))
-                mapping_grp.create_dataset('element_ids', data=np.zeros(len(node_idxs), dtype='int')) 
-                mapping_grp.create_dataset('element_pos', data=np.zeros(len(node_idxs), dtype='int')) 
+                mapping_grp.create_dataset('index_pointer', data=np.arange(len(node_idxs), dtype='int'), compression=compression)
+                mapping_grp.create_dataset('element_ids', data=np.zeros(len(node_idxs), dtype='int'), compression=compression)
+                mapping_grp.create_dataset('element_pos', data=np.zeros(len(node_idxs), dtype='int'), compression=compression)
 
-    def to_sonata(self, file_path, split_batches=False, overwrite=True):
+    def to_sonata(self, file_path, split_batches=False, overwrite=True, compression='gzip'):
+        compression = normalize_sonata_compression(compression)
+        file_path = str(file_path)
+        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
         if split_batches:
             ext = ''.join(Path(file_path).suffixes)
             for batch_num in range(self.parent.batch_size):
                 batched_file_path = file_path.replace(ext, f'.batch_{batch_num}{ext}')
-                self.__to_sonata_helper(batched_file_path, batch_num=batch_num, overwrite=overwrite)
+                self.__to_sonata_helper(
+                    batched_file_path, batch_num=batch_num, overwrite=overwrite, compression=compression
+                )
 
         else:
-            self.__to_sonata_helper(file_path, overwrite=overwrite)
+            self.__to_sonata_helper(file_path, overwrite=overwrite, compression=compression)
 
     def to_pickle(self, file_path, split_batches=False, overwrite=True):
         raise NotImplementedError()
@@ -265,11 +274,14 @@ class RNNExtractorResults:
         output_dir = save_opts.get('output_dir', '.')
         split_batches = save_opts.get('split_batches', False)
         overwrite_results = save_opts.get('overwrite_results', True)
+        compression = normalize_sonata_compression(save_opts.get('compression', 'gzip'))
 
         spikes_output_sonata = save_opts.get('spikes_file', None)
         if spikes_output_sonata:
             file_path = RNNExtractorResults.get_actual_path(output_dir, spikes_output_sonata)
-            self.spikes.to_sonata(file_path, split_batches=split_batches, overwrite=overwrite_results)
+            self.spikes.to_sonata(
+                file_path, split_batches=split_batches, overwrite=overwrite_results, compression=compression
+            )
 
         spikes_output_csv = save_opts.get('spikes_file_csv', None)
         if spikes_output_csv:
@@ -289,7 +301,9 @@ class RNNExtractorResults:
         voltages_output_sonata = save_opts.get('voltages_file', None)
         if voltages_output_sonata:
             file_path = RNNExtractorResults.get_actual_path(output_dir, voltages_output_sonata)
-            self.voltages.to_sonata(file_path, split_batches=split_batches, overwrite=overwrite_results)
+            self.voltages.to_sonata(
+                file_path, split_batches=split_batches, overwrite=overwrite_results, compression=compression
+            )
 
         voltages_output_pickle = save_opts.get('voltages_file_pkl', None)
         if voltages_output_pickle:

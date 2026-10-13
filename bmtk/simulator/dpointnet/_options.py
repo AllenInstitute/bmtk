@@ -8,6 +8,22 @@ import numpy as np
 UNSET = object()
 
 
+def normalize_sonata_compression(compression):
+    if compression is None:
+        return None
+    if isinstance(compression, str):
+        if compression.lower() == "none":
+            return None
+        if compression in ("gzip", "lzf"):
+            return compression
+    elif isinstance(compression, (int, np.integer)) and not isinstance(compression, (bool, np.bool_)):
+        if 1 <= compression <= 9:
+            return int(compression)
+    raise ValueError(
+        "SONATA compression must be 'gzip', 'lzf', 'none', None, or an integer gzip level 1-9."
+    )
+
+
 def resolve_renamed_option(
     name, value, legacy_name, legacy_value, default, transform=None, *, stacklevel=2
 ):

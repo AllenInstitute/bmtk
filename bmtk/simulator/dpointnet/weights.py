@@ -4,6 +4,7 @@ import h5py
 from pathlib import Path
 
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+from ._options import normalize_sonata_compression
 
 
 class ModelWeights:
@@ -72,7 +73,9 @@ class ModelWeights:
 
         return ret_df
 
-    def to_sonata(self, output_dir='.', single_file=False, overwrite=False):
+    def to_sonata(self, output_dir='.', single_file=False, overwrite=False, compression='gzip'):
+        """Export edges with gzip, lzf, no compression, or a gzip level (1-9)."""
+        compression = normalize_sonata_compression(compression)
         weights_df = self.to_dataframe()
         for (trg_pop, src_pop), conns_df in weights_df.groupby(['target_population', 'source_population']):
             h5_path = Path(output_dir) / f'{src_pop}_{trg_pop}_edges.h5'
@@ -90,11 +93,11 @@ class ModelWeights:
                         raise ValueError(f'SONATA file {h5_path} already exists with group {grp_name}. Please delete or set overwrite=True.')
 
                 edges_grp = h5_out.create_group(grp_name)
-                edges_grp.create_dataset('source_node_id', data=conns_df['source_node_id'].values)
+                edges_grp.create_dataset('source_node_id', data=conns_df['source_node_id'].values, compression=compression)
                 edges_grp['source_node_id'].attrs['node_population'] = src_pop
-                edges_grp.create_dataset('target_node_id', data=conns_df['target_node_id'].values)
+                edges_grp.create_dataset('target_node_id', data=conns_df['target_node_id'].values, compression=compression)
                 edges_grp['target_node_id'].attrs['node_population'] = trg_pop
-                edges_grp.create_dataset('edge_type_id', data=conns_df['edge_type_id'].values)
-                edges_grp.create_dataset('edge_group_id', data=np.zeros(len(conns_df), dtype=int))
-                edges_grp.create_dataset('edge_group_index', data=np.arange(len(conns_df), dtype=int))
-                edges_grp.create_dataset('0/syn_weight', data=conns_df['syn_weight'].values)
+                edges_grp.create_dataset('edge_type_id', data=conns_df['edge_type_id'].values, compression=compression)
+                edges_grp.create_dataset('edge_group_id', data=np.zeros(len(conns_df), dtype=int), compression=compression)
+                edges_grp.create_dataset('edge_group_index', data=np.arange(len(conns_df), dtype=int), compression=compression)
+                edges_grp.create_dataset('0/syn_weight', data=conns_df['syn_weight'].values, compression=compression)

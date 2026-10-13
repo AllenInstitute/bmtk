@@ -10,7 +10,8 @@ from bmtk.simulator.dpointnet.weights import ModelWeights
 
 
 @pytest.mark.parametrize("recurrent", [True, False])
-def test_export_preserves_order_physical_weights_and_input_scaling(tmp_path, recurrent):
+@pytest.mark.parametrize("compression", ["default", "gzip", "lzf", None, "none", "None", 1, 9])
+def test_export_preserves_order_physical_weights_and_input_scaling(tmp_path, recurrent, compression):
     adaptor = SimpleNamespace(
         canonical_edge_order=np.array([1, 2, 0]) if recurrent else None,
         connection_table=pd.DataFrame(
@@ -44,7 +45,8 @@ def test_export_preserves_order_physical_weights_and_input_scaling(tmp_path, rec
     expected_weights = (
         np.array([20.0, 60.0, 150.0]) if recurrent else np.array([14.0, 33.0, 52.0])
     )
-    weights.to_sonata(tmp_path)
+    options = {} if compression == "default" else {"compression": compression}
+    weights.to_sonata(tmp_path, **options)
     source = "v1" if recurrent else "bkg"
     with h5py.File(tmp_path / f"{source}_v1_edges.h5") as handle:
         group = handle[f"edges/{source}_to_v1"]
@@ -55,9 +57,32 @@ def test_export_preserves_order_physical_weights_and_input_scaling(tmp_path, rec
         np.testing.assert_array_equal(
             group["0/syn_weight"], expected_weights[expected_order]
         )
+        expected_compression = (
+            None if compression in (None, "none", "None") else
+            "lzf" if compression == "lzf" else "gzip"
+        )
+        for name in (
+            "source_node_id", "target_node_id", "edge_type_id",
+            "edge_group_id", "edge_group_index", "0/syn_weight",
+        ):
+            assert group[name].compression == expected_compression
+            if isinstance(compression, int):
+                assert group[name].compression_opts == compression
+        assert group["source_node_id"].attrs["node_population"] == source
+        assert group["target_node_id"].attrs["node_population"] == "v1"
     with pytest.raises(ValueError, match="already exists"):
         weights.to_sonata(tmp_path)
-    weights.to_sonata(tmp_path, overwrite=True)
+    weights.to_sonata(tmp_path, overwrite=True, compression=None)
+    with h5py.File(tmp_path / f"{source}_v1_edges.h5") as handle:
+        assert handle[f"edges/{source}_to_v1/0/syn_weight"].compression is None
+
+
+@pytest.mark.parametrize("compression", [True, False, 0, 10, -1, 1.5, "invalid", {}, []])
+def test_invalid_export_compression_does_not_create_output(tmp_path, compression):
+    weights = object.__new__(ModelWeights)
+    with pytest.raises(ValueError, match="SONATA compression"):
+        weights.to_sonata(tmp_path / "invalid", compression=compression)
+    assert not (tmp_path / "invalid").exists()
 
 
 def test_group_row_mapping_handles_interleaved_and_empty_groups():
