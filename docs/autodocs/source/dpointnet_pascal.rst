@@ -81,8 +81,9 @@ Batch-32 V1 training on an 11-GiB device is not qualified by these results.
 Visual inputs
 -------------
 
-DPointNet includes a Pascal/Volta GPU path for LGN spatial filtering that avoids
-unsupported cuDNN convolution. It retains the original padding, normalization,
+DPointNet includes a GPU path for LGN spatial filtering on compute capability
+7.0 or earlier that avoids unsupported cuDNN convolution.
+It retains the original padding, normalization,
 row order and temporal filters, and chunks large movies.
 This is specific to LGN filtering, not a general convolution fallback.
 Measure actual input shapes and memory before using it in a model.
