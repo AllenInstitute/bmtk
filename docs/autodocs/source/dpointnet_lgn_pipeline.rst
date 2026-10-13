@@ -93,5 +93,10 @@ iterator when finished; ``rnn.cleanup()`` closes configured inference inputs.
 Seeded host/device comparisons have been checked on a single RTX3090.
 Multiple logical replicas are not physical multi-GPU performance validation.
 Measure end-to-end input and update time before expecting a speedup.
+Pascal and Volta (including V100, compute capability 7.0) use bounded
+GPU spatial filtering and non-XLA firing-rate dispatch to avoid unsupported
+cuDNN convolution algorithms. This retains the filter padding, edge
+normalization and sampling policy; it does not move LGN generation to the CPU.
+Turing and newer GPUs retain the existing convolution route.
 For older GPUs, see :doc:`dpointnet_pascal`; for initial-state generation
 interruptions, see :doc:`dpointnet_input_recovery`.

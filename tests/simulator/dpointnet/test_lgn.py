@@ -65,7 +65,8 @@ def test_native_depthwise_chunk_boundaries_and_gradients(padding, channels, mult
 
 
 @pytest.mark.parametrize(
-    "capability,expected", [((6, 1), True), ((7, 0), False), ((8, 6), False)]
+    "capability,expected",
+    [((6, 1), True), ((7, 0), True), ((7, 5), False), ((8, 0), False), ((8, 6), False)],
 )
 def test_native_spatial_convolution_architecture_selection(
     monkeypatch, capability, expected
@@ -81,6 +82,37 @@ def test_native_spatial_convolution_architecture_selection(
         lambda device: {"compute_capability": capability},
     )
     assert _requires_native_spatial_convolution() is expected
+
+
+def test_v100_firing_rates_use_non_xla_route(monkeypatch):
+    import bmtk.simulator.dpointnet.lgn_tf.lgn as module
+
+    monkeypatch.setattr(
+        module.tf.config, "get_visible_devices", lambda kind: [object()]
+    )
+    monkeypatch.setattr(
+        module.tf.config.experimental,
+        "get_device_details",
+        lambda device: {"compute_capability": (7, 0)},
+    )
+    lgn = object.__new__(LGN)
+    dominant = tf.constant([[1.0]])
+    non_dominant = tf.zeros((1, 0))
+    calls = []
+
+    def native(actual_dominant, actual_non_dominant):
+        assert actual_dominant is dominant
+        assert actual_non_dominant is non_dominant
+        calls.append("native")
+        return dominant
+
+    def compiled(*args):
+        pytest.fail("V100 firing rates must not use the XLA convolution route")
+
+    lgn._native_firing_rates = native
+    lgn._compiled_firing_rates = compiled
+    assert lgn.firing_rates_from_spatial(dominant, non_dominant) is dominant
+    assert calls == ["native"]
 
 
 def test_drifting_grating_accepts_repeated_scalar_tensor_parameters():

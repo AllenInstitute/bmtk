@@ -123,7 +123,7 @@ Compatibility implementation
 Below compute capability 7.0, scalar half accumulation uses TensorFlow's
 compare-and-swap helper and duplicate-target warp grouping uses shuffle/ballot
 matching. Preserve grouping and live silent-neuron derivatives.
-Pre-Volta LGN filtering uses bounded extract-patches/matrix multiplication,
+Pascal/Volta LGN filtering uses bounded extract-patches/matrix multiplication,
 retaining padding, normalization and multichannel temporal filtering.
 Do not generalize that input-specific route into a blanket convolution fallback.
 
