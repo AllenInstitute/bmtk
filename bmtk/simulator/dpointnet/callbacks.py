@@ -11,6 +11,7 @@ import numpy as np
 from pathlib import Path
 
 from .io_tools import io
+from ._options import normalize_sonata_compression
 
 callback_classes = {}
 
@@ -74,8 +75,10 @@ class Callbacks:
         losses_table_csv="losses.csv",
         performance_table_csv="performance.csv",
         memory_report="epoch",
+        sonata_compression="gzip",
     ):
         self.rnn = rnn
+        self.sonata_compression = normalize_sonata_compression(sonata_compression)
         self.callbacks_dir = callbacks_dir
         self.train_start_time = None
         self.training_time = None
@@ -162,10 +165,13 @@ class Callbacks:
         if len(self._saved_weights) > 1:
             for epoch_num, epoch_weights in self._saved_weights:
                 output_dir = f"{self.sonata_output_dir}.epoch_{epoch_num}"
-                epoch_weights.to_sonata(output_dir=output_dir, overwrite=True)
+                epoch_weights.to_sonata(
+                    output_dir=output_dir, overwrite=True, compression=self.sonata_compression
+                )
         elif len(self._saved_weights) == 1:
             self._saved_weights[0].to_sonata(
-                output_dir=self.sonata_output_dir, overwrite=True
+                output_dir=self.sonata_output_dir, overwrite=True,
+                compression=self.sonata_compression,
             )
         else:
             pass

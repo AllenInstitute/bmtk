@@ -202,8 +202,31 @@ This complete configuration runs two epochs of three steps each, fits a
 synthetic 15-Hz target for all neurons, and then runs inference.
 The default callbacks write ``callbacks_outputs/losses.csv`` and export
 trained edge files under ``callbacks_outputs/trained_weights/``.
-This is a workflow demonstration, not a
-recommended learning rate or biological target for another network.
+This is a workflow demonstration, not a recommended learning rate or
+biological target for another network.
+
+SONATA HDF5 exports use lossless gzip compression by default. For spike and
+voltage results, select ``compression`` in the ``output`` section (or an
+inference's own ``output`` section):
+
+.. code-block:: json
+
+   {
+     "output": {
+       "spikes_file": "spikes.h5",
+       "voltages_file": "voltages.h5",
+       "compression": "gzip"
+     }
+   }
+
+Choose ``"gzip"``, ``"lzf"``, an integer gzip level from 1 to 9, or
+``"none"``/JSON ``null`` to disable compression. This includes split-batch
+files and voltage mapping datasets; CSV output is unchanged.
+Programmatic ``results.spikes.to_sonata(...)``,
+``results.voltages.to_sonata(...)`` and ``results.save_results(...)`` accept the
+same ``compression`` option (Python ``None`` disables it).
+For trained edge exports, use ``training.callbacks.sonata_compression``;
+see :doc:`dpointnet_training`.
 
 Continue with :doc:`dpointnet_training` for ordinary training choices,
 validation, saved weights and optional regularizers. For your own objectives

@@ -75,7 +75,7 @@ def _requires_native_spatial_convolution():
         capability = tf.config.experimental.get_device_details(device).get(
             "compute_capability"
         )
-        if capability is not None and tuple(capability) < (7, 0):
+        if capability is not None and tuple(capability) <= (7, 0):
             return True
     return False
 

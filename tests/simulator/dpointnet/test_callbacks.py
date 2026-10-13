@@ -31,6 +31,26 @@ def make_callback(monkeypatch, **kwargs):
     return callback
 
 
+@pytest.mark.parametrize("compression", ["default", "lzf", None, "none", 3])
+@pytest.mark.parametrize("all_epochs", [False, True])
+def test_training_exports_selected_compression(monkeypatch, compression, all_epochs):
+    options = {} if compression == "default" else {"sonata_compression": compression}
+    callback = make_callback(monkeypatch, **options)
+    callback.train_start_time = 0
+    calls = []
+    weights = SimpleNamespace(to_sonata=lambda **kwargs: calls.append(kwargs))
+    callback._saved_weights = [(1, weights), (2, weights)] if all_epochs else [weights]
+    callback.on_train_end()
+    expected = "gzip" if compression == "default" else None if compression == "none" else compression
+    assert len(calls) == (2 if all_epochs else 1)
+    assert all(call["compression"] == expected and call["overwrite"] for call in calls)
+
+
+def test_training_rejects_invalid_compression_at_initialization(monkeypatch):
+    with pytest.raises(ValueError, match="SONATA compression"):
+        make_callback(monkeypatch, sonata_compression=False)
+
+
 def test_memory_report_distinguishes_allocator_and_driver():
     sample = callbacks.GPUMem(
         name="GPU:0",

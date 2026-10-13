@@ -249,6 +249,31 @@ new inference config in the original example working directory.
 A SONATA weight export is not a complete optimizer checkpoint and cannot by
 itself reproduce a resumed training trajectory.
 
+SONATA edge datasets use lossless gzip compression by default, matching the
+network builder. Set ``training.callbacks.sonata_compression`` to ``"gzip"``,
+``"lzf"``, an integer gzip level from 1 to 9, or ``"none"``/JSON ``null`` for
+uncompressed output. For example:
+
+.. code-block:: json
+
+   {
+     "training": {
+       "callbacks": {
+         "class": "Callbacks",
+         "sonata_compression": "none"
+       }
+     }
+   }
+
+When configuring callbacks explicitly, include ``"class": "Callbacks"`` (or
+the name of your registered custom callback class).
+
+For direct Python exports, pass the same selection as
+``ModelWeights.to_sonata(output_dir, compression=...)``; Python ``None`` disables
+compression. This applies to every edge dataset and preserves physical weights,
+canonical row order, population attributes and overwrite behavior.
+Compression changes storage only, not training or checkpoint semantics.
+
 For a custom Python workflow, ``tf.train.Checkpoint`` can include the model,
 optimizer and experiment state. Reconstruct the same model and loss
 configuration before restoration, check that all requested objects were
