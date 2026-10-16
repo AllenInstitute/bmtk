@@ -19,6 +19,21 @@ _RESOURCE_COUNTER = itertools.count()
 _RESOURCE_CONTAINER = "bmtk_dpointnet_csr"
 
 
+def _selected_physical_gpus():
+    from ..distribution import data_parallel_worker_devices
+    visible = tf.config.get_visible_devices("GPU")
+    devices = data_parallel_worker_devices()
+    if not devices:
+        return visible if len(visible) == 1 else []
+    selected = []
+    for name in devices:
+        spec = tf.DeviceSpec.from_string(name)
+        if spec.device_type != "GPU" or spec.device_index >= len(visible):
+            return []
+        selected.append(visible[spec.device_index])
+    return selected
+
+
 def _read_built_architectures(architecture_path=_ARCHITECTURE_PATH):
     if not architecture_path.exists():
         return (), None
@@ -48,24 +63,32 @@ def _gpu_compatibility_error(
             ptx_architecture = _PTX_ARCHITECTURE
     elif sm_architectures is None:
         sm_architectures = ()
-    visible_gpus = tf.config.get_visible_devices("GPU")
-    if len(visible_gpus) != 1:
-        return f"fused CUDA requires exactly one visible GPU; found {len(visible_gpus)}"
+    visible_gpus = _selected_physical_gpus()
+    if not visible_gpus:
+        count = len(tf.config.get_visible_devices("GPU"))
+        return (
+            "fused CUDA requires exactly one visible GPU or an explicit "
+            f"data-parallel GPU strategy; found {count} visible GPUs"
+        )
     if not sm_architectures and ptx_architecture is None:
         return f"build architecture metadata is missing at {architecture_path}"
-    details = tf.config.experimental.get_device_details(visible_gpus[0])
-    capability = details.get("compute_capability")
-    if capability is None:
-        return f"compute capability is unavailable for {visible_gpus[0].name}"
-    architecture = int(capability[0]) * 10 + int(capability[1])
-    if architecture in sm_architectures:
-        return None
-    if ptx_architecture is not None and architecture >= ptx_architecture:
-        return None
-    return (
-        f"GPU compute capability sm_{architecture} is incompatible with "
-        f"sm targets {sm_architectures} and compute_{ptx_architecture} PTX"
-    )
+    architectures = []
+    for device in visible_gpus:
+        capability = tf.config.experimental.get_device_details(device).get("compute_capability")
+        if capability is None:
+            return f"compute capability is unavailable for {device.name}"
+        architecture = int(capability[0]) * 10 + int(capability[1])
+        architectures.append(architecture)
+        if architecture not in sm_architectures and not (
+            ptx_architecture is not None and architecture >= ptx_architecture
+        ):
+            return (
+                f"GPU compute capability sm_{architecture} is incompatible with "
+                f"sm targets {sm_architectures} and compute_{ptx_architecture} PTX"
+            )
+    if len(set(architectures)) != 1:
+        return "native data parallelism currently requires homogeneous GPU architectures"
+    return None
 
 
 def _destroy_metadata_resource(handle):
@@ -83,11 +106,24 @@ def _destroy_metadata_resource(handle):
 class CsrConnectivity(Mapping):
     def __init__(self, values):
         self._values = values
-        self._finalizer = weakref.finalize(
-            self, _destroy_metadata_resource, values["metadata_handle"]
+        self._handles = values.pop("_replica_handles", (values["metadata_handle"],))
+        self._replica_values = values.pop(
+            "_replica_values",
+            tuple({"metadata_handle": handle} for handle in self._handles),
+        )
+        self._finalizers = tuple(
+            weakref.finalize(self, _destroy_metadata_resource, handle)
+            for handle in self._handles
         )
 
     def __getitem__(self, key):
+        if key in self._replica_values[0] and len(self._replica_values) > 1:
+            context = tf.distribute.get_replica_context()
+            if context is not None:
+                replica = tf.get_static_value(context.replica_id_in_sync_group)
+                if replica is None:
+                    raise ValueError("CSR metadata requires a statically resolved local replica.")
+                return self._replica_values[int(replica)][key]
         return self._values[key]
 
     def __iter__(self):
@@ -97,7 +133,8 @@ class CsrConnectivity(Mapping):
         return len(self._values)
 
     def close(self):
-        self._finalizer()
+        for finalizer in self._finalizers:
+            finalizer()
 
 
 def _environment_flag(name):
@@ -110,15 +147,16 @@ def _validate_packed_sm120_option(value, option_name="use_packed_sm120_backward"
 
 
 def _gpu_compute_architecture():
-    visible_gpus = tf.config.get_visible_devices("GPU")
-    if len(visible_gpus) != 1:
+    visible_gpus = _selected_physical_gpus()
+    if not visible_gpus:
         return None
-    capability = tf.config.experimental.get_device_details(visible_gpus[0]).get(
-        "compute_capability"
-    )
-    if capability is None:
-        return None
-    return int(capability[0]) * 10 + int(capability[1])
+    architectures = []
+    for device in visible_gpus:
+        capability = tf.config.experimental.get_device_details(device).get("compute_capability")
+        if capability is None:
+            return None
+        architectures.append(int(capability[0]) * 10 + int(capability[1]))
+    return architectures[0] if len(set(architectures)) == 1 else None
 
 
 def _auto_native_architecture(architecture):
@@ -397,10 +435,27 @@ def build_csr_connectivity(
             )
             n_pairs = int(pairs.shape[0])
         metadata = np.concatenate(metadata_parts)
-        metadata_handle = _create_metadata_resource(metadata, index_dtype)
+        from ..distribution import data_parallel_worker_devices
+        devices = data_parallel_worker_devices() or (device,)
+        handles = []
+        replica_values = []
+        for worker in devices:
+            with tf.device(worker):
+                handles.append(_create_metadata_resource(metadata, index_dtype))
+                replica_values.append(
+                    {
+                        "metadata_handle": handles[-1],
+                        "incoming_pre_ids": tf.constant(incoming_pre_ids, dtype=index_dtype),
+                        "incoming_edge_ids": tf.constant(incoming_edge_ids, dtype=index_dtype),
+                        "incoming_types": tf.constant(incoming_types, dtype=index_dtype),
+                    }
+                )
+        metadata_handle = handles[0]
         return CsrConnectivity(
             {
                 "metadata_handle": metadata_handle,
+                "_replica_handles": tuple(handles),
+                "_replica_values": tuple(replica_values),
                 "index_dtype": index_dtype.name,
                 "n_edges": int(indices.shape[0]),
                 "n_sources": int(n_source_neurons),
@@ -409,9 +464,9 @@ def build_csr_connectivity(
                 "n_pairs": n_pairs,
                 "has_repeated_targets": has_repeated_targets,
                 "fixed4_incoming": bool(incoming_pre_ids.size),
-                "incoming_pre_ids": tf.constant(incoming_pre_ids, dtype=index_dtype),
-                "incoming_edge_ids": tf.constant(incoming_edge_ids, dtype=index_dtype),
-                "incoming_types": tf.constant(incoming_types, dtype=index_dtype),
+                "incoming_pre_ids": replica_values[0]["incoming_pre_ids"],
+                "incoming_edge_ids": replica_values[0]["incoming_edge_ids"],
+                "incoming_types": replica_values[0]["incoming_types"],
             }
         )
 

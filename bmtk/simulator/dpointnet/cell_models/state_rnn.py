@@ -1,7 +1,17 @@
 import inspect
 from contextlib import contextmanager
+from contextvars import ContextVar
 
 import tensorflow as tf
+
+_ROLLOUT_CONSTANTS = ContextVar("dpointnet_rollout_constants", default=())
+
+
+def _rollout_constant(cell, name):
+    for owner, values in reversed(_ROLLOUT_CONSTANTS.get()):
+        if owner is cell and name in values:
+            return values[name]
+    return getattr(cell, name)
 
 
 @contextmanager
@@ -9,6 +19,12 @@ def _rollout_context(cell):
     missing = object()
     previous_coefficients = getattr(cell, "_rollout_nest_coefficients", missing)
     previous_noise_seed = getattr(cell, "_rollout_noise_seed", missing)
+    constants = (
+        cell.prepare_rollout_constants()
+        if hasattr(cell, "prepare_rollout_constants")
+        else {}
+    )
+    token = _ROLLOUT_CONSTANTS.set(_ROLLOUT_CONSTANTS.get() + ((cell, constants),))
     try:
         cell._rollout_nest_coefficients = (
             cell.prepare_rollout_nest_coefficients()
@@ -23,6 +39,7 @@ def _rollout_context(cell):
                 )
         yield
     finally:
+        _ROLLOUT_CONSTANTS.reset(token)
         for name, previous in (
             ("_rollout_nest_coefficients", previous_coefficients),
             ("_rollout_noise_seed", previous_noise_seed),

@@ -7,6 +7,7 @@ from datetime import datetime
 from threading import Lock
 
 from bmtk.simulator.core.io_tools import IOUtils
+from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
 class RNNIOUtils(IOUtils):
@@ -17,6 +18,36 @@ class RNNIOUtils(IOUtils):
         self._diagnostic_path = None
         self._diagnostic_lock = Lock()
         self._console_handler = None
+        self.configure_mpi()
+
+    def configure_mpi(self):
+        mode = os.environ.get("BMTK_DPOINTNET_MPI_LAUNCH")
+        if mode is not None and mode not in ("cpu", "gpu"):
+            raise ValueError("Unknown DPointNet MPI launcher mode.")
+        self._comm = bmtk_world_comm.comm if mode is not None else None
+        if mode is not None and self._comm is None:
+            raise RuntimeError("DPointNet MPI launch requires an MPI communicator.")
+        self.mpi_rank = self._comm.Get_rank() if self._comm is not None else 0
+        self.mpi_size = self._comm.Get_size() if self._comm is not None else 1
+
+    def barrier(self):
+        if self._comm is not None:
+            self._comm.Barrier()
+
+    def setup_output_dir(self, output_dir, log_file, overwrite=True):
+        super().setup_output_dir(
+            output_dir, log_file if self.mpi_rank == 0 else None, overwrite
+        )
+        self.barrier()
+
+    def log_exception(self, message, raise_exception=True):
+        if self._comm is None:
+            return super().log_exception(message, raise_exception=raise_exception)
+        if self.mpi_rank == 0:
+            self.logger.error(message)
+        # Let rank-local failures reach the launcher's abort without a collective.
+        if raise_exception:
+            raise Exception(message)
 
     @IOUtils.log_to_console.setter
     def log_to_console(self, flag):

@@ -2,13 +2,18 @@ import tensorflow as tf
 
 
 class TargetFiringRate:
-    def __init__(self, rnn, firing_rate, **kwargs):
+    data_parallel_reduction = "replica_mean"
+
+    def __init__(self, rnn, firing_rate, rate_units="Hz", **kwargs):
+        if rate_units not in ("Hz", "spikes_per_step"):
+            raise ValueError('rate_units must be "Hz" or "spikes_per_step".')
         self.rnn = rnn
         self.target_fr = firing_rate
         # self.target_fr2 = tf.math.square(firing_rate)
         self.dt = self.rnn.dt
         self.seq_len = self.rnn.seq_len
         self.sim_time = self.dt*self.seq_len/1000.0
+        self.rate_units = rate_units
         # self.batch_size = self.rnn.batch_size
 
     @staticmethod
@@ -21,7 +26,9 @@ class TargetFiringRate:
         # mean_spike_count = tf.reduce_mean(tf.reduce_sum(spikes, axis=1), axis=0)
         # actual_fr = mean_spike_count / self.sim_time
         spike_counts = tf.reduce_sum(spikes, axis=1)
-        firing_rates = spike_counts / self.sim_time
+        firing_rates = spike_counts / (
+            self.sim_time if self.rate_units == "Hz" else self.seq_len
+        )
 
         # actual_fr = tf.reduce_mean(spikes)/n_neurons/self.sim_time/self.rnn.batch_size
         # diff_fr = actual_fr - self.target_fr

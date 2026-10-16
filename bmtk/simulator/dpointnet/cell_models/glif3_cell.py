@@ -11,6 +11,8 @@ from .nest_dynamics import (
     spike_reset,
     time_steps,
 )
+from .state_rnn import _rollout_constant
+from ..distribution import data_parallel_replica_id
 from bmtk.simulator.dpointnet.io_tools import io
 from bmtk.simulator.dpointnet.custom_ops import (
     build_csr_connectivity,
@@ -1889,7 +1891,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self, rec_z_buf, projection_values=None, recurrent_weight_carrier=None
     ):
         basis, weight = (
-            (self.synaptic_basis_weights,
+            (_rollout_constant(self, "synaptic_basis_weights"),
              self.recurrent_csr_weight_values_compute if self._use_fused_cuda
              else self.recurrent_weight_values_compute)
             if projection_values is None else projection_values
@@ -1908,7 +1910,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     self.recurrent_fused_connectivity,
                     basis,
                     self._n_neurons,
-                    self._recurrent_dampening,
+                    _rollout_constant(self, "_recurrent_dampening"),
                     vjp_only=False,
                     use_javier_batch32_backward=self.use_javier_recurrent_vjp,
                     use_active_row_forward=(
@@ -1935,7 +1937,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self._n_neurons,
                 compute_spike_gradient=True,
                 compute_weight_gradient=self.recurrent_weight_values.trainable,
-                spike_gradient_scale=self._recurrent_dampening,
+                spike_gradient_scale=_rollout_constant(self, "_recurrent_dampening"),
                 use_packed_sm120_backward=self._use_packed_sm120_backward,
                 write_csr_weight_gradient=(self._use_direct_csr_recurrent_gradient),
                 use_small_batch_backward=self._use_small_batch_recurrent_backward,
@@ -1957,7 +1959,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             basis,
             self.syn_ids,
             self.pre_ind_table,
-            self._recurrent_dampening,
+            _rollout_constant(self, "_recurrent_dampening"),
         )
 
     def restore_segmented_variable_gradients(self, variables, gradients):
@@ -1993,7 +1995,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         batch_size = tf.shape(x_t)[0]
         input_indices = input_net["input_indices"]
         basis, input_weight_values = (
-            (self.synaptic_basis_weights, input_net["input_weight_values"])
+            (_rollout_constant(self, "synaptic_basis_weights"), input_net["input_weight_values"])
             if projection_values is None else projection_values
         )
         input_syn_ids = input_net["input_syn_ids"]
@@ -2023,7 +2025,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self, x_t, input_net, initial_currents=None, projection_values=None
     ):
         basis, weight = (
-            (self.synaptic_basis_weights,
+            (_rollout_constant(self, "synaptic_basis_weights"),
              input_net["csr_weight_values_compute"] if self._use_fused_cuda
              else input_net["input_weight_values_compute"])
             if projection_values is None else projection_values
@@ -2176,12 +2178,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 ),
                 tf.int32,
             )
-            replica_context = tf.distribute.get_replica_context()
-            replica_id = (
-                0
-                if replica_context is None
-                else replica_context.replica_id_in_sync_group
-            )
+            replica_id = data_parallel_replica_id()
             seed = tf.stack(
                 [
                     base_seed + tf.cast(replica_id, tf.int32) * 1000003,
@@ -2209,11 +2206,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 else self.noise_seed,
                 tf.int32,
             )
-            replica_context = tf.distribute.get_replica_context()
-            if replica_context is None:
-                replica_id = tf.constant(0, dtype=tf.int32)
-            else:
-                replica_id = tf.cast(replica_context.replica_id_in_sync_group, tf.int32)
+            replica_id = data_parallel_replica_id()
             noise_seed = tf.stack(
                 [base_seed + replica_id * tf.constant(1000003, dtype=tf.int32), step_seed],
                 axis=0,
@@ -2503,6 +2496,36 @@ class GLIF3Cell(tf.keras.layers.Layer):
             else result
         )
 
+    def prepare_rollout_constants(self):
+        from ..distribution import data_parallel_worker_devices
+
+        devices = data_parallel_worker_devices() or ()
+        if len(devices) < 2:
+            return {}
+        context = tf.distribute.get_replica_context()
+        replica = (
+            0 if context is None
+            else tf.get_static_value(context.replica_id_in_sync_group)
+        )
+        if replica is None:
+            raise ValueError("Rollout constants require a statically resolved local replica.")
+        names = (
+            "synaptic_basis_weights", "_nest_type_indices", "t_ref_steps",
+            "_dt", "v_th", "_dampening_factor", "_gauss_std",
+            "_voltage_gradient_dampening", "_recurrent_dampening", "_lr_scale",
+            "_nest_type_first_indices", "syn_decay", "psc_initial", "asc_decay",
+            "v_reset",
+        )
+        if self.dynamics_mode == "nest":
+            names += ("asc_mean", "asc_refractory_decay", "psc_voltage", "rise_voltage")
+        values = {name: getattr(self, name) for name in names}
+        # Lift immutable captures out of checkpoint graphs, not just timestep loops.
+        with tf.init_scope(), tf.device(devices[int(replica)]):
+            return {
+                name: value if isinstance(value, tf.Variable) else tf.identity(value)
+                for name, value in values.items()
+            }
+
     def prepare_rollout_nest_coefficients(self):
         if not (
             self._use_prepacked_nest_coefficients
@@ -2513,18 +2536,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
         coefficients = pack_nest_state_coefficients(
             tf.constant(self._n_neurons, dtype=tf.int32),
             self.state_dtype,
-            syn_decay=self.syn_decay,
-            psc_initial=self.psc_initial,
-            asc_decay=self.asc_decay,
+            syn_decay=_rollout_constant(self, "syn_decay"),
+            psc_initial=_rollout_constant(self, "psc_initial"),
+            asc_decay=_rollout_constant(self, "asc_decay"),
             asc_amps=self.asc_amps,
             decay=self.decay,
             current_factor=self.current_factor,
-            asc_mean=self.asc_mean,
-            asc_refractory_decay=self.asc_refractory_decay,
-            psc_voltage=self.psc_voltage,
-            rise_voltage=self.rise_voltage,
-            v_reset=self.v_reset,
-            voltage_gradient_dampening=self._voltage_gradient_dampening,
+            asc_mean=_rollout_constant(self, "asc_mean"),
+            asc_refractory_decay=_rollout_constant(self, "asc_refractory_decay"),
+            psc_voltage=_rollout_constant(self, "psc_voltage"),
+            rise_voltage=_rollout_constant(self, "rise_voltage"),
+            v_reset=_rollout_constant(self, "v_reset"),
+            voltage_gradient_dampening=_rollout_constant(
+                self, "_voltage_gradient_dampening"
+            ),
         )
         kernel_coefficients = (
             tf.transpose(coefficients)
@@ -2544,21 +2569,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         "coefficient table to fit in CUDA shared memory."
                     )
                 type_coefficients = tf.gather(
-                    coefficients, self._nest_type_first_indices
+                    coefficients, _rollout_constant(self, "_nest_type_first_indices")
                 )
-                type_indices = self._nest_type_indices
+                type_indices = _rollout_constant(self, "_nest_type_indices")
                 type_identity = tf.constant(True)
             else:
                 type_coefficients, type_indices, type_identity = (
                     pack_type_indexed_nest_state_coefficients(
                         coefficients,
-                        self._nest_type_indices,
-                        self._nest_type_first_indices,
+                        _rollout_constant(self, "_nest_type_indices"),
+                        _rollout_constant(self, "_nest_type_first_indices"),
                     )
                 )
                 type_identity = tf.logical_and(
                     type_identity, tf.constant(type_table_bytes <= 48 * 1024)
                 )
+            with tf.device("/CPU:0"):
+                type_identity = tf.identity(type_identity)
             return (
                 coefficients,
                 kernel_coefficients,
@@ -2588,6 +2615,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         recurrent_weight_carrier=None,
     ):
         """Original compute-dtype math, optionally at immutable rollout weights."""
+
         def frame(index):
             return (
                 {} if projection_values is None else
@@ -2698,7 +2726,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             rec_inputs, [batch_size, self._n_neurons * self._n_syn_basis]
         )
         # Scale with the learning rate
-        rec_inputs = rec_inputs * self._lr_scale
+        rec_inputs = rec_inputs * _rollout_constant(self, "_lr_scale")
         if recurrent_weight_carrier is not None:
             return rec_inputs, new_input_history, recurrent_weight_carrier
         return rec_inputs, new_input_history
@@ -2838,42 +2866,42 @@ class GLIF3Cell(tf.keras.layers.Layer):
                             "require_type_indexed_coefficients": rollout_coefficients[5],
                         }
                     )
-            fused_result = (
-                fused_nest_state(
-                    v,
-                    r,
-                    asc,
-                    psc_rise,
-                    psc,
-                    rec_inputs,
-                    z_buf,
-                    syn_decay=self.syn_decay,
-                    psc_initial=self.psc_initial,
-                    asc_decay=self.asc_decay,
-                    asc_amps=self.asc_amps,
-                    decay=self.decay,
-                    current_factor=self.current_factor,
-                    asc_mean=self.asc_mean,
-                    asc_refractory_decay=self.asc_refractory_decay,
-                    psc_voltage=self.psc_voltage,
-                    rise_voltage=self.rise_voltage,
-                    t_ref_steps=self.t_ref_steps,
-                    dt=self._dt,
-                    v_reset=self.v_reset,
-                    v_th=self.v_th,
-                    dampening=self._dampening_factor,
-                    voltage_gradient_dampening=self._voltage_gradient_dampening,
-                    hard_reset=self._hard_reset,
-                    hard_reset_gradient_mode=self.hard_reset_gradient_mode,
-                    detach_reset=self.detach_reset,
-                    detach_asc_reset=self.detach_asc_reset,
-                    pseudo_gauss=self._pseudo_gauss,
-                    gauss_std=self._gauss_std,
-                    return_pre_reset_voltage=bool(self._online_voltage_losses),
-                    use_fused_event_vjp=self.use_fused_nest_event_vjp,
-                    fuse_history=self._use_fused_state_history,
-                    **coefficient_kwargs,
-                )
+            fused_result = fused_nest_state(
+                v,
+                r,
+                asc,
+                psc_rise,
+                psc,
+                rec_inputs,
+                z_buf,
+                syn_decay=self.syn_decay,
+                psc_initial=self.psc_initial,
+                asc_decay=self.asc_decay,
+                asc_amps=self.asc_amps,
+                decay=self.decay,
+                current_factor=self.current_factor,
+                asc_mean=self.asc_mean,
+                asc_refractory_decay=self.asc_refractory_decay,
+                psc_voltage=self.psc_voltage,
+                rise_voltage=self.rise_voltage,
+                t_ref_steps=_rollout_constant(self, "t_ref_steps"),
+                dt=_rollout_constant(self, "_dt"),
+                v_reset=self.v_reset,
+                v_th=_rollout_constant(self, "v_th"),
+                dampening=_rollout_constant(self, "_dampening_factor"),
+                voltage_gradient_dampening=_rollout_constant(
+                    self, "_voltage_gradient_dampening"
+                ),
+                hard_reset=self._hard_reset,
+                hard_reset_gradient_mode=self.hard_reset_gradient_mode,
+                detach_reset=self.detach_reset,
+                detach_asc_reset=self.detach_asc_reset,
+                pseudo_gauss=self._pseudo_gauss,
+                gauss_std=_rollout_constant(self, "_gauss_std"),
+                return_pre_reset_voltage=bool(self._online_voltage_losses),
+                use_fused_event_vjp=self.use_fused_nest_event_vjp,
+                fuse_history=self._use_fused_state_history,
+                **coefficient_kwargs,
             )
             new_z, new_v, new_r, new_asc, new_psc_rise, new_psc, new_z_buf = fused_result[:7]
             if self._online_voltage_losses:

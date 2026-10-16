@@ -5,6 +5,14 @@ Start with a working example in :doc:`dpointnet_guide`. Performance depends on
 network size, activity, batch, precision, inputs and outputs; there is no
 universal speedup or memory requirement.
 
+For execution across multiple GPUs, see :doc:`dpointnet_multi_gpu`.
+That section covers sample splitting, batch semantics, launch and ownership;
+the setup and acceleration guidance below applies to each GPU.
+MPI is the recommended opt-in starting point for the qualified multi-GPU
+workload; the manual also documents single-process MirroredStrategy as an
+opt-in alternative. This is a workload-specific recommendation, not a
+runtime-default change or universal transport-performance ranking.
+
 Use automatic acceleration
 --------------------------
 
