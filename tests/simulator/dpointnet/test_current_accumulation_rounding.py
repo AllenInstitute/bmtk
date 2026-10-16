@@ -59,6 +59,44 @@ def test_accumulation_rounds_projection_before_adding_initial(batch, dtype, rout
 
 @pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
 @pytest.mark.parametrize("batch", [1, 4, 16, 32])
+@pytest.mark.parametrize("compiled", [False, True])
+def test_fixed4_fp16_cancellation_rounds_projection_first(batch, compiled):
+    indices = np.array([[post, pre] for pre in range(4) for post in range(3)])
+    connectivity = build_csr_connectivity(
+        indices, np.zeros(len(indices), np.int64), 4, 3, 1,
+        build_fixed4_incoming=True, sort_by_target=True)
+    master = tf.constant(np.repeat([1., 2.**-11, 0., 0.], 3), tf.float32)
+    weights = reorder_csr_values(tf.cast(master, tf.float16), connectivity)
+    basis = tf.ones((1, 4), tf.float16)
+    activity = tf.ones((batch, 4), tf.float16)
+    initial = tf.Variable(-tf.ones((batch * 3, 4), tf.float16))
+
+    # The FP16 tie rounds to 1; cancelling in FP32 before that cast leaves 2**-11.
+    projection = np.float32(1.) + np.float32(2.**-11)
+    assert np.float16(projection) == np.float16(1.)
+    assert np.float16(projection - np.float32(1.)) == np.float16(2.**-11)
+
+    def evaluate(spikes, baseline):
+        projected = fused_spike_currents(
+            spikes, master, weights, connectivity, basis, 3,
+            compute_spike_gradient=True, use_fixed4_forward=True)
+        accumulated = fused_spike_currents(
+            spikes, master, weights, connectivity, basis, 3,
+            compute_spike_gradient=True, use_fixed4_forward=True, initial_currents=baseline)
+        return projected, accumulated
+
+    run = tf.function(evaluate) if compiled else evaluate
+    for _ in range(3):
+        projected, accumulated = run(activity, initial)
+        np.testing.assert_array_equal(projected, np.ones((batch * 3, 4), np.float16))
+        np.testing.assert_array_equal(
+            accumulated, np.zeros((batch * 3, 4), np.float16),
+            err_msg="FP16 projection must round before baseline cancellation")
+        np.testing.assert_array_equal(initial, -np.ones((batch * 3, 4), np.float16))
+
+
+@pytest.mark.skipif(not fused_cuda_available(), reason="Fused CUDA op is unavailable.")
+@pytest.mark.parametrize("batch", [1, 4, 16, 32])
 @pytest.mark.parametrize("route", ["ordinary", "fixed4", "queue"])
 def test_distinct_counted_inputs_accumulation_and_checkpoint_vjp(batch, route):
     indices = np.array([[post, pre] for pre in range(4) for post in range(3)])
