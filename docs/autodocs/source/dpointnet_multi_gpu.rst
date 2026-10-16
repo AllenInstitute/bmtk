@@ -62,6 +62,52 @@ head-to-head benchmark. They support the MPI recommendation for that workload,
 not a claim that MPI transport is intrinsically faster than TensorFlow's
 collectives or that every network and GPU will scale the same way.
 
+Memory use: MPI versus MirroredStrategy
+--------------------------------------------------
+
+**MPI does not inherently require more GPU memory than MirroredStrategy.**
+At the same local batch size, both modes keep a complete network, optimizer
+state and local trial/BPTT state on each GPU. A separate process does not add
+another full network copy on that same GPU. Runtime allocations, temporary
+buffers and device placement can differ, so neither mode has a universal
+memory advantage.
+
+Separate MPI processes can increase **host RAM** use: each has its own Python
+and TensorFlow runtime, graphs and host-side network data, plus MPI input and
+gradient staging buffers. The qualification below did not measure a matched
+host-RAM comparison, so it does not establish a host-memory overhead figure.
+
+The historical two-V10032 full-V1 qualification runs above used local batch
+16/global batch 32, 500 timesteps, FP32/NEST and checkpoint interval 25.
+Their recorded TensorFlow allocator lifetime peaks were:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 30 30
+
+   * - Mode
+     - First GPU (GiB)
+     - Second GPU (GiB)
+   * - MPI (ranks 0 and 1)
+     - 9.82
+     - 9.45
+   * - MirroredStrategy
+     - 10.59
+     - 8.97
+
+MPI did not increase the largest per-GPU TensorFlow peak in these runs.
+These are separate qualification runs, not a controlled head-to-head memory
+experiment or a universal memory ranking. TensorFlow allocator peaks are
+**not total driver GPU memory or a minimum VRAM requirement**: they do not
+include all CUDA/driver allocations or describe allocator reservations.
+End-of-run driver snapshots were approximately 16.3--16.5 GiB per GPU;
+those snapshots were not sampled driver peaks.
+
+For either mode, splitting a fixed global batch can reduce per-GPU trial
+state and activation memory compared with placing that entire batch on one
+GPU. It does not halve the network/optimizer memory or pool device memory:
+the complete network and local batch must still fit on every GPU.
+
 Sample-parallel training
 ------------------------
 
