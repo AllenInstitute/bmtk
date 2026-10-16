@@ -64,6 +64,7 @@ setup(
     extras_require={
         'bionet': ['NEURON'],
         'mintnet': ['tensorflow'],
+        'dpointnet-mpi': ['tensorflow>=2.13', 'mpi4py>=4'],
         'pointnet': ['NEST'],
         'popnet': ['DiPDE']
     },
@@ -75,6 +76,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'bmtk-dpointnet-mpi=bmtk.utils.dpointnet_mpi:main',
             'bmtk-build-dpointnet-cuda='
             'bmtk.simulator.dpointnet.custom_ops.build:main',
         ],

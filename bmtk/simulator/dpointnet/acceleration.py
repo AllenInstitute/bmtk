@@ -58,7 +58,7 @@ def resolve_acceleration_options(
         "use_fused_cuda", currents,
         "compatible loaded CSR library and FP16/FP32 compute with FP32 masters; "
         "SM61-compatible CSR currents; matching loaded library, FP16/FP32 compute "
-        "and FP32 masters; multiple visible GPUs excluded",
+        "and FP32 masters; explicit homogeneous data-parallel GPU strategies supported",
     )
     currents = currents and options["use_fused_cuda"] is not False
     known_batch = isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0

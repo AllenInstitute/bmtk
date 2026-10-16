@@ -81,7 +81,7 @@ class RNN:
     
     """
 
-    def __init__(self, seq_len=None, batch_size=None, dtype=None, dt=1.0, default_seed=None, cell_cls=None, cell_params=None, precision=None, **kwargs):
+    def __init__(self, seq_len=None, batch_size=None, dtype=None, dt=1.0, default_seed=None, cell_cls=None, cell_params=None, precision=None, distribution=None, **kwargs):
         if cell_cls is None:
             self.cell_cls = cell_models['default']
         elif isinstance(cell_cls, str):
@@ -152,7 +152,14 @@ class RNN:
         # the RNN while_loop as loop-invariant captures instead of being stacked per timestep;
         # OneDeviceStrategy does NOT do this and OOMs on the full network. Single visible GPU
         # => effectively one device.
-        self.strategy = tf.distribute.MirroredStrategy()
+        self.data_parallel = None
+        if distribution is None:
+            self.strategy = tf.distribute.MirroredStrategy()
+        else:
+            from .distribution import create_data_parallel
+            self.data_parallel = create_data_parallel(distribution, batch_size, self.dtype)
+            self.strategy = self.data_parallel.strategy
+            io.log_info(f"DPointNet resolved distribution: {self.data_parallel.report}")
 
     @property
     def input_modules(self):
@@ -849,6 +856,8 @@ class RNN:
         if training_engine is None:
             io.log_debug('No training condition has been set, skipping training.')
             return
+        if self.data_parallel is not None:
+            self.data_parallel.validate_training(training_engine)
         self._prepare_training_model()
 
         if self.extractor_model is None:
@@ -892,6 +901,11 @@ class RNN:
         the `build(...)`, `train(...)`, and `run_inference(...)` function directly through the Python API.
         """
         io.log_info('RNN.run() starting...')
+        if getattr(getattr(self, "data_parallel", None), "process_based", False) and self._inferences:
+            raise ValueError(
+                "MPI preview supports training only; run inference separately to "
+                "avoid duplicate output ownership."
+            )
         if not self._model_built:
             io.log_info('Building Model.')
             self.build()

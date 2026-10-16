@@ -98,6 +98,20 @@ into one model batch, and ``series_accumulate`` accumulates them before one
 update. These protocols are not interchangeable: two sequential batch-16
 updates differ from one combined batch-32 update.
 
+.. _single-host-data-parallelism-engineering-preview:
+.. _one-process-per-gpu-mpi-engineering-preview:
+
+Multi-GPU execution
+-------------------
+
+For sample-parallel training, see :doc:`dpointnet_multi_gpu`. That section
+explains the execution modes, per-GPU versus global batch sizes, configuration,
+MPI launcher, runnable example, output ownership and supported scope.
+Multi-GPU sample batches are distinct from the condition-update protocols above.
+MPI is the recommended starting approach when explicitly enabling multi-GPU
+training; MirroredStrategy remains an opt-in alternative. Neither is enabled
+automatically by this recommendation.
+
 Weights and objectives
 ----------------------
 

@@ -4,6 +4,11 @@ from tensorflow.python.eager import record
 _PACKED_SPIKES_PER_WORD = 31
 
 
+def _checkpoint_dtype(dtype):
+    # Compact integer TensorList Get/Set kernels run on CPU, copying whole lists.
+    return tf.int32 if dtype in (tf.int8, tf.uint8, tf.int16, tf.uint16) else dtype
+
+
 def _pack_spikes(spikes):
     """Pack a rank-two spike state, treating every nonzero value as one."""
     width = spikes.shape[-1]
@@ -179,7 +184,7 @@ class SegmentedRecomputeRunner:
                 dtype=(
                     tf.int32
                     if self.pack_spike_checkpoints and index == 0
-                    else value.dtype
+                    else _checkpoint_dtype(value.dtype)
                 ),
                 size=self.n_chunks,
                 clear_after_read=True,
@@ -195,7 +200,7 @@ class SegmentedRecomputeRunner:
                     (
                         _pack_spikes(value)
                         if self.pack_spike_checkpoints and index == 0
-                        else value
+                        else tf.cast(value, array.dtype)
                     ),
                 )
                 for index, (array, value) in enumerate(zip(history, states))
@@ -231,7 +236,7 @@ class SegmentedRecomputeRunner:
                     (
                         _pack_spikes(value)
                         if self.pack_spike_checkpoints and index == 0
-                        else value
+                        else tf.cast(value, array.dtype)
                     ),
                 )
                 for index, (array, value) in enumerate(zip(state_arrays, state))
@@ -303,7 +308,12 @@ class SegmentedRecomputeRunner:
         ):
             start = chunk_index * self.chunk_size
             chunk = self._slice_chunk(inputs, chunk_index, chunk_length)
-            boundary_state = tuple(array.read(chunk_index) for array in state_arrays)
+            boundary_state = tuple(
+                array.read(chunk_index)
+                if self.pack_spike_checkpoints and index == 0
+                else tf.cast(array.read(chunk_index), state_dtypes[index])
+                for index, array in enumerate(state_arrays)
+            )
             if self.pack_spike_checkpoints:
                 spike_width = final_state[0].shape[-1]
                 if spike_width is None:

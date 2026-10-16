@@ -232,6 +232,17 @@ Continue with :doc:`dpointnet_training` for ordinary training choices,
 validation, saved weights and optional regularizers. For your own objectives
 or training hooks, follow :doc:`dpointnet_custom_training`; no BMTK edits are needed.
 
+Multi-GPU support
+=================
+
+See :doc:`dpointnet_multi_gpu` for sample-parallel execution across multiple
+GPUs, including configuration, launch commands, a runnable example and
+supported restrictions. Each GPU holds the full network; the sample batch
+is divided between GPUs.
+Start with the explicitly enabled MPI approach for the qualified workload;
+single-process MirroredStrategy is an opt-in alternative. This recommendation
+does not change execution when ``run.distribution`` is omitted.
+
 Dynamics and simulation
 =======================
 
@@ -279,6 +290,12 @@ automatic continuous simulation.
 
 Next steps
 ==========
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Multi-GPU support
+
+   Sample-parallel execution <dpointnet_multi_gpu>
 
 .. toctree::
    :maxdepth: 1

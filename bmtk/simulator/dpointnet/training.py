@@ -644,6 +644,11 @@ class TrainingEngine:
 
         TODO: This function should be able to be merged with _train_step_series.
         """
+        loss_vals, gradients, statistics = self._single_gradients(x, y, init_state)
+        self._apply_gradients(gradients, statistics)
+        return loss_vals
+
+    def _single_gradients(self, x, y, init_state):
         pname = self.parameters[0].name
         loss_vals = {pname: {}}
         input_spikes = x[0]
@@ -674,14 +679,20 @@ class TrainingEngine:
             loss_for_grad = optimizers.scale_loss_for_optimizer(
                 self.optimizer, total_loss
             )
-            loss_vals["__total_loss"] = tf.reduce_mean(total_loss)
+            loss_vals["__total_loss"] = tf.reduce_mean(
+                _total_loss if getattr(self.rnn, "data_parallel", None) else total_loss
+            )
 
         # Backpropagation of the model (gradients computation and application)
         grad = tape.gradient(loss_for_grad, self.rnn.model.trainable_variables)
         grad = optimizers.unscale_gradients_for_optimizer(self.optimizer, grad)
-        self._apply_gradients(grad, self._voltage_floor_rate_statistics(_spikes_out))
+        return loss_vals, grad, self._voltage_floor_rate_statistics(_spikes_out)
 
-        return loss_vals
+    @tf.function
+    def _distributed_single_gradients(self, x, y, init_state):
+        return self.rnn.strategy.run(
+            self._single_gradients, args=(x, y, init_state)
+        )
 
     def _train_step_parameter_gradients(self, x, y, init_state, parameter_index):
         """Compute one parameter set's gradients without applying them."""
@@ -756,6 +767,11 @@ class TrainingEngine:
         return counts, samples
 
     def _apply_gradients(self, grads, rate_statistics=None):
+        parallel = getattr(self.rnn, "data_parallel", None)
+        if getattr(parallel, "process_based", False):
+            # External graph arguments have no device for Keras' local reduction.
+            with tf.device(parallel.strategy.extended.worker_devices[0]):
+                grads = [None if value is None else tf.identity(value) for value in grads]
         losses = getattr(self.rnn, "_online_voltage_losses", ())
         if not losses:
             self.optimizer.apply_gradients(zip(grads, self.rnn.model.trainable_variables))
@@ -979,7 +995,24 @@ class TrainingEngine:
 
     @tf.function
     def _distributed_train_step(self, x, y, init_state):
+        if getattr(getattr(self.rnn, "data_parallel", None), "process_based", False):
+            raise ValueError("MPI collectives require eager train_step(), not a traced step.")
+        if getattr(self.rnn, "data_parallel", None) is not None:
+            self.rnn.data_parallel.validate_training(self)
         return self.rnn.strategy.run(self.step_train_function, args=(x, y, init_state))
+
+    def train_step(self, x, y, init_state):
+        """Apply one update; process collectives run outside TensorFlow graphs."""
+        parallel = getattr(self.rnn, "data_parallel", None)
+        if not getattr(parallel, "process_based", False):
+            return self._distributed_train_step(x, y, init_state)
+        parallel.prepare(self)
+        metrics, gradients, statistics = self._distributed_single_gradients(x, y, init_state)
+        if statistics is not None:
+            raise ValueError("MPI online population-rate state is not yet qualified.")
+        gradients = parallel.average_gradients(gradients)
+        self._distributed_apply_gradients(gradients)
+        return metrics
 
     def _validation_step(self, xs, ys, init_state, training_approach):
         if training_approach in ["series", "series_accumulate", "single"]:
@@ -1017,7 +1050,9 @@ class TrainingEngine:
 
                 _total_loss = tf.cast(_total_loss, tf.float32)
                 total_loss = tf.nn.scale_regularization_loss(_total_loss)
-                all_losses.append(total_loss)
+                all_losses.append(
+                    _total_loss if getattr(self.rnn, "data_parallel", None) else total_loss
+                )
 
             loss_vals["__total_loss"] = tf.reduce_mean(all_losses)
 
@@ -1124,6 +1159,11 @@ class TrainingEngine:
         raise last_err
 
     def train(self):
+        data_parallel = getattr(self.rnn, "data_parallel", None)
+        process_parallel = getattr(data_parallel, "process_based", False)
+        chief = not process_parallel or data_parallel.is_chief
+        if data_parallel is not None:
+            data_parallel.validate_training(self)
         prepare_training_model = getattr(self.rnn, "_prepare_training_model", None)
         if prepare_training_model is not None:
             prepare_training_model()
@@ -1132,7 +1172,9 @@ class TrainingEngine:
         input_seq_lens = []
         for p in self.parameters:
             input_generators.append(p.input_generators)
-            input_batch_sizes.append(p.batch_size)
+            input_batch_sizes.append(
+                p.batch_size * data_parallel.replicas if data_parallel is not None else p.batch_size
+            )
             input_seq_lens.append(p.seq_len)
 
         # fetch_in_graph=False: fetch the next batch eagerly. The in-graph path wraps the
@@ -1146,32 +1188,46 @@ class TrainingEngine:
             input_seq_lens,
             self.rnn.ordered_inputs_populations,
             fetch_in_graph=False,
-        )
+            use_device_generation=data_parallel is None,
+        ) if chief else None
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]
         init_state = None
         if not self.regenerate_initial_state_each_epoch:
-            init_state = self.init_state.get_state()
+            init_state = (
+                self.rnn.strategy.run(self.init_state.get_state)
+                if data_parallel is not None else self.init_state.get_state()
+            )
         self._prepare_normalizers()
 
         self.prepare_gradient_checkpointing()
 
         try:
-            self.callbacks.on_train_begin()
+            if chief:
+                self.callbacks.on_train_begin()
             for epoch in range(self.n_epochs):
-                self.callbacks.on_epoch_start()
+                if chief:
+                    self.callbacks.on_epoch_start()
                 if self.regenerate_initial_state_each_epoch:
-                    init_state = self.init_state.get_state()
+                    init_state = (
+                        self.rnn.strategy.run(self.init_state.get_state)
+                        if data_parallel is not None else self.init_state.get_state()
+                    )
 
                 for step in range(self.steps_per_epoch):
-                    self.callbacks.on_step_start()
-                    spikes, ys = self._next_spikes_with_retry(input_itr)
+                    if chief:
+                        self.callbacks.on_step_start()
+                    values = self._next_spikes_with_retry(input_itr) if chief else None
+                    if data_parallel is not None:
+                        spikes, ys = data_parallel.distribute_batch(values)
+                    else:
+                        spikes, ys = values
                     if self.training_approach == "series_accumulate":
                         step_loss_vals = self._distributed_train_step_series_accumulate(
                             spikes, ys, init_state=init_state
                         )
                     else:
-                        step_loss_vals = self._distributed_train_step(
+                        step_loss_vals = self.train_step(
                             spikes, ys, init_state=init_state
                         )
                     self.learning_rule.on_global_step_end()
@@ -1181,8 +1237,14 @@ class TrainingEngine:
                     if cell is not None and hasattr(
                         cell, "refresh_recurrent_weight_shadow"
                     ):
-                        cell.refresh_recurrent_weight_shadow()
-                    self.callbacks.on_step_end(step_loss_vals)
+                        if data_parallel is not None:
+                            self.rnn.strategy.run(cell.refresh_recurrent_weight_shadow)
+                        else:
+                            cell.refresh_recurrent_weight_shadow()
+                    if data_parallel is not None:
+                        step_loss_vals = data_parallel.reduce_metrics(step_loss_vals)
+                    if chief:
+                        self.callbacks.on_step_end(step_loss_vals)
 
                 validation_loss = self._distributed_validation_step(
                     spikes,
@@ -1190,7 +1252,11 @@ class TrainingEngine:
                     init_state=init_state,
                     training_approach=self.training_approach,
                 )
-                stop = self.callbacks.on_epoch_end(validation_loss)
+                if data_parallel is not None:
+                    validation_loss = data_parallel.reduce_metrics(validation_loss)
+                stop = self.callbacks.on_epoch_end(validation_loss) if chief else None
+                if process_parallel:
+                    stop = data_parallel.broadcast_stop(stop)
                 if stop:
                     break
 
@@ -1199,9 +1265,11 @@ class TrainingEngine:
                 normalizers = {
                     name: value.numpy() for name, value in self._normalizers.items()
                 }
-            self.callbacks.on_train_end(normalizers=normalizers)
+            if chief:
+                self.callbacks.on_train_end(normalizers=normalizers)
         finally:
-            input_itr.close()
+            if input_itr is not None:
+                input_itr.close()
 
     """
     def train_old(self):

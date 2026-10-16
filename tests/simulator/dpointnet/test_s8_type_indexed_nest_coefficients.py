@@ -96,6 +96,8 @@ def test_cell_prepare_rechecks_live_assignable_coefficients(monkeypatch):
     packed = cell.prepare_rollout_nest_coefficients()
     assert len(packed) == 6
     assert bool(packed[4].numpy())
+    assert packed[4].dtype == tf.bool and packed[4].shape.rank == 0
+    assert packed[4].device.endswith("/device:CPU:0")
     np.testing.assert_array_equal(packed[3].numpy(), [0, 1, 0])
     assert packed[2].shape == (2, 28)
 

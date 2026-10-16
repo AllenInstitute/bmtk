@@ -1,0 +1,51 @@
+name: DPointNet MPI smoke
+
+on:
+  pull_request:
+    branches: [develop, "release/**"]
+    paths:
+      - "bmtk/**"
+      - "setup.py"
+      - "tests/simulator/dpointnet/**"
+      - "examples/dpointnet_mpi/**"
+      - "examples/dpointnet_all2all/**"
+      - ".github/workflows/dpointnet-mpi.yaml"
+
+jobs:
+  mpi-cpu:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        include:
+          - python: "3.8"
+            tensorflow: "2.13.*"
+          - python: "3.11"
+            tensorflow: "2.20.*"
+    env:
+      CUDA_VISIBLE_DEVICES: ""
+      BMTK_DPOINTNET_DISABLE_FUSED_CUDA: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      TF_NUM_INTRAOP_THREADS: "1"
+      TF_NUM_INTEROP_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install CPU TensorFlow and optional MPI backend
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openmpi-bin libopenmpi-dev
+          python -m pip install ".[dpointnet-mpi]" pytest "tensorflow==${{ matrix.tensorflow }}"
+      - name: Unit tests and real configuration lifecycle
+        env:
+          BMTK_RUN_MPI_TESTS: "1"
+        run: |
+          python -m pytest -q tests/simulator/dpointnet/test_mpi_integration.py tests/simulator/dpointnet/test_process_distribution.py
+      - name: Two-process gradient, update, restore and ownership oracle
+        run: |
+          mkdir -p "$RUNNER_TEMP/dpointnet-mpi"
+          timeout --kill-after=10s 300s mpiexec -n 2 python -m bmtk.utils.dpointnet_mpi --cpu tests/simulator/dpointnet/process_parallel_probe.py --output "$RUNNER_TEMP/dpointnet-mpi/numerical.json"
