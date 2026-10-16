@@ -86,6 +86,29 @@ External custom runners must wire their input and recurrent carrier surfaces.
 Explicit packed/small-batch FP16 backward requests are incompatible with the
 FP32 temporal route.
 
+Current accumulation and numerical boundaries
+---------------------------------------------
+
+``fused_spike_currents(initial_currents=...)`` rounds the standalone projection
+to the compute dtype before adding the initial current once. Do not seed the
+projection's atomic accumulator or fixed-four reduction with the initial
+current: that reassociates every synaptic addition with the baseline, can
+absorb small contributions, and changes threshold crossings even in FP32.
+The fixed-four route may forward its initial buffer because each thread reads
+and writes only its own output elements. Atomic projection routes retain a
+separate output until projection completes, then add the initial current on
+the same TensorFlow device stream. The initial-current VJP is the identity;
+spike and canonical weight VJPs are unchanged.
+
+This rounding boundary does not make atomic projection deterministic or
+make differently grouped sums of multiple projections bitwise equivalent.
+Tiny current differences can amplify through recurrent spike thresholds.
+Validate per-neuron counts and states, not only aggregate spike totals;
+capture forward results before backward/update when diagnosing divergence.
+For checkpoint replay requirements, retain the recorded-primal guidance above.
+``use_fused_current_accumulation`` concerns forward currents and is independent
+of ``use_fused_recurrent_accumulation``, the recurrent weight-gradient carrier.
+
 Online loss channels
 --------------------
 

@@ -448,12 +448,6 @@ __global__ void CsrSpikeForwardFixed4Kernel(
     const int post = static_cast<int>(
         index - static_cast<int64_t>(batch) * n_post);
     float sums[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    if (initial != nullptr) {
-#pragma unroll
-      for (int receptor = 0; receptor < 4; ++receptor) {
-        sums[receptor] = ToFloat(initial[index * 4 + receptor]);
-      }
-    }
 #pragma unroll
     for (int offset = 0; offset < 4; ++offset) {
       const int64_t incoming = static_cast<int64_t>(post) * 4 + offset;
@@ -479,8 +473,20 @@ __global__ void CsrSpikeForwardFixed4Kernel(
     }
 #pragma unroll
     for (int receptor = 0; receptor < 4; ++receptor) {
-      currents[index * 4 + receptor] = FromFloat<T>(sums[receptor]);
+      const int64_t output = index * 4 + receptor;
+      const T projected = FromFloat<T>(sums[receptor]);
+      currents[output] = initial == nullptr ? projected :
+          FromFloat<T>(ToFloat(initial[output]) + ToFloat(projected));
     }
+  }
+}
+
+template <typename T>
+__global__ void AddInitialCurrentsKernel(
+    int64_t count, const T* initial, T* currents) {
+  for (int64_t index : GpuGridRangeX(count)) {
+    currents[index] = FromFloat<T>(
+        ToFloat(initial[index]) + ToFloat(currents[index]));
   }
 }
 
@@ -1556,10 +1562,14 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
     Tensor* currents = nullptr;
-    OP_REQUIRES_OK(
-        context,
-      context->forward_input_or_allocate_output(
-        {10}, 0, output_shape, &currents));
+    if (use_fixed4_forward_) {
+      OP_REQUIRES_OK(
+          context,
+          context->forward_input_or_allocate_output(
+              {10}, 0, output_shape, &currents));
+    } else {
+      OP_REQUIRES_OK(context, context->allocate_output(0, output_shape, &currents));
+    }
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     const int64_t output_count = currents->NumElements();
     if (vjp_only_) {
@@ -1589,17 +1599,7 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
               currents->flat<T>().data()));
       return;
     }
-    if (initial.NumElements() > 0 &&
-        currents->flat<T>().data() != initial.flat<T>().data()) {
-      OP_REQUIRES(
-        context,
-        cudaMemcpyAsync(
-          currents->flat<T>().data(), initial.flat<T>().data(),
-          output_count * sizeof(T), cudaMemcpyDeviceToDevice,
-          device.stream()) == cudaSuccess,
-        errors::Internal("Failed to copy initial current buffer."));
-    }
-    if (initial.NumElements() == 0) {
+    {
       constexpr int zero_threads = 256;
       OP_REQUIRES_OK(
         context,
@@ -1706,6 +1706,16 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
               static_cast<int>(n_basis), spikes.flat<T>().data(), post_ids,
               weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
               row_splits, currents->flat<T>().data()));
+    }
+    if (initial.NumElements() > 0) {
+      constexpr int threads = 256;
+      OP_REQUIRES_OK(
+          context,
+          GpuLaunchKernel(
+              AddInitialCurrentsKernel<T>,
+              BlockCountFor(output_count, threads, device), threads, 0,
+              device.stream(), output_count, initial.flat<T>().data(),
+              currents->flat<T>().data()));
     }
   }
 
