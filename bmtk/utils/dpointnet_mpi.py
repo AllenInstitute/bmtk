@@ -20,6 +20,16 @@ def select_device(allocation, rank, size):
     return devices[rank]
 
 
+def _abort_with_traceback(comm):
+    try:
+        traceback.print_exc()
+        # MPI abort bypasses Python shutdown and its buffered stream flushing.
+        sys.stderr.flush()
+        sys.stdout.flush()
+    finally:
+        comm.Abort(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cpu", action="store_true", help="Explicit CPU qualification.")
@@ -47,11 +57,9 @@ def main():
         runpy.run_path(str(script), run_name="__main__")
     except SystemExit as error:
         if error.code not in (None, 0):
-            traceback.print_exc()
-            comm.Abort(1)
+            _abort_with_traceback(comm)
     except BaseException:
-        traceback.print_exc()
-        comm.Abort(1)
+        _abort_with_traceback(comm)
 
 
 if __name__ == "__main__":

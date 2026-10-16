@@ -337,8 +337,9 @@ metrics and early-stop decisions are synchronized so all ranks take the same
 number of updates. Custom callbacks must respect this ownership: mutating
 chief weights/optimizer/noise without a collective synchronization is not
 supported. Uncaught worker errors are printed and abort the MPI job rather
-than leaving peers blocked. Run all ranks through the launcher and maintain
-identical collective control flow.
+than leaving peers blocked. Tracebacks and pending standard output/error are
+flushed before aborting, since MPI abort bypasses Python's normal shutdown.
+Run all ranks through the launcher and maintain identical collective control flow.
 
 The initial FP32/BPTT/one-condition/zero-state/equal-full-batch/no-clipping and
 sample-separable-loss restrictions above still apply. Dense canonical

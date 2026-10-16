@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
         include:
           - python: "3.8"
@@ -44,7 +45,7 @@ jobs:
         env:
           BMTK_RUN_MPI_TESTS: "1"
         run: |
-          python -m pytest -q tests/simulator/dpointnet/test_mpi_integration.py tests/simulator/dpointnet/test_process_distribution.py
+          python -m pytest -q tests/simulator/dpointnet/test_mpi_launcher.py tests/simulator/dpointnet/test_mpi_integration.py tests/simulator/dpointnet/test_process_distribution.py
       - name: Two-process gradient, update, restore and ownership oracle
         run: |
           mkdir -p "$RUNNER_TEMP/dpointnet-mpi"
