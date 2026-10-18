@@ -65,11 +65,64 @@ and NEST end-of-step timestamps.
 
 Automatic direct-CSR gradients require a training-engine or FP32-temporal
 restoration boundary. Bare cells and inference-only RNNs retain canonical
-gradients. Type-indexed state dispatch checks current coefficient identity;
-static dispatch is an explicit assumption that those coefficients cannot change.
+gradients. Type-indexed state dispatch checks current coefficient identity.
+Static dispatch is an explicit promise that within-type equality remains valid,
+not a mutation guard or a cache of initial values. Uniform type-preserving
+changes need not invalidate that representation.
+
+The single-replica SM86/TF2.21 high-level automatic route can move the live
+identity predicate out of native custom-gradient carrier arguments. Both branches reuse
+the same neuron transition/VJP; assignment and restore still affect the next
+rollout. Custom cells and distribution retain their existing dispatch.
 
 Custom runners and FP32 temporal gradients
 ------------------------------------------
+
+External current and release components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``GLIF3Cell.advance_with_currents(inputs, states, currents, noise_seed=...)``
+advances the existing neuron transition without rerunning recurrent or input
+projection. Supply the complete **base** carry (including input-delay and online
+loss channels), not appended STP release state. Currents have shape
+``[batch, n_neurons * n_syn_basis]``, already include normal learning-rate scaling,
+and are cast to the selected compute dtype as in ordinary execution. Inputs are
+still required for external delay history and replay-safe Poisson history.
+``noise_seed`` is the scalar base seed, not a two-element stateless RNG seed.
+The method deliberately bypasses a subclass's ``_call_impl`` projection override;
+the subclass remains responsible for its own release-state update and validation.
+
+The hook preserves ordinary-tape current/state VJPs and can be used inside
+segmented recomputation. It rejects the FP32 temporal-adjoint mode just as direct
+``cell.call`` does; it is not an external-runner canonical-gradient boundary.
+Existing ordinary calls, state ordering, precision and accelerator selection are
+unchanged.
+
+``cell.native_execution_options`` returns a copy of the base cell's selected
+fused-current/state/history, pair-projection and fused-event flags, including
+when the profile is explicit and ``acceleration_report`` is ``None``.
+It is selection information, not kernel-execution evidence or a declaration
+about a custom projection. Mutating the returned dictionary changes no policy.
+``cell.create_compute_shadow(value, name=..., dtype=...)`` creates a nontrainable
+copy without creating a canonical master or registering gradient routing.
+Its default dtype is the cell compute dtype; FP32 projection adapters must
+request FP32 explicitly. The owner must refresh it after every master update,
+assignment and restore, including frozen assignable masters, and explicitly
+verify checkpoint coverage. A shadow factory is not automatic synchronization.
+
+``fused_spike_currents`` accepts graded **nonnegative** source amplitudes.
+It multiplies positive amplitudes unchanged, including fractional release
+efficacy and counted Poisson events. With spike gradients enabled its VJP
+returns dense source-row credit, including silent connected rows. For STP that
+is efficacy credit: apply the local release VJP before summing source-event
+credit across consuming ranks. Do not route efficacy credit directly to the
+source spike surrogate.
+With ``write_csr_weight_gradient=False`` the weight VJP is already canonical,
+including duplicate edges, and must not receive a second CSR restoration.
+An actual direct-CSR carrier still requires exactly one canonical restoration.
+
+Temporal adjoint boundary
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The supported FP32 temporal route uses ``TemporalAdjointRunner`` or
 ``ExplicitStateRNN`` with selective forward state. The reverse pass uses
@@ -88,6 +141,16 @@ FP32 temporal route.
 
 Current accumulation and numerical boundaries
 ---------------------------------------------
+
+``fused_combined_currents`` is a distinct projection primal: compatible
+recurrent/named-input sources share FP32 accumulation and one final rounding.
+It retains each source's dense source VJP and canonical/carrier weight boundary;
+``vjp_only`` projection proxies supply derivatives, not additional currents.
+Never apply a second canonical restoration to an already-canonical VJP.
+The tile attribute requires the rebuilt native signature; an older library
+cannot silently accept it. Routing caches depend only on immutable metadata
+identity and source width, never the current weight values.
+See :doc:`dpointnet_performance` for automatic admission and numerical opt-out.
 
 ``fused_spike_currents(initial_currents=...)`` rounds the standalone projection
 to the compute dtype before adding the initial current once. Do not seed the

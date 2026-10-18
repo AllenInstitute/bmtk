@@ -8,9 +8,80 @@ from .custom_ops import csr_spike_ops, glif_state_ops
 from .io_tools import io
 
 
+def performance_projection_context(
+    network, inputs, *, dt, max_delay, standard_cell, single_replica,
+):
+    """Describe the high-level runner's static projection admission boundary."""
+    history = max(1, int(max_delay / dt) + 1)
+    return {
+        "standard_cell": standard_cell,
+        "single_replica": single_replica,
+        "spike_inputs": 1 <= len(inputs) <= 7 and all(
+            item.get("options", {}).get("input_type", item["input_type"])
+            in ("spikes", "poisson_spikes_internal")
+            and item["n_inputs"] > 0 and len(item["indices"]) > 0
+            for item in inputs.values()
+        ),
+        "n_post": int(network["n_nodes"]),
+        "source_rows_upper_bound": history * (
+            int(network["n_nodes"]) + sum(int(item["n_inputs"]) for item in inputs.values())
+        ),
+        "max_edges": max(
+            [len(network["synapses"]["indices"])]
+            + [len(item["indices"]) for item in inputs.values()]
+        ),
+        "recurrent_edges": len(network["synapses"]["indices"]),
+    }
+
+
+def select_performance_projection(
+    options, context, *, compute_dtype, variable_dtype, batch_size, basis_width,
+    architecture,
+):
+    """Choose a qualified joint-current route without changing explicit options."""
+    reason = (
+        "single-replica standard GLIF/NEST, SM86, FP16/FP32 with FP32 masters, "
+        "batch1/16/32, four bases, native spike inputs and bounded routing; "
+        "joint FP32 accumulation rounds once to compute dtype"
+    )
+    eligible = (
+        options.get("acceleration_profile", "auto") == "auto"
+        and options.get("use_combined_current_sweep") is not False
+        and options.get("use_fused_cuda") is not False
+        and options.get("dynamics_mode", "nest") == "nest"
+        and options.get("temporal_gradient_precision", "compute") == "compute"
+        and architecture == 86
+        and tf.as_dtype(compute_dtype) in (tf.float16, tf.float32)
+        and tf.as_dtype(variable_dtype) == tf.float32
+        and isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
+        and batch_size in (1, 16, 32) and basis_width == 4
+        and context is not None and context["standard_cell"]
+        and context["single_replica"] and context["spike_inputs"]
+        and context["recurrent_edges"] > 0
+        and csr_spike_ops.combined_sweep_available()
+    )
+    tile = 256 if eligible and batch_size == 1 else 2048
+    if eligible:
+        index_bytes = 4 if max(
+            context["n_post"], context["source_rows_upper_bound"], context["max_edges"]
+        ) <= 2**32 - 1 else 8
+
+        def routing_bytes(targets):
+            return (
+                ((context["n_post"] + targets - 1) // targets + 1)
+                * context["source_rows_upper_bound"] * index_bytes
+            )
+
+        if routing_bytes(tile) > 512 * 1024**2:
+            tile = 2048
+        eligible = routing_bytes(tile) <= 512 * 1024**2
+    return bool(eligible), tile, reason
+
+
 def resolve_acceleration_options(
     cell_params, *, compute_dtype, variable_dtype, batch_size, basis_width,
     train_recurrent_per_type=False, canonical_gradient_boundary=True,
+    performance_context=None,
 ):
     """Resolve ``acceleration_profile="auto"`` without overriding explicit flags.
 
@@ -61,6 +132,20 @@ def resolve_acceleration_options(
         "and FP32 masters; explicit homogeneous data-parallel GPU strategies supported",
     )
     currents = currents and options["use_fused_cuda"] is not False
+    combined, tile, combined_reason = select_performance_projection(
+        cell_params, performance_context, compute_dtype=compute_dtype,
+        variable_dtype=variable_dtype, batch_size=batch_size, basis_width=basis_width,
+        architecture=architecture,
+    )
+    select("use_combined_current_sweep", currents and combined, combined_reason)
+    if options["use_combined_current_sweep"] is True:
+        tile_name = "combined_current_target_tile_size"
+        report["reasons"][tile_name] = (
+            "explicit override; constructor validation retained"
+            if tile_name in options else "batch-aware bounded target routing"
+        )
+        options.setdefault(tile_name, tile)
+        report["selected"][tile_name] = options[tile_name]
     known_batch = isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0
     small_batch = known_batch and batch_size <= 32
     four_basis = basis_width == 4

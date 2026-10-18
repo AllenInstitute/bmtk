@@ -146,6 +146,11 @@ only their sum. The visual-cortex example in ``examples/dpointnet_v1`` needs
 its own model/data preparation and is not the first-run tutorial.
 
 The built-in ``TargetFiringRate`` does not load CSV filenames.
+Its ``compiled_spike_counts`` option defaults to ``"auto"`` for the bounded
+native GPU route described in :doc:`dpointnet_performance`; explicit booleans
+force the compiled FP32 count reduction or retain the ordinary reduction.
+This affects loss execution, not the selected target units or optimizer.
+
 The separate ``run_dpointnet.firing_rate_reg.py`` example registers a custom
 CSV-aware loss for the individual/grouped CSV configurations. Use that
 entrypoint when following those examples; it is not an automatic extension

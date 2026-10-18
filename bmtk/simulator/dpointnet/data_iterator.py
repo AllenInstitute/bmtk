@@ -17,6 +17,7 @@ class DataIterator:
         prefetch_device_inputs=True,
         recover_input_errors=False,
         use_device_generation=True,
+        output_dtype=None,
     ):
         self.input_mods = input_mods
         self.batch_size = batch_size
@@ -27,6 +28,7 @@ class DataIterator:
         self.prefetch_device_inputs = prefetch_device_inputs
         self.recover_input_errors = recover_input_errors
         self.use_device_generation = use_device_generation
+        self.output_dtype = None if output_dtype is None else tf.as_dtype(output_dtype)
         self._device_generation = False
         self._prefetch_executor = None
         self._prefetch_future = None
@@ -212,7 +214,7 @@ class DataIterator:
                 _cspikes.append(s)
                 _cys.append(y)
 
-            concat_spikes = self._concat_spikes(_cspikes, self.strategy)
+            concat_spikes = self._concat_spikes(_cspikes, self.strategy, self.output_dtype)
             spikes.append(concat_spikes)
             ys.append(_cys)
 
@@ -228,11 +230,11 @@ class DataIterator:
             spikes.append(s)
             ys.append(y)
 
-        concat_spikes = self._concat_spikes(spikes, self.strategy)
+        concat_spikes = self._concat_spikes(spikes, self.strategy, self.output_dtype)
         return concat_spikes, ys
 
     @staticmethod
-    def _concat_spikes(spikes, strategy=None):
+    def _concat_spikes(spikes, strategy=None, output_dtype=None):
         if not spikes:
             raise ValueError(
                 "DataIterator did not receive any active spike generators."
@@ -261,7 +263,7 @@ class DataIterator:
                         )
                         for spike in spikes
                     ]
-                    return DataIterator._concat_spikes(local)
+                    return DataIterator._concat_spikes(local, output_dtype=output_dtype)
 
             return strategy.experimental_distribute_values_from_function(concatenate)
 
@@ -273,4 +275,5 @@ class DataIterator:
                 for spike in spikes
             ]
 
-        return tf.concat(spikes, axis=2)
+        result = tf.concat(spikes, axis=2)
+        return result if output_dtype is None else tf.cast(result, output_dtype)

@@ -849,10 +849,14 @@ def test_state_only_rollout_completes_omitted_noise_step():
     np.testing.assert_array_equal(completed[-1], [8, 8])
 
 
-def test_training_refreshes_weight_shadows_after_each_step(monkeypatch):
+@pytest.mark.parametrize("combined", [False, True])
+def test_training_refreshes_weight_shadows_after_each_step(monkeypatch, combined):
+    iterator_options = {}
+
     class FakeDataIterator:
         def __init__(self, *args, **kwargs):
             self.closed = False
+            iterator_options.update(kwargs)
 
         def close(self):
             self.closed = True
@@ -876,6 +880,10 @@ def test_training_refreshes_weight_shadows_after_each_step(monkeypatch):
     engine = object.__new__(training.TrainingEngine)
     engine._parameters = [SimpleNamespace(input_generators=[], batch_size=1, seq_len=2)]
     engine.rnn = SimpleNamespace(ordered_inputs_populations=[], _cell=cell)
+    if combined:
+        cell._use_combined_current_sweep = True
+        engine.rnn.cell = cell
+        engine.rnn.model = SimpleNamespace(inputs=[SimpleNamespace(dtype="float16")])
     engine.regenerate_initial_state_each_epoch = False
     engine._init_state_mod = SimpleNamespace(get_state=lambda: None)
     engine._prepare_normalizers = lambda: None
@@ -896,6 +904,7 @@ def test_training_refreshes_weight_shadows_after_each_step(monkeypatch):
     engine.train()
 
     assert cell.refresh_count == engine.steps_per_epoch
+    assert iterator_options["output_dtype"] == ("float16" if combined else None)
 
 
 def test_lex_sort_order_avoids_integer_overflow():

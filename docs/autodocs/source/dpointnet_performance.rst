@@ -46,6 +46,91 @@ For Pascal hardware, read :doc:`dpointnet_pascal` before adopting a model.
 A visible NVIDIA GPU alone does not establish compatibility with every
 TensorFlow or DPointNet execution route.
 
+Projection and loss improvements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The optimized implementation reduces redundant work without changing canonical
+weights, the optimizer, Poisson counts, configured dynamics or temporal-gradient
+precision:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Improvement
+     - What it avoids
+   * - Shared immutable basis rows
+     - Repeated backward projection for byte-identical effective coefficient
+       rows. Edge weights and trainable physiological parameters are not shared.
+   * - Warp-tiled event gradients
+     - Redundant sparse weight-gradient work while retaining dense credit for
+       silent sources and canonical per-edge gradients.
+   * - Joint recurrent/input projection
+     - Separate output buffers and launches for compatible spike sources.
+       Routing metadata is cached; live weights are still read for every rollout.
+   * - Compact input replay
+     - Uploading FP32 inputs only to cast them to the model input dtype.
+       Input producers retain count-valued Poisson events.
+   * - Host canonical metadata
+     - Keeping redundant canonical index/type tables on the GPU alongside native
+       routing. Canonical resources and checkpoint identity are retained.
+   * - Compiled firing-rate counts
+     - Materializing full-sequence FP32 cast/broadcast intermediates for a rate
+       objective. Only count reduction and its derivative use XLA.
+   * - Compact grouped EMD indexing
+     - Edge-sized host round trips during grouped weight regularization.
+       Group membership, stable tie credit and the signed-int32 checkpoint schema
+       are preserved.
+
+For the standard high-level GLIF cell on one SM86 GPU, automatic joint projection
+requires NEST dynamics, compute-precision temporal gradients, FP16 or FP32 compute
+with FP32 masters, four bases, batch 1, 16 or 32, nonempty recurrence and one to
+seven supported spike-input populations. It also checks the loaded native ABI.
+Batch 1 selects 256-target tiles; batch 16/32 select 2048. A conservative
+512-MiB routing-table budget can retain 2048 or the ordinary projection instead.
+These are workload-based choices, not online autotuning or a universal fastest
+kernel. Other architectures/shapes retain existing compatible automatic routes.
+Custom/STP cells, declared data parallelism and FP32 temporal replay do not
+automatically opt into this new projection.
+
+Joint projection accumulates sources together in FP32 and rounds once to the
+compute dtype. Ordinary projection rounds each source separately before adding.
+This intentional floating-point reassociation can change spikes and later
+training trajectories, including in full FP32; it is not bitwise trajectory or
+convergence equivalence. To retain separate projection, set:
+
+.. code-block:: json
+
+   {
+     "rnn_cell_params": {
+       "acceleration_profile": "auto",
+       "use_combined_current_sweep": false
+     }
+   }
+
+Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
+``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
+are 256, 512, 1024 and 2048. Explicit choices retain validation and are not
+evidence that an unqualified hardware/feature combination is supported.
+Small tiles use more routing memory and are not a general large-batch tuning
+recommendation.
+
+``TargetFiringRate.compiled_spike_counts`` defaults to ``"auto"``. It selects the
+compiled FP32 count reduction after the model is built for a declared standard
+single-replica SM86/native model on TensorFlow 2.21. Other models retain the
+ordinary reduction. Explicit ``true``/``false`` override this choice; put the
+option alongside ``module`` and ``firing_rate`` in the loss configuration.
+Explicit compilation failures are reported, not silently replaced with another
+objective. This feature does not compile the entire RNN or accelerate every loss.
+Custom callers should feed compact spikes directly rather than first casting the
+entire sequence to FP32.
+
+The same admitted high-level native model prepares its live type-identity
+predicate on the compute device once per rollout, outside custom-gradient
+carrier arguments. Timestep transitions reuse that predicate to select compact
+or full-coefficient execution, falling back when within-type equality is lost.
+Automatic selection does not enable the static-dispatch promise.
+
 Precision and memory
 --------------------
 

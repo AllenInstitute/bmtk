@@ -1,5 +1,6 @@
 import os
 import warnings
+from contextlib import nullcontext
 import tensorflow as tf
 import numpy as np
 import pickle as pkl
@@ -41,10 +42,45 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _validate_packed_sm120_option,
     fused_recurrent_accumulation_available,
     fused_recurrent_weight_carry,
+    combined_sweep_available,
+    fused_combined_currents,
+    validate_combined_target_tile_size,
 )
 from bmtk.simulator.dpointnet.custom_ops.glif_state_ops import (
     fused_pascal_nest_launch_available,
 )
+
+
+def _prepare_host_index_variables(network, inputs):
+    if tf.distribute.has_strategy():
+        raise ValueError("Host index variables must be prepared outside distribution scope.")
+    with tf.device("/CPU:0"):
+        return {
+            "recurrent": tf.Variable(
+                network["synapses"]["indices"], dtype=tf.int64, trainable=False
+            ),
+            "inputs": {
+                name: tf.Variable(item["indices"], dtype=tf.int64, trainable=False)
+                for name, item in inputs.items()
+            },
+        }
+
+
+def _canonical_index_variable(indices, prepared=None):
+    if prepared is None:
+        return tf.Variable(indices, dtype=tf.int64, trainable=False)
+    if (
+        not isinstance(prepared, tf.Variable)
+        or prepared.dtype != tf.int64
+        or prepared.trainable
+        or "CPU:" not in prepared.device
+        or prepared.shape != indices.shape
+    ):
+        raise ValueError("Prepared canonical indices require a matching nontrainable CPU int64 variable.")
+    with tf.device("/CPU:0"):
+        prepared.assign(indices)
+    return prepared
+
 
 try:
     from numba import njit
@@ -737,6 +773,45 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def _untracked_variable(self, variable):
         return variable
 
+    def create_compute_shadow(self, initial_value, *, name, dtype=None):
+        """Create a nontrainable compute copy, not a canonical weight resource.
+
+        ``dtype`` defaults to the cell's compute dtype. The caller owns refresh
+        after master updates/assignment/restore and explicit checkpoint coverage.
+        Creation does not register a new projection or its gradient mapping.
+        """
+        dtype = self.compute_dtype if dtype is None else dtype
+        return self._untracked_variable(
+            tf.Variable(tf.cast(initial_value, dtype), trainable=False, name=name)
+        )
+
+    @property
+    def _guarded_type_indexed_dispatch(self):
+        return bool(
+            self.acceleration_report is not None
+            and self.acceleration_report["architecture"] == 86
+            and self.acceleration_report["tensorflow"].startswith("2.21.")
+            and self.temporal_gradient_precision == "compute"
+            and self._performance_auto_context is not None
+            and self._performance_auto_context["standard_cell"]
+            and self._performance_auto_context["single_replica"]
+        )
+
+    @property
+    def native_execution_options(self):
+        """Return a snapshot of the base cell's selected native execution flags.
+
+        This works for explicit profiles as well as auto. It describes selection,
+        not proof of kernel execution or a subclass's separate projection.
+        """
+        return {
+            "use_fused_cuda": self._use_fused_cuda,
+            "use_fused_state": self._use_fused_state,
+            "use_fused_state_history": self._use_fused_state_history,
+            "use_pair_projection": self._use_pair_projection,
+            "use_fused_nest_event_vjp": self.use_fused_nest_event_vjp,
+        }
+
     def __init__(
         self,
         glif_network,
@@ -807,12 +882,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
         hard_reset_gradient_mode=UNSET,
         acceleration_profile="auto",
         _canonical_gradient_boundary=False,
+        use_combined_current_sweep=UNSET,
+        combined_current_target_tile_size=UNSET,
+        _host_index_variables=None,
+        _performance_auto_context=None,
     ):
         execution = {
             name: value for name, value in locals().items()
             if name.startswith("use_") and value is not UNSET
         }
         super().__init__()
+        self._performance_auto_context = _performance_auto_context
         validate_bool_option(_canonical_gradient_boundary, "_canonical_gradient_boundary")
         from .nest_dynamics import resolve_hard_reset_options
 
@@ -878,18 +958,23 @@ class GLIF3Cell(tf.keras.layers.Layer):
             track_voltage_penalty=track_voltage_penalty,
             hard_reset_gradient_mode=hard_reset_gradient_mode,
         )
+        if combined_current_target_tile_size is not UNSET:
+            execution["combined_current_target_tile_size"] = combined_current_target_tile_size
         execution, self.acceleration_report = resolve_acceleration_options(
             execution, compute_dtype=self.compute_dtype, variable_dtype=self.variable_dtype,
             batch_size=batch_size,
             basis_width=None if tau_basis is None else np.asarray(tau_basis).size,
             train_recurrent_per_type=train_recurrent_per_type,
             canonical_gradient_boundary=_canonical_gradient_boundary,
+            performance_context=_performance_auto_context,
         )
         use_fused_cuda = execution.get("use_fused_cuda", False)
         use_fused_state = execution.get("use_fused_state", False)
         use_fused_nest_event_vjp = execution.get("use_fused_nest_event_vjp", False)
         use_fixed4_input_forward = execution.get("use_fixed4_input_forward", False)
         use_fused_current_accumulation = execution.get("use_fused_current_accumulation", False)
+        use_combined_current_sweep = execution.get("use_combined_current_sweep", False)
+        combined_current_target_tile_size = execution.get("combined_current_target_tile_size", 2048)
         use_direct_csr_recurrent_gradient = execution.get("use_direct_csr_recurrent_gradient", False)
         use_active_row_forward = execution.get("use_active_row_forward", False)
         use_forward_run_aggregation = execution.get("use_forward_run_aggregation", False)
@@ -1054,6 +1139,27 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_active_row_forward = use_active_row_forward
         validate_bool_option(use_forward_run_aggregation, "use_forward_run_aggregation")
         self._use_forward_run_aggregation = use_forward_run_aggregation
+        validate_bool_option(use_combined_current_sweep, "use_combined_current_sweep")
+        self._use_combined_current_sweep = use_combined_current_sweep
+        self.combined_current_target_tile_size = validate_combined_target_tile_size(
+            combined_current_target_tile_size
+        )
+        if not use_combined_current_sweep and self.combined_current_target_tile_size != 2048:
+            raise ValueError(
+                "combined_current_target_tile_size requires use_combined_current_sweep=True."
+            )
+        if use_combined_current_sweep:
+            if dynamics_mode != "nest" or temporal_gradient_precision == "float32":
+                raise ValueError("Combined current sweep requires NEST and compute temporal gradients.")
+            if not combined_sweep_available():
+                raise RuntimeError("Rebuild both CUDA operators for use_combined_current_sweep=True.")
+            if not 1 <= len(inputs) <= 7:
+                raise ValueError("Combined current sweep requires one to seven named spike inputs.")
+            if self.acceleration_report is not None:
+                self.acceleration_report["selected"]["use_combined_current_sweep"] = True
+                self.acceleration_report["selected"]["combined_current_target_tile_size"] = (
+                    self.combined_current_target_tile_size
+                )
         validate_bool_option(use_device_active_queue_forward, "use_device_active_queue_forward")
         self._use_device_active_queue_forward = use_device_active_queue_forward
         validate_bool_option(use_uniform_input_delay_projection, "use_uniform_input_delay_projection")
@@ -1088,6 +1194,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_fused_cuda = fused_available and (
             use_fused_cuda is True or use_fused_cuda == "auto"
         )
+        if self._use_combined_current_sweep and not self._use_fused_cuda:
+            raise ValueError("Combined current sweep requires fused CUDA currents.")
         if self._use_fused_current_accumulation and not self._use_fused_cuda:
             raise ValueError(
                 "use_fused_current_accumulation=True requires fused CUDA currents."
@@ -1478,9 +1586,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self.recurrent_dense_shape = dense_shape[0], self.max_delay * dense_shape[1]
 
         # Define the Tensorflow variables
-        self.recurrent_indices = tf.Variable(
-            indices, dtype=tf.int64, trainable=False
-        )  # dtype necessary for sparse dense matmul
+        if _host_index_variables is not None and not self._use_combined_current_sweep:
+            raise ValueError("Prepared host index variables require the explicit combined sweep.")
+        self.recurrent_indices = _canonical_index_variable(
+            indices,
+            None if _host_index_variables is None else _host_index_variables["recurrent"],
+        )
+        self._recurrent_projection_basis_reference = self.synaptic_basis_weights
+        self._unshared_recurrent_fused_connectivity = None
         if self._use_fused_cuda:
             self.recurrent_fused_connectivity = build_csr_connectivity(
                 indices,
@@ -1489,7 +1602,16 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self._n_neurons,
                 self.synaptic_basis_weights.shape[0],
                 build_compact_pairs=self._use_pair_projection,
-                sort_by_target=self._use_forward_run_aggregation,
+                sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
+                projection_basis=(
+                    np.asarray(
+                        _synaptic_basis_weights,
+                        dtype=tf.as_dtype(self.compute_dtype).as_numpy_dtype,
+                    )
+                    if self._use_pair_projection
+                    and self.temporal_gradient_precision != "float32"
+                    else None
+                ),
             )
             self.pre_ind_table = None
         else:
@@ -1585,9 +1707,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
         else:
             self.recurrent_csr_weight_values_compute = None
 
-        self.syn_ids = tf.constant(
-            syn_ids, dtype=tf.int64
-        )  # this needs to be int64 for efficiency
+        with tf.device("/CPU:0") if self._use_combined_current_sweep else nullcontext():
+            self.syn_ids = tf.constant(syn_ids, dtype=tf.int64)
         # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
         io.log_debug(
             f" > Added recurrent synapses: indices = {len(indices)}; trainable = {individual_training}"
@@ -1639,8 +1760,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = (
                 input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             )
-            input_props["input_indices"] = tf.Variable(
-                input_indices, trainable=False, dtype=tf.int64
+            input_props["input_indices"] = _canonical_index_variable(
+                input_indices,
+                None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
             )
 
             input_options = input_network.get("options", {})
@@ -1680,9 +1802,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 input_props["input_weight_values_compute"] = input_props[
                     "input_weight_values"
                 ]
-            input_props["input_syn_ids"] = tf.constant(
-                input_syn_ids, dtype=tf.int64
-            )  # for efficiency this needs to be in int64
+            host_types = self._use_combined_current_sweep and input_type != "current"
+            with tf.device("/CPU:0") if host_types else nullcontext():
+                input_props["input_syn_ids"] = tf.constant(input_syn_ids, dtype=tf.int64)
             input_props["input_type"] = input_type
             if input_type == "spikes":
                 end_indx = self.inputs_idx[idx] + n_input_nodes
@@ -1729,7 +1851,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                             and input_trainable
                         ),
                         build_fixed4_incoming=self._use_fixed4_input_forward,
-                        sort_by_target=self._use_forward_run_aggregation,
+                        sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
                     )
                     input_props["use_fixed4_forward"] = input_props[
                         "fused_connectivity"
@@ -1769,6 +1891,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
             #     input_props['spike_prob'] = tf.constant(bkg_firing_rate * 0.001, dtype=self.compute_dtype)
 
             self.inputs[input_name] = input_props
+        if self._use_combined_current_sweep:
+            if self._n_syn_basis != 4 or any(
+                net["input_type"] == "current" or net.get("fused_connectivity") is None
+                for net in self.inputs.values()
+            ):
+                raise ValueError("Combined current sweep requires four bases and native spike-input connectivity.")
 
         """
         lgn_inputs = inputs[0]
@@ -1882,13 +2010,42 @@ class GLIF3Cell(tf.keras.layers.Layer):
         connectivity = getattr(self, "recurrent_fused_connectivity", None)
         if connectivity is not None:
             connectivity.close()
+        connectivity = getattr(self, "_unshared_recurrent_fused_connectivity", None)
+        if connectivity is not None:
+            connectivity.close()
         for input_net in self.inputs.values():
             connectivity = input_net.get("fused_connectivity")
             if connectivity is not None:
                 connectivity.close()
 
+    def _recurrent_projection_connectivity(self, alternate_basis=False):
+        connectivity = self.recurrent_fused_connectivity
+        if (
+            connectivity is None
+            or not connectivity.get("projection_basis_shared", False)
+            or (
+                not alternate_basis
+                and self.synaptic_basis_weights is self._recurrent_projection_basis_reference
+            )
+        ):
+            return connectivity
+        if self._unshared_recurrent_fused_connectivity is None:
+            with tf.init_scope():
+                self._unshared_recurrent_fused_connectivity = build_csr_connectivity(
+                    self.recurrent_indices.numpy(),
+                    self.syn_ids.numpy(),
+                    self.recurrent_dense_shape[1],
+                    self._n_neurons,
+                    connectivity["n_synapse_types"],
+                    build_compact_pairs=self._use_pair_projection,
+                    sort_by_target=(
+                        self._use_forward_run_aggregation or self._use_combined_current_sweep
+                    ),
+                )
+        return self._unshared_recurrent_fused_connectivity
+
     def calculate_i_rec_with_custom_grad(
-        self, rec_z_buf, projection_values=None, recurrent_weight_carrier=None
+        self, rec_z_buf, projection_values=None, recurrent_weight_carrier=None, vjp_only=False
     ):
         basis, weight = (
             (_rollout_constant(self, "synaptic_basis_weights"),
@@ -1897,6 +2054,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
             if projection_values is None else projection_values
         )
         if self._use_fused_cuda:
+            connectivity = self._recurrent_projection_connectivity(
+                alternate_basis=projection_values is not None
+            )
             if recurrent_weight_carrier is not None:
                 if projection_values is not None:
                     raise ValueError(
@@ -1907,11 +2067,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     rec_z_buf,
                     recurrent_weight_carrier,
                     weight,
-                    self.recurrent_fused_connectivity,
+                    connectivity,
                     basis,
                     self._n_neurons,
                     _rollout_constant(self, "_recurrent_dampening"),
-                    vjp_only=False,
+                    vjp_only=vjp_only,
                     use_javier_batch32_backward=self.use_javier_recurrent_vjp,
                     use_active_row_forward=(
                         rec_z_buf.shape[0] != 32 and self._use_active_row_forward
@@ -1919,7 +2079,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     use_forward_run_aggregation=(
                         rec_z_buf.shape[0] != 32
                         and self._use_forward_run_aggregation
-                        and self.recurrent_fused_connectivity.get(
+                        and connectivity.get(
                             "has_repeated_targets", False
                         )
                     ),
@@ -1932,7 +2092,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 rec_z_buf,
                 self.recurrent_weight_values,
                 weight,
-                self.recurrent_fused_connectivity,
+                connectivity,
                 basis,
                 self._n_neurons,
                 compute_spike_gradient=True,
@@ -1944,11 +2104,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 use_active_row_forward=self._use_active_row_forward,
                 use_forward_run_aggregation=(
                     self._use_forward_run_aggregation
-                    and self.recurrent_fused_connectivity.get(
+                    and connectivity.get(
                         "has_repeated_targets", False
                     )
                 ),
                 use_device_active_queue_forward=self._use_device_active_queue_forward,
+                vjp_only=vjp_only,
             )
         return calculate_synaptic_currents(
             rec_z_buf,
@@ -2022,7 +2183,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         return i_in_flat
 
     def calculate_input_current_from_spikes(
-        self, x_t, input_net, initial_currents=None, projection_values=None
+        self, x_t, input_net, initial_currents=None, projection_values=None, vjp_only=False
     ):
         basis, weight = (
             (_rollout_constant(self, "synaptic_basis_weights"),
@@ -2053,6 +2214,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 use_packed_sm120_backward=input_net.get(
                     "use_packed_sm120_backward", False
                 ),
+                vjp_only=vjp_only,
             )
         # Memory-efficient input current via the @tf.custom_gradient module function: the forward
         # reads the compute-dtype shadow and the backward recomputes the cheap basis gather (instead
@@ -2335,7 +2497,8 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
             table = self.pre_ind_table if not self._use_fused_cuda else None
             connectivity = (
-                self.recurrent_fused_connectivity if self._use_fused_cuda else None
+                self._recurrent_projection_connectivity(alternate_basis=context is not None)
+                if self._use_fused_cuda else None
             )
             csr = (
                 self.recurrent_csr_weight_values_compute
@@ -2584,7 +2747,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 type_identity = tf.logical_and(
                     type_identity, tf.constant(type_table_bytes <= 48 * 1024)
                 )
-            with tf.device("/CPU:0"):
+            guard_device = (
+                self.recurrent_weight_values_compute.device
+                if self._guarded_type_indexed_dispatch else "/CPU:0"
+            )
+            with tf.device(guard_device):
                 type_identity = tf.identity(type_identity)
             return (
                 coefficients,
@@ -2597,12 +2764,36 @@ class GLIF3Cell(tf.keras.layers.Layer):
         return coefficients, kernel_coefficients
 
     def call(self, inputs, states):
+        self._validate_direct_temporal_gradients()
+        return self._call_impl(inputs, states)
+
+    def _validate_direct_temporal_gradients(self):
         if self.temporal_gradient_precision == "float32":
             raise ValueError(
                 "FP32 temporal gradients require TemporalAdjointRunner or ExplicitStateRNN; "
                 "a direct cell tape cannot carry FP32 gradients through FP16 state."
             )
-        return self._call_impl(inputs, states)
+
+    def advance_with_currents(self, inputs, states, currents, *, noise_seed=None):
+        """Advance the base GLIF transition with already-summed synaptic currents.
+
+        ``currents`` has shape ``[batch, n_neurons * n_syn_basis]`` and includes
+        the normal learning-rate scaling. Pass the complete base carry, without
+        subclass release state. Inputs remain necessary to advance external
+        delay history, including replay-safe Poisson history.
+        ``noise_seed`` is the optional scalar base seed, not a stateless RNG pair.
+
+        Current and floating-state credit stay live under ordinary tapes and
+        segmented recomputation. This does not implement FP32 temporal adjoints,
+        a carrier restoration boundary or a subclass's release-state update.
+        """
+        self._validate_direct_temporal_gradients()
+        if currents is None:
+            raise ValueError("advance_with_currents requires explicit synaptic currents.")
+        # Bypass a subclass projection override while retaining the base transition.
+        return GLIF3Cell._call_impl(
+            self, inputs, states, recorded_currents=currents, noise_seed=noise_seed
+        )
 
     _supports_recorded_currents = True
 
@@ -2631,9 +2822,20 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
         z_buf, noise_step = states[0], states[6]
         new_input_history = []
+        combined = self._use_combined_current_sweep
+        if combined:
+            combined_spikes = [tf.cast(z_buf, self.compute_dtype)]
+            combined_weights = [
+                self.recurrent_csr_weight_values_compute if projection_values is None
+                else projection_values[1][0]
+            ]
+            combined_connections = [self._recurrent_projection_connectivity(
+                alternate_basis=projection_values is not None
+            )]
         i_rec = self.calculate_i_rec_with_custom_grad(
             tf.cast(z_buf, self.compute_dtype),
             recurrent_weight_carrier=recurrent_weight_carrier,
+            vjp_only=combined,
             **frame(0),
         )
         if recurrent_weight_carrier is not None:
@@ -2705,7 +2907,17 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     )
                 )
             else:
-                if self._use_fused_current_accumulation:
+                if combined:
+                    combined_spikes.append(tf.cast(input_spikes, self.compute_dtype))
+                    combined_weights.append(
+                        input_net["csr_weight_values_compute"] if projection_values is None
+                        else projection_values[1][idx + 1]
+                    )
+                    combined_connections.append(input_net["fused_connectivity"])
+                    extern_currents.append(self.calculate_input_current_from_spikes(
+                        input_spikes, input_net, vjp_only=True, **frame(idx + 1)
+                    ))
+                elif self._use_fused_current_accumulation:
                     rec_inputs = self.calculate_input_current_from_spikes(
                         input_spikes,
                         input_net,
@@ -2719,7 +2931,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         )
                     )
 
-        if extern_currents:
+        if combined:
+            rec_inputs = fused_combined_currents(
+                combined_spikes, combined_weights, combined_connections,
+                _rollout_constant(self, "synaptic_basis_weights") if projection_values is None
+                else projection_values[0],
+                [i_rec] + extern_currents,
+                target_tile_size=self.combined_current_target_tile_size,
+            )
+        elif extern_currents:
             rec_inputs = rec_inputs + tf.add_n(extern_currents)
         # Reshape i_rec_flat back to [batch_size, num_neurons]
         rec_inputs = tf.reshape(
@@ -2901,6 +3121,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 return_pre_reset_voltage=bool(self._online_voltage_losses),
                 use_fused_event_vjp=self.use_fused_nest_event_vjp,
                 fuse_history=self._use_fused_state_history,
+                hoist_type_indexed_guard=self._guarded_type_indexed_dispatch,
                 **coefficient_kwargs,
             )
             new_z, new_v, new_r, new_asc, new_psc_rise, new_psc, new_z_buf = fused_result[:7]

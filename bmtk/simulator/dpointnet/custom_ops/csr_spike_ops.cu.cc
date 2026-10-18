@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 #include <type_traits>
+#include <vector>
 
 #include <cub/cub.cuh>
 #include "tensorflow/core/framework/op_kernel.h"
@@ -12,6 +13,7 @@
 #include "tensorflow/core/framework/resource_mgr.h"
 #include "tensorflow/core/framework/resource_var.h"
 #include "tensorflow/core/platform/errors.h"
+#include "tensorflow/core/platform/mutex.h"
 #include "tensorflow/core/platform/types.h"
 #include "tensorflow/core/util/gpu_kernel_helper.h"
 
@@ -163,6 +165,123 @@ Status BuildActiveSlotQueue(
     return errors::Internal("building the active slot queue failed");
   }
   return OkStatus();
+}
+
+constexpr int kCombinedSources = 8;
+
+template <typename T, typename Index>
+struct CombinedSource {
+  const T* spikes;
+  const T* weights;
+  const Index* posts;
+  const Index* types;
+  const Index* splits;
+  const Index* tile_starts;
+  const int* queue;
+  const int* counts;
+  int width;
+};
+
+template <typename T>
+__global__ void CombinedActiveRowsKernel(
+    int width, const T* spikes, int* queue, int* counts) {
+  const int batch = blockIdx.y;
+  for (int row = blockIdx.x * blockDim.x + threadIdx.x;
+       row < width; row += blockDim.x * gridDim.x) {
+    if (ToFloat(spikes[static_cast<int64_t>(batch) * width + row]) > 0.0f) {
+      const int slot = atomicAdd(counts + batch, 1);
+      queue[static_cast<int64_t>(batch) * width + slot] = row;
+    }
+  }
+}
+
+template <typename T, typename Index>
+struct CombinedSources {
+  CombinedSource<T, Index> source[kCombinedSources];
+};
+
+template <int kValues>
+__device__ __forceinline__ void DpointnetForwardRunSuffixSums(
+    float (&values)[kValues], unsigned int group, int lane);
+
+template <typename Index>
+__global__ void CombinedTileStartsKernel(
+    int64_t count, int boundaries, int tile_targets, const Index* posts, const Index* splits,
+    Index* tile_starts) {
+  for (int64_t item = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+       item < count; item += static_cast<int64_t>(gridDim.x) * blockDim.x) {
+    const int row = item / boundaries;
+    const int target = (item % boundaries) * tile_targets;
+    Index first = splits[row];
+    Index last = splits[row + 1];
+    while (first < last) {
+      const Index middle = first + (last - first) / 2;
+      if (posts[middle] < target) {
+        first = middle + 1;
+      } else {
+        last = middle;
+      }
+    }
+    tile_starts[item] = first;
+  }
+}
+
+template <typename T, typename Index, int kTargets>
+__global__ void DpointnetCombinedSweepKernel(
+    CombinedSources<T, Index> sources, int source_count, int n_post,
+    const T* basis, bool batch_fast, T* output) {
+  __shared__ float sums[kTargets * 4];
+  const int tile = batch_fast ? blockIdx.y : blockIdx.x;
+  const int target_start = tile * kTargets;
+  const int batch = batch_fast ? blockIdx.x : blockIdx.y;
+  const int lane = threadIdx.x % 32;
+  const int warp = threadIdx.x / 32;
+  for (int item = threadIdx.x; item < kTargets * 4; item += blockDim.x) {
+    sums[item] = 0.0f;
+  }
+  __syncthreads();
+  for (int source_id = 0; source_id < source_count; ++source_id) {
+    const auto source = sources.source[source_id];
+    const int active = source.counts[batch];
+    for (int item = warp; item < active; item += blockDim.x / 32) {
+      const int row = source.queue[static_cast<int64_t>(batch) * source.width + item];
+      const float spike = ToFloat(source.spikes[static_cast<int64_t>(batch) * source.width + row]);
+      const int boundaries = (n_post + kTargets - 1) / kTargets + 1;
+      const int64_t position = static_cast<int64_t>(row) * boundaries + tile;
+      const Index first = source.tile_starts[position];
+      const Index end = source.tile_starts[position + 1];
+      for (Index base = first; base < end; base += 32) {
+        const Index edge = base + lane;
+        const bool valid = edge < end;
+        const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
+        float contribution[4] = {};
+        if (valid) {
+          const float weighted = __fmul_rn(spike, ToFloat(source.weights[edge]));
+          const int type = source.types[edge];
+#pragma unroll
+          for (int receptor = 0; receptor < 4; ++receptor) {
+            contribution[receptor] = __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor]));
+          }
+        }
+        const unsigned int group = MatchWarpValue(target);
+        if (__any_sync(0xffffffffu, valid && __popc(group) > 1)) {
+          DpointnetForwardRunSuffixSums(contribution, group, lane);
+        }
+        if (valid && lane == __ffs(group) - 1) {
+#pragma unroll
+          for (int receptor = 0; receptor < 4; ++receptor) {
+            atomicAdd(sums + target * 4 + receptor, contribution[receptor]);
+          }
+        }
+      }
+    }
+  }
+  __syncthreads();
+  const int targets = min(kTargets, n_post - target_start);
+  for (int item = threadIdx.x; item < targets * 4; item += blockDim.x) {
+    output[(static_cast<int64_t>(batch) * n_post + target_start) * 4 + item] =
+        FromFloat<T>(sums[item]);
+  }
 }
 
 template <typename T, typename Index>
@@ -883,7 +1002,7 @@ __global__ void CsrSpikeGradPairVariableBatchKernel(
 // layout and compute-dtype basis, and adds into the already-initialized FP32
 // CSR accumulator/output.
 constexpr int kDpointnetEventThreads = 256;
-constexpr int kDpointnetEventChunk = 4 * kDpointnetEventThreads;
+constexpr int kDpointnetEventChunk = 256;
 constexpr int kDpointnetEventBlocks = 4512;
 
 template <typename T, typename Index, bool kPositiveOnly = false>
@@ -947,10 +1066,14 @@ void DpointnetEventWeightGradKernel(
     const T* current_grad, const T* basis, const Index* post_ids,
     const Index* synapse_types, const Index* row_splits, const Index* edge_ids,
     const unsigned int* queue, const unsigned int* queue_count, float* weight_grad) {
-  constexpr int kEdgesPerThread = kDpointnetEventChunk / kDpointnetEventThreads;
+  constexpr int kWarpsPerBlock = kDpointnetEventThreads / 32;
+  constexpr int kEdgesPerThread = kDpointnetEventChunk / 32;
+  const int lane = threadIdx.x & 31;
+  const unsigned int warp = blockIdx.x * kWarpsPerBlock + threadIdx.x / 32;
   const int64_t sample_stride = static_cast<int64_t>(n_post) * n_basis;
   const unsigned int total = *queue_count;
-  for (unsigned int item = blockIdx.x; item < total; item += gridDim.x) {
+  for (unsigned int item = warp; item < total;
+       item += gridDim.x * kWarpsPerBlock) {
     const ::uint4 entry = reinterpret_cast<const ::uint4*>(queue)[item];
     const int64_t pre = entry.x;
     const Index start =
@@ -958,26 +1081,34 @@ void DpointnetEventWeightGradKernel(
     const Index end = min(
         static_cast<Index>(start + kDpointnetEventChunk), row_splits[pre + 1]);
     float sum[kEdgesPerThread] = {};
+    int64_t current_offsets[kEdgesPerThread];
+    int64_t basis_offsets[kEdgesPerThread];
 #pragma unroll
     for (int k = 0; k < kEdgesPerThread; ++k) {
-      const Index csr = start + static_cast<Index>(threadIdx.x + k * kDpointnetEventThreads);
+      const Index csr = start + static_cast<Index>(lane + k * 32);
       if (csr >= end) continue;
-      const int post = static_cast<int>(post_ids[csr]);
-      const int type = static_cast<int>(synapse_types[csr]);
-      const T* type_basis = basis + static_cast<int64_t>(type) * n_basis;
-      for (unsigned int bits = entry.z; bits; bits &= bits - 1) {
-        const int sample = __ffs(bits) - 1;
-        const T spike = activity[static_cast<int64_t>(sample) * n_pre + pre];
+      current_offsets[k] = static_cast<int64_t>(post_ids[csr]) * n_basis;
+      basis_offsets[k] = static_cast<int64_t>(synapse_types[csr]) * n_basis;
+    }
+    for (unsigned int bits = entry.z; bits; bits &= bits - 1) {
+      const int sample = __ffs(bits) - 1;
+      const float spike =
+          ToFloat(activity[static_cast<int64_t>(sample) * n_pre + pre]);
+#pragma unroll
+      for (int k = 0; k < kEdgesPerThread; ++k) {
+        const Index csr = start + static_cast<Index>(lane + k * 32);
+        if (csr >= end) continue;
+        const T* type_basis = basis + basis_offsets[k];
         const T* grad_row =
             current_grad + static_cast<int64_t>(sample) * sample_stride +
-            static_cast<int64_t>(post) * n_basis;
-        sum[k] += ToFloat(spike) *
+            current_offsets[k];
+        sum[k] += spike *
                   DpointnetEventProjection<T, kBasis>(grad_row, type_basis, n_basis);
       }
     }
 #pragma unroll
     for (int k = 0; k < kEdgesPerThread; ++k) {
-      const Index csr = start + static_cast<Index>(threadIdx.x + k * kDpointnetEventThreads);
+      const Index csr = start + static_cast<Index>(lane + k * 32);
       if (csr < end) {
         const int64_t target = kWriteCsrGradient
             ? static_cast<int64_t>(csr)
@@ -1573,8 +1704,8 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const GPUDevice& device = context->eigen_device<GPUDevice>();
     const int64_t output_count = currents->NumElements();
     if (vjp_only_) {
-      OP_REQUIRES(context, (std::is_same<T, float>::value && initial.NumElements() == 0),
-                  errors::InvalidArgument("VJP-only projection requires FP32 operands and no initial currents."));
+      OP_REQUIRES(context, initial.NumElements() == 0,
+                  errors::InvalidArgument("VJP-only projection requires no initial currents."));
       constexpr int threads = 256;
       OP_REQUIRES_OK(context, GpuLaunchKernel(
           SetZeroKernel<T>, BlockCountFor(output_count, threads, device),
@@ -2363,7 +2494,132 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   bool use_packed_sm120_backward_;
 };
 
+template <typename T, typename Index>
+class DpointnetCombinedSweepOp : public OpKernel {
+ public:
+  explicit DpointnetCombinedSweepOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
+    OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
+    OP_REQUIRES_OK(context, context->GetAttr("n_edges", &edges_));
+    OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &pairs_));
+    OP_REQUIRES_OK(context, context->GetAttr("target_tile_size", &tile_targets_));
+    OP_REQUIRES(context, tile_targets_ == 256 || tile_targets_ == 512 ||
+                    tile_targets_ == 1024 || tile_targets_ == 2048,
+                errors::InvalidArgument("Combined sweep target_tile_size must be 256, 512, 1024 or 2048."));
+    OP_REQUIRES(context, sources_ <= kCombinedSources &&
+                    edges_.size() == sources_ && pairs_.size() == sources_,
+                errors::InvalidArgument("Combined sweep requires two to eight matching sources."));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    mutex_lock cache_lock(cache_mu_);
+    const Tensor& basis = context->input(3 * sources_);
+    RequireMatrix(context, basis, "basis");
+    if (!context->status().ok()) return;
+    OP_REQUIRES(context, basis.dim_size(0) > 0 && basis.dim_size(1) == 4,
+                errors::InvalidArgument("Combined sweep requires four basis columns."));
+    const Tensor& first = context->input(0);
+    RequireMatrix(context, first, "spikes");
+    if (!context->status().ok()) return;
+    const int64_t batch = first.dim_size(0);
+    OP_REQUIRES(context, batch > 0 && batch <= 65535,
+                errors::InvalidArgument("Combined sweep batch must be in 1..65535."));
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    CombinedSources<T, Index> views{};
+    Tensor queues[kCombinedSources];
+    Tensor counts[kCombinedSources];
+    core::RefCountPtr<Var> resources[kCombinedSources];
+    for (int source = 0; source < sources_; ++source) {
+      const Tensor& spikes = context->input(source);
+      const Tensor& weights = context->input(sources_ + source);
+      RequireMatrix(context, spikes, "spikes");
+      RequireVector(context, weights, "weights");
+      if (!context->status().ok()) return;
+      OP_REQUIRES(context, spikes.dim_size(0) == batch &&
+                      spikes.dim_size(1) <= std::numeric_limits<int>::max() &&
+                      weights.NumElements() == edges_[source] &&
+                      edges_[source] >= 0 && pairs_[source] >= 0,
+                  errors::InvalidArgument("Combined sweep source shape or edge count mismatch."));
+      if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
+      const Tensor& metadata = *resources[source]->tensor();
+      const int width = spikes.dim_size(1);
+      OP_REQUIRES(context, metadata.NumElements() ==
+                      3 * edges_[source] + width + 1 +
+                          (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0),
+                  errors::InvalidArgument("Combined sweep metadata shape mismatch."));
+      OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch, width}), &queues[source]));
+      OP_REQUIRES_OK(context, context->allocate_temp(DT_INT32, TensorShape({batch}), &counts[source]));
+      OP_REQUIRES_OK(context, GpuLaunchKernel(
+          SetZeroKernel<int32>, 1, 256, 0, device.stream(), batch, counts[source].flat<int32>().data()));
+      if (width > 0) {
+        OP_REQUIRES_OK(context, GpuLaunchKernel(
+            CombinedActiveRowsKernel<T>, dim3(std::min(256, (width + 255) / 256), batch),
+            256, 0, device.stream(), width, spikes.flat<T>().data(),
+            queues[source].flat<int32>().data(), counts[source].flat<int32>().data()));
+      }
+      const Index* data = metadata.flat<Index>().data();
+      if (!cached_metadata_[source].IsInitialized() ||
+          cached_metadata_[source].tensor_data().data() != metadata.tensor_data().data() ||
+          cached_width_[source] != width) {
+        const int boundaries = (n_post_ + tile_targets_ - 1) / tile_targets_ + 1;
+        const int64_t entries = static_cast<int64_t>(width) * boundaries;
+        OP_REQUIRES_OK(context, context->allocate_temp(
+            DataTypeToEnum<Index>::v(), TensorShape({width, boundaries}),
+            &tile_starts_[source]));
+        if (entries > 0) {
+          OP_REQUIRES_OK(context, GpuLaunchKernel(
+              CombinedTileStartsKernel<Index>,
+              std::min<int64_t>((entries + 255) / 256, 65535), 256, 0, device.stream(),
+              entries, boundaries, tile_targets_, data, data + 2 * edges_[source],
+              tile_starts_[source].flat<Index>().data()));
+        }
+        cached_metadata_[source] = metadata;
+        cached_width_[source] = width;
+      }
+      views.source[source] = {
+          spikes.flat<T>().data(), weights.flat<T>().data(), data, data + edges_[source],
+          data + 2 * edges_[source], tile_starts_[source].flat<Index>().data(),
+          queues[source].flat<int32>().data(),
+          counts[source].flat<int32>().data(), width};
+    }
+    Tensor* output = nullptr;
+    OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({batch * n_post_, 4}), &output));
+    const int tiles = (n_post_ + tile_targets_ - 1) / tile_targets_;
+    const bool batch_fast = tiles <= 65535;
+    const dim3 grid = batch_fast ? dim3(batch, tiles) : dim3(tiles, batch);
+    switch (tile_targets_) {
+#define LAUNCH_COMBINED_TILE(Targets)                                       \
+      case Targets:                                                       \
+        OP_REQUIRES_OK(context, GpuLaunchKernel(                           \
+            DpointnetCombinedSweepKernel<T, Index, Targets>, grid,         \
+            512, 0, device.stream(), views, sources_, n_post_,               \
+            basis.flat<T>().data(), batch_fast, output->flat<T>().data())); \
+        break
+      LAUNCH_COMBINED_TILE(256);
+      LAUNCH_COMBINED_TILE(512);
+      LAUNCH_COMBINED_TILE(1024);
+      LAUNCH_COMBINED_TILE(2048);
+#undef LAUNCH_COMBINED_TILE
+    }
+  }
+
+ private:
+  mutex cache_mu_;
+  Tensor cached_metadata_[kCombinedSources];
+  Tensor tile_starts_[kCombinedSources];
+  int cached_width_[kCombinedSources] = {};
+  int sources_;
+  int n_post_;
+  int tile_targets_;
+  std::vector<int64_t> edges_;
+  std::vector<int64_t> pairs_;
+};
+
 #define REGISTER_GPU_KERNELS(T, Index)                                    \
+  REGISTER_KERNEL_BUILDER(                                               \
+      Name("DpointnetCombinedSweep").Device(DEVICE_GPU)                   \
+          .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"),        \
+      DpointnetCombinedSweepOp<T, Index>);                                \
   REGISTER_KERNEL_BUILDER(                                               \
       Name("DpointnetCsrReorder")                                        \
           .Device(DEVICE_GPU)                                            \
