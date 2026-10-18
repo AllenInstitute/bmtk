@@ -75,7 +75,9 @@ def test_type_indexed_pack_identity_and_fallback_detection():
     assert not bool(identity.numpy())
 
 
-def test_cell_prepare_rechecks_live_assignable_coefficients(monkeypatch):
+@pytest.mark.parametrize("guarded", [False, True])
+@pytest.mark.parametrize("weight_mode", ["per_edge", "frozen", "per_type"])
+def test_cell_prepare_rechecks_live_assignable_coefficients(monkeypatch, guarded, weight_mode):
     from bmtk.simulator.dpointnet.cell_models import glif3_cell
 
     monkeypatch.setattr(glif3_cell, "_resolve_fused_state", lambda *a, **k: True)
@@ -91,13 +93,22 @@ def test_cell_prepare_rechecks_live_assignable_coefficients(monkeypatch):
         hard_reset=False,
         use_fused_state=True,
         use_type_indexed_nest_coefficients=True,
+        train_recurrent=weight_mode != "frozen",
+        train_recurrent_per_type=weight_mode == "per_type",
+    )
+    monkeypatch.setattr(
+        glif3_cell.GLIF3Cell, "_guarded_type_indexed_dispatch",
+        property(lambda self: guarded),
     )
 
     packed = cell.prepare_rollout_nest_coefficients()
     assert len(packed) == 6
     assert bool(packed[4].numpy())
     assert packed[4].dtype == tf.bool and packed[4].shape.rank == 0
-    assert packed[4].device.endswith("/device:CPU:0")
+    if guarded:
+        assert packed[4].device == cell.recurrent_weight_values_compute.handle.device
+    else:
+        assert packed[4].device.endswith("/device:CPU:0")
     np.testing.assert_array_equal(packed[3].numpy(), [0, 1, 0])
     assert packed[2].shape == (2, 28)
 

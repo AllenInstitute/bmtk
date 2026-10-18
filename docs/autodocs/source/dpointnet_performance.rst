@@ -88,6 +88,9 @@ with FP32 masters, four bases, batch 1, 16 or 32, nonempty recurrence and one to
 seven supported spike-input populations. It also checks the loaded native ABI.
 Batch 1 selects 256-target tiles; batch 16/32 select 2048. A conservative
 512-MiB routing-table budget can retain 2048 or the ordinary projection instead.
+The bound uses the network's maximum recurrent delay when ``max_delay`` is
+``None`` or nonpositive, and accounts for each external input population's own
+maximum delay independently of the recurrent cap.
 These are workload-based choices, not online autotuning or a universal fastest
 kernel. Other architectures/shapes retain existing compatible automatic routes.
 Custom/STP cells, declared data parallelism and FP32 temporal replay do not

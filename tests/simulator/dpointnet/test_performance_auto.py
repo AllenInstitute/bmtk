@@ -113,11 +113,94 @@ def test_context_respects_effective_input_types_and_delay_expansion():
         network, inputs, dt=1.0, max_delay=5.0, standard_cell=True, single_replica=True,
     )
     assert metadata["spike_inputs"]
-    assert metadata["source_rows_upper_bound"] == 6 * (3 + 4)
+    assert metadata["source_rows_upper_bound"] == 4 * (3 + 4)
     inputs["drive"]["options"]["input_type"] = "current"
     assert not acceleration.performance_projection_context(
         network, inputs, dt=1.0, max_delay=5.0, standard_cell=True, single_replica=True,
     )["spike_inputs"]
+
+
+@pytest.mark.parametrize("max_delay", [None, 0, -1, 2.5])
+@pytest.mark.parametrize("dt", [1.0, 0.5])
+def test_context_bounds_recurrent_history_for_capped_and_uncapped_delays(max_delay, dt):
+    from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+    from test_s8_type_indexed_nest_coefficients import _small_network_inputs
+
+    network, inputs = _small_network_inputs()
+    network["synapses"]["delays"][-1] = 7.5
+    metadata = acceleration.performance_projection_context(
+        network, inputs, dt=dt, max_delay=max_delay,
+        standard_cell=True, single_replica=True,
+    )
+    cell = GLIF3Cell(
+        network, inputs, dt=dt, max_delay=max_delay, dynamics_mode="nest",
+        acceleration_profile=None, use_fused_cuda=False, use_fused_state=False,
+        tau_basis=[2.0, 4.0, 8.0, 16.0],
+    )
+    source_rows = cell.recurrent_dense_shape[1] + sum(
+        item["input_dense_shape"][1] for item in cell.inputs.values()
+    )
+    assert metadata["source_rows_upper_bound"] >= source_rows
+    limit = 7.5 if max_delay is None or max_delay <= 0 else max_delay
+    assert metadata["source_rows_upper_bound"] == (
+        (int(np.ceil(limit / dt)) + 1) * 3
+        + (int(np.ceil(3.0 / dt)) + 1) * 4
+    )
+
+
+@pytest.mark.parametrize("n_inputs,enabled", [(20000, True), (100000, False)])
+def test_context_bounds_external_delays_independently_of_recurrent_cap(
+    projection_hardware, n_inputs, enabled,
+):
+    network = {
+        "n_nodes": 4096,
+        "synapses": {"indices": np.array([[0, 1]]), "delays": np.array([5.0])},
+    }
+    inputs = {
+        "drive": {
+            "n_inputs": n_inputs, "indices": np.array([[0, 0], [1, 1]]),
+            "delays": np.array([1.0, 500.0]), "input_type": "spikes",
+        },
+        "background": {
+            "n_inputs": 10, "indices": np.array([[0, 0]]),
+            "delays": np.array([1.0]), "input_type": "poisson_spikes_internal",
+        },
+    }
+    metadata = acceleration.performance_projection_context(
+        network, inputs, dt=1.0, max_delay=5.0,
+        standard_cell=True, single_replica=True,
+    )
+    assert metadata["source_rows_upper_bound"] == 6 * 4096 + 501 * n_inputs + 2 * 10
+    assert select(metadata=metadata, batch_size=1)[:2] == (enabled, 2048)
+
+
+@pytest.mark.parametrize("max_delay", [None, 0, -1])
+def test_high_level_build_accepts_uncapped_delay_with_acceleration_disabled(max_delay):
+    from bmtk.simulator.dpointnet.rnn_model import RNN
+    from test_s8_type_indexed_nest_coefficients import _small_network_inputs
+
+    policy = tf.keras.mixed_precision.global_policy()
+    try:
+        network, inputs = _small_network_inputs()
+        rnn = RNN(
+            seq_len=3, batch_size=1, precision={"mixed_precision": False},
+            cell_params={
+                "acceleration_profile": None, "max_delay": max_delay,
+                "use_fused_cuda": False, "use_fused_state": False,
+                "tau_basis": [2.0, 4.0, 8.0, 16.0], "dynamics_mode": "nest",
+            },
+        )
+        rnn._recurrent_networks["recurrent"] = SimpleNamespace(to_dict=lambda: network)
+        for name, item in inputs.items():
+            rnn._input_networks[name] = SimpleNamespace(
+                name=name, n_spiking_nodes=item["n_inputs"], to_dict=lambda item=item: item,
+            )
+            rnn._inputs_order.append(name)
+        rnn.build(training=False)
+        assert rnn.cell.max_delay == 3
+        assert rnn.cell.acceleration_report is None
+    finally:
+        tf.keras.mixed_precision.set_global_policy(policy)
 
 
 @pytest.mark.parametrize("tile", [256, 512, 1024, 2048])
@@ -225,7 +308,10 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
 
 @pytest.mark.parametrize("selective", [False, True])
 @pytest.mark.parametrize("rollout", [False, True])
-def test_guarded_native_dispatch_rechecks_live_coefficients_and_restore(selective, rollout, tmp_path):
+@pytest.mark.parametrize("weight_mode", ["per_edge", "frozen", "per_type"])
+def test_guarded_native_dispatch_rechecks_live_coefficients_and_restore(
+    selective, rollout, weight_mode, tmp_path,
+):
     from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
     if not glif_state_ops.fused_nest_state_history_type_indexed_available():
         pytest.skip("Native type-indexed history required")
@@ -243,6 +329,8 @@ def test_guarded_native_dispatch_rechecks_live_coefficients_and_restore(selectiv
             dynamics_mode="nest", tau_basis=[2.0, 4.0, 8.0, 16.0], batch_size=2,
             acceleration_profile="auto", hard_reset=True,
             hard_reset_gradient_mode="soft_surrogate",
+            train_recurrent=weight_mode != "frozen",
+            train_recurrent_per_type=weight_mode == "per_type",
             _performance_auto_context=acceleration.performance_projection_context(
                 network, inputs, dt=1.0, max_delay=5.0,
                 standard_cell=True, single_replica=True,

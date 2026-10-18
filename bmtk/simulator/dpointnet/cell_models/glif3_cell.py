@@ -2748,7 +2748,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     type_identity, tf.constant(type_table_bytes <= 48 * 1024)
                 )
             guard_device = (
-                self.recurrent_weight_values_compute.device
+                self.recurrent_weight_values_compute.handle.device
                 if self._guarded_type_indexed_dispatch else "/CPU:0"
             )
             with tf.device(guard_device):

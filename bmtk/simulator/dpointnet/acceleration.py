@@ -2,6 +2,7 @@
 
 from numbers import Integral
 
+import numpy as np
 import tensorflow as tf
 
 from .custom_ops import csr_spike_ops, glif_state_ops
@@ -12,7 +13,19 @@ def performance_projection_context(
     network, inputs, *, dt, max_delay, standard_cell, single_replica,
 ):
     """Describe the high-level runner's static projection admission boundary."""
-    history = max(1, int(max_delay / dt) + 1)
+    recurrent_delay = np.max(network["synapses"]["delays"], initial=dt)
+    if max_delay is not None and max_delay > 0:
+        recurrent_delay = min(recurrent_delay, max_delay)
+
+    def history_rows(delays, n_sources):
+        return (max(1, int(np.ceil(delays / dt))) + 1) * int(n_sources)
+
+    source_rows = history_rows(recurrent_delay, network["n_nodes"])
+    # External NEST delays are independent of the recurrent delay cap.
+    source_rows += sum(
+        history_rows(np.max(item["delays"], initial=dt), item["n_inputs"])
+        for item in inputs.values()
+    )
     return {
         "standard_cell": standard_cell,
         "single_replica": single_replica,
@@ -23,9 +36,7 @@ def performance_projection_context(
             for item in inputs.values()
         ),
         "n_post": int(network["n_nodes"]),
-        "source_rows_upper_bound": history * (
-            int(network["n_nodes"]) + sum(int(item["n_inputs"]) for item in inputs.values())
-        ),
+        "source_rows_upper_bound": source_rows,
         "max_edges": max(
             [len(network["synapses"]["indices"])]
             + [len(item["indices"]) for item in inputs.values()]
