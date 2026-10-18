@@ -55,19 +55,29 @@ def raw_gradient(
     )
 
 
-@gpu
-@pytest.mark.parametrize("batch_size", [1, 2, 3, 5, 8, 13, 16, 23, 31, 32])
-def test_scaled_variable_batch_gradients_dense_reference(batch_size):
+def _check_scaled_variable_batch_gradients(batch_size, fanout=None):
     rng = np.random.default_rng(761)
-    indices = np.column_stack((rng.integers(7, size=129), rng.integers(5, size=129)))
+    if fanout is None:
+        indices = np.column_stack((rng.integers(7, size=129), rng.integers(5, size=129)))
+    else:
+        presynaptic = np.repeat(np.arange(5), fanout)
+        indices = np.column_stack((rng.integers(7, size=presynaptic.size), presynaptic))
+        indices = indices[rng.permutation(len(indices))]
     types = rng.integers(3, size=len(indices))
     conn = build_csr_connectivity(indices, types, 6, 7, 3, build_compact_pairs=True)
     activity = rng.poisson(0.3, (batch_size, 6)).astype(np.float16)
     activity[:, 0] = -1
     activity[:, 2] = 0
+    if fanout is not None:
+        activity[-1, 1] = 3
     weights = rng.normal(size=len(indices)).astype(np.float16)
-    basis = rng.normal(size=(3, 4)).astype(np.float16)
-    upstream = rng.normal(size=(batch_size, 7, 4)).astype(np.float16)
+    if fanout is None:
+        basis = rng.normal(size=(3, 4)).astype(np.float16)
+        upstream = rng.normal(size=(batch_size, 7, 4)).astype(np.float16)
+    else:
+        # Exact projections isolate queue boundaries from existing FP16 projection rounding.
+        basis = rng.integers(-2, 3, size=(3, 4)).astype(np.float16)
+        upstream = rng.integers(-16, 17, size=(batch_size, 7, 4)).astype(np.float16) / 8
     seed = rng.normal(size=len(indices)).astype(np.float32)
     try:
         actual_spikes, actual_weights = raw_gradient(
@@ -98,6 +108,19 @@ def test_scaled_variable_batch_gradients_dense_reference(batch_size):
         np.testing.assert_array_equal(np.asarray(actual_spikes)[:, 5], 0)
     finally:
         conn.close()
+
+
+@gpu
+@pytest.mark.parametrize("batch_size", [1, 2, 3, 5, 8, 13, 16, 23, 31, 32])
+def test_scaled_variable_batch_gradients_dense_reference(batch_size):
+    _check_scaled_variable_batch_gradients(batch_size)
+
+
+@gpu
+@pytest.mark.parametrize("batch_size", [1, 2, 3, 5, 8, 13, 16, 23, 31, 32])
+@pytest.mark.parametrize("fanout", [7, 255, 256, 257, 1025])
+def test_scaled_variable_batch_gradients_queue_boundaries(batch_size, fanout):
+    _check_scaled_variable_batch_gradients(batch_size, fanout)
 
 
 @gpu

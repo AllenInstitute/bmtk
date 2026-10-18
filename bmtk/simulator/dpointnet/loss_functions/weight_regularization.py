@@ -60,6 +60,60 @@ def _sort_initial_values_by_group(initial_values, order, row_splits):
     return out
 
 
+class _CheckpointCompatibleGroupOrder(tf.Module):
+    """GPU-resident unsigned indices with the original signed checkpoint value."""
+
+    def __init__(self, values):
+        super().__init__(name="emd_group_order")
+        self._value = self._no_dependency(tf.Variable(
+            values, dtype=tf.uint32, trainable=False, name="emd_group_order",
+        ))
+
+    @property
+    def dtype(self):
+        return self._value.dtype
+
+    @property
+    def shape(self):
+        return self._value.shape
+
+    @property
+    def device(self):
+        return self._value.device
+
+    @property
+    def trainable(self):
+        return False
+
+    def read_value(self):
+        return self._value.read_value()
+
+    def numpy(self):
+        return self._value.numpy()
+
+    def __array__(self, dtype=None, copy=None):
+        values = np.asarray(self.numpy(), dtype=dtype)
+        return values.copy() if copy else values
+
+    def assign(self, value, **kwargs):
+        return self._value.assign(value, **kwargs)
+
+    def _serialize_to_tensors(self):
+        return {"VARIABLE_VALUE": tf.bitcast(self.read_value(), tf.int32)}
+
+    def _restore_from_tensors(self, restored_tensors):
+        return self.assign(tf.bitcast(restored_tensors["VARIABLE_VALUE"], tf.uint32))
+
+
+def _group_order_to_tensor(value, dtype=None, name=None, as_ref=False):
+    if as_ref:
+        raise ValueError("Group-order conversion does not expose a mutable tensor reference.")
+    return tf.convert_to_tensor(value.read_value(), dtype=dtype, name=name)
+
+
+tf.register_tensor_conversion_function(_CheckpointCompatibleGroupOrder, _group_order_to_tensor)
+
+
 def _grouped_emd_custom_gradient(
     values, group_order, sorted_initial_values, group_slices, sensitivity_denominators
 ):
@@ -68,32 +122,41 @@ def _grouped_emd_custom_gradient(
     Adapted from Javier's ``v1_model_utils/loss_functions.py`` ``_grouped_emd``
     at commit 2c52ec10; credited to Javier.
     """
+    # Reshape compact unsigned storage before casting: integer element operations
+    # on int32 indices otherwise move the edge-sized permutation through the host.
+    compact_indices = (
+        group_order.dtype != tf.int64
+        and group_order.shape[0] is not None
+        and group_order.shape[0] <= np.iinfo(np.int32).max
+    )
+    index_dtype = tf.int32 if compact_indices else tf.int64
+    group_indices = tf.cast(tf.reshape(group_order, [-1, 1]), index_dtype)
 
     @tf.custom_gradient
     def emd(x):
-        grouped_x = tf.gather(x, group_order)
+        grouped_x = tf.reshape(tf.gather(x, group_indices), [-1])
         group_losses = []
         positions = []
         sensitivities = []
         for start, end in group_slices:
             x_i = grouped_x[start:end]
-            order = tf.argsort(x_i, stable=True)
+            order = tf.math.top_k(-x_i, k=end - start, sorted=True).indices
             deviation = tf.gather(x_i, order) - sorted_initial_values[start:end]
             group_losses.append(tf.reduce_mean(tf.abs(deviation)))
-            positions.append(order + tf.cast(start, order.dtype))
+            positions.append(tf.cast(order, tf.int64) + start)
             denominator = tf.constant(
                 sensitivity_denominators[len(sensitivities)], dtype=x.dtype
             )
             sensitivities.append(tf.sign(deviation) / denominator)
         loss = tf.reduce_mean(tf.stack(group_losses))
-        targets = tf.gather(group_order, tf.concat(positions, axis=0))
+        targets = tf.gather(group_indices, tf.concat(positions, axis=0))
         derivative = tf.concat(sensitivities, axis=0)
 
         def grad(upstream):
             return tf.scatter_nd(
-                tf.cast(targets[:, tf.newaxis], tf.int64),
+                targets,
                 derivative * tf.cast(upstream, derivative.dtype),
-                tf.cast(tf.shape(x), tf.int64),
+                tf.shape(x, out_type=index_dtype),
             )
 
         return loss, grad
@@ -153,14 +216,13 @@ class EMDWeightRegularization:
                 initial_value_np, order_np, row_splits_np
             )
 
-        order_dtype = tf.int32 if order_np.size <= np.iinfo(np.int32).max else tf.int64
         self._n_groups = n_groups
         self.num_unique = tf.constant(n_groups, dtype=tf.int32)
-        self._group_order = tf.Variable(
-            order_np,
-            dtype=order_dtype,
-            trainable=False,
-            name="emd_group_order",
+        self._group_order = (
+            _CheckpointCompatibleGroupOrder(order_np)
+            if order_np.size <= np.iinfo(np.int32).max else tf.Variable(
+                order_np, dtype=tf.int64, trainable=False, name="emd_group_order",
+            )
         )
         self._sorted_initial_values = tf.Variable(
             sorted_initial_np,

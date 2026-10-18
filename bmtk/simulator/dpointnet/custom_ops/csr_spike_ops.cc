@@ -241,6 +241,34 @@ REGISTER_OP("DpointnetCsrSpikeForward")
       return absl::OkStatus();
     });
 
+REGISTER_OP("DpointnetCombinedSweep")
+    .Input("spikes: N * T")
+    .Input("weights: N * T")
+    .Input("metadata: N * resource")
+    .Input("basis: T")
+    .Attr("T: {half, float}")
+    .Attr("Tindex: {uint32, int64}")
+    .Attr("N: int >= 2")
+    .Attr("n_post: int >= 1")
+    .Attr("n_edges: list(int)")
+    .Attr("n_pairs: list(int)")
+    .Attr("target_tile_size: int = 2048")
+    .Output("currents: T")
+    .SetShapeFn([](InferenceContext* context) -> absl::Status {
+      int sources;
+      int n_post;
+      TF_RETURN_IF_ERROR(context->GetAttr("N", &sources));
+      TF_RETURN_IF_ERROR(context->GetAttr("n_post", &n_post));
+      ShapeHandle spikes;
+      ShapeHandle basis;
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &spikes));
+      TF_RETURN_IF_ERROR(context->WithRank(context->input(3 * sources), 2, &basis));
+      DimensionHandle batch_posts;
+      TF_RETURN_IF_ERROR(context->Multiply(context->Dim(spikes, 0), n_post, &batch_posts));
+      context->set_output(0, context->Matrix(batch_posts, context->Dim(basis, 1)));
+      return absl::OkStatus();
+    });
+
 REGISTER_OP("DpointnetCsrSpikeGrad")
     .Input("spikes: T")
     .Input("current_grad: T")

@@ -286,6 +286,24 @@ def _create_metadata_resource(metadata, index_dtype):
     return metadata_handle
 
 
+def _projection_type_representatives(basis, n_synapse_types):
+    basis = np.asarray(basis)
+    if (
+        basis.ndim != 2
+        or basis.shape[0] != n_synapse_types
+        or basis.shape[1] == 0
+        or not np.issubdtype(basis.dtype, np.floating)
+    ):
+        raise ValueError(
+            "projection_basis must be a floating matrix with one row per synapse type."
+        )
+    representatives = np.empty(n_synapse_types, dtype=np.int64)
+    first_by_bits = {}
+    for index, row in enumerate(basis):
+        representatives[index] = first_by_bits.setdefault(row.tobytes(), index)
+    return representatives
+
+
 def build_csr_connectivity(
     indices,
     synapse_types,
@@ -295,7 +313,14 @@ def build_csr_connectivity(
     build_compact_pairs=False,
     build_fixed4_incoming=False,
     sort_by_target=False,
+    projection_basis=None,
 ):
+    """Build canonical CSR routing and optional immutable-basis projection sharing.
+
+    ``projection_basis`` must describe the exact effective coefficients used for
+    every projection with this metadata. Rebuild without sharing for mutable or
+    alternate coefficients; edge types and canonical/CSR weight order never change.
+    """
     indices = np.asarray(indices)
     synapse_types = np.asarray(synapse_types)
     for dimension, name in (
@@ -342,6 +367,13 @@ def build_csr_connectivity(
         n_synapse_types,
     )
     numpy_index_dtype = index_dtype.as_numpy_dtype
+    projection_types = None
+    if projection_basis is not None:
+        if not build_compact_pairs:
+            raise ValueError("projection_basis requires build_compact_pairs=True.")
+        projection_types = _projection_type_representatives(
+            projection_basis, n_synapse_types
+        )
     if sort_by_target:
         if (
             int(n_target_neurons) < 2**64
@@ -409,20 +441,24 @@ def build_csr_connectivity(
         ]
         n_pairs = 0
         if build_compact_pairs and post_ids.size:
+            pair_types = (
+                sorted_synapse_types if projection_types is None
+                else projection_types[sorted_synapse_types]
+            )
             if (
                 int(n_synapse_types) < 2**64
                 and int(n_target_neurons) * int(n_synapse_types) <= 2**64
             ):
                 stride = np.uint64(n_synapse_types)
                 keys = post_ids.astype(np.uint64) * stride
-                keys += sorted_synapse_types.astype(np.uint64, copy=False)
+                keys += pair_types.astype(np.uint64, copy=False)
                 unique_keys, pair_ids = np.unique(keys, return_inverse=True)
                 pairs = np.column_stack(
                     (unique_keys // stride, unique_keys % stride)
                 ).astype(numpy_index_dtype, copy=False)
             else:
                 pairs, pair_ids = np.unique(
-                    np.column_stack((post_ids, sorted_synapse_types)),
+                    np.column_stack((post_ids, pair_types)),
                     axis=0,
                     return_inverse=True,
                 )
@@ -462,7 +498,12 @@ def build_csr_connectivity(
                 "n_post": int(n_target_neurons),
                 "n_synapse_types": int(n_synapse_types),
                 "n_pairs": n_pairs,
+                "projection_basis_shared": (
+                    projection_types is not None
+                    and bool(np.any(projection_types != np.arange(n_synapse_types)))
+                ),
                 "has_repeated_targets": has_repeated_targets,
+                "sorted_by_target": bool(sort_by_target),
                 "fixed4_incoming": bool(incoming_pre_ids.size),
                 "incoming_pre_ids": replica_values[0]["incoming_pre_ids"],
                 "incoming_edge_ids": replica_values[0]["incoming_edge_ids"],
@@ -623,9 +664,6 @@ def fused_recurrent_weight_carry(
         raise ValueError(
             "Fused recurrent accumulation requires matching compute operands."
         )
-    if vjp_only and spikes.dtype != tf.float32:
-        raise ValueError("VJP-only fused recurrent accumulation requires FP32 operands.")
-
     @tf.custom_gradient
     def project(z, carrier, weights, coefficients, scale):
         currents = fused_spike_currents(
@@ -711,6 +749,18 @@ def fused_spike_currents(
 ):
     """Project currents, or supply only their registered VJP for recorded replay.
 
+    ``spikes`` may contain graded nonnegative source amplitudes, not only binary
+    events. Positive values multiply the per-edge weights unchanged; counted
+    Poisson inputs and local STP efficacy must not be Booleanized. With
+    ``compute_spike_gradient=True``, the VJP returns dense per-source credit,
+    including silent connected sources. For STP this is efficacy credit: apply
+    the local release VJP before routing source-event credit across partitions.
+
+    With ``write_csr_weight_gradient=False`` (the default), weight gradients
+    already follow canonical master-edge order, including duplicate edges.
+    Do not restore that gradient a second time. Direct-CSR carrier routes have
+    a separate, exactly-once canonical restoration contract.
+
     The internal ``vjp_only`` mode returns zeros and must only be used under
     saved-primal substitution; it does not approximate the forward simulation.
     """
@@ -722,8 +772,8 @@ def fused_spike_currents(
         raise TypeError(
             f"Fused DPointNet CUDA operator requires float16 or float32 spikes, got {spikes.dtype}."
         )
-    if vjp_only and (spikes.dtype != tf.float32 or initial_currents is not None):
-        raise ValueError("VJP-only projection requires FP32 operands and no initial currents.")
+    if vjp_only and initial_currents is not None:
+        raise ValueError("VJP-only projection requires no initial currents.")
     if csr_weights.dtype != spikes.dtype or basis.dtype != spikes.dtype:
         raise TypeError("spikes, csr_weights, and basis must have the same dtype.")
     if master_weights.shape.rank != 1 or csr_weights.shape.rank != 1:
@@ -834,3 +884,68 @@ def fused_spike_currents(
         use_small_batch_backward=use_small_batch_backward,
         vjp_only=vjp_only,
     )
+
+
+def combined_sweep_available():
+    return (
+        fused_cuda_available()
+        and hasattr(_OPS, "dpointnet_combined_sweep")
+        and "target_tile_size" in inspect.signature(_OPS.dpointnet_combined_sweep).parameters
+    )
+
+
+@tf.custom_gradient
+def _substitute_combined_primal(primal, *proxies):
+    def grad(dcurrent):
+        return (None,) + (dcurrent,) * len(proxies)
+
+    return tf.identity(primal), grad
+
+
+def validate_combined_target_tile_size(target_tile_size):
+    if (
+        isinstance(target_tile_size, bool)
+        or not isinstance(target_tile_size, (int, np.integer))
+        or target_tile_size not in (256, 512, 1024, 2048)
+    ):
+        raise ValueError("Combined sweep target_tile_size must be 256, 512, 1024 or 2048.")
+    return int(target_tile_size)
+
+
+def fused_combined_currents(
+    spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
+):
+    """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs."""
+    target_tile_size = validate_combined_target_tile_size(target_tile_size)
+    if not combined_sweep_available():
+        raise RuntimeError("Rebuild both CUDA operators for the combined current sweep.")
+    if not 2 <= len(spikes) <= 8 or not (
+        len(spikes) == len(weights) == len(connectivities) == len(proxies)
+    ):
+        raise ValueError("Combined sweep requires two to eight matching sources and VJP proxies.")
+    dtype = spikes[0].dtype
+    index = connectivities[0]["index_dtype"]
+    if dtype not in (tf.float16, tf.float32) or basis.dtype != dtype or basis.shape[1] != 4:
+        raise ValueError("Combined sweep requires matching FP16/FP32 operands and four bases.")
+    for z, weight, connectivity in zip(spikes, weights, connectivities):
+        if z.dtype != dtype or weight.dtype != dtype or z.shape.rank != 2:
+            raise ValueError("Combined sweep spike/weight dtypes and spike ranks must match.")
+        if not connectivity.get("sorted_by_target", False) or connectivity["index_dtype"] != index:
+            raise ValueError("Combined sweep requires target-sorted CSR with matching index dtypes.")
+        if connectivity["n_post"] != connectivities[0]["n_post"]:
+            raise ValueError("Combined sweep target dimensions must match.")
+        if z.shape[1] != connectivity["n_sources"] or weight.shape != (connectivity["n_edges"],):
+            raise ValueError("Combined sweep connectivity and operand shapes must match.")
+        if connectivity["n_synapse_types"] != basis.shape[0]:
+            raise ValueError("Combined sweep type counts must match the basis.")
+    primal = _OPS.dpointnet_combined_sweep(
+        spikes, weights, [conn["metadata_handle"] for conn in connectivities], basis,
+        Tindex=tf.as_dtype(index), n_post=connectivities[0]["n_post"],
+        n_edges=[conn["n_edges"] for conn in connectivities],
+        n_pairs=[conn["n_pairs"] for conn in connectivities],
+        target_tile_size=target_tile_size,
+    )
+    return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
+
+
+ops.NotDifferentiable("DpointnetCombinedSweep")

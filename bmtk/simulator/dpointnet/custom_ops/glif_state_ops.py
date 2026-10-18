@@ -195,8 +195,10 @@ def fused_nest_state(
     type_indexed_identity=None,
     require_type_indexed_coefficients=False,
     fuse_history=False,
+    hoist_type_indexed_guard=False,
 ):
     """Four-basis NEST transition with live frozen coefficients and event VJPs."""
+    validate_bool_option(hoist_type_indexed_guard, "hoist_type_indexed_guard")
     from ..cell_models.nest_dynamics import validate_hard_reset_gradient_mode
 
     validate_hard_reset_gradient_mode(
@@ -316,7 +318,7 @@ def fused_nest_state(
         if use_type_indexed:
             type_coefficients_arg = arguments[14]
             type_indices_arg = arguments[15]
-            type_identity_arg = arguments[16]
+            type_identity_arg = type_indexed_identity if hoist_type_indexed_guard else arguments[16]
 
             def type_indexed_forward():
                 if fuse_history:
@@ -490,12 +492,14 @@ def fused_nest_state(
                 elif type_indexed_identity_static is False:
                     gradients = full_backward()
                 else:
-                    gradients = tf.cond(arguments[16], type_indexed_backward, full_backward)
+                    gradients = tf.cond(type_identity_arg, type_indexed_backward, full_backward)
             else:
                 gradients = full_backward()
             if fuse_history:
                 old_history_gradient = gradients[5]
-            extra_nones = (None, None, None) if use_type_indexed else ()
+            extra_nones = (
+                (None, None) if hoist_type_indexed_guard else (None, None, None)
+            ) if use_type_indexed else ()
             return (
                 gradients[0],
                 None,
@@ -679,7 +683,10 @@ def fused_nest_state(
             tf.cast(history, psc.dtype),
         )
         if use_type_indexed:
-            transition_args += (type_coefficients, type_indices, type_indexed_identity)
+            transition_args += (type_coefficients, type_indices)
+            if not hoist_type_indexed_guard:
+                # IdentityN would otherwise transport this CPU predicate with GPU state.
+                transition_args += (type_indexed_identity,)
         transition_outputs = transition(*transition_args)
     threshold, new_v, new_r, new_asc, new_rise, new_psc = transition_outputs[:6]
     if fuse_history:

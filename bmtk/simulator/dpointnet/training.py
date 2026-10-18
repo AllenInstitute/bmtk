@@ -1189,6 +1189,11 @@ class TrainingEngine:
             self.rnn.ordered_inputs_populations,
             fetch_in_graph=False,
             use_device_generation=data_parallel is None,
+            output_dtype=(
+                self.rnn.model.inputs[0].dtype
+                if getattr(getattr(self.rnn, "cell", None), "_use_combined_current_sweep", False)
+                else None
+            ),
         ) if chief else None
 
         # input_itrs = [DataIterator(p.input_generators, p.batch_size, p.seq_len, self.rnn.ordered_inputs_populations) for p in self.parameters]

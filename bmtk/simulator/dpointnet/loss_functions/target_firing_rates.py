@@ -1,10 +1,19 @@
 import tensorflow as tf
 
+from .._options import validate_bool_option
+
+
+@tf.function(jit_compile=True, reduce_retracing=True)
+def _compiled_fp32_spike_counts(spikes):
+    return tf.reduce_sum(tf.cast(spikes, tf.float32), axis=1)
+
 
 class TargetFiringRate:
     data_parallel_reduction = "replica_mean"
 
-    def __init__(self, rnn, firing_rate, rate_units="Hz", **kwargs):
+    def __init__(
+        self, rnn, firing_rate, rate_units="Hz", compiled_spike_counts="auto", **kwargs
+    ):
         if rate_units not in ("Hz", "spikes_per_step"):
             raise ValueError('rate_units must be "Hz" or "spikes_per_step".')
         self.rnn = rnn
@@ -14,7 +23,28 @@ class TargetFiringRate:
         self.seq_len = self.rnn.seq_len
         self.sim_time = self.dt*self.seq_len/1000.0
         self.rate_units = rate_units
+        self.compiled_spike_counts = compiled_spike_counts
         # self.batch_size = self.rnn.batch_size
+
+    @property
+    def compiled_spike_counts(self):
+        if self._compiled_spike_counts != "auto":
+            return self._compiled_spike_counts
+        cell = getattr(self.rnn, "_cell", None)
+        report = getattr(cell, "acceleration_report", None)
+        context = getattr(cell, "_performance_auto_context", None)
+        return bool(
+            report is not None and report["architecture"] == 86
+            and report.get("tensorflow", "").startswith("2.21.")
+            and report.get("selected", {}).get("use_fused_cuda") is True
+            and context is not None and context["standard_cell"] and context["single_replica"]
+        )
+
+    @compiled_spike_counts.setter
+    def compiled_spike_counts(self, value):
+        if value != "auto":
+            validate_bool_option(value, "compiled_spike_counts")
+        self._compiled_spike_counts = value
 
     @staticmethod
     def module():
@@ -25,7 +55,10 @@ class TargetFiringRate:
         
         # mean_spike_count = tf.reduce_mean(tf.reduce_sum(spikes, axis=1), axis=0)
         # actual_fr = mean_spike_count / self.sim_time
-        spike_counts = tf.reduce_sum(spikes, axis=1)
+        spike_counts = (
+            _compiled_fp32_spike_counts(spikes)
+            if self.compiled_spike_counts else tf.reduce_sum(spikes, axis=1)
+        )
         firing_rates = spike_counts / (
             self.sim_time if self.rate_units == "Hz" else self.seq_len
         )

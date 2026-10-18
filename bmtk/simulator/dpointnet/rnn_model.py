@@ -533,6 +533,44 @@ class RNN:
                 cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
+        combined_auto = False
+        if self.cell_cls is GLIF3Cell:
+            from .acceleration import (
+                performance_projection_context, select_performance_projection,
+            )
+            from .custom_ops import csr_spike_ops
+
+            context = performance_projection_context(
+                network, inputs_dicts, dt=self.dt,
+                max_delay=cell_params.get("max_delay", 5),
+                standard_cell=True,
+                single_replica=(
+                    self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
+                ),
+            )
+            cell_params["_performance_auto_context"] = context
+            basis = cell_params.get("tau_basis")
+            if isinstance(basis, (str, Path)):
+                basis = np.load(basis)
+            combined_auto, _, _ = select_performance_projection(
+                cell_params, context, compute_dtype=self.dtype,
+                variable_dtype=self.precision_module.global_policy().variable_dtype,
+                batch_size=_batch_size,
+                basis_width=None if basis is None else np.asarray(basis).size,
+                architecture=csr_spike_ops._gpu_compute_architecture(),
+            )
+        if (
+            issubclass(self.cell_cls, GLIF3Cell)
+            and (cell_params.get("use_combined_current_sweep") is True or combined_auto)
+            and tf.executing_eagerly()
+            and not tf.distribute.has_strategy()
+        ):
+            from .cell_models.glif3_cell import _prepare_host_index_variables
+
+            # MirroredStrategy overrides device scopes during variable creation.
+            cell_params["_host_index_variables"] = _prepare_host_index_variables(
+                network, inputs_dicts
+            )
         with self.strategy.scope():
             self._cell = self.cell_cls(network, inputs=inputs_dicts, **cell_params)
             if isinstance(self._cell, GLIF3Cell):
