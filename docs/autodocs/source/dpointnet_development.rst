@@ -46,6 +46,153 @@ Terminology
 * **VJP:** vector-Jacobian product, the backward propagation of a supplied
   output derivative through an operation.
 
+Cooperative short-row projection
+--------------------------------
+
+The keyword-only ``use_cooperative_row_projection`` option of ``GLIF3Cell``
+(also forwarded through ``rnn_cell_params``) requires the explicit/selected
+combined current sweep and both rebuilt native libraries. An explicit request
+errors on an older native ABI; the wrapper omits the new native attribute when
+the option is off, retaining compatible older-library behavior. Automatic
+selection enables it whenever the joint sweep is admitted and the capability is
+present; explicit ``False`` keeps the original traversal.
+
+The native ``cooperative_rows`` list is empty by default. The wrapper opts in
+only known target-unique CSR sources below512edges per delay-expanded source
+row; repeated-target/high-fanout named sources use the fanout-row walk below
+when it is selected, and otherwise their original traversal.
+Eight short row segments are packed by warp scans into a register-only work
+stream. Per-source float products, FP32 tile accumulation and final rounding
+remain unchanged, but atomic addition order can differ. Canonical/master and
+carrier VJPs use the unchanged per-source proxies, including silent credit.
+Counts, delays, live weights, coefficient dispatch, Poisson RNG and state/
+checkpoint schemas are unchanged; active queues are still rebuilt.
+
+Compile-time default/opt-in specializations plus two-block launch bounds avoid
+the first prototype's register-pressure regression. Measured RTX3090 B32 mixed
+full-biological-loss controls give about4.17percent shorter updates. Neither
+that hardware result nor fat-binary compilation establishes every-family
+performance, convergence or distributed/custom-cell composition.
+
+High-fanout compact row walk
+----------------------------
+
+The keyword-only ``use_fanout_row_projection`` cell option, also accepted
+through ``rnn_cell_params``, requires the combined sweep and the rebuilt native
+``fanout_rows`` capability. Explicit incompatible requests raise; when off the
+wrapper omits the new native attribute for older compatible libraries.
+Automatic selection enables it with the admitted joint sweep; explicit
+``False`` keeps the original traversal. It is independent of the cooperative
+short-row selector.
+
+Sources with average fanout at least512edges per delay-expanded row are walked
+as follows. One packed block scan over the round's active rows compacts only
+the rows with a nonempty segment in the block's target tile, in queue order,
+and yields their edge prefix. Each warp then walks32consecutive edges of the
+round's concatenated segments: the chunk owner is found by one warp-uniform
+binary search and each lane advances linearly where its edge crosses a row.
+No lanes are padded at row ends. Equal-target runs inside a row segment are
+detected by comparing each lane's key with its predecessor (segments are
+target-sorted), and suffix rounds stop as soon as no lane can still take from
+its run; this replaced a per-edge warp-wide value match and fixed five rounds,
+and applies to every high-fanout traversal of the combined sweep.
+Row-local repeated-target aggregation, canonical per-source VJPs, silent
+credit, FP32 products/tile sums, live operands, delays and Poisson counts are
+preserved. Atomic ordering can change; there is no bitwise trajectory/
+convergence guarantee or new state ABI.
+
+Tiles wider than2048targets now launch1024-thread blocks when the index type
+is32-bit, so one wide-tile block fills an SM instead of leaving half of it
+idle; both block scans use warp-scan scratch to fit the row tables beside a
+5120-target tile. Explicit ``combined_current_target_tile_size=5120`` is how
+this geometry is selected; the automatic default tile is unchanged.
+Earlier conclusions that wide tiles regress this workload were measured with
+512-thread blocks and do not transfer to the1024-thread kernel.
+
+Identical-operand RTX3090 B32 mixed forward screens (fixed captured LGN step,
+synthetic recurrent activity, recurrent plus LGN only) measure the joint main
+kernel at549us with tile5120 versus575us at tile2048 and the retained Javier
+original at544us; the LGN-only kernel is261us versus252us. FP32 joint is551us
+versus Javier579us. With the background source included, tile5120 is slower
+than2048 (646 versus627us), and full-biological B32 updates at tile5120 were
+2.1percent longer than at2048; the wide tile is not a general recommendation.
+At tile2048 the compact walk and run detection alone shorten full-biological
+updates from2.6155to2.5779seconds (1.44percent).
+The remaining per-step difference outside the sweep is queue construction: the
+sweep rescans every delay slot each step, whereas carried per-slot queues would
+scan only the newest slot. These are not parity, memory-saving, FP32
+full-training admission or automatic recommendations, and compiled fat-binary
+targets are not execution evidence.
+
+Target-major gather for low in-degree sources
+---------------------------------------------
+
+The keyword-only ``use_target_gather_projection`` cell option, also
+accepted through ``rnn_cell_params``, requires the combined sweep and the
+rebuilt native ``gather_sources`` capability; explicit incompatible requests
+raise and the wrapper omits the attribute for older compatible libraries when
+the option is off. Automatic selection enables it with the admitted joint
+sweep; explicit ``False`` keeps the scatter traversal.
+Sources with at most16incoming edges per target on average
+(``combined_gather_eligible``) are projected target-major: the operator builds
+once per metadata identity a stable target sort of the edge positions with
+per-target ranges and per-entry source rows, and after the scatter phases each
+tile thread sums its own targets' few incoming edges in FP32 (four independent
+chains at a time) and adds once to the shared tile without atomics, row lookups
+or scans. Repeated sources on one target are summed like any other entry.
+Canonical per-source VJPs, live weights, delays and Poisson counts are
+unchanged; the single rounding of the tile is preserved.
+
+This exists because the V1 background input (100sources, four edges per neuron,
+250Hz Poisson counts) is a poor fit for the source-major scatter: its sweep
+phase cost about123us per launch for under two million edges, dominated by
+per-block fixed work and shared CAS-loop atomics. The gather measures about82us
+in the three-source screen and adds about10to25us when other sources run.
+RTX3090 B32 mixed full-biological updates fall2.5779to2.5558seconds
+(0.85percent) on top of the compact walk, 2.2percent below the LGN-winner
+baseline. The structurally better placement, projecting such an input inside
+the neuron update as the original implementation does, is not attempted here.
+Three earlier gather variants (one sequential target per thread; entry-parallel
+with atomics; warp-owned pipelined ranges) measured105,133and141us and were
+rejected: any in-sweep gather rereads the source's target-major table once per
+(tile, sample) block. The automatic policy enables the gather with the
+admitted joint sweep; its eligibility rule (at most16incoming edges per target
+on average) is a workload property, and explicit ``False`` retains the scatter.
+
+Prepared CPU Poisson draws
+--------------------------
+
+The keyword-only ``use_prepared_cpu_poisson`` option of ``GLIF3Cell`` is
+also passed through high-level ``rnn_cell_params``. Automatic selection
+resolves it to ``"auto"`` for the single-replica NEST direct loop with compute
+temporal gradients and internal Poisson inputs; the RNN layer then prepares
+counts only when it actually runs the direct loop and the declared batch,
+rollout length and input widths fit the 64 MiB count table, and otherwise
+keeps the per-step sampler. Explicit ``True`` keeps the strict behavior below.
+It requires the direct, forward, unmasked, non-unrolled, batch-major NEST loop
+with compute-temporal gradients; FP32 temporal gradients and device Poisson
+are explicitly incompatible. Stateful execution remains unsupported.
+
+When enabled, each rollout/checkpoint chunk calls the unchanged CPU stateless
+Poisson sampler with its original per-step counter, live rollout seed and
+replica seed offset, then uploads its complete count table. Counts are stored
+losslessly in int64 because TensorFlow 2.21 places int32 ``GatherV2`` parameters
+on the host. A separate GPU int64 loop index selects each frame, cast back to
+int32 before the ordinary cell input path. Do not replace this with int32
+table gathers: actual traces show a full-table upload every timestep.
+
+The option bounds resident tables to 64 MiB per chunk, across named internal
+Poisson/noisy-current inputs. It does not cache counts across rollouts, advance
+the logical noise stream, change the noise state/checkpoint schema or replace
+Poisson counts with Bernoulli events. Recomputed chunks prepare the same draws
+from their restored starting counter. A step-level seed override while using
+a prepared frame errors. Direct standalone cell calls retain ordinary sampling.
+
+RTX3090 B32/T500/checkpoint25 full-biological-loss controls show about
+1.8 percent shorter updates, without a reproducible memory saving.
+Distributed/custom-cell composition, other GPU families and full-loss FP32
+admission are not qualified by this change.
+
 Canonical weights and gradients
 -------------------------------
 
@@ -70,10 +217,21 @@ Static dispatch is an explicit promise that within-type equality remains valid,
 not a mutation guard or a cache of initial values. Uniform type-preserving
 changes need not invalidate that representation.
 
-The single-replica SM86/TF2.21 high-level automatic route can move the live
-identity predicate out of native custom-gradient carrier arguments. Both branches reuse
-the same neuron transition/VJP; assignment and restore still affect the next
-rollout. Custom cells and distribution retain their existing dispatch.
+The single-replica SM86/TF2.21 high-level automatic route moves the live
+identity predicate out of native custom-gradient carrier arguments. With rebuilt
+device-dispatch entry points, the state kernels read that GPU predicate directly:
+true selects the compact type table, while false selects the live full AoS
+coefficient table. Forward, history and event/state VJPs share the existing
+arithmetic. Neither branch requires a per-step host predicate transfer.
+Preparation still checks current coefficients at every rollout boundary;
+assignment and restore affect the next rollout without retracing. This is not
+the static immutable-coefficient promise.
+
+All six device-dispatch entry points must be available before selecting this
+route. Older compatible libraries retain the existing TensorFlow conditional
+and its full-coefficient fallback. Custom cells, distribution and explicit
+static dispatch retain their existing selection boundaries. Rebuild both native
+operators after changing the native ABI; old entry-point signatures are retained.
 
 Custom runners and FP32 temporal gradients
 ------------------------------------------

@@ -253,6 +253,9 @@ REGISTER_OP("DpointnetCombinedSweep")
     .Attr("n_edges: list(int)")
     .Attr("n_pairs: list(int)")
     .Attr("target_tile_size: int = 2048")
+    .Attr("cooperative_rows: list(bool) = []")
+    .Attr("fanout_rows: bool = false")
+    .Attr("gather_sources: list(bool) = []")
     .Output("currents: T")
     .SetShapeFn([](InferenceContext* context) -> absl::Status {
       int sources;

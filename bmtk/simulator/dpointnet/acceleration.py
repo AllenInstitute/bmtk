@@ -10,7 +10,7 @@ from .io_tools import io
 
 
 def performance_projection_context(
-    network, inputs, *, dt, max_delay, standard_cell, single_replica,
+    network, inputs, *, dt, max_delay, standard_cell, single_replica, sequence_length=None,
 ):
     """Describe the high-level runner's static projection admission boundary."""
     recurrent_delay = np.max(network["synapses"]["delays"], initial=dt)
@@ -42,6 +42,8 @@ def performance_projection_context(
             + [len(item["indices"]) for item in inputs.values()]
         ),
         "recurrent_edges": len(network["synapses"]["indices"]),
+        # Declared rollout length for static admission of prepared Poisson counts.
+        "sequence_length": None if sequence_length is None else int(sequence_length),
     }
 
 
@@ -149,7 +151,8 @@ def resolve_acceleration_options(
         architecture=architecture,
     )
     select("use_combined_current_sweep", currents and combined, combined_reason)
-    if options["use_combined_current_sweep"] is True:
+    joint = options["use_combined_current_sweep"] is True
+    if joint:
         tile_name = "combined_current_target_tile_size"
         report["reasons"][tile_name] = (
             "explicit override; constructor validation retained"
@@ -157,6 +160,28 @@ def resolve_acceleration_options(
         )
         options.setdefault(tile_name, tile)
         report["selected"][tile_name] = options[tile_name]
+    # Projection traversal choices inside the admitted joint sweep. Each is a
+    # pure scheduling change over the same FP32 tile accumulation and rounding;
+    # per-source VJPs, live operands, delays and Poisson counts are unchanged.
+    # Explicit False keeps the original traversal (compatibility override).
+    select(
+        "use_cooperative_row_projection",
+        joint and csr_spike_ops.cooperative_combined_sweep_available(),
+        "admitted joint sweep and rebuilt cooperative-row capability; register-only "
+        "eight-row warp packing for known target-unique sources below512edges per row",
+    )
+    select(
+        "use_fanout_row_projection",
+        joint and csr_spike_ops.fanout_combined_sweep_available(),
+        "admitted joint sweep and rebuilt fanout-row capability; compact nonempty-row "
+        "scan with concatenated edge walk for sources of at least512edges per row",
+    )
+    select(
+        "use_target_gather_projection",
+        joint and csr_spike_ops.gather_combined_sweep_available(),
+        "admitted joint sweep and rebuilt gather capability; target-major atomic-free "
+        "gather for sources with at most16incoming edges per target",
+    )
     known_batch = isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0
     small_batch = known_batch and batch_size <= 32
     four_basis = basis_width == 4
@@ -178,6 +203,25 @@ def resolve_acceleration_options(
     state = options["use_fused_state"] is not False and numeric and four_basis and state_available and not unsupported_nest
     select("use_direct_state_rnn_loop", state and currents,
            "compatible fused state/currents and explicit-state loop")
+    prepared = (
+        nest and options["use_direct_state_rnn_loop"] is True
+        and options.get("temporal_gradient_precision", "compute") == "compute"
+        and options.get("use_device_poisson") is not True
+        and performance_context is not None and performance_context["single_replica"]
+        and performance_context["standard_cell"]
+    )
+    if "use_prepared_cpu_poisson" in options:
+        report["reasons"]["use_prepared_cpu_poisson"] = "explicit override; constructor validation retained"
+    else:
+        # "auto" prepares exact per-step CPU Poisson counts once per rollout when
+        # the RNN layer actually runs the direct NEST loop within the static
+        # count budget, and otherwise keeps the ordinary per-step sampler.
+        options["use_prepared_cpu_poisson"] = "auto" if prepared else False
+        report["reasons"]["use_prepared_cpu_poisson"] = (
+            "NEST direct loop, compute temporal gradients, internal Poisson, single replica; "
+            "the layer falls back to per-step sampling outside the direct loop or budget"
+        )
+    report["selected"]["use_prepared_cpu_poisson"] = options["use_prepared_cpu_poisson"]
     select("use_fused_nest_event_vjp",
            nest and state and glif_state_ops.fused_nest_event_vjp_available(),
            "compatible NEST state and loaded event-gradient operator")

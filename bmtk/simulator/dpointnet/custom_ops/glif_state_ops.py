@@ -49,6 +49,16 @@ def glif_state_op_status():
     return str(_LOAD_ERROR)
 
 
+def fused_nest_device_dispatch_available():
+    return _OPS is not None and all(
+        hasattr(_OPS, "dpointnet_nest_state_" + name + "_device_dispatch")
+        for name in (
+            "forward", "history_forward", "backward", "backward_events",
+            "history_backward", "history_backward_events",
+        )
+    ) and _glif_gpu_compatibility_error() is None
+
+
 def fused_glif_state_available():
     return (
         _OPS is not None
@@ -297,6 +307,23 @@ def fused_nest_state(
     else:
         type_coefficients = None
 
+    # Device dispatch enters the type-indexed operator unconditionally and lets
+    # the GPU read the predicate, so the compact table must already be known to
+    # fit the operator's 48 KiB shared-memory bound; a larger table keeps the
+    # conditional full-coefficient fallback, which the predicate already selects.
+    NEST_TYPE_TABLE_SHARED_LIMIT = 48 * 1024
+    type_table_fits = (
+        use_type_indexed
+        and type_coefficients.shape.rank == 2
+        and type_coefficients.shape[0] is not None
+        and int(type_coefficients.shape[0]) * 28 * dtype.size <= NEST_TYPE_TABLE_SHARED_LIMIT
+    )
+    device_dispatch = (
+        use_type_indexed and hoist_type_indexed_guard
+        and type_indexed_identity_static is None
+        and type_table_fits
+        and fused_nest_device_dispatch_available()
+    )
     forward_options = {}
     if return_pre_reset_voltage:
         import inspect
@@ -319,17 +346,23 @@ def fused_nest_state(
             type_coefficients_arg = arguments[14]
             type_indices_arg = arguments[15]
             type_identity_arg = type_indexed_identity if hoist_type_indexed_guard else arguments[16]
+            dispatch_options = dict(
+                fallback_coefficients=arguments[6], type_identity=type_identity_arg,
+            ) if device_dispatch else {}
 
             def type_indexed_forward():
+                suffix = "device_dispatch" if device_dispatch else "type_indexed"
                 if fuse_history:
-                    return tuple(_OPS.dpointnet_nest_state_history_forward_type_indexed(
+                    operation = getattr(_OPS, "dpointnet_nest_state_history_forward_" + suffix)
+                    return tuple(operation(
                         *arguments[:6], type_coefficients_arg, type_indices_arg,
                         *arguments[8:11], arguments[13],
-                        hard_reset=hard_reset, **forward_options
+                        hard_reset=hard_reset, **forward_options, **dispatch_options
                     ))
-                return tuple(_OPS.dpointnet_nest_state_forward_type_indexed(
+                operation = getattr(_OPS, "dpointnet_nest_state_forward_" + suffix)
+                return tuple(operation(
                     *arguments[:6], type_coefficients_arg, type_indices_arg,
-                    *arguments[8:11], hard_reset=hard_reset, **forward_options
+                    *arguments[8:11], hard_reset=hard_reset, **forward_options, **dispatch_options
                 ))
 
             def full_forward():
@@ -343,6 +376,8 @@ def fused_nest_state(
                 outputs = type_indexed_forward()
             elif type_indexed_identity_static is False:
                 outputs = full_forward()
+            elif device_dispatch:
+                outputs = type_indexed_forward()
             else:
                 outputs = tf.cond(type_identity_arg, type_indexed_forward, full_forward)
         else:
@@ -471,6 +506,10 @@ def fused_nest_state(
                         else ()
                     )
                     type_extra_inputs = ()
+                if device_dispatch:
+                    type_backward = getattr(
+                        _OPS, type_backward.__name__.replace("_type_indexed", "_device_dispatch"),
+                    )
 
                 def type_indexed_backward():
                     return tuple(type_backward(
@@ -485,12 +524,15 @@ def fused_nest_state(
                         *type_extra_inputs,
                         hard_reset=backward_hard_reset,
                         **event_options,
+                        **dispatch_options,
                     ))
 
                 if type_indexed_identity_static is True:
                     gradients = type_indexed_backward()
                 elif type_indexed_identity_static is False:
                     gradients = full_backward()
+                elif device_dispatch:
+                    gradients = type_indexed_backward()
                 else:
                     gradients = tf.cond(type_identity_arg, type_indexed_backward, full_backward)
             else:

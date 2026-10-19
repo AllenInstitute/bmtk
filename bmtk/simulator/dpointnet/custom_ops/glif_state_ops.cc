@@ -47,6 +47,121 @@ Status NestTypeIndexedCoefficientShape(shape_inference::InferenceContext* contex
 }
 }  // namespace
 
+namespace {
+Status NestDeviceDispatchShape(shape_inference::InferenceContext* context,
+                               bool backward, bool history, bool events) {
+  TF_RETURN_IF_ERROR(NestTypeIndexedCoefficientShape(
+      context, backward ? 2 : 6, backward ? 3 : 7));
+  const int fallback = context->num_inputs() - 2;
+  shape_inference::ShapeHandle voltage, coefficients, predicate;
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(0), 2, &voltage));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(fallback), 2, &coefficients));
+  TF_RETURN_IF_ERROR(context->WithRank(context->input(fallback + 1), 0, &predicate));
+  shape_inference::DimensionHandle dimension;
+  TF_RETURN_IF_ERROR(context->WithValue(context->Dim(coefficients, 1), 28, &dimension));
+  TF_RETURN_IF_ERROR(context->Merge(context->Dim(coefficients, 0),
+                                    context->Dim(voltage, 1), &dimension));
+  if (backward) {
+    context->set_output(0, voltage);
+    context->set_output(1, context->input(8));
+    context->set_output(2, context->input(9));
+    context->set_output(3, context->input(10));
+    context->set_output(4, context->input(9));
+    if (history) context->set_output(5, context->input(events ? 16 : 14));
+  } else {
+    context->set_output(0, voltage);
+    for (int output = 1; output < 6; ++output) {
+      context->set_output(output, context->input(output - 1));
+    }
+    if (history) {
+      context->set_output(6, voltage);
+      context->set_output(7, context->input(11));
+    }
+  }
+  return OkStatus();
+}
+}  // namespace
+
+#define NEST_DEVICE_TYPES \
+    .Attr("T: {half, float}") .Attr("S: {half, float}") \
+    .Attr("R: {int8, int16}") .Attr("hard_reset: bool = false")
+#define NEST_DEVICE_FORWARD_INPUTS \
+    .Input("v: T") .Input("r: R") .Input("asc: T") \
+    .Input("psc_rise: S") .Input("psc: S") .Input("currents: S") \
+    .Input("type_coefficients: T") .Input("type_indices: int64") \
+    .Input("t_ref: R") .Input("dt: T") .Input("v_th: T")
+#define NEST_DEVICE_FORWARD_OUTPUTS \
+    .Output("threshold_voltage: T") .Output("new_v: T") .Output("new_r: R") \
+    .Output("new_asc: T") .Output("new_rise: S") .Output("new_psc: S")
+#define NEST_DEVICE_BACKWARD_INPUTS \
+    .Input("threshold_voltage: T") .Input("r: R") \
+    .Input("type_coefficients: T") .Input("type_indices: int64") \
+    .Input("dt: T") .Input("voltage_gradient_retention: T") \
+    .Input("grad_threshold: T") .Input("grad_v: T") .Input("grad_asc: T") \
+    .Input("grad_rise: S") .Input("grad_psc: S")
+#define NEST_DEVICE_BACKWARD_OUTPUTS \
+    .Output("v_grad: T") .Output("asc_grad: T") .Output("rise_grad: S") \
+    .Output("psc_grad: S") .Output("currents_grad: S")
+#define NEST_DEVICE_EVENT_ATTRS \
+    .Attr("detach_reset: bool = true") .Attr("detach_asc_reset: bool = true") \
+    .Attr("pseudo_gauss: bool = false")
+#define NEST_DEVICE_EVENT_INPUTS \
+    .Input("previous_asc: T") .Input("v_th: T") \
+    .Input("dampening: T") .Input("gauss_std: T")
+#define NEST_DEVICE_GUARD_INPUTS \
+    .Input("fallback_coefficients: T") .Input("type_identity: bool")
+
+REGISTER_OP("DpointnetNestStateForwardDeviceDispatch")
+    NEST_DEVICE_TYPES .Attr("emit_pre_reset_voltage: bool = false")
+    NEST_DEVICE_FORWARD_INPUTS NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_FORWARD_OUTPUTS
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, false, false, false);
+    });
+REGISTER_OP("DpointnetNestStateHistoryForwardDeviceDispatch")
+    NEST_DEVICE_TYPES .Attr("emit_pre_reset_voltage: bool = false")
+    NEST_DEVICE_FORWARD_INPUTS .Input("history: S")
+    NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_FORWARD_OUTPUTS
+    .Output("spikes: S") .Output("new_history: S")
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, false, true, false);
+    });
+REGISTER_OP("DpointnetNestStateBackwardDeviceDispatch")
+    NEST_DEVICE_TYPES NEST_DEVICE_BACKWARD_INPUTS
+    NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_BACKWARD_OUTPUTS
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, true, false, false);
+    });
+REGISTER_OP("DpointnetNestStateBackwardEventsDeviceDispatch")
+    NEST_DEVICE_TYPES NEST_DEVICE_EVENT_ATTRS NEST_DEVICE_BACKWARD_INPUTS
+    NEST_DEVICE_EVENT_INPUTS NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_BACKWARD_OUTPUTS
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, true, false, true);
+    });
+REGISTER_OP("DpointnetNestStateHistoryBackwardDeviceDispatch")
+    NEST_DEVICE_TYPES .Attr("pseudo_gauss: bool = false")
+    NEST_DEVICE_BACKWARD_INPUTS .Input("dampening: T") .Input("gauss_std: T")
+    .Input("grad_spikes: S") .Input("grad_history: S")
+    NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_BACKWARD_OUTPUTS .Output("old_history_grad: S")
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, true, true, false);
+    });
+REGISTER_OP("DpointnetNestStateHistoryBackwardEventsDeviceDispatch")
+    NEST_DEVICE_TYPES NEST_DEVICE_EVENT_ATTRS NEST_DEVICE_BACKWARD_INPUTS
+    NEST_DEVICE_EVENT_INPUTS .Input("grad_spikes: S") .Input("grad_history: S")
+    NEST_DEVICE_GUARD_INPUTS NEST_DEVICE_BACKWARD_OUTPUTS .Output("old_history_grad: S")
+    .SetShapeFn([](shape_inference::InferenceContext* c) {
+      return NestDeviceDispatchShape(c, true, true, true);
+    });
+
+#undef NEST_DEVICE_TYPES
+#undef NEST_DEVICE_FORWARD_INPUTS
+#undef NEST_DEVICE_FORWARD_OUTPUTS
+#undef NEST_DEVICE_BACKWARD_INPUTS
+#undef NEST_DEVICE_BACKWARD_OUTPUTS
+#undef NEST_DEVICE_EVENT_ATTRS
+#undef NEST_DEVICE_EVENT_INPUTS
+#undef NEST_DEVICE_GUARD_INPUTS
+
 REGISTER_OP("DpointnetNestStateForward")
     .Attr("launch_geometry_version: int = 1")
     .Attr("T: {half, float}")
