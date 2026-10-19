@@ -433,7 +433,11 @@ __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSw
           // rows: no padded lanes at row ends. One packed scan yields both the
           // compact slot and the edge prefix; the chunk owner search is
           // warp-uniform and each lane then advances linearly at most a few rows.
-          constexpr int kCountShift = 54;
+          // The round's found-row count needs log2(kThreads) + 1 bits (all rows
+          // may have segments); the remaining low bits carry the edge total.
+          constexpr int kCountBits = kThreads == 1024 ? 11 : 10;
+          constexpr int kCountShift = 64 - kCountBits;
+          static_assert((1ull << kCountShift) > (1ull << 40), "edge-total field");
           const unsigned long long length = static_cast<unsigned long long>(end - first);
           const unsigned long long packed = length ? (1ull << kCountShift) | length : 0ull;
           unsigned long long prefix, aggregate;

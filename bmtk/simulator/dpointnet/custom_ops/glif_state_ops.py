@@ -307,9 +307,21 @@ def fused_nest_state(
     else:
         type_coefficients = None
 
+    # Device dispatch enters the type-indexed operator unconditionally and lets
+    # the GPU read the predicate, so the compact table must already be known to
+    # fit the operator's 48 KiB shared-memory bound; a larger table keeps the
+    # conditional full-coefficient fallback, which the predicate already selects.
+    NEST_TYPE_TABLE_SHARED_LIMIT = 48 * 1024
+    type_table_fits = (
+        use_type_indexed
+        and type_coefficients.shape.rank == 2
+        and type_coefficients.shape[0] is not None
+        and int(type_coefficients.shape[0]) * 28 * dtype.size <= NEST_TYPE_TABLE_SHARED_LIMIT
+    )
     device_dispatch = (
         use_type_indexed and hoist_type_indexed_guard
         and type_indexed_identity_static is None
+        and type_table_fits
         and fused_nest_device_dispatch_available()
     )
     forward_options = {}

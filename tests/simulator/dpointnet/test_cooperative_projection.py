@@ -269,3 +269,61 @@ def test_background_source_without_gather_matches_oracle(dtype, monkeypatch):
     test_short_rows_tail_empty_segments_and_canonical_vjps(
         dtype, 4, "uint32", monkeypatch, fanout_rows=True, background=True,
     )
+
+
+@pytest.mark.parametrize("dtype", [np.float16, np.float32])
+@pytest.mark.parametrize("active_rows", [1024, 1100])
+def test_fanout_wide_tile_round_with_every_row_nonempty(dtype, active_rows, monkeypatch):
+    """At tile5120 the fanout walk runs1,024-thread rounds. When every row of a
+    round has a segment in the tile, the packed scan's count field must hold
+    1,024 (11 bits); a10-bit field wraps to zero and corrupts the offsets."""
+    if not ops.fanout_combined_sweep_available():
+        pytest.skip("Rebuilt fanout sweep required")
+    monkeypatch.setattr(ops, "_csr_index_dtype", lambda *args: tf.uint32)
+    rng = np.random.default_rng(1024)
+    targets = 5120  # one tile: every edge of every row lands in it
+    basis = rng.integers(-3, 4, (2, 4)).astype(dtype) / 4
+    width = active_rows
+    # Each row has >=600 edges in the tile so the source is high-fanout and
+    # every row's segment is nonempty; a few repeated targets per row.
+    rows = []
+    for row in range(width):
+        posts = rng.choice(targets, size=600, replace=False)
+        rows.extend((post, row) for post in posts)
+        rows.extend((int(posts[0]), row) for _ in range(3))
+    indices = np.asarray(rows, dtype=np.int64)
+    types = rng.integers(2, size=len(indices))
+    weights = rng.integers(-4, 5, size=len(indices)).astype(dtype) / 64
+    activity = np.ones((1, width), dtype)
+    connection = ops.build_csr_connectivity(
+        indices, types, width, targets, 2, build_compact_pairs=True, sort_by_target=True,
+    )
+    assert connection["n_edges"] // connection["n_sources"] >= 512
+    # A second tiny, inactive source keeps the two-source contract.
+    other = ops.build_csr_connectivity(
+        np.array([[0, 0]], np.int64), np.array([0]), 1, targets, 2,
+        build_compact_pairs=True, sort_by_target=True,
+    )
+    products = weights[:, None].astype(np.float64) * basis[types].astype(np.float64)
+    expected = np.zeros((targets, 4), np.float64)
+    np.add.at(expected, indices[:, 0], products)
+    try:
+        with tf.device("/GPU:0"):
+            spikes = [tf.constant(activity), tf.zeros((1, 1), dtype)]
+            values = [
+                ops.reorder_csr_values(tf.constant(weights), connection),
+                tf.zeros((1,), dtype),
+            ]
+            coefficients = tf.constant(basis)
+            proxies = [tf.zeros((targets, 4), dtype)] * 2
+            result = ops.fused_combined_currents(
+                spikes, values, [connection, other], coefficients, proxies,
+                cooperative_rows=True, fanout_rows=True, target_tile_size=5120,
+            )
+        np.testing.assert_allclose(
+            result.numpy().reshape(targets, 4), expected,
+            rtol=2e-3 if dtype == np.float16 else 1e-5, atol=2e-3 if dtype == np.float16 else 1e-5,
+        )
+    finally:
+        connection.close()
+        other.close()
