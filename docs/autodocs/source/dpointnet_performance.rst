@@ -111,9 +111,41 @@ convergence equivalence. To retain separate projection, set:
      }
    }
 
+Inside an admitted joint sweep, automatic selection also chooses how each
+source's edges are traversed, when the loaded native library has the
+corresponding capability. These are scheduling choices over the same FP32
+tile accumulation and single rounding; per-source gradients, live weights,
+delays and Poisson counts are unchanged, although the order of atomic
+additions can differ.
+
+* ``use_cooperative_row_projection``: known target-unique sources with fewer
+  than 512 edges per delay-expanded row (the recurrent history) are packed
+  eight rows at a time into register-only warp work.
+* ``use_fanout_row_projection``: sources with at least 512 edges per row (the
+  LGN) are compacted to the rows that have edges in the block's target tile and
+  walked as one concatenated edge stream, with equal-target runs reduced
+  inside each warp before the shared addition.
+* ``use_target_gather_projection``: sources with at most 16 incoming edges per
+  target (the background input) are gathered target-major by one thread per
+  target, without atomics or row lookups.
+
+Explicit ``false`` keeps the original traversal for that source class; explicit
+``true`` on an older native library raises. The automatic policy also prepares
+exact per-step CPU Poisson counts once per rollout (``use_prepared_cpu_poisson``)
+for the direct NEST compute-temporal loop on a single replica, when the declared
+batch, rollout length and internal Poisson widths fit a 64 MiB count table.
+The counts are the same draws as the per-step sampler; outside that route the
+layer keeps the per-step sampler. Explicit ``true`` raises where the route is
+unavailable and keeps the 64 MiB runtime budget.
+
 Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
 ``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
-are 256, 512, 1024 and 2048. Explicit choices retain validation and are not
+are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
+device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
+routing; the automatic choice remains 256 (batch 1) or 2048. On the V1 reference
+workload a 5120 tile is faster for the LGN alone but slower for the full
+update, because the background source costs more per block there.
+Explicit choices retain validation and are not
 evidence that an unqualified hardware/feature combination is supported.
 Small tiles use more routing memory and are not a general large-batch tuning
 recommendation.

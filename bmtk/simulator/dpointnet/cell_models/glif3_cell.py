@@ -2,6 +2,8 @@ import os
 import warnings
 from contextlib import nullcontext
 import tensorflow as tf
+from numbers import Integral
+
 import numpy as np
 import pickle as pkl
 from pathlib import Path
@@ -874,6 +876,10 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_device_poisson=False,
         # current_input=False,
         *,
+        use_prepared_cpu_poisson=UNSET,
+        use_cooperative_row_projection=UNSET,
+        use_fanout_row_projection=UNSET,
+        use_target_gather_projection=UNSET,
         spike_surrogate=UNSET,
         spike_surrogate_width=UNSET,
         spike_surrogate_gain=UNSET,
@@ -893,6 +899,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         }
         super().__init__()
         self._performance_auto_context = _performance_auto_context
+        self._declared_sequence_length = (_performance_auto_context or {}).get("sequence_length")
+        self._declared_batch_size = (
+            int(batch_size) if isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
+            and batch_size > 0 else None
+        )
         validate_bool_option(_canonical_gradient_boundary, "_canonical_gradient_boundary")
         from .nest_dynamics import resolve_hard_reset_options
 
@@ -975,6 +986,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
         use_fused_current_accumulation = execution.get("use_fused_current_accumulation", False)
         use_combined_current_sweep = execution.get("use_combined_current_sweep", False)
         combined_current_target_tile_size = execution.get("combined_current_target_tile_size", 2048)
+        # Auto resolves these to True/False; prepared Poisson resolves to "auto",
+        # which falls back silently where an explicit True would raise.
+        use_prepared_cpu_poisson = execution.get("use_prepared_cpu_poisson", False)
+        use_cooperative_row_projection = execution.get("use_cooperative_row_projection", False)
+        use_fanout_row_projection = execution.get("use_fanout_row_projection", False)
+        use_target_gather_projection = execution.get("use_target_gather_projection", False)
         use_direct_csr_recurrent_gradient = execution.get("use_direct_csr_recurrent_gradient", False)
         use_active_row_forward = execution.get("use_active_row_forward", False)
         use_forward_run_aggregation = execution.get("use_forward_run_aggregation", False)
@@ -1005,6 +1022,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             ("use_fused_nest_event_vjp", use_fused_nest_event_vjp),
             ("use_javier_recurrent_vjp", use_javier_recurrent_vjp),
             ("use_device_poisson", use_device_poisson),
+            *(() if use_prepared_cpu_poisson == "auto" else (("use_prepared_cpu_poisson", use_prepared_cpu_poisson),)),
             ("use_prepacked_nest_coefficients", use_prepacked_nest_coefficients),
             ("use_type_indexed_nest_coefficients", use_type_indexed_nest_coefficients),
             (
@@ -1025,6 +1043,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             raise ValueError("dampening_factor must be finite and nonnegative.")
         self.state_precision = state_precision
         self._use_device_poisson = use_device_poisson
+        if use_prepared_cpu_poisson == "auto" and use_device_poisson:
+            use_prepared_cpu_poisson = False
+        self._use_prepared_cpu_poisson = use_prepared_cpu_poisson
+        if use_prepared_cpu_poisson is True and use_device_poisson:
+            raise ValueError("Prepared CPU Poisson cannot be combined with device Poisson.")
         self.use_fused_nest_event_vjp = use_fused_nest_event_vjp
         self._use_type_indexed_nest_coefficients = use_type_indexed_nest_coefficients
         self._require_type_indexed_nest_coefficients = require_type_indexed_nest_coefficients
@@ -1141,6 +1164,33 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._use_forward_run_aggregation = use_forward_run_aggregation
         validate_bool_option(use_combined_current_sweep, "use_combined_current_sweep")
         self._use_combined_current_sweep = use_combined_current_sweep
+        validate_bool_option(use_cooperative_row_projection, "use_cooperative_row_projection")
+        self._use_cooperative_row_projection = use_cooperative_row_projection
+        validate_bool_option(use_fanout_row_projection, "use_fanout_row_projection")
+        self._use_fanout_row_projection = use_fanout_row_projection
+        if use_fanout_row_projection:
+            from ..custom_ops.csr_spike_ops import fanout_combined_sweep_available
+
+            if not use_combined_current_sweep:
+                raise ValueError("Fanout row projection requires the combined current sweep.")
+            if not fanout_combined_sweep_available():
+                raise RuntimeError("Rebuild both CUDA operators for fanout row projection.")
+        validate_bool_option(use_target_gather_projection, "use_target_gather_projection")
+        self._use_target_gather_projection = use_target_gather_projection
+        if use_target_gather_projection:
+            from ..custom_ops.csr_spike_ops import gather_combined_sweep_available
+
+            if not use_combined_current_sweep:
+                raise ValueError("Target gather projection requires the combined current sweep.")
+            if not gather_combined_sweep_available():
+                raise RuntimeError("Rebuild both CUDA operators for target gather projection.")
+        if use_cooperative_row_projection:
+            from ..custom_ops.csr_spike_ops import cooperative_combined_sweep_available
+
+            if not use_combined_current_sweep:
+                raise ValueError("Cooperative row projection requires the combined current sweep.")
+            if not cooperative_combined_sweep_available():
+                raise RuntimeError("Rebuild both CUDA operators for cooperative row projection.")
         self.combined_current_target_tile_size = validate_combined_target_tile_size(
             combined_current_target_tile_size
         )
@@ -2330,6 +2380,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
 
     def sample_noise_spikes(self, batch_size, noise_step, input_net, noise_seed=None):
+        if getattr(self, "_use_prepared_cpu_poisson", False):
+            from .state_rnn import _prepared_noise_for
+
+            prepared = _prepared_noise_for(self, input_net)
+            if prepared is not None:
+                if noise_seed is not None:
+                    raise ValueError("Prepared CPU Poisson does not accept an overridden step seed.")
+                return prepared
         if getattr(self, "_use_device_poisson", False):
             rollout_seed = getattr(self, "_rollout_noise_seed", None)
             base_seed = tf.cast(
@@ -2938,6 +2996,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 else projection_values[0],
                 [i_rec] + extern_currents,
                 target_tile_size=self.combined_current_target_tile_size,
+                cooperative_rows=self._use_cooperative_row_projection,
+                fanout_rows=self._use_fanout_row_projection,
+                gather_sources=self._use_target_gather_projection,
             )
         elif extern_currents:
             rec_inputs = rec_inputs + tf.add_n(extern_currents)

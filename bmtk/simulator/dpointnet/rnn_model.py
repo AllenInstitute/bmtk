@@ -204,6 +204,20 @@ class RNN:
         else:
             return self.seq_len
 
+    def _declared_sequence_length(self):
+        """Declared rollout length for static admission, or None when undetermined.
+
+        An attached engine without a resolved training approach is not an error
+        here: automatic prepared Poisson simply stays off without a length.
+        """
+        try:
+            length = self.adjusted_seq_len
+        except ValueError:
+            length = self.seq_len
+        if isinstance(length, bool) or not isinstance(length, (int, np.integer)) or length <= 0:
+            return None
+        return int(length)
+
     @property
     def inputs_populations(self):
         return self._inputs_order
@@ -547,6 +561,7 @@ class RNN:
                 single_replica=(
                     self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
                 ),
+                sequence_length=self._declared_sequence_length(),
             )
             cell_params["_performance_auto_context"] = context
             basis = cell_params.get("tau_basis")

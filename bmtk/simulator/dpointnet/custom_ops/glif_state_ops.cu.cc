@@ -58,9 +58,12 @@ template <typename T>
 struct NestTypeCoefficients {
   const T* values;
   int type;
+  const T* fallback = nullptr;
+  int neuron = 0;
 
   __device__ __forceinline__ T operator[](int column) const {
-    return values[static_cast<int64>(type) * 28 + column];
+    return fallback ? fallback[static_cast<int64>(neuron) * 28 + column]
+                    : values[static_cast<int64>(type) * 28 + column];
   }
 };
 
@@ -147,17 +150,21 @@ __global__ void NestForwardTypeIndexedKernel(
     const T* type_coefficients, const int64* type_indices, const R* t_ref,
     const T* dt, const T* v_th, bool hard_reset, T* threshold, T* new_v,
     R* new_r, T* new_asc, S* new_rise, S* new_psc,
-    int64 history_width, const S* history, S* spikes, S* new_history) {
+    int64 history_width, const S* history, S* spikes, S* new_history,
+    const T* fallback_coefficients, const bool* type_identity) {
   extern __shared__ __align__(16) unsigned char shared_bytes[];
   T* block_coefficients = reinterpret_cast<T*>(shared_bytes);
-  const int coefficient_entries = type_count * 28;
+  const bool use_types = type_identity == nullptr || *type_identity;
+  const int coefficient_entries = use_types ? type_count * 28 : 0;
   for (int entry = threadIdx.x; entry < coefficient_entries; entry += blockDim.x) {
     block_coefficients[entry] = type_coefficients[entry];
   }
   __syncthreads();
   GPU_1D_KERNEL_LOOP(index, count) {
     const int neuron = index % neurons;
-    const NestTypeCoefficients<T> params{block_coefficients, static_cast<int>(type_indices[neuron])};
+    const NestTypeCoefficients<T> params{
+        block_coefficients, use_types ? static_cast<int>(type_indices[neuron]) : 0,
+        use_types ? nullptr : fallback_coefficients, neuron};
     const bool active = refractory[index] <= 0;
     const T mean_asc = NestAdd(NestMul(asc[index * 2], params[14]),
                                NestMul(asc[index * 2 + 1], params[15]));
@@ -301,17 +308,21 @@ __global__ void NestBackwardTypeIndexedKernel(
     const T* grad_asc, const S* grad_rise, const S* grad_psc, bool hard_reset,
     const T* previous_asc, const T* v_th, const T* dampening, const T* gauss_std,
     bool detach_reset, bool detach_asc_reset, bool pseudo_gauss,
-    T* voltage_grad, T* asc_grad, S* rise_grad, S* psc_grad, S* currents_grad) {
+    T* voltage_grad, T* asc_grad, S* rise_grad, S* psc_grad, S* currents_grad,
+    const T* fallback_coefficients, const bool* type_identity) {
   extern __shared__ __align__(16) unsigned char shared_bytes[];
   T* block_coefficients = reinterpret_cast<T*>(shared_bytes);
-  const int coefficient_entries = type_count * 28;
+  const bool use_types = type_identity == nullptr || *type_identity;
+  const int coefficient_entries = use_types ? type_count * 28 : 0;
   for (int entry = threadIdx.x; entry < coefficient_entries; entry += blockDim.x) {
     block_coefficients[entry] = type_coefficients[entry];
   }
   __syncthreads();
   GPU_1D_KERNEL_LOOP(index, count) {
     const int neuron = static_cast<int>(index % neurons);
-    const NestTypeCoefficients<T> params{block_coefficients, static_cast<int>(type_indices[neuron])};
+    const NestTypeCoefficients<T> params{
+        block_coefficients, use_types ? static_cast<int>(type_indices[neuron]) : 0,
+        use_types ? nullptr : fallback_coefficients, neuron};
     const bool active = refractory[index] <= 0;
     const bool fired = active && ToFloat(threshold[index]) > 0.0f;
     T threshold_grad = grad_threshold[index];
@@ -478,10 +489,11 @@ __global__ void NestHistoryBackwardTypeIndexedKernel(
     const S* grad_spikes, const S* grad_history,
     bool detach_reset, bool detach_asc_reset, bool pseudo_gauss,
     T* voltage_grad, T* asc_grad, S* rise_grad, S* psc_grad, S* currents_grad,
-    S* old_history_grad) {
+    S* old_history_grad, const T* fallback_coefficients, const bool* type_identity) {
   extern __shared__ __align__(16) unsigned char shared_bytes[];
   T* block_coefficients = reinterpret_cast<T*>(shared_bytes);
-  const int coefficient_entries = type_count * 28;
+  const bool use_types = type_identity == nullptr || *type_identity;
+  const int coefficient_entries = use_types ? type_count * 28 : 0;
   for (int entry = threadIdx.x; entry < coefficient_entries; entry += blockDim.x) {
     block_coefficients[entry] = type_coefficients[entry];
   }
@@ -489,7 +501,9 @@ __global__ void NestHistoryBackwardTypeIndexedKernel(
   GPU_1D_KERNEL_LOOP(index, count) {
     const int neuron = static_cast<int>(index % neurons);
     const int64 history_base = (index / neurons) * history_width + neuron;
-    const NestTypeCoefficients<T> params{block_coefficients, static_cast<int>(type_indices[neuron])};
+    const NestTypeCoefficients<T> params{
+        block_coefficients, use_types ? static_cast<int>(type_indices[neuron]) : 0,
+        use_types ? nullptr : fallback_coefficients, neuron};
     const bool active = refractory[index] <= 0;
     const bool fired = active && ToFloat(threshold[index]) > 0.0f;
     const T square = FromFloat<T>(
@@ -717,8 +731,19 @@ class NestStateOp : public OpKernel {
   bool pseudo_gauss_ = false;
 };
 
+Status ValidateDeviceDispatchInputs(OpKernelContext* context, int neurons) {
+  const Tensor& coefficients = context->input(context->num_inputs() - 2);
+  const Tensor& identity = context->input(context->num_inputs() - 1);
+  if (coefficients.shape() != TensorShape({neurons, 28}) ||
+      !TensorShapeUtils::IsScalar(identity.shape())) {
+    return errors::InvalidArgument(
+        "NEST device dispatch requires [neurons, 28] fallback coefficients and a scalar predicate");
+  }
+  return OkStatus();
+}
+
 template <typename T, typename R, typename S, bool Backward, bool Events = false,
-          bool History = false>
+          bool History = false, bool DeviceDispatch = false>
 class NestStateTypeIndexedOp : public OpKernel {
  public:
   explicit NestStateTypeIndexedOp(OpKernelConstruction* context) : OpKernel(context) {
@@ -739,6 +764,9 @@ class NestStateTypeIndexedOp : public OpKernel {
                 errors::InvalidArgument("NEST voltage must have shape [batch, neurons]"));
     const int64 batch = voltage.dim_size(0);
     const int neurons = voltage.dim_size(1);
+    if constexpr (DeviceDispatch) {
+      OP_REQUIRES_OK(context, ValidateDeviceDispatchInputs(context, neurons));
+    }
     const TensorShape asc_shape({batch, neurons * 2LL});
     const TensorShape psc_shape({batch, neurons * 4LL});
     const int coefficient_index = Backward ? 2 : 6;
@@ -811,6 +839,10 @@ class NestStateTypeIndexedOp : public OpKernel {
               int type_count, size_t shared_bytes, Tensor** outputs) {
     auto& device = context->eigen_device<GPUDevice>();
     auto config = GetGpuLaunchConfig(voltage.NumElements(), device);
+    const T* fallback = DeviceDispatch
+        ? context->input(context->num_inputs() - 2).flat<T>().data() : nullptr;
+    const bool* identity = DeviceDispatch
+        ? context->input(context->num_inputs() - 1).flat<bool>().data() : nullptr;
     if constexpr (Backward) {
       OP_REQUIRES_OK(context, GpuLaunchKernel(
           NestBackwardTypeIndexedKernel<T, R, S, Events>,
@@ -828,7 +860,8 @@ class NestStateTypeIndexedOp : public OpKernel {
           Events ? context->input(14).flat<T>().data() : nullptr,
           detach_reset_, detach_asc_reset_, pseudo_gauss_,
           outputs[0]->flat<T>().data(), outputs[1]->flat<T>().data(),
-          outputs[2]->flat<S>().data(), outputs[3]->flat<S>().data(), outputs[4]->flat<S>().data()));
+          outputs[2]->flat<S>().data(), outputs[3]->flat<S>().data(), outputs[4]->flat<S>().data(),
+          fallback, identity));
     } else {
       int64 history_width = 0;
       const S* history = nullptr;
@@ -853,7 +886,7 @@ class NestStateTypeIndexedOp : public OpKernel {
           outputs[0]->flat<T>().data(), outputs[1]->flat<T>().data(),
           outputs[2]->flat<R>().data(), outputs[3]->flat<T>().data(),
           outputs[4]->flat<S>().data(), outputs[5]->flat<S>().data(),
-          history_width, history, spikes, new_history));
+          history_width, history, spikes, new_history, fallback, identity));
     }
   }
 
@@ -974,7 +1007,7 @@ class NestStateHistoryBackwardOp : public OpKernel {
   bool pseudo_gauss_ = false;
 };
 
-template <typename T, typename R, typename S, bool Events = false>
+template <typename T, typename R, typename S, bool Events = false, bool DeviceDispatch = false>
 class NestStateHistoryTypeIndexedBackwardOp : public OpKernel {
  public:
   explicit NestStateHistoryTypeIndexedBackwardOp(OpKernelConstruction* context) : OpKernel(context) {
@@ -992,6 +1025,9 @@ class NestStateHistoryTypeIndexedBackwardOp : public OpKernel {
                 errors::InvalidArgument("NEST type-indexed threshold must have shape [batch, neurons]"));
     const int64 batch = voltage.dim_size(0);
     const int neurons = voltage.dim_size(1);
+    if constexpr (DeviceDispatch) {
+      OP_REQUIRES_OK(context, ValidateDeviceDispatchInputs(context, neurons));
+    }
     const TensorShape asc_shape({batch, neurons * 2LL});
     const TensorShape psc_shape({batch, neurons * 4LL});
     const Tensor& type_coefficients = context->input(2);
@@ -1072,7 +1108,9 @@ class NestStateHistoryTypeIndexedBackwardOp : public OpKernel {
         detach_reset_, detach_asc_reset_, pseudo_gauss_,
         outputs[0]->flat<T>().data(), outputs[1]->flat<T>().data(),
         outputs[2]->flat<S>().data(), outputs[3]->flat<S>().data(),
-        outputs[4]->flat<S>().data(), outputs[5]->flat<S>().data()));
+        outputs[4]->flat<S>().data(), outputs[5]->flat<S>().data(),
+        DeviceDispatch ? context->input(context->num_inputs() - 2).flat<T>().data() : nullptr,
+        DeviceDispatch ? context->input(context->num_inputs() - 1).flat<bool>().data() : nullptr));
   }
 
   bool hard_reset_;
@@ -1083,6 +1121,18 @@ class NestStateHistoryTypeIndexedBackwardOp : public OpKernel {
 
 
 #define REGISTER_NEST(T, R, S) \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateForwardDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateTypeIndexedOp<T, R, S, false, false, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateHistoryForwardDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateTypeIndexedOp<T, R, S, false, false, true, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateBackwardDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateTypeIndexedOp<T, R, S, true, false, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateBackwardEventsDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateTypeIndexedOp<T, R, S, true, true, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateHistoryBackwardDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateHistoryTypeIndexedBackwardOp<T, R, S, false, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateHistoryBackwardEventsDeviceDispatch").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateHistoryTypeIndexedBackwardOp<T, R, S, true, true>); \
   REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateHistoryForward").Device(DEVICE_GPU) \
       .TypeConstraint<T>("T").TypeConstraint<R>("R").TypeConstraint<S>("S"), NestStateOp<T, R, S, false, false, true>); \
   REGISTER_KERNEL_BUILDER(Name("DpointnetNestStateForward").Device(DEVICE_GPU) \

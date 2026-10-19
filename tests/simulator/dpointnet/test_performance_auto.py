@@ -275,6 +275,11 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
         cell = rnn.cell
         assert cell._use_combined_current_sweep
         assert cell.combined_current_target_tile_size == tile
+        assert cell._use_cooperative_row_projection is True
+        assert cell._use_fanout_row_projection is True
+        assert cell._use_target_gather_projection is True
+        assert cell._use_prepared_cpu_poisson == "auto"
+        assert cell._declared_sequence_length == 7 and cell._declared_batch_size == batch
         assert "CPU:" in cell.recurrent_indices.device
         assert all("CPU:" in item["input_indices"].device for item in cell.inputs.values())
         assert TargetFiringRate(rnn, 5.0).compiled_spike_counts
@@ -300,6 +305,16 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
             assert value is not None, name
             assert np.isfinite(value.numpy()).all(), name
         assert np.any(gradients[1].numpy())
+        sweep = [
+            node for node in evaluate.get_concrete_function().graph.as_graph_def().node
+            if node.op == "DpointnetCombinedSweep"
+        ]
+        assert len(sweep) == 1
+        assert sweep[0].attr["fanout_rows"].b
+        assert sweep[0].attr["target_tile_size"].i == tile
+        assert len(sweep[0].attr["cooperative_rows"].list.b) == len(cell.inputs) + 1
+        # Gather applies only to sources with at most 16 incoming edges per target.
+        assert "gather_sources" not in sweep[0].attr or len(sweep[0].attr["gather_sources"].list.b) == len(cell.inputs) + 1
     finally:
         if rnn is not None and rnn._cell is not None:
             rnn._cell.close_fused_cuda()
@@ -309,12 +324,18 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
 @pytest.mark.parametrize("selective", [False, True])
 @pytest.mark.parametrize("rollout", [False, True])
 @pytest.mark.parametrize("weight_mode", ["per_edge", "frozen", "per_type"])
+@pytest.mark.parametrize("device_dispatch", [False, True])
 def test_guarded_native_dispatch_rechecks_live_coefficients_and_restore(
-    selective, rollout, weight_mode, tmp_path,
+    selective, rollout, weight_mode, device_dispatch, tmp_path, monkeypatch,
 ):
     from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
     if not glif_state_ops.fused_nest_state_history_type_indexed_available():
         pytest.skip("Native type-indexed history required")
+    if device_dispatch:
+        if not glif_state_ops.fused_nest_device_dispatch_available():
+            pytest.skip("Rebuilt device-dispatch operators required")
+    else:
+        monkeypatch.setattr(glif_state_ops, "fused_nest_device_dispatch_available", lambda: False)
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     from bmtk.simulator.dpointnet.cell_models.state_rnn import _rollout_context
     from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
@@ -415,7 +436,8 @@ def test_guarded_native_dispatch_rechecks_live_coefficients_and_restore(
 
 @pytest.mark.parametrize("selective", [False, True])
 @pytest.mark.parametrize("batch", [1, 2, 32])
-def test_guarded_dispatch_preserves_segmented_remainder_vjps(selective, batch):
+@pytest.mark.parametrize("shared_types", [False, True])
+def test_guarded_dispatch_preserves_segmented_remainder_vjps(selective, batch, shared_types, tmp_path):
     from bmtk.simulator.dpointnet.custom_ops import glif_state_ops
     if not glif_state_ops.fused_nest_state_history_type_indexed_available():
         pytest.skip("Native type-indexed history required")
@@ -430,6 +452,8 @@ def test_guarded_dispatch_preserves_segmented_remainder_vjps(selective, batch):
             "nest", selective=selective, fused=True, return_spec=True,
             acceleration_profile="auto",
         )
+        if shared_types:
+            network["node_type_ids"] = np.zeros_like(network["node_type_ids"])
         inputs["drive"]["input_type"] = "spikes"
         options["_performance_auto_context"] = acceleration.performance_projection_context(
             network, inputs, dt=1.0, max_delay=5.0, standard_cell=True, single_replica=True,
@@ -498,7 +522,231 @@ def test_guarded_dispatch_preserves_segmented_remainder_vjps(selective, batch):
         for value, oracle in zip(gradients, reference):
             np.testing.assert_allclose(value, oracle, rtol=2e-5, atol=2e-5)
         assert np.any(gradients[-1].numpy())
+        if not shared_types:
+            return
+        traces = evaluate.experimental_get_tracing_count()
+        original = cell.decay.numpy()
+        checkpoint = tf.train.Checkpoint(decay=cell.decay)
+        path = checkpoint.save(str(tmp_path / "remainder-coefficients"))
+        types = np.asarray(network["node_type_ids"])
+        shared_type = next(value for value in np.unique(types) if np.sum(types == value) > 1)
+        members = np.flatnonzero(types == shared_type)
+        changed = original.copy()
+        changed[members[0]] *= .5
+        cell.decay.assign(changed)
+
+        def compare_live(identity):
+            assert bool(cell.prepare_rollout_nest_coefficients()[4].numpy()) is identity
+            expected, reference = evaluate(False)
+            actual, gradients = evaluate(True)
+            for value, oracle in zip(actual, expected):
+                np.testing.assert_array_equal(value, oracle)
+            for value, oracle in zip(gradients, reference):
+                np.testing.assert_allclose(value, oracle, rtol=2e-5, atol=2e-5)
+
+        compare_live(False)
+        changed[members] = changed[members[0]]
+        cell.decay.assign(changed)
+        compare_live(True)
+        checkpoint.restore(path).assert_consumed()
+        np.testing.assert_array_equal(cell.decay.numpy(), original)
+        compare_live(True)
+        assert evaluate.experimental_get_tracing_count() == traces
     finally:
         if cell is not None:
             cell.close_fused_cuda()
         tf.keras.mixed_precision.set_global_policy(policy)
+
+
+def _resolver_hardware(monkeypatch, *, cooperative=True, fanout=True, gather=True):
+    monkeypatch.setattr(acceleration.csr_spike_ops, "combined_sweep_available", lambda: True)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "fused_cuda_available", lambda: True)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "cooperative_combined_sweep_available", lambda: cooperative)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "fanout_combined_sweep_available", lambda: fanout)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "gather_combined_sweep_available", lambda: gather)
+    monkeypatch.setattr(acceleration.glif_state_ops, "fused_nest_state_available", lambda: True)
+    monkeypatch.setattr(acceleration.glif_state_ops, "glif_state_op_status", lambda: {})
+    monkeypatch.setattr(acceleration.csr_spike_ops, "cuda_op_status", lambda: {})
+
+
+def resolve(options=None, metadata=None, **overrides):
+    parameters = dict(
+        compute_dtype=tf.float16, variable_dtype=tf.float32, batch_size=32, basis_width=4,
+        performance_context=context() if metadata is None else metadata,
+    )
+    parameters.update(overrides)
+    return acceleration.resolve_acceleration_options({**(options or {})}, **parameters)
+
+
+PROJECTION_OPTIONS = (
+    "use_cooperative_row_projection", "use_fanout_row_projection", "use_target_gather_projection",
+)
+
+
+@pytest.mark.parametrize("batch", [1, 16, 32])
+@pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
+def test_auto_selects_projection_traversals_and_prepared_poisson_with_joint_sweep(
+    monkeypatch, batch, dtype,
+):
+    _resolver_hardware(monkeypatch)
+    options, report = resolve(batch_size=batch, compute_dtype=dtype)
+    assert options["use_combined_current_sweep"] is True
+    for name in PROJECTION_OPTIONS:
+        assert options[name] is True, name
+        assert "admitted joint sweep" in report["reasons"][name]
+    assert options["use_prepared_cpu_poisson"] == "auto"
+    assert report["selected"]["use_prepared_cpu_poisson"] == "auto"
+
+
+@pytest.mark.parametrize("name", PROJECTION_OPTIONS + ("use_prepared_cpu_poisson",))
+def test_auto_keeps_explicit_false_and_true_overrides(monkeypatch, name):
+    _resolver_hardware(monkeypatch)
+    for value in (False, True):
+        options, report = resolve({name: value})
+        assert options[name] is value
+        assert report["reasons"][name].startswith("explicit override")
+
+
+@pytest.mark.parametrize("missing", ["cooperative", "fanout", "gather"])
+def test_auto_omits_traversals_without_the_rebuilt_native_capability(monkeypatch, missing):
+    _resolver_hardware(monkeypatch, **{missing: False})
+    options, _ = resolve()
+    expected = {
+        "use_cooperative_row_projection": missing != "cooperative",
+        "use_fanout_row_projection": missing != "fanout",
+        "use_target_gather_projection": missing != "gather",
+    }
+    for name, value in expected.items():
+        assert options[name] is value, name
+
+
+@pytest.mark.parametrize("boundary", [
+    {"options": {"use_combined_current_sweep": False}},
+    {"options": {"acceleration_profile": None}},
+    {"architecture": 89},
+    {"batch_size": 7},
+    {"metadata": None},
+])
+def test_traversals_follow_the_joint_sweep_boundary(monkeypatch, boundary):
+    _resolver_hardware(monkeypatch)
+    if "architecture" in boundary:
+        monkeypatch.setattr(acceleration.csr_spike_ops, "_gpu_compute_architecture", lambda: boundary["architecture"])
+    options = boundary.get("options", {})
+    if options.get("acceleration_profile", "auto") is None:
+        resolved, report = resolve(options)
+        assert report is None and not any(name in resolved for name in PROJECTION_OPTIONS)
+        return
+    resolved, _ = resolve(
+        options, **({"batch_size": boundary["batch_size"]} if "batch_size" in boundary else {}),
+        **({"performance_context": None} if "metadata" in boundary else {}),
+    )
+    assert resolved.get("use_combined_current_sweep") is not True
+    for name in PROJECTION_OPTIONS:
+        assert resolved[name] is False, name
+
+
+@pytest.mark.parametrize("options,metadata", [
+    ({"use_device_poisson": True}, None),
+    ({"temporal_gradient_precision": "float32"}, None),
+    ({"dynamics_mode": "legacy"}, None),
+    ({"use_direct_state_rnn_loop": False}, None),
+    ({}, context(single_replica=False)),
+    ({}, context(standard_cell=False)),
+])
+def test_prepared_poisson_auto_respects_its_boundaries(monkeypatch, options, metadata):
+    _resolver_hardware(monkeypatch)
+    resolved, report = resolve(options, metadata=metadata)
+    assert resolved["use_prepared_cpu_poisson"] is False
+    assert report["selected"]["use_prepared_cpu_poisson"] is False
+
+
+def test_prepared_poisson_auto_requires_a_context():
+    resolved, _ = resolve(metadata=None, performance_context=None)
+    assert resolved["use_prepared_cpu_poisson"] is False
+
+
+def test_context_records_declared_sequence_length():
+    network = {"synapses": {"delays": np.array([1.0]), "indices": np.zeros((1, 2))}, "n_nodes": 3}
+    inputs = {"bkg": {"delays": np.array([1.0]), "n_inputs": 2, "indices": np.zeros((2, 2)),
+                      "input_type": "poisson_spikes_internal"}}
+    metadata = acceleration.performance_projection_context(
+        network, inputs, dt=1.0, max_delay=3, standard_cell=True, single_replica=True,
+    )
+    assert metadata["sequence_length"] is None
+    metadata = acceleration.performance_projection_context(
+        network, inputs, dt=1.0, max_delay=3, standard_cell=True, single_replica=True,
+        sequence_length=np.int64(500),
+    )
+    assert metadata["sequence_length"] == 500 and isinstance(metadata["sequence_length"], int)
+
+
+@pytest.mark.parametrize("length,batch,admitted", [
+    (500, 32, True), (None, 32, True), (None, None, False), (3000, 32, False),
+])
+def test_prepared_poisson_static_admission_uses_declared_shapes(length, batch, admitted):
+    from bmtk.simulator.dpointnet.cell_models import state_rnn
+
+    cell = SimpleNamespace(
+        inputs={"bkg": {"input_type": "poisson_spikes_internal", "input_dim": 100}},
+        _declared_sequence_length=500 if length is None else None,
+        _declared_batch_size=32 if batch is None else None,
+    )
+    sequences = tf.keras.Input(shape=(length, 0), batch_size=batch, dtype=tf.float32)
+    if length is None and batch is None:
+        cell._declared_sequence_length = None
+    assert state_rnn._prepared_poisson_admitted(cell, sequences) is admitted
+    # Entries: 500 * 32 * 100 * 8 B = 12.8 MB fits; 3000 steps do not.
+    assert state_rnn._prepared_poisson_admitted(
+        SimpleNamespace(inputs={}, _declared_sequence_length=1, _declared_batch_size=1), sequences,
+    ) is False
+
+
+@pytest.mark.parametrize("selective", [False, True])
+def test_auto_prepared_poisson_runs_direct_loop_and_falls_back_silently(selective, monkeypatch):
+    """Under auto the layer prepares exact counts on the direct loop and keeps the
+    per-step sampler for an unrolled loop; explicit True still raises there."""
+    from test_precision_credit import make_cell, build_core
+    from bmtk.simulator.dpointnet.cell_models import state_rnn
+    from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
+
+    cell = make_cell(
+        "nest", selective=selective, noise=True, use_direct_state_rnn_loop=True,
+    )
+    assert cell._use_prepared_cpu_poisson is False  # bare cell: no context, no auto preparation
+    cell._use_prepared_cpu_poisson = "auto"
+    cell._declared_sequence_length = 7
+    cell._declared_batch_size = 3
+    calls = []
+    original = state_rnn._prepare_cpu_poisson
+
+    def counting(cell_, sequences, states, budget_bytes=state_rnn.PREPARED_POISSON_BUDGET_BYTES):
+        calls.append(budget_bytes)
+        return original(cell_, sequences, states, budget_bytes)
+
+    monkeypatch.setattr(state_rnn, "_prepare_cpu_poisson", counting)
+    try:
+        core, states, sequence = build_core(cell, length=7, batch=3)
+        prepared = core([sequence, *states])
+        # Keras may trace the functional model more than once; every trace must
+        # prepare under the automatic ceiling.
+        assert calls and set(calls) == {state_rnn.PREPARED_POISSON_AUTO_CEILING_BYTES}
+        cell._use_prepared_cpu_poisson = False
+        core, states, sequence = build_core(cell, length=7, batch=3)
+        plain = core([sequence, *states])
+        for left, right in zip(tf.nest.flatten(prepared), tf.nest.flatten(plain)):
+            np.testing.assert_array_equal(left, right)
+        cell._use_prepared_cpu_poisson = "auto"
+        width = 0
+        unrolled = ExplicitStateRNN(cell, return_sequences=True, return_state=True, unroll=True)
+        unrolled._autocast = False
+        calls.clear()
+        unrolled(tf.ones((3, 7, width), cell.compute_dtype), initial_state=states)
+        assert calls == []
+        cell._use_prepared_cpu_poisson = True
+        explicit = ExplicitStateRNN(cell, return_sequences=True, return_state=True, unroll=True)
+        explicit._autocast = False
+        with pytest.raises(ValueError, match="direct NEST compute-temporal loop"):
+            explicit(tf.ones((3, 7, width), cell.compute_dtype), initial_state=states)
+    finally:
+        cell.close_fused_cuda()

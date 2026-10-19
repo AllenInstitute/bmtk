@@ -894,6 +894,41 @@ def combined_sweep_available():
     )
 
 
+def _combined_sweep_accepts(attribute):
+    """Whether the loaded combined sweep advertises ``attribute``; False without a library."""
+    operator = getattr(_OPS, "dpointnet_combined_sweep", None)
+    return (
+        combined_sweep_available()
+        and operator is not None
+        and attribute in inspect.signature(operator).parameters
+    )
+
+
+def cooperative_combined_sweep_available():
+    return _combined_sweep_accepts("cooperative_rows")
+
+
+def fanout_combined_sweep_available():
+    return _combined_sweep_accepts("fanout_rows")
+
+
+def gather_combined_sweep_available():
+    return _combined_sweep_accepts("gather_sources")
+
+
+# Average incoming edges per target at or below which a source is projected by a
+# target-major gather (one owner thread per target, no atomics or row lookups)
+# instead of the source-major scatter walk.
+COMBINED_GATHER_MAX_MEAN_IN_DEGREE = 16
+
+
+def combined_gather_eligible(connectivity):
+    return (
+        connectivity["n_edges"] > 0
+        and connectivity["n_edges"] <= COMBINED_GATHER_MAX_MEAN_IN_DEGREE * connectivity["n_post"]
+    )
+
+
 @tf.custom_gradient
 def _substitute_combined_primal(primal, *proxies):
     def grad(dcurrent):
@@ -906,17 +941,30 @@ def validate_combined_target_tile_size(target_tile_size):
     if (
         isinstance(target_tile_size, bool)
         or not isinstance(target_tile_size, (int, np.integer))
-        or target_tile_size not in (256, 512, 1024, 2048)
+        or target_tile_size not in (256, 512, 1024, 2048, 3072, 4096, 5120)
     ):
-        raise ValueError("Combined sweep target_tile_size must be 256, 512, 1024 or 2048.")
+        raise ValueError("Combined sweep target_tile_size must be 256, 512, 1024, 2048, 3072, 4096 or 5120.")
     return int(target_tile_size)
 
 
 def fused_combined_currents(
     spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
+    cooperative_rows=False, fanout_rows=False, gather_sources=False,
 ):
     """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs."""
     target_tile_size = validate_combined_target_tile_size(target_tile_size)
+    if type(cooperative_rows) is not bool:
+        raise ValueError("cooperative_rows must be true or false.")
+    if type(fanout_rows) is not bool:
+        raise ValueError("fanout_rows must be true or false.")
+    if type(gather_sources) is not bool:
+        raise ValueError("gather_sources must be true or false.")
+    if fanout_rows and not fanout_combined_sweep_available():
+        raise RuntimeError("Rebuild both CUDA operators for fanout combined rows.")
+    if gather_sources and not gather_combined_sweep_available():
+        raise RuntimeError("Rebuild both CUDA operators for gathered combined sources.")
+    if cooperative_rows and not cooperative_combined_sweep_available():
+        raise RuntimeError("Rebuild both CUDA operators for cooperative combined rows.")
     if not combined_sweep_available():
         raise RuntimeError("Rebuild both CUDA operators for the combined current sweep.")
     if not 2 <= len(spikes) <= 8 or not (
@@ -938,12 +986,27 @@ def fused_combined_currents(
             raise ValueError("Combined sweep connectivity and operand shapes must match.")
         if connectivity["n_synapse_types"] != basis.shape[0]:
             raise ValueError("Combined sweep type counts must match the basis.")
+    schedule = {}
+    if fanout_rows:
+        schedule["fanout_rows"] = True
+    if gather_sources:
+        gathered = [combined_gather_eligible(conn) for conn in connectivities]
+        if any(gathered):
+            schedule["gather_sources"] = gathered
+    if cooperative_rows:
+        schedule["cooperative_rows"] = [
+            conn.get("has_repeated_targets") is False
+            and conn["n_sources"] > 0
+            and conn["n_edges"] // conn["n_sources"] < 512
+            for conn in connectivities
+        ]
     primal = _OPS.dpointnet_combined_sweep(
         spikes, weights, [conn["metadata_handle"] for conn in connectivities], basis,
         Tindex=tf.as_dtype(index), n_post=connectivities[0]["n_post"],
         n_edges=[conn["n_edges"] for conn in connectivities],
         n_pairs=[conn["n_pairs"] for conn in connectivities],
         target_tile_size=target_tile_size,
+        **schedule,
     )
     return _substitute_combined_primal(tf.stop_gradient(primal), *proxies)
 

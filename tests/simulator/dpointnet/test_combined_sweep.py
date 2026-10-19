@@ -16,16 +16,23 @@ def restore_policy():
     tf.keras.mixed_precision.set_global_policy(policy)
 
 
-def fixture(dtype, batch, n_post=521):
+def fixture(dtype, batch, n_post=521, high_fanout=False, wide_rows=False):
     rng = np.random.default_rng(43)
     basis = rng.uniform(-0.75, 1.25, (3, 4)).astype(dtype)
+    if high_fanout or wide_rows:
+        basis = (rng.integers(-3, 6, (3, 4)) / 4).astype(dtype)
     sources = []
-    for width, edges in ((19, 1701), (11, 701), (3, 151)):
+    first = (777, 400001) if wide_rows else (19, 17001 if high_fanout else 1701)
+    for width, edges in (first, (11, 701), (3, 151)):
         indices = np.column_stack((rng.integers(n_post, size=edges), rng.integers(width, size=edges)))
         types = rng.integers(len(basis), size=edges)
         weights = rng.uniform(-1, 1, edges).astype(dtype)
+        if high_fanout or wide_rows:
+            weights = (rng.integers(-4, 5, edges) / 4).astype(dtype)
         spikes = rng.integers(0, 4, (batch, width)).astype(dtype)
         spikes[:, 0] = 0
+        if wide_rows and width == 777:
+            assert np.all(np.count_nonzero(spikes, axis=1) > 512)
         if width == 3:
             spikes.fill(0)
         conn = ops.build_csr_connectivity(
@@ -43,13 +50,19 @@ def fixture(dtype, batch, n_post=521):
 @pytest.mark.parametrize("compiled", [False, True])
 @pytest.mark.parametrize("index_dtype", ["uint32", "int64"])
 @pytest.mark.parametrize("n_post", [521, 4099])
-def test_combined_accuracy_and_all_canonical_vjps(dtype, batch, compiled, index_dtype, n_post, monkeypatch):
+def test_combined_accuracy_and_all_canonical_vjps(
+    dtype, batch, compiled, index_dtype, n_post, monkeypatch, target_tile_size=2048,
+    high_fanout=False, wide_rows=False,
+):
     if not ops.combined_sweep_available():
         pytest.skip("Rebuilt combined-sweep CUDA required")
     monkeypatch.setattr(ops, "_csr_index_dtype", lambda *args: tf.as_dtype(index_dtype))
-    basis, sources = fixture(dtype, batch, n_post)
+    basis, sources = fixture(dtype, batch, n_post, high_fanout, wide_rows)
     rng = np.random.default_rng(17)
     upstream = rng.uniform(-1, 1, (batch, n_post, 4)).astype(dtype)
+    if high_fanout or wide_rows:
+        # Binary-exact operands isolate traversal from long-sum VJP rounding.
+        upstream = (rng.integers(-4, 5, (batch, n_post, 4)) / 4).astype(dtype)
     reference = np.zeros((batch, n_post, 4), np.float64)
     derivative_z, derivative_w = [], []
     for indices, types, weights, spikes, _ in sources:
@@ -81,7 +94,8 @@ def test_combined_accuracy_and_all_canonical_vjps(dtype, batch, compiled, index_
                         ) for z, w, weight, source in zip(zs, masters, csr, sources)
                     ]
                     combined = ops.fused_combined_currents(
-                        zs, csr, [source[4] for source in sources], coefficients, proxies
+                        zs, csr, [source[4] for source in sources], coefficients, proxies,
+                        target_tile_size=target_tile_size,
                     )
                     loss = tf.reduce_sum(tf.cast(combined, tf.float32) * upstream.reshape(-1, 4))
                 gradients = tape.gradient(loss, zs + masters)
@@ -98,6 +112,49 @@ def test_combined_accuracy_and_all_canonical_vjps(dtype, batch, compiled, index_
     finally:
         for source in sources:
             source[4].close()
+
+
+@pytest.mark.parametrize("tile", [3072, 4096, 5120])
+@pytest.mark.parametrize("dtype", [np.float16, np.float32])
+@pytest.mark.parametrize("batch", [1, 32])
+@pytest.mark.parametrize("compiled", [False, True])
+@pytest.mark.parametrize("index_dtype", ["uint32", "int64"])
+def test_wide_tiles_values_and_all_canonical_vjps(tile, dtype, batch, compiled, index_dtype, monkeypatch):
+    test_combined_accuracy_and_all_canonical_vjps(
+        dtype, batch, compiled, index_dtype, 10243, monkeypatch, target_tile_size=tile,
+        high_fanout=True,
+    )
+
+
+@pytest.mark.parametrize("dtype", [np.float16, np.float32])
+@pytest.mark.parametrize("batch", [1, 3])
+def test_balanced_multiple_rounds_values_and_all_canonical_vjps(dtype, batch, monkeypatch):
+    test_combined_accuracy_and_all_canonical_vjps(
+        dtype, batch, True, "uint32", 10243, monkeypatch, wide_rows=True,
+    )
+
+
+def test_balanced_aggregation_keeps_disjoint_row_runs_separate():
+    if not ops.combined_sweep_available():
+        pytest.skip("Rebuilt combined-sweep CUDA required")
+    indices = np.column_stack((
+        np.r_[np.zeros(500), np.ones(11), 0, np.ones(512)],
+        np.r_[np.zeros(511), np.ones(513)],
+    )).astype(np.int64)
+    conn = ops.build_csr_connectivity(
+        indices, np.zeros(1024), 2, 2, 1, sort_by_target=True,
+    )
+    try:
+        with tf.device("/GPU:0"):
+            active = tf.constant([[1., 3.]])
+            weights = tf.ones(1024)
+            result = ops.fused_combined_currents(
+                [active, tf.zeros_like(active)], [weights, weights], [conn, conn],
+                tf.ones((1, 4)), [tf.zeros((2, 4))] * 2,
+            )
+        np.testing.assert_array_equal(result, np.repeat([[503.], [1547.]], 4, axis=1))
+    finally:
+        conn.close()
 
 
 def test_joint_rounding_fp16_high_fan_in_improves_fp64_error():

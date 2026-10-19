@@ -180,6 +180,15 @@ struct CombinedSource {
   const int* queue;
   const int* counts;
   int width;
+  bool balance_edges;
+  bool cooperative_rows;
+  // Target-major view for gathered sources: incoming CSR edge positions and
+  // their source rows per target; null when the source is scattered.
+  const Index* csc_splits;
+  const Index* csc_targets;
+  const Index* csc_edges;
+  const Index* csc_sources;
+  bool gather;
 };
 
 template <typename T>
@@ -226,11 +235,116 @@ __global__ void CombinedTileStartsKernel(
   }
 }
 
-template <typename T, typename Index, int kTargets>
-__global__ void DpointnetCombinedSweepKernel(
+// Target-major (CSC) tables of one source, built once per cached metadata:
+// edges are stably sorted by target and each target's incoming range and
+// each entry's source row are derived by binary searches.
+template <typename Index>
+__global__ void CombinedIotaKernel(int64_t count, Index* values) {
+  for (int64_t item = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+       item < count; item += static_cast<int64_t>(gridDim.x) * blockDim.x) {
+    values[item] = static_cast<Index>(item);
+  }
+}
+
+template <typename Index>
+__global__ void CombinedCscSplitsKernel(
+    int n_post, int64_t edges, const Index* sorted_posts, Index* csc_splits) {
+  for (int64_t target = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+       target <= n_post; target += static_cast<int64_t>(gridDim.x) * blockDim.x) {
+    int64_t low = 0, high = edges;
+    while (low < high) {
+      const int64_t middle = low + (high - low) / 2;
+      if (static_cast<int64_t>(sorted_posts[middle]) < target) low = middle + 1;
+      else high = middle;
+    }
+    csc_splits[target] = static_cast<Index>(low);
+  }
+}
+
+template <typename Index>
+__global__ void CombinedCscSourcesKernel(
+    int64_t edges, int width, const Index* splits, const Index* csc_edges, Index* csc_sources) {
+  for (int64_t item = static_cast<int64_t>(blockIdx.x) * blockDim.x + threadIdx.x;
+       item < edges; item += static_cast<int64_t>(gridDim.x) * blockDim.x) {
+    const Index edge = csc_edges[item];
+    int low = 0, high = width;   // largest row with splits[row] <= edge
+    while (high - low > 1) {
+      const int middle = (low + high) / 2;
+      if (splits[middle] <= edge) low = middle;
+      else high = middle;
+    }
+    csc_sources[item] = static_cast<Index>(low);
+  }
+}
+
+template <typename T, typename Index>
+__device__ __forceinline__ void DpointnetCombinedAccumulateEdge(
+    const CombinedSource<T, Index>& source, const T* basis, Index edge,
+    bool valid, float spike, int target_start, int lane, float* sums,
+    unsigned int segment = 0) {
+  const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
+  float contribution[4] = {};
+  if (valid) {
+    const float weighted = __fmul_rn(spike, ToFloat(source.weights[edge]));
+    const int type = source.types[edge];
+#pragma unroll
+    for (int receptor = 0; receptor < 4; ++receptor) {
+      contribution[receptor] = __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor]));
+    }
+  }
+  // Edges of one row segment are target-sorted, so equal targets occupy
+  // consecutive lanes: a run is detected by comparing each lane with its
+  // predecessor, which is far cheaper than a warp-wide value match. Invalid
+  // lanes get unique keys and never form a run. Suffix rounds stop as soon as
+  // no lane can still take from within its run.
+  const unsigned int key = valid ? target | (segment << 13) : 0x80000000u | lane;
+  const unsigned int below = __shfl_up_sync(0xffffffffu, key, 1);
+  const bool head = lane == 0 || key != below;
+  const unsigned int heads = __ballot_sync(0xffffffffu, head);
+  if (heads != 0xffffffffu) {
+    const unsigned int later = heads & ~((2u << lane) - 1);
+    const int next = later ? __ffs(later) - 1 : 32;
+#pragma unroll
+    for (int offset = 1; offset < 32; offset <<= 1) {
+      const int from = lane + offset;
+      const bool take = from < next;
+      if (!__any_sync(0xffffffffu, take)) break;
+#pragma unroll
+      for (int receptor = 0; receptor < 4; ++receptor) {
+        const float other = __shfl_down_sync(0xffffffffu, contribution[receptor], offset);
+        if (take) contribution[receptor] += other;
+      }
+    }
+  }
+  if (valid && head) {
+#pragma unroll
+    for (int receptor = 0; receptor < 4; ++receptor) {
+      atomicAdd(sums + target * 4 + receptor, contribution[receptor]);
+    }
+  }
+}
+
+template <typename T, typename Index, int kTargets, int kThreads = 512,
+          bool kCooperative = false, bool kFanout = false>
+__global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSweepKernel(
     CombinedSources<T, Index> sources, int source_count, int n_post,
     const T* basis, bool batch_fast, T* output) {
-  __shared__ float sums[kTargets * 4];
+  static_assert(kThreads == 512 || kThreads == 1024, "combined sweep block size");
+  __shared__ float static_sums[kTargets <= 2048 ? kTargets * 4 : 1];
+  extern __shared__ float dynamic_sums[];
+  float* sums = kTargets <= 2048 ? static_sums : dynamic_sums;
+  // Warp scans keep the scan scratch to one word per warp, leaving room for a
+  // 5,120-target tile beside the row tables in a 1,024-thread block.
+  using EdgeScan = cub::BlockScan<Index, kThreads, cub::BLOCK_SCAN_WARP_SCANS>;
+  using PackedScan = cub::BlockScan<unsigned long long, kThreads, cub::BLOCK_SCAN_WARP_SCANS>;
+  union ScanWorkspace {
+    typename EdgeScan::TempStorage scan;
+    typename PackedScan::TempStorage packed;
+  };
+  __shared__ ScanWorkspace scan_storage;
+  __shared__ Index starts[kThreads];
+  __shared__ Index offsets[kThreads + 1];
+  __shared__ float amplitudes[kThreads];
   const int tile = batch_fast ? blockIdx.y : blockIdx.x;
   const int target_start = tile * kTargets;
   const int batch = batch_fast ? blockIdx.x : blockIdx.y;
@@ -242,7 +356,146 @@ __global__ void DpointnetCombinedSweepKernel(
   __syncthreads();
   for (int source_id = 0; source_id < source_count; ++source_id) {
     const auto source = sources.source[source_id];
+    if (source.gather) continue;
     const int active = source.counts[batch];
+    if constexpr (kCooperative) {
+    if (source.cooperative_rows) {
+      // Register-only compaction fills a warp from eight short row segments.
+      constexpr int rows = 8;
+      for (int group = warp * rows; group < active; group += (blockDim.x / 32) * rows) {
+        Index first = 0, length = 0;
+        float amplitude = 0.0f;
+        if (lane < rows && group + lane < active) {
+          const int row = source.queue[static_cast<int64_t>(batch) * source.width + group + lane];
+          const int boundaries = (n_post + kTargets - 1) / kTargets + 1;
+          const int64_t at = static_cast<int64_t>(row) * boundaries + tile;
+          first = source.tile_starts[at];
+          length = source.tile_starts[at + 1] - first;
+          amplitude = ToFloat(source.spikes[static_cast<int64_t>(batch) * source.width + row]);
+        }
+        unsigned long long endpoint = static_cast<unsigned long long>(length);
+#pragma unroll
+        for (int distance = 1; distance < rows; distance *= 2) {
+          const auto preceding = __shfl_up_sync(0xffffffffu, endpoint, distance);
+          if (lane >= distance) endpoint += preceding;
+        }
+        const auto total = __shfl_sync(0xffffffffu, endpoint, rows - 1);
+        for (unsigned long long chunk = 0; chunk < total; chunk += 32) {
+          const auto position = chunk + lane;
+          const bool valid = position < total;
+          int low = 0, high = rows - 1;
+#pragma unroll
+          for (int search = 0; search < 3; ++search) {
+            const int middle = (low + high) / 2;
+            const auto boundary = __shfl_sync(0xffffffffu, endpoint, middle);
+            if (boundary <= position) low = middle + 1;
+            else high = middle;
+          }
+          const int owner = min(low, rows - 1);
+          const auto begin = __shfl_sync(
+              0xffffffffu, static_cast<unsigned long long>(first), owner);
+          const auto end = __shfl_sync(0xffffffffu, endpoint, owner);
+          const auto size = __shfl_sync(
+              0xffffffffu, static_cast<unsigned long long>(length), owner);
+          const float spike = __shfl_sync(0xffffffffu, amplitude, owner);
+          if (valid) {
+            const Index edge = static_cast<Index>(begin + position - (end - size));
+            const int target = source.posts[edge] - target_start;
+            const int type = source.types[edge];
+            const float weighted = __fmul_rn(spike, ToFloat(source.weights[edge]));
+#pragma unroll
+            for (int receptor = 0; receptor < 4; ++receptor) {
+              atomicAdd(sums + target * 4 + receptor,
+                        __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor])));
+            }
+          }
+        }
+      }
+      continue;
+    }
+    }
+    if (source.balance_edges) {
+      for (int round = 0; round < active; round += kThreads) {
+        const int item = round + threadIdx.x;
+        Index first = 0, end = 0;
+        float spike = 0.0f;
+        if (item < active) {
+          const int row = source.queue[static_cast<int64_t>(batch) * source.width + item];
+          const int boundaries = (n_post + kTargets - 1) / kTargets + 1;
+          const int64_t position = static_cast<int64_t>(row) * boundaries + tile;
+          first = source.tile_starts[position];
+          end = source.tile_starts[position + 1];
+          spike = ToFloat(source.spikes[static_cast<int64_t>(batch) * source.width + row]);
+        }
+        if constexpr (kFanout) {
+          // Compact only the rows with a segment in this tile, in queue order,
+          // then walk their concatenated edges in 32-edge chunks that may span
+          // rows: no padded lanes at row ends. One packed scan yields both the
+          // compact slot and the edge prefix; the chunk owner search is
+          // warp-uniform and each lane then advances linearly at most a few rows.
+          constexpr int kCountShift = 54;
+          const unsigned long long length = static_cast<unsigned long long>(end - first);
+          const unsigned long long packed = length ? (1ull << kCountShift) | length : 0ull;
+          unsigned long long prefix, aggregate;
+          PackedScan(scan_storage.packed).ExclusiveSum(packed, prefix, aggregate);
+          const int count = static_cast<int>(aggregate >> kCountShift);
+          const Index total = static_cast<Index>(aggregate & ((1ull << kCountShift) - 1));
+          if (length) {
+            const int slot = static_cast<int>(prefix >> kCountShift);
+            starts[slot] = first;
+            offsets[slot] = static_cast<Index>(prefix & ((1ull << kCountShift) - 1));
+            amplitudes[slot] = spike;
+          }
+          if (threadIdx.x == 0) offsets[count] = total;
+          __syncthreads();
+          for (Index chunk = warp * 32; chunk < total; chunk += blockDim.x) {
+            int owner = 0, high = count;
+            while (high - owner > 1) {
+              const int middle = (owner + high) / 2;
+              if (offsets[middle] <= chunk) owner = middle;
+              else high = middle;
+            }
+            const Index position = chunk + lane;
+            const bool valid = position < total;
+            if (valid) {
+              while (offsets[owner + 1] <= position) ++owner;
+            }
+            const Index edge = valid ? starts[owner] + (position - offsets[owner]) : 0;
+            DpointnetCombinedAccumulateEdge(
+                source, basis, edge, valid, amplitudes[owner], target_start, lane, sums, owner);
+          }
+          __syncthreads();
+          continue;
+        }
+        starts[threadIdx.x] = first;
+        amplitudes[threadIdx.x] = spike;
+        Index prefix;
+        Index work = end - first;
+        EdgeScan(scan_storage.scan).InclusiveSum(work, prefix);
+        offsets[threadIdx.x + 1] = prefix;
+        if (threadIdx.x == 0) offsets[0] = 0;
+        __syncthreads();
+        const int64_t total = offsets[kThreads];
+        for (int64_t chunk = warp * 32; chunk < total; chunk += kThreads) {
+          const int64_t position = chunk + lane;
+          const bool valid = position < total;
+          int owner = 0;
+          int upper = kThreads;
+          if (valid) {
+            while (upper - owner > 1) {
+              const int middle = (owner + upper) / 2;
+              if (offsets[middle] <= position) owner = middle;
+              else upper = middle;
+            }
+          }
+          const Index edge = valid ? starts[owner] + static_cast<Index>(position) - offsets[owner] : 0;
+          DpointnetCombinedAccumulateEdge(
+              source, basis, edge, valid, amplitudes[owner], target_start, lane, sums, owner);
+        }
+        __syncthreads();
+      }
+      continue;
+    }
     for (int item = warp; item < active; item += blockDim.x / 32) {
       const int row = source.queue[static_cast<int64_t>(batch) * source.width + item];
       const float spike = ToFloat(source.spikes[static_cast<int64_t>(batch) * source.width + row]);
@@ -253,31 +506,63 @@ __global__ void DpointnetCombinedSweepKernel(
       for (Index base = first; base < end; base += 32) {
         const Index edge = base + lane;
         const bool valid = edge < end;
-        const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
-        float contribution[4] = {};
-        if (valid) {
-          const float weighted = __fmul_rn(spike, ToFloat(source.weights[edge]));
-          const int type = source.types[edge];
-#pragma unroll
-          for (int receptor = 0; receptor < 4; ++receptor) {
-            contribution[receptor] = __fmul_rn(weighted, ToFloat(basis[type * 4 + receptor]));
-          }
-        }
-        const unsigned int group = MatchWarpValue(target);
-        if (__any_sync(0xffffffffu, valid && __popc(group) > 1)) {
-          DpointnetForwardRunSuffixSums(contribution, group, lane);
-        }
-        if (valid && lane == __ffs(group) - 1) {
-#pragma unroll
-          for (int receptor = 0; receptor < 4; ++receptor) {
-            atomicAdd(sums + target * 4 + receptor, contribution[receptor]);
-          }
-        }
+        DpointnetCombinedAccumulateEdge(source, basis, edge, valid, spike, target_start, lane, sums);
       }
     }
   }
   __syncthreads();
   const int targets = min(kTargets, n_post - target_start);
+  // Gathered sources (few incoming edges per target): one lane per target,
+  // so the adds need no atomics (no other warp touches the tile after the
+  // barrier above). Up to four incoming entries per target are loaded with
+  // independent, unrolled chains; longer in-degrees loop in groups of four.
+  for (int source_id = 0; source_id < source_count; ++source_id) {
+    const auto source = sources.source[source_id];
+    if (!source.gather) continue;
+    const T* activity = source.spikes + static_cast<int64_t>(batch) * source.width;
+    constexpr int kGroup = 4;
+#pragma unroll 2
+    for (int item = threadIdx.x; item < targets; item += kThreads) {
+      const Index begin = source.csc_splits[target_start + item];
+      const Index end = source.csc_splits[target_start + item + 1];
+      float acc[4] = {};
+      for (Index base = begin; base < end; base += kGroup) {
+        float spike[kGroup];
+        Index edge[kGroup];
+#pragma unroll
+        for (int k = 0; k < kGroup; ++k) {
+          const bool valid = base + k < end;
+          spike[k] = valid ? ToFloat(activity[source.csc_sources[base + k]]) : 0.0f;
+        }
+#pragma unroll
+        for (int k = 0; k < kGroup; ++k) {
+          edge[k] = spike[k] > 0.0f ? source.csc_edges[base + k] : 0;
+        }
+        float weight[kGroup];
+        int type[kGroup];
+#pragma unroll
+        for (int k = 0; k < kGroup; ++k) {
+          weight[k] = spike[k] > 0.0f ? ToFloat(source.weights[edge[k]]) : 0.0f;
+          type[k] = spike[k] > 0.0f ? static_cast<int>(source.types[edge[k]]) : 0;
+        }
+#pragma unroll
+        for (int k = 0; k < kGroup; ++k) {
+          if (spike[k] > 0.0f) {
+            const float weighted = __fmul_rn(spike[k], weight[k]);
+#pragma unroll
+            for (int receptor = 0; receptor < 4; ++receptor) {
+              acc[receptor] += __fmul_rn(weighted, ToFloat(basis[type[k] * 4 + receptor]));
+            }
+          }
+        }
+      }
+#pragma unroll
+      for (int receptor = 0; receptor < 4; ++receptor) {
+        sums[item * 4 + receptor] += acc[receptor];
+      }
+    }
+  }
+  __syncthreads();
   for (int item = threadIdx.x; item < targets * 4; item += blockDim.x) {
     output[(static_cast<int64_t>(batch) * n_post + target_start) * 4 + item] =
         FromFloat<T>(sums[item]);
@@ -2503,9 +2788,19 @@ class DpointnetCombinedSweepOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &pairs_));
     OP_REQUIRES_OK(context, context->GetAttr("target_tile_size", &tile_targets_));
+    OP_REQUIRES_OK(context, context->GetAttr("cooperative_rows", &cooperative_rows_));
+    OP_REQUIRES_OK(context, context->GetAttr("fanout_rows", &use_fanout_));
+    OP_REQUIRES_OK(context, context->GetAttr("gather_sources", &gather_sources_));
+    OP_REQUIRES(context, cooperative_rows_.empty() || cooperative_rows_.size() == sources_,
+                errors::InvalidArgument("cooperative_rows must be empty or match the source count."));
+    OP_REQUIRES(context, gather_sources_.empty() || gather_sources_.size() == sources_,
+                errors::InvalidArgument("gather_sources must be empty or match the source count."));
+    use_cooperative_ = std::find(cooperative_rows_.begin(), cooperative_rows_.end(), true)
+                       != cooperative_rows_.end();
     OP_REQUIRES(context, tile_targets_ == 256 || tile_targets_ == 512 ||
-                    tile_targets_ == 1024 || tile_targets_ == 2048,
-                errors::InvalidArgument("Combined sweep target_tile_size must be 256, 512, 1024 or 2048."));
+                    tile_targets_ == 1024 || tile_targets_ == 2048 ||
+                    tile_targets_ == 3072 || tile_targets_ == 4096 || tile_targets_ == 5120,
+                errors::InvalidArgument("Combined sweep target_tile_size must be 256, 512, 1024, 2048, 3072, 4096 or 5120."));
     OP_REQUIRES(context, sources_ <= kCombinedSources &&
                     edges_.size() == sources_ && pairs_.size() == sources_,
                 errors::InvalidArgument("Combined sweep requires two to eight matching sources."));
@@ -2558,9 +2853,16 @@ class DpointnetCombinedSweepOp : public OpKernel {
             queues[source].flat<int32>().data(), counts[source].flat<int32>().data()));
       }
       const Index* data = metadata.flat<Index>().data();
+      const bool gather = !gather_sources_.empty() && gather_sources_[source];
       if (!cached_metadata_[source].IsInitialized() ||
           cached_metadata_[source].tensor_data().data() != metadata.tensor_data().data() ||
           cached_width_[source] != width) {
+        if (gather) {
+          OP_REQUIRES_OK(context, BuildCscTables(
+              context, edges_[source], width, data, data + 2 * edges_[source],
+              &csc_splits_[source], &csc_targets_[source], &csc_edges_[source],
+              &csc_sources_[source]));
+        }
         const int boundaries = (n_post_ + tile_targets_ - 1) / tile_targets_ + 1;
         const int64_t entries = static_cast<int64_t>(width) * boundaries;
         OP_REQUIRES_OK(context, context->allocate_temp(
@@ -2580,7 +2882,14 @@ class DpointnetCombinedSweepOp : public OpKernel {
           spikes.flat<T>().data(), weights.flat<T>().data(), data, data + edges_[source],
           data + 2 * edges_[source], tile_starts_[source].flat<Index>().data(),
           queues[source].flat<int32>().data(),
-          counts[source].flat<int32>().data(), width};
+          counts[source].flat<int32>().data(), width,
+          width > 0 && edges_[source] / width >= 512,
+          !cooperative_rows_.empty() && cooperative_rows_[source],
+          gather ? csc_splits_[source].flat<Index>().data() : nullptr,
+          gather ? csc_targets_[source].flat<Index>().data() : nullptr,
+          gather ? csc_edges_[source].flat<Index>().data() : nullptr,
+          gather ? csc_sources_[source].flat<Index>().data() : nullptr,
+          gather};
     }
     Tensor* output = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({batch * n_post_, 4}), &output));
@@ -2589,28 +2898,105 @@ class DpointnetCombinedSweepOp : public OpKernel {
     const dim3 grid = batch_fast ? dim3(batch, tiles) : dim3(tiles, batch);
     switch (tile_targets_) {
 #define LAUNCH_COMBINED_TILE(Targets)                                       \
-      case Targets:                                                       \
+      case Targets: {                                                     \
+        /* Wide tiles hold one block per SM, so fill it with 1,024 threads  \
+           where the 32-bit row tables still fit beside the tile. */        \
+        constexpr int threads = Targets > 2048 && sizeof(Index) == 4 ? 1024 : 512; \
+        auto kernel = use_fanout_                                        \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, true>  \
+            : use_cooperative_                                           \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true>        \
+            : DpointnetCombinedSweepKernel<T, Index, Targets, threads, false>;      \
+        constexpr int shared_bytes = Targets > 2048 ? Targets * 4 * sizeof(float) : 0; \
+        if constexpr (shared_bytes > 0) {                                 \
+          if (!shared_memory_configured_) {                               \
+            const cudaError_t error = cudaFuncSetAttribute(               \
+                kernel,                                                  \
+                cudaFuncAttributeMaxDynamicSharedMemorySize, shared_bytes); \
+            OP_REQUIRES(context, error == cudaSuccess,                    \
+                        errors::InvalidArgument("Requested combined tile shared memory unavailable: ", \
+                                                cudaGetErrorString(error))); \
+            shared_memory_configured_ = true;                            \
+          }                                                              \
+        }                                                                \
         OP_REQUIRES_OK(context, GpuLaunchKernel(                           \
-            DpointnetCombinedSweepKernel<T, Index, Targets>, grid,         \
-            512, 0, device.stream(), views, sources_, n_post_,               \
+            kernel, grid,                                                \
+            threads, shared_bytes, device.stream(), views, sources_, n_post_,  \
             basis.flat<T>().data(), batch_fast, output->flat<T>().data())); \
-        break
+        break; }
       LAUNCH_COMBINED_TILE(256);
       LAUNCH_COMBINED_TILE(512);
       LAUNCH_COMBINED_TILE(1024);
       LAUNCH_COMBINED_TILE(2048);
+      LAUNCH_COMBINED_TILE(3072);
+      LAUNCH_COMBINED_TILE(4096);
+      LAUNCH_COMBINED_TILE(5120);
 #undef LAUNCH_COMBINED_TILE
     }
   }
 
  private:
+  // Stable target sort of the edge positions, then per-target ranges and
+  // per-entry source rows. Runs once per cached metadata identity.
+  Status BuildCscTables(OpKernelContext* context, int64_t edges, int width, const Index* posts,
+                        const Index* splits, Tensor* csc_splits, Tensor* csc_targets,
+                        Tensor* csc_edges, Tensor* csc_sources) {
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    auto stream = device.stream();
+    const auto type = DataTypeToEnum<Index>::v();
+    TF_RETURN_IF_ERROR(context->allocate_temp(type, TensorShape({n_post_ + 1}), csc_splits));
+    TF_RETURN_IF_ERROR(context->allocate_temp(type, TensorShape({std::max<int64_t>(edges, 1)}), csc_edges));
+    TF_RETURN_IF_ERROR(context->allocate_temp(type, TensorShape({std::max<int64_t>(edges, 1)}), csc_sources));
+    Tensor iota;
+    Tensor& sorted_posts = *csc_targets;
+    TF_RETURN_IF_ERROR(context->allocate_temp(type, TensorShape({std::max<int64_t>(edges, 1)}), &iota));
+    TF_RETURN_IF_ERROR(context->allocate_temp(type, TensorShape({std::max<int64_t>(edges, 1)}), &sorted_posts));
+    const int blocks = static_cast<int>(std::min<int64_t>((std::max<int64_t>(edges, 1) + 255) / 256, 65535));
+    if (edges > 0) {
+      TF_RETURN_IF_ERROR(GpuLaunchKernel(CombinedIotaKernel<Index>, blocks, 256, 0, stream,
+                                         edges, iota.flat<Index>().data()));
+      size_t scratch_bytes = 0;
+      cub::DeviceRadixSort::SortPairs(
+          nullptr, scratch_bytes, posts, sorted_posts.flat<Index>().data(),
+          iota.flat<Index>().data(), csc_edges->flat<Index>().data(), edges, 0,
+          static_cast<int>(sizeof(Index) * 8), stream);
+      Tensor scratch;
+      TF_RETURN_IF_ERROR(context->allocate_temp(
+          DT_INT8, TensorShape({static_cast<int64_t>(scratch_bytes)}), &scratch));
+      if (cub::DeviceRadixSort::SortPairs(
+              scratch.flat<int8>().data(), scratch_bytes, posts, sorted_posts.flat<Index>().data(),
+              iota.flat<Index>().data(), csc_edges->flat<Index>().data(), edges, 0,
+              static_cast<int>(sizeof(Index) * 8), stream) != cudaSuccess) {
+        return errors::Internal("sorting combined sweep edges by target failed");
+      }
+      TF_RETURN_IF_ERROR(GpuLaunchKernel(
+          CombinedCscSourcesKernel<Index>, blocks, 256, 0, stream, edges, width, splits,
+          csc_edges->flat<Index>().data(), csc_sources->flat<Index>().data()));
+    }
+    TF_RETURN_IF_ERROR(GpuLaunchKernel(
+        CombinedCscSplitsKernel<Index>, (n_post_ + 1 + 255) / 256, 256, 0, stream, n_post_, edges,
+        sorted_posts.flat<Index>().data(), csc_splits->flat<Index>().data()));
+    // Sorting scratch is a temporary of this stream order; the retained tables
+    // are referenced by the kernel launches that follow.
+    return OkStatus();
+  }
+
   mutex cache_mu_;
+  bool shared_memory_configured_ = false;
   Tensor cached_metadata_[kCombinedSources];
   Tensor tile_starts_[kCombinedSources];
+  Tensor csc_splits_[kCombinedSources];
+  Tensor csc_targets_[kCombinedSources];
+  Tensor csc_edges_[kCombinedSources];
+  Tensor csc_sources_[kCombinedSources];
   int cached_width_[kCombinedSources] = {};
   int sources_;
   int n_post_;
   int tile_targets_;
+  std::vector<bool> cooperative_rows_;
+  std::vector<bool> gather_sources_;
+  bool use_cooperative_;
+  bool use_fanout_;
   std::vector<int64_t> edges_;
   std::vector<int64_t> pairs_;
 };

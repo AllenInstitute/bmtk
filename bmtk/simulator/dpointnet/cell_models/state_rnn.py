@@ -1,10 +1,121 @@
 import inspect
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from contextvars import ContextVar
 
 import tensorflow as tf
 
 _ROLLOUT_CONSTANTS = ContextVar("dpointnet_rollout_constants", default=())
+_PREPARED_NOISE = ContextVar("dpointnet_prepared_cpu_poisson", default=())
+
+
+def _weight_device(cell):
+    """Device of the compute weight shadow, tolerating distributed variables.
+
+    A Keras2 ``DistributedVariable`` rejects ``.handle`` outside the replica
+    context; its primary component or replica values still name the device.
+    """
+    variable = cell.recurrent_weight_values_compute
+    for candidate in (variable, getattr(variable, "primary", None)):
+        if candidate is None:
+            continue
+        try:
+            return candidate.handle.device
+        except (ValueError, AttributeError):
+            continue
+    values = getattr(variable, "values", None)
+    if values:
+        return values[0].device
+    return getattr(variable, "device", None)
+
+
+def _weight_device_scope(cell):
+    device = _weight_device(cell)
+    return tf.device(device) if device else nullcontext()
+
+
+def _prepared_noise_for(cell, input_net):
+    for owner, values in reversed(_PREPARED_NOISE.get()):
+        if owner is cell:
+            return values.get(id(input_net))
+    return None
+
+
+@contextmanager
+def _prepared_noise_step(cell, tables, index):
+    with _weight_device_scope(cell):
+        values = {
+            key: tf.cast(tf.gather(table, index), tf.int32)
+            for key, table in tables.items()
+        }
+    token = _PREPARED_NOISE.set(_PREPARED_NOISE.get() + ((cell, values),))
+    try:
+        yield
+    finally:
+        _PREPARED_NOISE.reset(token)
+
+
+def _internal_poisson_inputs(cell):
+    return [
+        net for net in cell.inputs.values()
+        if net["input_type"] in ("poisson_spikes_internal", "noisy_current")
+    ]
+
+
+PREPARED_POISSON_BUDGET_BYTES = 64 * 1024**2
+# Automatic admission is decided statically within the budget above; the
+# runtime guard for auto only rejects pathological rollouts far beyond it.
+PREPARED_POISSON_AUTO_CEILING_BYTES = 1024**3
+
+
+def _poisson_width(net):
+    return net["input_dim"] if "input_dim" in net else net["input_dense_shape"][1]
+
+
+def _prepared_poisson_admitted(cell, sequences):
+    """Static admission for automatic prepared Poisson from declared/static shapes."""
+    internal = _internal_poisson_inputs(cell)
+    batch = sequences.shape[0]
+    if batch is None:
+        batch = getattr(cell, "_declared_batch_size", None)
+    length = sequences.shape[1]
+    if length is None:
+        length = getattr(cell, "_declared_sequence_length", None)
+    if not internal or batch is None or length is None:
+        return False
+    entries = int(length) * int(batch) * sum(int(_poisson_width(net)) for net in internal)
+    return entries * 8 <= PREPARED_POISSON_BUDGET_BYTES
+
+
+def _prepare_cpu_poisson(cell, sequences, states, budget_bytes=PREPARED_POISSON_BUDGET_BYTES):
+    internal = _internal_poisson_inputs(cell)
+    with tf.device("/CPU:0"):
+        shape = tf.shape(sequences, out_type=tf.int64)
+        batch, length = shape[0], shape[1]
+        entries = length * batch * sum(
+            net.get("input_dim", net["input_dense_shape"][1]) for net in internal
+        )
+        with tf.control_dependencies([
+            tf.debugging.assert_less_equal(
+                entries * 8, tf.constant(budget_bytes, tf.int64),
+                message=f"Prepared CPU Poisson exceeds the {budget_bytes >> 20} MiB rollout count budget.",
+            )
+        ]):
+            length = tf.identity(length)
+    tables = {}
+    for net in internal:
+        width = net.get("input_dim", net["input_dense_shape"][1])
+        with tf.device("/CPU:0"):
+            start = tf.identity(states[6])
+            counts = tf.map_fn(
+                lambda index: cell.sample_noise_spikes(batch, start + index, net),
+                tf.range(tf.cast(length, start.dtype), dtype=start.dtype),
+                fn_output_signature=tf.TensorSpec((sequences.shape[0], width), tf.int32),
+                parallel_iterations=1,
+            )
+        with _weight_device_scope(cell):
+            # The int32 GatherV2 registration keeps its parameters on the host.
+            tables[id(net)] = tf.cast(counts, tf.int64)
+    return tables
 
 
 def _rollout_constant(cell, name):
@@ -74,6 +185,8 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
         float32_temporal = (
             getattr(self.cell, "temporal_gradient_precision", "compute") == "float32"
         )
+        if float32_temporal and getattr(self.cell, "_use_prepared_cpu_poisson", False) is True:
+            raise ValueError("Prepared CPU Poisson requires compute-temporal gradients.")
         if float32_temporal and (mask is not None or getattr(self, "time_major", False)):
             raise ValueError(
                 "FP32 temporal gradients require unmasked batch-major input."
@@ -106,6 +219,18 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                 and not self.unroll
                 and not getattr(self, "time_major", False)
             )
+            prepare_noise = getattr(self.cell, "_use_prepared_cpu_poisson", False)
+            prepared_route = (
+                use_direct_loop and not float32_temporal and self.cell.dynamics_mode == "nest"
+            )
+            if prepare_noise is True and not prepared_route:
+                raise ValueError("Prepared CPU Poisson requires the direct NEST compute-temporal loop.")
+            noise_budget = PREPARED_POISSON_BUDGET_BYTES
+            if prepare_noise == "auto":
+                # Automatic selection keeps the ordinary per-step sampler wherever
+                # the exact prepared route or its static budget is not established.
+                prepare_noise = prepared_route and _prepared_poisson_admitted(self.cell, sequences)
+                noise_budget = PREPARED_POISSON_AUTO_CEILING_BYTES
             carry_weights = (
                 use_direct_loop
                 and getattr(self.cell, "temporal_gradient_precision", "compute")
@@ -167,19 +292,36 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                     if carry_weights
                     else ()
                 )
+                noise_tables = (
+                    _prepare_cpu_poisson(self.cell, sequences, states, noise_budget)
+                    if prepare_noise else {}
+                )
+                noise_index = ()
+                if prepare_noise:
+                    with _weight_device_scope(self.cell):
+                        noise_index = (tf.constant(0, tf.int64),)
 
                 def direct_step(index, state_values, output_arrays, *weight_carrier):
-                    if carry_weights:
-                        output, next_states, next_carrier = self.cell._call_impl(
-                            sequences[:, index],
-                            state_values,
-                            recurrent_weight_carrier=weight_carrier[0],
-                        )
-                        weight_carrier = (next_carrier,)
-                    else:
-                        output, next_states = self.cell(
-                            sequences[:, index], state_values, **cell_kwargs
-                        )
+                    step_noise_index = weight_carrier[-1:] if prepare_noise else ()
+                    weight_carrier = weight_carrier[:-1] if prepare_noise else weight_carrier
+                    with (
+                        _prepared_noise_step(self.cell, noise_tables, step_noise_index[0])
+                        if prepare_noise else nullcontext()
+                    ):
+                        if carry_weights:
+                            output, next_states, next_carrier = self.cell._call_impl(
+                                sequences[:, index],
+                                state_values,
+                                recurrent_weight_carrier=weight_carrier[0],
+                            )
+                            weight_carrier = (next_carrier,)
+                        else:
+                            output, next_states = self.cell(
+                                sequences[:, index], state_values, **cell_kwargs
+                            )
+                    if prepare_noise:
+                        with _weight_device_scope(self.cell):
+                            step_noise_index = (step_noise_index[0] + tf.constant(1, tf.int64),)
                     output_arrays = tuple(
                         tf.raw_ops.TensorListPushBack(input_handle=array, tensor=value)
                         for array, value in zip(output_arrays, tf.nest.flatten(output))
@@ -188,12 +330,12 @@ class ExplicitStateRNN(tf.keras.layers.RNN):
                         index + 1,
                         tuple(next_states),
                         output_arrays,
-                    ) + weight_carrier
+                    ) + weight_carrier + step_noise_index
 
                 result = tf.while_loop(
                     lambda index, *_: index < length,
                     direct_step,
-                    (tf.constant(0), tuple(states), arrays) + carrier,
+                    (tf.constant(0), tuple(states), arrays) + carrier + noise_index,
                     parallel_iterations=32,
                 )
                 _, states, arrays = result[:3]
