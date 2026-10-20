@@ -30,7 +30,7 @@ population-level firing rate models.
 The BMTK is not itself a simulator and utilizes existing simulators, like NEURON and NEST, to run different types of
 models. What BMTK does provide is a streamlined workflow to build, analyze, and store models efficiently:
 
-.. figure:: _static/images/bmtk_architecture.jpg
+.. figure:: _static/images/bmtk_architecture_ver2.jpg
    :scale: 45%
 
 The BMTK Workflow and architecture
@@ -57,8 +57,6 @@ As such BMTK can be broken into three major components:
 * Analysis and Visualization Tools [:py:mod:`bmtk.analyzer`] - Python functions for analyzing and visualizing the
    network and simulation results
 
-.. figure:: _static/images/bmtk_architecture.jpg
-   :scale: 45%
 
 The components can function as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but

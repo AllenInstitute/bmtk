@@ -76,7 +76,7 @@ def test_onunit(cell_type, expected_val):
     assert(isinstance(cell, OnUnit))
 
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=5)  # Does the filtering + non-linearity on movie object m
+    results = lgn.evaluate(mv, downsample=5, separable=False)  # Does the filtering + non-linearity on movie object m
     times = np.array(results[0][0], dtype=np.float64)
     rates = np.array(results[0][1], dtype=np.float64)
 
@@ -104,7 +104,7 @@ def test_offunit(cell_type, expected_val):
     assert(isinstance(cell, OffUnit))
 
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=5)  # Does the filtering + non-linearity on movie object m
+    results = lgn.evaluate(mv, downsample=5, separable=False)  # Does the filtering + non-linearity on movie object m
     times = np.array(results[0][0], dtype=np.float64)
     rates = np.array(results[0][1], dtype=np.float64)
 
@@ -127,7 +127,7 @@ def test_sONsOFF(cell_type, expected_val):
     assert(isinstance(cell, TwoSubfieldLinearCell))
 
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=5)  # Does the filtering + non-linearity on movie object m
+    results = lgn.evaluate(mv, downsample=5, separable=False)  # Does the filtering + non-linearity on movie object m
     times = np.array(results[0][0], dtype=np.float64)
     rates = np.array(results[0][1], dtype=np.float64)
 
@@ -149,7 +149,7 @@ def test_sONtOFF(cell_type, expected_val):
     assert(isinstance(cell, TwoSubfieldLinearCell))
 
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=5)  # Does the filtering + non-linearity on movie object m
+    results = lgn.evaluate(mv, downsample=5, separable=False)  # Does the filtering + non-linearity on movie object m
     times = np.array(results[0][0], dtype=np.float64)
     rates = np.array(results[0][1], dtype=np.float64)
 
