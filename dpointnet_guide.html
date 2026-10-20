@@ -49,7 +49,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="DPointNet training" href="dpointnet_training.html" />
+    <link rel="next" title="DPointNet multi-GPU support" href="dpointnet_multi_gpu.html" />
     <link rel="prev" title="PointNet" href="pointnet.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -383,6 +383,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_multi_gpu.html">Sample-parallel execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training.html">DPointNet training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
@@ -655,11 +656,41 @@ change to the general checkpointing default, and does not disable BPTT.</p>
 synthetic 15-Hz target for all neurons, and then runs inference.
 The default callbacks write <code class="docutils literal notranslate"><span class="pre">callbacks_outputs/losses.csv</span></code> and export
 trained edge files under <code class="docutils literal notranslate"><span class="pre">callbacks_outputs/trained_weights/</span></code>.
-This is a workflow demonstration, not a
-recommended learning rate or biological target for another network.</p>
+This is a workflow demonstration, not a recommended learning rate or
+biological target for another network.</p>
+<p>SONATA HDF5 exports use lossless gzip compression by default. For spike and
+voltage results, select <code class="docutils literal notranslate"><span class="pre">compression</span></code> in the <code class="docutils literal notranslate"><span class="pre">output</span></code> section (or an
+inference’s own <code class="docutils literal notranslate"><span class="pre">output</span></code> section):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"output"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"spikes_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"spikes.h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"voltages_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"voltages.h5"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"compression"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gzip"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Choose <code class="docutils literal notranslate"><span class="pre">&quot;gzip&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;lzf&quot;</span></code>, an integer gzip level from 1 to 9, or
+<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>/JSON <code class="docutils literal notranslate"><span class="pre">null</span></code> to disable compression. This includes split-batch
+files and voltage mapping datasets; CSV output is unchanged.
+Programmatic <code class="docutils literal notranslate"><span class="pre">results.spikes.to_sonata(...)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">results.voltages.to_sonata(...)</span></code> and <code class="docutils literal notranslate"><span class="pre">results.save_results(...)</span></code> accept the
+same <code class="docutils literal notranslate"><span class="pre">compression</span></code> option (Python <code class="docutils literal notranslate"><span class="pre">None</span></code> disables it).
+For trained edge exports, use <code class="docutils literal notranslate"><span class="pre">training.callbacks.sonata_compression</span></code>;
+see <a class="reference internal" href="dpointnet_training.html"><span class="doc">DPointNet training</span></a>.</p>
 <p>Continue with <a class="reference internal" href="dpointnet_training.html"><span class="doc">DPointNet training</span></a> for ordinary training choices,
 validation, saved weights and optional regularizers. For your own objectives
 or training hooks, follow <a class="reference internal" href="dpointnet_custom_training.html"><span class="doc">DPointNet custom losses and callbacks</span></a>; no BMTK edits are needed.</p>
+</section>
+<section id="multi-gpu-support">
+<h2>Multi-GPU support<a class="headerlink" href="#multi-gpu-support" title="Link to this heading">#</a></h2>
+<p>See <a class="reference internal" href="dpointnet_multi_gpu.html"><span class="doc">DPointNet multi-GPU support</span></a> for sample-parallel execution across multiple
+GPUs, including configuration, launch commands, a runnable example and
+supported restrictions. Each GPU holds the full network; the sample batch
+is divided between GPUs.
+Start with the explicitly enabled MPI approach for the qualified workload;
+single-process MirroredStrategy is an opt-in alternative. This recommendation
+does not change execution when <code class="docutils literal notranslate"><span class="pre">run.distribution</span></code> is omitted.</p>
 </section>
 <section id="dynamics-and-simulation">
 <h2>Dynamics and simulation<a class="headerlink" href="#dynamics-and-simulation" title="Link to this heading">#</a></h2>
@@ -701,6 +732,17 @@ automatic continuous simulation.</p>
 </section>
 <section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Multi-GPU support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dpointnet_multi_gpu.html">Sample-parallel execution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dpointnet_multi_gpu.html#choose-an-execution-mode">Choose an execution mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpointnet_multi_gpu.html#memory-use-mpi-versus-mirroredstrategy">Memory use: MPI versus MirroredStrategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dpointnet_multi_gpu.html#sample-parallel-training">Sample-parallel training</a></li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Training and configuration</span></p>
 <ul>
@@ -760,6 +802,7 @@ automatic continuous simulation.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-the-example">Train the example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-gpu-support">Multi-GPU support</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamics-and-simulation">Dynamics and simulation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a><ul class="nav section-nav flex-column">
 </ul>

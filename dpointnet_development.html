@@ -475,6 +475,39 @@
 first-run configuration recipe.
 Current user guidance lives in <a class="reference internal" href="dpointnet_guide.html"><span class="doc">DPointNet</span></a>,
 <a class="reference internal" href="dpointnet_training_standards.html"><span class="doc">DPointNet defaults and configuration migration</span></a> and <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a>.</p>
+<section id="running-tests-efficiently">
+<h2>Running tests efficiently<a class="headerlink" href="#running-tests-efficiently" title="Link to this heading">#</a></h2>
+<p>Install the test dependencies with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">test_requirements.txt</span></code>.
+For CPU-only development, use four isolated pytest workers and one numerical
+thread per worker:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s2">""</span> <span class="n">BMTK_DPOINTNET_DISABLE_FUSED_CUDA</span><span class="o">=</span><span class="mi">1</span> \
+  <span class="n">TF_NUM_INTRAOP_THREADS</span><span class="o">=</span><span class="mi">1</span> <span class="n">TF_NUM_INTEROP_THREADS</span><span class="o">=</span><span class="mi">1</span> \
+  <span class="n">OMP_NUM_THREADS</span><span class="o">=</span><span class="mi">1</span> <span class="n">OPENBLAS_NUM_THREADS</span><span class="o">=</span><span class="mi">1</span> \
+  <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span> <span class="o">-</span><span class="n">q</span> <span class="o">-</span><span class="n">n</span> <span class="mi">4</span> <span class="o">--</span><span class="n">dist</span> <span class="n">worksteal</span> <span class="o">--</span><span class="n">durations</span><span class="o">=</span><span class="mi">20</span> \
+  <span class="n">tests</span><span class="o">/</span><span class="n">simulator</span><span class="o">/</span><span class="n">dpointnet</span>
+</pre></div>
+</div>
+<p>Use fewer workers on hosts with fewer CPU cores or limited memory. Work stealing
+balances individual parameterized cases, including expensive traced replay and
+adjoint oracles. It does not select a reduced subset. Run focused files or node
+IDs during iteration; omit <code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">4</span></code> for serial debugging.</p>
+<p>The pull-request workflow retains Python3.8,3.9,3.10 and3.11 compatibility
+jobs. Each runs the complete DPointNet suite with four CPU workers; other
+simulators, builders and utilities remain serial because some use shared
+files or simulator-global state. Coverage is collected only on Python3.11,
+appended across both phases and uploaded as <code class="docutils literal notranslate"><span class="pre">coverage.xml</span></code>. Dependency
+downloads are cached; a newer commit cancels the obsolete run for the same PR.
+Test-only and test-dependency changes also trigger validation.</p>
+<p>These CPU runs deliberately disable native CUDA loading. They do not replace
+serial native-GPU qualification from the intended source and matching operators.
+Do not run multiple pytest GPU workers against one GPU. Supported deprecated
+aliases retain regression coverage; a deprecation warning is not evidence that
+an API or its tests can be deleted.</p>
+<p>The compiled firing-rate oracle groups silent, binary and count inputs in one
+trace per units/length/dtype combination, keeping separate losses and gradients
+for all three inputs. This removes redundant trace setup, not numerical cases
+or their exact-equality assertions.</p>
+</section>
 <section id="glif3cell-gradient-control-api">
 <h2>GLIF3Cell gradient-control API<a class="headerlink" href="#glif3cell-gradient-control-api" title="Link to this heading">#</a></h2>
 <p>The constructor retains old positional argument slots for compatibility.
@@ -521,6 +554,140 @@ spike or current derivatives.</p></li>
 output derivative through an operation.</p></li>
 </ul>
 </section>
+<section id="cooperative-short-row-projection">
+<h2>Cooperative short-row projection<a class="headerlink" href="#cooperative-short-row-projection" title="Link to this heading">#</a></h2>
+<p>The keyword-only <code class="docutils literal notranslate"><span class="pre">use_cooperative_row_projection</span></code> option of <code class="docutils literal notranslate"><span class="pre">GLIF3Cell</span></code>
+(also forwarded through <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>) requires the explicit/selected
+combined current sweep and both rebuilt native libraries. An explicit request
+errors on an older native ABI; the wrapper omits the new native attribute when
+the option is off, retaining compatible older-library behavior. Automatic
+selection enables it whenever the joint sweep is admitted and the capability is
+present; explicit <code class="docutils literal notranslate"><span class="pre">False</span></code> keeps the original traversal.</p>
+<p>The native <code class="docutils literal notranslate"><span class="pre">cooperative_rows</span></code> list is empty by default. The wrapper opts in
+only known target-unique CSR sources below512edges per delay-expanded source
+row; repeated-target/high-fanout named sources use the fanout-row walk below
+when it is selected, and otherwise their original traversal.
+Eight short row segments are packed by warp scans into a register-only work
+stream. Per-source float products, FP32 tile accumulation and final rounding
+remain unchanged, but atomic addition order can differ. Canonical/master and
+carrier VJPs use the unchanged per-source proxies, including silent credit.
+Counts, delays, live weights, coefficient dispatch, Poisson RNG and state/
+checkpoint schemas are unchanged; active queues are still rebuilt.</p>
+<p>Compile-time default/opt-in specializations plus two-block launch bounds avoid
+the first prototype’s register-pressure regression. Measured RTX3090 B32 mixed
+full-biological-loss controls give about4.17percent shorter updates. Neither
+that hardware result nor fat-binary compilation establishes every-family
+performance, convergence or distributed/custom-cell composition.</p>
+</section>
+<section id="high-fanout-compact-row-walk">
+<h2>High-fanout compact row walk<a class="headerlink" href="#high-fanout-compact-row-walk" title="Link to this heading">#</a></h2>
+<p>The keyword-only <code class="docutils literal notranslate"><span class="pre">use_fanout_row_projection</span></code> cell option, also accepted
+through <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>, requires the combined sweep and the rebuilt native
+<code class="docutils literal notranslate"><span class="pre">fanout_rows</span></code> capability. Explicit incompatible requests raise; when off the
+wrapper omits the new native attribute for older compatible libraries.
+Automatic selection enables it with the admitted joint sweep; explicit
+<code class="docutils literal notranslate"><span class="pre">False</span></code> keeps the original traversal. It is independent of the cooperative
+short-row selector.</p>
+<p>Sources with average fanout at least512edges per delay-expanded row are walked
+as follows. One packed block scan over the round’s active rows compacts only
+the rows with a nonempty segment in the block’s target tile, in queue order,
+and yields their edge prefix. Each warp then walks32consecutive edges of the
+round’s concatenated segments: the chunk owner is found by one warp-uniform
+binary search and each lane advances linearly where its edge crosses a row.
+No lanes are padded at row ends. Equal-target runs inside a row segment are
+detected by comparing each lane’s key with its predecessor (segments are
+target-sorted), and suffix rounds stop as soon as no lane can still take from
+its run; this replaced a per-edge warp-wide value match and fixed five rounds,
+and applies to every high-fanout traversal of the combined sweep.
+Row-local repeated-target aggregation, canonical per-source VJPs, silent
+credit, FP32 products/tile sums, live operands, delays and Poisson counts are
+preserved. Atomic ordering can change; there is no bitwise trajectory/
+convergence guarantee or new state ABI.</p>
+<p>Tiles wider than2048targets now launch1024-thread blocks when the index type
+is32-bit, so one wide-tile block fills an SM instead of leaving half of it
+idle; both block scans use warp-scan scratch to fit the row tables beside a
+5120-target tile. Explicit <code class="docutils literal notranslate"><span class="pre">combined_current_target_tile_size=5120</span></code> is how
+this geometry is selected; the automatic default tile is unchanged.
+Earlier conclusions that wide tiles regress this workload were measured with
+512-thread blocks and do not transfer to the1024-thread kernel.</p>
+<p>Identical-operand RTX3090 B32 mixed forward screens (fixed captured LGN step,
+synthetic recurrent activity, recurrent plus LGN only) measure the joint main
+kernel at549us with tile5120 versus575us at tile2048 and the retained Javier
+original at544us; the LGN-only kernel is261us versus252us. FP32 joint is551us
+versus Javier579us. With the background source included, tile5120 is slower
+than2048 (646 versus627us), and full-biological B32 updates at tile5120 were
+2.1percent longer than at2048; the wide tile is not a general recommendation.
+At tile2048 the compact walk and run detection alone shorten full-biological
+updates from2.6155to2.5779seconds (1.44percent).
+The remaining per-step difference outside the sweep is queue construction: the
+sweep rescans every delay slot each step, whereas carried per-slot queues would
+scan only the newest slot. These are not parity, memory-saving, FP32
+full-training admission or automatic recommendations, and compiled fat-binary
+targets are not execution evidence.</p>
+</section>
+<section id="target-major-gather-for-low-in-degree-sources">
+<h2>Target-major gather for low in-degree sources<a class="headerlink" href="#target-major-gather-for-low-in-degree-sources" title="Link to this heading">#</a></h2>
+<p>The keyword-only <code class="docutils literal notranslate"><span class="pre">use_target_gather_projection</span></code> cell option, also
+accepted through <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>, requires the combined sweep and the
+rebuilt native <code class="docutils literal notranslate"><span class="pre">gather_sources</span></code> capability; explicit incompatible requests
+raise and the wrapper omits the attribute for older compatible libraries when
+the option is off. Automatic selection enables it with the admitted joint
+sweep; explicit <code class="docutils literal notranslate"><span class="pre">False</span></code> keeps the scatter traversal.
+Sources with at most16incoming edges per target on average
+(<code class="docutils literal notranslate"><span class="pre">combined_gather_eligible</span></code>) are projected target-major: the operator builds
+once per metadata identity a stable target sort of the edge positions with
+per-target ranges and per-entry source rows, and after the scatter phases each
+tile thread sums its own targets’ few incoming edges in FP32 (four independent
+chains at a time) and adds once to the shared tile without atomics, row lookups
+or scans. Repeated sources on one target are summed like any other entry.
+Canonical per-source VJPs, live weights, delays and Poisson counts are
+unchanged; the single rounding of the tile is preserved.</p>
+<p>This exists because the V1 background input (100sources, four edges per neuron,
+250Hz Poisson counts) is a poor fit for the source-major scatter: its sweep
+phase cost about123us per launch for under two million edges, dominated by
+per-block fixed work and shared CAS-loop atomics. The gather measures about82us
+in the three-source screen and adds about10to25us when other sources run.
+RTX3090 B32 mixed full-biological updates fall2.5779to2.5558seconds
+(0.85percent) on top of the compact walk, 2.2percent below the LGN-winner
+baseline. The structurally better placement, projecting such an input inside
+the neuron update as the original implementation does, is not attempted here.
+Three earlier gather variants (one sequential target per thread; entry-parallel
+with atomics; warp-owned pipelined ranges) measured105,133and141us and were
+rejected: any in-sweep gather rereads the source’s target-major table once per
+(tile, sample) block. The automatic policy enables the gather with the
+admitted joint sweep; its eligibility rule (at most16incoming edges per target
+on average) is a workload property, and explicit <code class="docutils literal notranslate"><span class="pre">False</span></code> retains the scatter.</p>
+</section>
+<section id="prepared-cpu-poisson-draws">
+<h2>Prepared CPU Poisson draws<a class="headerlink" href="#prepared-cpu-poisson-draws" title="Link to this heading">#</a></h2>
+<p>The keyword-only <code class="docutils literal notranslate"><span class="pre">use_prepared_cpu_poisson</span></code> option of <code class="docutils literal notranslate"><span class="pre">GLIF3Cell</span></code> is
+also passed through high-level <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>. Automatic selection
+resolves it to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> for the single-replica NEST direct loop with compute
+temporal gradients and internal Poisson inputs; the RNN layer then prepares
+counts only when it actually runs the direct loop and the declared batch,
+rollout length and input widths fit the 64 MiB count table, and otherwise
+keeps the per-step sampler. Explicit <code class="docutils literal notranslate"><span class="pre">True</span></code> keeps the strict behavior below.
+It requires the direct, forward, unmasked, non-unrolled, batch-major NEST loop
+with compute-temporal gradients; FP32 temporal gradients and device Poisson
+are explicitly incompatible. Stateful execution remains unsupported.</p>
+<p>When enabled, each rollout/checkpoint chunk calls the unchanged CPU stateless
+Poisson sampler with its original per-step counter, live rollout seed and
+replica seed offset, then uploads its complete count table. Counts are stored
+losslessly in int64 because TensorFlow 2.21 places int32 <code class="docutils literal notranslate"><span class="pre">GatherV2</span></code> parameters
+on the host. A separate GPU int64 loop index selects each frame, cast back to
+int32 before the ordinary cell input path. Do not replace this with int32
+table gathers: actual traces show a full-table upload every timestep.</p>
+<p>The option bounds resident tables to 64 MiB per chunk, across named internal
+Poisson/noisy-current inputs. It does not cache counts across rollouts, advance
+the logical noise stream, change the noise state/checkpoint schema or replace
+Poisson counts with Bernoulli events. Recomputed chunks prepare the same draws
+from their restored starting counter. A step-level seed override while using
+a prepared frame errors. Direct standalone cell calls retain ordinary sampling.</p>
+<p>RTX3090 B32/T500/checkpoint25 full-biological-loss controls show about
+1.8 percent shorter updates, without a reproducible memory saving.
+Distributed/custom-cell composition, other GPU families and full-loss FP32
+admission are not qualified by this change.</p>
+</section>
 <section id="canonical-weights-and-gradients">
 <h2>Canonical weights and gradients<a class="headerlink" href="#canonical-weights-and-gradients" title="Link to this heading">#</a></h2>
 <p>Preserve SONATA neuron and edge-row identity. Trainable FP32 masters, optimizer
@@ -537,11 +704,68 @@ Preserve Poisson counts, invocation-local replay/RNG state, external delay histo
 and NEST end-of-step timestamps.</p>
 <p>Automatic direct-CSR gradients require a training-engine or FP32-temporal
 restoration boundary. Bare cells and inference-only RNNs retain canonical
-gradients. Type-indexed state dispatch checks current coefficient identity;
-static dispatch is an explicit assumption that those coefficients cannot change.</p>
+gradients. Type-indexed state dispatch checks current coefficient identity.
+Static dispatch is an explicit promise that within-type equality remains valid,
+not a mutation guard or a cache of initial values. Uniform type-preserving
+changes need not invalidate that representation.</p>
+<p>The single-replica SM86/TF2.21 high-level automatic route moves the live
+identity predicate out of native custom-gradient carrier arguments. With rebuilt
+device-dispatch entry points, the state kernels read that GPU predicate directly:
+true selects the compact type table, while false selects the live full AoS
+coefficient table. Forward, history and event/state VJPs share the existing
+arithmetic. Neither branch requires a per-step host predicate transfer.
+Preparation still checks current coefficients at every rollout boundary;
+assignment and restore affect the next rollout without retracing. This is not
+the static immutable-coefficient promise.</p>
+<p>All six device-dispatch entry points must be available before selecting this
+route. Older compatible libraries retain the existing TensorFlow conditional
+and its full-coefficient fallback. Custom cells, distribution and explicit
+static dispatch retain their existing selection boundaries. Rebuild both native
+operators after changing the native ABI; old entry-point signatures are retained.</p>
 </section>
 <section id="custom-runners-and-fp32-temporal-gradients">
 <h2>Custom runners and FP32 temporal gradients<a class="headerlink" href="#custom-runners-and-fp32-temporal-gradients" title="Link to this heading">#</a></h2>
+<section id="external-current-and-release-components">
+<h3>External current and release components<a class="headerlink" href="#external-current-and-release-components" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GLIF3Cell.advance_with_currents(inputs,</span> <span class="pre">states,</span> <span class="pre">currents,</span> <span class="pre">noise_seed=...)</span></code>
+advances the existing neuron transition without rerunning recurrent or input
+projection. Supply the complete <strong>base</strong> carry (including input-delay and online
+loss channels), not appended STP release state. Currents have shape
+<code class="docutils literal notranslate"><span class="pre">[batch,</span> <span class="pre">n_neurons</span> <span class="pre">*</span> <span class="pre">n_syn_basis]</span></code>, already include normal learning-rate scaling,
+and are cast to the selected compute dtype as in ordinary execution. Inputs are
+still required for external delay history and replay-safe Poisson history.
+<code class="docutils literal notranslate"><span class="pre">noise_seed</span></code> is the scalar base seed, not a two-element stateless RNG seed.
+The method deliberately bypasses a subclass’s <code class="docutils literal notranslate"><span class="pre">_call_impl</span></code> projection override;
+the subclass remains responsible for its own release-state update and validation.</p>
+<p>The hook preserves ordinary-tape current/state VJPs and can be used inside
+segmented recomputation. It rejects the FP32 temporal-adjoint mode just as direct
+<code class="docutils literal notranslate"><span class="pre">cell.call</span></code> does; it is not an external-runner canonical-gradient boundary.
+Existing ordinary calls, state ordering, precision and accelerator selection are
+unchanged.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cell.native_execution_options</span></code> returns a copy of the base cell’s selected
+fused-current/state/history, pair-projection and fused-event flags, including
+when the profile is explicit and <code class="docutils literal notranslate"><span class="pre">acceleration_report</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+It is selection information, not kernel-execution evidence or a declaration
+about a custom projection. Mutating the returned dictionary changes no policy.
+<code class="docutils literal notranslate"><span class="pre">cell.create_compute_shadow(value,</span> <span class="pre">name=...,</span> <span class="pre">dtype=...)</span></code> creates a nontrainable
+copy without creating a canonical master or registering gradient routing.
+Its default dtype is the cell compute dtype; FP32 projection adapters must
+request FP32 explicitly. The owner must refresh it after every master update,
+assignment and restore, including frozen assignable masters, and explicitly
+verify checkpoint coverage. A shadow factory is not automatic synchronization.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fused_spike_currents</span></code> accepts graded <strong>nonnegative</strong> source amplitudes.
+It multiplies positive amplitudes unchanged, including fractional release
+efficacy and counted Poisson events. With spike gradients enabled its VJP
+returns dense source-row credit, including silent connected rows. For STP that
+is efficacy credit: apply the local release VJP before summing source-event
+credit across consuming ranks. Do not route efficacy credit directly to the
+source spike surrogate.
+With <code class="docutils literal notranslate"><span class="pre">write_csr_weight_gradient=False</span></code> the weight VJP is already canonical,
+including duplicate edges, and must not receive a second CSR restoration.
+An actual direct-CSR carrier still requires exactly one canonical restoration.</p>
+</section>
+<section id="temporal-adjoint-boundary">
+<h3>Temporal adjoint boundary<a class="headerlink" href="#temporal-adjoint-boundary" title="Link to this heading">#</a></h3>
 <p>The supported FP32 temporal route uses <code class="docutils literal notranslate"><span class="pre">TemporalAdjointRunner</span></code> or
 <code class="docutils literal notranslate"><span class="pre">ExplicitStateRNN</span></code> with selective forward state. The reverse pass uses
 FP32 state/projection derivatives and can record the original compute-precision
@@ -555,6 +779,37 @@ ordinary direct-loop use supplies compute-dtype primal currents.
 External custom runners must wire their input and recurrent carrier surfaces.
 Explicit packed/small-batch FP16 backward requests are incompatible with the
 FP32 temporal route.</p>
+</section>
+</section>
+<section id="current-accumulation-and-numerical-boundaries">
+<h2>Current accumulation and numerical boundaries<a class="headerlink" href="#current-accumulation-and-numerical-boundaries" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fused_combined_currents</span></code> is a distinct projection primal: compatible
+recurrent/named-input sources share FP32 accumulation and one final rounding.
+It retains each source’s dense source VJP and canonical/carrier weight boundary;
+<code class="docutils literal notranslate"><span class="pre">vjp_only</span></code> projection proxies supply derivatives, not additional currents.
+Never apply a second canonical restoration to an already-canonical VJP.
+The tile attribute requires the rebuilt native signature; an older library
+cannot silently accept it. Routing caches depend only on immutable metadata
+identity and source width, never the current weight values.
+See <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a> for automatic admission and numerical opt-out.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fused_spike_currents(initial_currents=...)</span></code> rounds the standalone projection
+to the compute dtype before adding the initial current once. Do not seed the
+projection’s atomic accumulator or fixed-four reduction with the initial
+current: that reassociates every synaptic addition with the baseline, can
+absorb small contributions, and changes threshold crossings even in FP32.
+The fixed-four route may forward its initial buffer because each thread reads
+and writes only its own output elements. Atomic projection routes retain a
+separate output until projection completes, then add the initial current on
+the same TensorFlow device stream. The initial-current VJP is the identity;
+spike and canonical weight VJPs are unchanged.</p>
+<p>This rounding boundary does not make atomic projection deterministic or
+make differently grouped sums of multiple projections bitwise equivalent.
+Tiny current differences can amplify through recurrent spike thresholds.
+Validate per-neuron counts and states, not only aggregate spike totals;
+capture forward results before backward/update when diagnosing divergence.
+For checkpoint replay requirements, retain the recorded-primal guidance above.
+<code class="docutils literal notranslate"><span class="pre">use_fused_current_accumulation</span></code> concerns forward currents and is independent
+of <code class="docutils literal notranslate"><span class="pre">use_fused_recurrent_accumulation</span></code>, the recurrent weight-gradient carrier.</p>
 </section>
 <section id="online-loss-channels">
 <h2>Online loss channels<a class="headerlink" href="#online-loss-channels" title="Link to this heading">#</a></h2>
@@ -588,7 +843,8 @@ configuration or persistent cache and do not change model/RNG initialization.</p
 <p>Below compute capability 7.0, scalar half accumulation uses TensorFlow’s
 compare-and-swap helper and duplicate-target warp grouping uses shuffle/ballot
 matching. Preserve grouping and live silent-neuron derivatives.
-Pre-Volta LGN filtering uses bounded extract-patches/matrix multiplication,
+LGN filtering on GPUs with compute capability 7.0 or earlier uses bounded
+extract-patches/matrix multiplication,
 retaining padding, normalization and multichannel temporal filtering.
 Do not generalize that input-specific route into a blanket convolution fallback.</p>
 <p>Alpha-basis fitting uses shared time constants and unconstrained per-class
@@ -640,10 +896,20 @@ broadcast trial assignment from that reference implementation.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-tests-efficiently">Running tests efficiently</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#glif3cell-gradient-control-api">GLIF3Cell gradient-control API</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#terminology">Terminology</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cooperative-short-row-projection">Cooperative short-row projection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-fanout-compact-row-walk">High-fanout compact row walk</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#target-major-gather-for-low-in-degree-sources">Target-major gather for low in-degree sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prepared-cpu-poisson-draws">Prepared CPU Poisson draws</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#canonical-weights-and-gradients">Canonical weights and gradients</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-runners-and-fp32-temporal-gradients">Custom runners and FP32 temporal gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-runners-and-fp32-temporal-gradients">Custom runners and FP32 temporal gradients</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#external-current-and-release-components">External current and release components</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-adjoint-boundary">Temporal adjoint boundary</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-accumulation-and-numerical-boundaries">Current accumulation and numerical boundaries</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#online-loss-channels">Online loss channels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectivity-preprocessing">Connectivity preprocessing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compatibility-implementation">Compatibility implementation</a></li>

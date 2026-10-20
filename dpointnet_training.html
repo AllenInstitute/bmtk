@@ -50,7 +50,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="DPointNet custom losses and callbacks" href="dpointnet_custom_training.html" />
-    <link rel="prev" title="DPointNet" href="dpointnet_guide.html" />
+    <link rel="prev" title="DPointNet multi-GPU support" href="dpointnet_multi_gpu.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="1.2.0" />
@@ -383,6 +383,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_multi_gpu.html">Sample-parallel execution</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">DPointNet training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
@@ -559,6 +560,16 @@ into one model batch, and <code class="docutils literal notranslate"><span class
 update. These protocols are not interchangeable: two sequential batch-16
 updates differ from one combined batch-32 update.</p>
 </section>
+<section id="multi-gpu-execution">
+<span id="one-process-per-gpu-mpi-engineering-preview"></span><span id="single-host-data-parallelism-engineering-preview"></span><h2>Multi-GPU execution<a class="headerlink" href="#multi-gpu-execution" title="Link to this heading">#</a></h2>
+<p>For sample-parallel training, see <a class="reference internal" href="dpointnet_multi_gpu.html"><span class="doc">DPointNet multi-GPU support</span></a>. That section
+explains the execution modes, per-GPU versus global batch sizes, configuration,
+MPI launcher, runnable example, output ownership and supported scope.
+Multi-GPU sample batches are distinct from the condition-update protocols above.
+MPI is the recommended starting approach when explicitly enabling multi-GPU
+training; MirroredStrategy remains an opt-in alternative. Neither is enabled
+automatically by this recommendation.</p>
+</section>
 <section id="weights-and-objectives">
 <h2>Weights and objectives<a class="headerlink" href="#weights-and-objectives" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">rnn_cell_params.train_recurrent</span></code> controls recurrent-weight training.
@@ -604,7 +615,11 @@ individual loss terms, firing-rate distributions and voltage behavior, not
 only their sum. The visual-cortex example in <code class="docutils literal notranslate"><span class="pre">examples/dpointnet_v1</span></code> needs
 its own model/data preparation and is not the first-run tutorial.</p>
 <p>The built-in <code class="docutils literal notranslate"><span class="pre">TargetFiringRate</span></code> does not load CSV filenames.
-The separate <code class="docutils literal notranslate"><span class="pre">run_dpointnet.firing_rate_reg.py</span></code> example registers a custom
+Its <code class="docutils literal notranslate"><span class="pre">compiled_spike_counts</span></code> option defaults to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> for the bounded
+native GPU route described in <a class="reference internal" href="dpointnet_performance.html"><span class="doc">DPointNet performance and GPU setup</span></a>; explicit booleans
+force the compiled FP32 count reduction or retain the ordinary reduction.
+This affects loss execution, not the selected target units or optimizer.</p>
+<p>The separate <code class="docutils literal notranslate"><span class="pre">run_dpointnet.firing_rate_reg.py</span></code> example registers a custom
 CSV-aware loss for the individual/grouped CSV configurations. Use that
 entrypoint when following those examples; it is not an automatic extension
 of the generic JSON loader.</p>
@@ -714,6 +729,27 @@ network assets. Retain compatible dynamics and reset settings, then run the
 new inference config in the original example working directory.</p>
 <p>A SONATA weight export is not a complete optimizer checkpoint and cannot by
 itself reproduce a resumed training trajectory.</p>
+<p>SONATA edge datasets use lossless gzip compression by default, matching the
+network builder. Set <code class="docutils literal notranslate"><span class="pre">training.callbacks.sonata_compression</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;gzip&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;lzf&quot;</span></code>, an integer gzip level from 1 to 9, or <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>/JSON <code class="docutils literal notranslate"><span class="pre">null</span></code> for
+uncompressed output. For example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"training"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"callbacks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Callbacks"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"sonata_compression"</span><span class="p">:</span><span class="w"> </span><span class="s2">"none"</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>When configuring callbacks explicitly, include <code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;Callbacks&quot;</span></code> (or
+the name of your registered custom callback class).</p>
+<p>For direct Python exports, pass the same selection as
+<code class="docutils literal notranslate"><span class="pre">ModelWeights.to_sonata(output_dir,</span> <span class="pre">compression=...)</span></code>; Python <code class="docutils literal notranslate"><span class="pre">None</span></code> disables
+compression. This applies to every edge dataset and preserves physical weights,
+canonical row order, population attributes and overwrite behavior.
+Compression changes storage only, not training or checkpoint semantics.</p>
 <p>For a custom Python workflow, <code class="docutils literal notranslate"><span class="pre">tf.train.Checkpoint</span></code> can include the model,
 optimizer and experiment state. Reconstruct the same model and loss
 configuration before restoration, check that all requested objects were
@@ -791,6 +827,7 @@ They do not establish convergence for either NEST or legacy dynamics.</p>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-an-experiment">Choose an experiment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-gpu-execution">Multi-GPU execution</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-and-objectives">Weights and objectives</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory-saving-checkpointing">Memory-saving checkpointing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#voltage-regularization-without-full-voltage-output">Voltage regularization without full voltage output</a></li>

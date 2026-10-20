@@ -98,6 +98,20 @@ into one model batch, and ``series_accumulate`` accumulates them before one
 update. These protocols are not interchangeable: two sequential batch-16
 updates differ from one combined batch-32 update.
 
+.. _single-host-data-parallelism-engineering-preview:
+.. _one-process-per-gpu-mpi-engineering-preview:
+
+Multi-GPU execution
+-------------------
+
+For sample-parallel training, see :doc:`dpointnet_multi_gpu`. That section
+explains the execution modes, per-GPU versus global batch sizes, configuration,
+MPI launcher, runnable example, output ownership and supported scope.
+Multi-GPU sample batches are distinct from the condition-update protocols above.
+MPI is the recommended starting approach when explicitly enabling multi-GPU
+training; MirroredStrategy remains an opt-in alternative. Neither is enabled
+automatically by this recommendation.
+
 Weights and objectives
 ----------------------
 
@@ -132,6 +146,11 @@ only their sum. The visual-cortex example in ``examples/dpointnet_v1`` needs
 its own model/data preparation and is not the first-run tutorial.
 
 The built-in ``TargetFiringRate`` does not load CSV filenames.
+Its ``compiled_spike_counts`` option defaults to ``"auto"`` for the bounded
+native GPU route described in :doc:`dpointnet_performance`; explicit booleans
+force the compiled FP32 count reduction or retain the ordinary reduction.
+This affects loss execution, not the selected target units or optimizer.
+
 The separate ``run_dpointnet.firing_rate_reg.py`` example registers a custom
 CSV-aware loss for the individual/grouped CSV configurations. Use that
 entrypoint when following those examples; it is not an automatic extension
@@ -248,6 +267,31 @@ new inference config in the original example working directory.
 
 A SONATA weight export is not a complete optimizer checkpoint and cannot by
 itself reproduce a resumed training trajectory.
+
+SONATA edge datasets use lossless gzip compression by default, matching the
+network builder. Set ``training.callbacks.sonata_compression`` to ``"gzip"``,
+``"lzf"``, an integer gzip level from 1 to 9, or ``"none"``/JSON ``null`` for
+uncompressed output. For example:
+
+.. code-block:: json
+
+   {
+     "training": {
+       "callbacks": {
+         "class": "Callbacks",
+         "sonata_compression": "none"
+       }
+     }
+   }
+
+When configuring callbacks explicitly, include ``"class": "Callbacks"`` (or
+the name of your registered custom callback class).
+
+For direct Python exports, pass the same selection as
+``ModelWeights.to_sonata(output_dir, compression=...)``; Python ``None`` disables
+compression. This applies to every edge dataset and preserves physical weights,
+canonical row order, population attributes and overwrite behavior.
+Compression changes storage only, not training or checkpoint semantics.
 
 For a custom Python workflow, ``tf.train.Checkpoint`` can include the model,
 optimizer and experiment state. Reconstruct the same model and loss

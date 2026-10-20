@@ -383,6 +383,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_multi_gpu.html">Sample-parallel execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training.html">DPointNet training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
@@ -474,6 +475,13 @@
 <p>Start with a working example in <a class="reference internal" href="dpointnet_guide.html"><span class="doc">DPointNet</span></a>. Performance depends on
 network size, activity, batch, precision, inputs and outputs; there is no
 universal speedup or memory requirement.</p>
+<p>For execution across multiple GPUs, see <a class="reference internal" href="dpointnet_multi_gpu.html"><span class="doc">DPointNet multi-GPU support</span></a>.
+That section covers sample splitting, batch semantics, launch and ownership;
+the setup and acceleration guidance below applies to each GPU.
+MPI is the recommended opt-in starting point for the qualified multi-GPU
+workload; the manual also documents single-process MirroredStrategy as an
+opt-in alternative. This is a workload-specific recommendation, not a
+runtime-default change or universal transport-performance ranking.</p>
 <section id="use-automatic-acceleration">
 <h2>Use automatic acceleration<a class="headerlink" href="#use-automatic-acceleration" title="Link to this heading">#</a></h2>
 <p>For ordinary use, leave <code class="docutils literal notranslate"><span class="pre">rnn_cell_params.acceleration_profile</span></code> omitted
@@ -500,6 +508,132 @@ selection does not bypass this safety check.</p>
 For Pascal hardware, read <a class="reference internal" href="dpointnet_pascal.html"><span class="doc">Pascal GPU compatibility</span></a> before adopting a model.
 A visible NVIDIA GPU alone does not establish compatibility with every
 TensorFlow or DPointNet execution route.</p>
+<section id="projection-and-loss-improvements">
+<h3>Projection and loss improvements<a class="headerlink" href="#projection-and-loss-improvements" title="Link to this heading">#</a></h3>
+<p>The optimized implementation reduces redundant work without changing canonical
+weights, the optimizer, Poisson counts, configured dynamics or temporal-gradient
+precision:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Improvement</p></th>
+<th class="head"><p>What it avoids</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Shared immutable basis rows</p></td>
+<td><p>Repeated backward projection for byte-identical effective coefficient
+rows. Edge weights and trainable physiological parameters are not shared.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Warp-tiled event gradients</p></td>
+<td><p>Redundant sparse weight-gradient work while retaining dense credit for
+silent sources and canonical per-edge gradients.</p></td>
+</tr>
+<tr class="row-even"><td><p>Joint recurrent/input projection</p></td>
+<td><p>Separate output buffers and launches for compatible spike sources.
+Routing metadata is cached; live weights are still read for every rollout.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Compact input replay</p></td>
+<td><p>Uploading FP32 inputs only to cast them to the model input dtype.
+Input producers retain count-valued Poisson events.</p></td>
+</tr>
+<tr class="row-even"><td><p>Host canonical metadata</p></td>
+<td><p>Keeping redundant canonical index/type tables on the GPU alongside native
+routing. Canonical resources and checkpoint identity are retained.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Compiled firing-rate counts</p></td>
+<td><p>Materializing full-sequence FP32 cast/broadcast intermediates for a rate
+objective. Only count reduction and its derivative use XLA.</p></td>
+</tr>
+<tr class="row-even"><td><p>Compact grouped EMD indexing</p></td>
+<td><p>Edge-sized host round trips during grouped weight regularization.
+Group membership, stable tie credit and the signed-int32 checkpoint schema
+are preserved.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For the standard high-level GLIF cell on one SM86 GPU, automatic joint projection
+requires NEST dynamics, compute-precision temporal gradients, FP16 or FP32 compute
+with FP32 masters, four bases, batch 1, 16 or 32, nonempty recurrence and one to
+seven supported spike-input populations. It also checks the loaded native ABI.
+Batch 1 selects 256-target tiles; batch 16/32 select 2048. A conservative
+512-MiB routing-table budget can retain 2048 or the ordinary projection instead.
+The bound uses the network’s maximum recurrent delay when <code class="docutils literal notranslate"><span class="pre">max_delay</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> or nonpositive, and accounts for each external input population’s own
+maximum delay independently of the recurrent cap.
+These are workload-based choices, not online autotuning or a universal fastest
+kernel. Other architectures/shapes retain existing compatible automatic routes.
+Custom/STP cells, declared data parallelism and FP32 temporal replay do not
+automatically opt into this new projection.</p>
+<p>Joint projection accumulates sources together in FP32 and rounds once to the
+compute dtype. Ordinary projection rounds each source separately before adding.
+This intentional floating-point reassociation can change spikes and later
+training trajectories, including in full FP32; it is not bitwise trajectory or
+convergence equivalence. To retain separate projection, set:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"rnn_cell_params"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"acceleration_profile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"auto"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"use_combined_current_sweep"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Inside an admitted joint sweep, automatic selection also chooses how each
+source’s edges are traversed, when the loaded native library has the
+corresponding capability. These are scheduling choices over the same FP32
+tile accumulation and single rounding; per-source gradients, live weights,
+delays and Poisson counts are unchanged, although the order of atomic
+additions can differ.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_cooperative_row_projection</span></code>: known target-unique sources with fewer
+than 512 edges per delay-expanded row (the recurrent history) are packed
+eight rows at a time into register-only warp work.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_fanout_row_projection</span></code>: sources with at least 512 edges per row (the
+LGN) are compacted to the rows that have edges in the block’s target tile and
+walked as one concatenated edge stream, with equal-target runs reduced
+inside each warp before the shared addition.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_target_gather_projection</span></code>: sources with at most 16 incoming edges per
+target (the background input) are gathered target-major by one thread per
+target, without atomics or row lookups.</p></li>
+</ul>
+<p>Explicit <code class="docutils literal notranslate"><span class="pre">false</span></code> keeps the original traversal for that source class; explicit
+<code class="docutils literal notranslate"><span class="pre">true</span></code> on an older native library raises. The automatic policy also prepares
+exact per-step CPU Poisson counts once per rollout (<code class="docutils literal notranslate"><span class="pre">use_prepared_cpu_poisson</span></code>)
+for the direct NEST compute-temporal loop on a single replica, when the declared
+batch, rollout length and internal Poisson widths fit a 64 MiB count table.
+The counts are the same draws as the per-step sampler; outside that route the
+layer keeps the per-step sampler. Explicit <code class="docutils literal notranslate"><span class="pre">true</span></code> raises where the route is
+unavailable and keeps the 64 MiB runtime budget.</p>
+<p>Advanced explicit joint selection uses <code class="docutils literal notranslate"><span class="pre">use_combined_current_sweep=true</span></code> and
+<code class="docutils literal notranslate"><span class="pre">combined_current_target_tile_size</span></code> in <code class="docutils literal notranslate"><span class="pre">rnn_cell_params</span></code>. Allowed tile sizes
+are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
+device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
+routing; the automatic choice remains 256 (batch 1) or 2048. On the V1 reference
+workload a 5120 tile is faster for the LGN alone but slower for the full
+update, because the background source costs more per block there.
+Explicit choices retain validation and are not
+evidence that an unqualified hardware/feature combination is supported.
+Small tiles use more routing memory and are not a general large-batch tuning
+recommendation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TargetFiringRate.compiled_spike_counts</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>. It selects the
+compiled FP32 count reduction after the model is built for a declared standard
+single-replica SM86/native model on TensorFlow 2.21. Other models retain the
+ordinary reduction. Explicit <code class="docutils literal notranslate"><span class="pre">true</span></code>/<code class="docutils literal notranslate"><span class="pre">false</span></code> override this choice; put the
+option alongside <code class="docutils literal notranslate"><span class="pre">module</span></code> and <code class="docutils literal notranslate"><span class="pre">firing_rate</span></code> in the loss configuration.
+Explicit compilation failures are reported, not silently replaced with another
+objective. This feature does not compile the entire RNN or accelerate every loss.
+Custom callers should feed compact spikes directly rather than first casting the
+entire sequence to FP32.</p>
+<p>The same admitted high-level native model prepares its live type-identity
+predicate on the compute device once per rollout, outside custom-gradient
+carrier arguments. Timestep transitions reuse that predicate to select compact
+or full-coefficient execution, falling back when within-type equality is lost.
+Automatic selection does not enable the static-dispatch promise.</p>
+</section>
 </section>
 <section id="precision-and-memory">
 <h2>Precision and memory<a class="headerlink" href="#precision-and-memory" title="Link to this heading">#</a></h2>
@@ -668,7 +802,10 @@ not override an application’s allocator environment.</p>
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-automatic-acceleration">Use automatic acceleration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-automatic-acceleration">Use automatic acceleration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#projection-and-loss-improvements">Projection and loss improvements</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#precision-and-memory">Precision and memory</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fp32-derivatives-across-time">FP32 derivatives across time</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-optional-cuda-operators">Build optional CUDA operators</a></li>

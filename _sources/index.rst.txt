@@ -91,15 +91,16 @@ About BMTK
    .. raw:: html
 
       <div style="position: relative;">
-         <img src="_static/images/bmtk-workflow-ver2.png" style="width: 100%; height: auto;">
+         <img src="_static/images/bmtk-workflow-ver3.png" style="width: 100%; height: auto;">
          <a href="builder.html"><div style="position: absolute; left: 0%; top: 22%; width: 20%; height: 13%; background-color: rgba(0, 0, 0, .0);"></div></a>
          <a href="simulators_guide.html"><div style="position: absolute; left: 38%; top: 22%; width: 23%; height: 13%; background-color: rgba(0, 0, 0, 0);"></div></a>
          <a href="analyzer.html"><div style="position: absolute; left: 78%; top: 22%; width: 22%; height: 13%; background-color: rgba(0, 0, 0, .0);"></div></a>
          
-         <a href="bionet.html"><div style="position: absolute; left: 22%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
-         <a href="pointnet.html"><div style="position: absolute; left: 36%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
-         <a href="filternet.html"><div style="position: absolute; left: 50%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
-         <a href="popnet.html"><div style="position: absolute; left: 64%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="bionet.html"><div style="position: absolute; left: 14.5%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="pointnet.html"><div style="position: absolute; left: 28.5%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="dpointnet_guide.html"><div style="position: absolute; left: 43%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="filternet.html"><div style="position: absolute; left: 57.5%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
+         <a href="popnet.html"><div style="position: absolute; left: 71.5%; top: 48%; width: 13%; height: 52%; background-color: rgba(0, 0, 0, .0);"></div></a>
       </div>
 
 

@@ -385,6 +385,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="dpointnet_guide.html">DPointNet</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="dpointnet_multi_gpu.html">Sample-parallel execution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training.html">DPointNet training</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_custom_training.html">DPointNet custom losses and callbacks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dpointnet_training_standards.html">DPointNet defaults and configuration migration</a></li>
@@ -479,7 +480,7 @@ population-level firing rate models.</p>
 <p>The BMTK is not itself a simulator and utilizes existing simulators, like NEURON and NEST, to run different types of
 models. What BMTK does provide is a streamlined workflow to build, analyze, and store models efficiently:</p>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" />
+<a class="reference internal image-reference" href="_images/bmtk_architecture_ver2.jpg"><img alt="_images/bmtk_architecture_ver2.jpg" src="_images/bmtk_architecture_ver2.jpg" style="width: 936.0px; height: 414.45px;" />
 </a>
 </figure>
 <section id="the-bmtk-workflow-and-architecture">
@@ -508,10 +509,6 @@ iterations of a simulation can be done as fast as possible.</p>
 </dl>
 </li>
 </ul>
-<figure class="align-default">
-<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" />
-</a>
-</figure>
 <p>The components can function as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
 another tool to run the model. Or if another model has been built by someone else and saved in SONATA format, BMTK will

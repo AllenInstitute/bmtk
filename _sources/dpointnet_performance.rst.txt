@@ -5,6 +5,14 @@ Start with a working example in :doc:`dpointnet_guide`. Performance depends on
 network size, activity, batch, precision, inputs and outputs; there is no
 universal speedup or memory requirement.
 
+For execution across multiple GPUs, see :doc:`dpointnet_multi_gpu`.
+That section covers sample splitting, batch semantics, launch and ownership;
+the setup and acceleration guidance below applies to each GPU.
+MPI is the recommended opt-in starting point for the qualified multi-GPU
+workload; the manual also documents single-process MirroredStrategy as an
+opt-in alternative. This is a workload-specific recommendation, not a
+runtime-default change or universal transport-performance ranking.
+
 Use automatic acceleration
 --------------------------
 
@@ -37,6 +45,126 @@ Do not copy a long list of flags from a different GPU or benchmark.
 For Pascal hardware, read :doc:`dpointnet_pascal` before adopting a model.
 A visible NVIDIA GPU alone does not establish compatibility with every
 TensorFlow or DPointNet execution route.
+
+Projection and loss improvements
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The optimized implementation reduces redundant work without changing canonical
+weights, the optimizer, Poisson counts, configured dynamics or temporal-gradient
+precision:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Improvement
+     - What it avoids
+   * - Shared immutable basis rows
+     - Repeated backward projection for byte-identical effective coefficient
+       rows. Edge weights and trainable physiological parameters are not shared.
+   * - Warp-tiled event gradients
+     - Redundant sparse weight-gradient work while retaining dense credit for
+       silent sources and canonical per-edge gradients.
+   * - Joint recurrent/input projection
+     - Separate output buffers and launches for compatible spike sources.
+       Routing metadata is cached; live weights are still read for every rollout.
+   * - Compact input replay
+     - Uploading FP32 inputs only to cast them to the model input dtype.
+       Input producers retain count-valued Poisson events.
+   * - Host canonical metadata
+     - Keeping redundant canonical index/type tables on the GPU alongside native
+       routing. Canonical resources and checkpoint identity are retained.
+   * - Compiled firing-rate counts
+     - Materializing full-sequence FP32 cast/broadcast intermediates for a rate
+       objective. Only count reduction and its derivative use XLA.
+   * - Compact grouped EMD indexing
+     - Edge-sized host round trips during grouped weight regularization.
+       Group membership, stable tie credit and the signed-int32 checkpoint schema
+       are preserved.
+
+For the standard high-level GLIF cell on one SM86 GPU, automatic joint projection
+requires NEST dynamics, compute-precision temporal gradients, FP16 or FP32 compute
+with FP32 masters, four bases, batch 1, 16 or 32, nonempty recurrence and one to
+seven supported spike-input populations. It also checks the loaded native ABI.
+Batch 1 selects 256-target tiles; batch 16/32 select 2048. A conservative
+512-MiB routing-table budget can retain 2048 or the ordinary projection instead.
+The bound uses the network's maximum recurrent delay when ``max_delay`` is
+``None`` or nonpositive, and accounts for each external input population's own
+maximum delay independently of the recurrent cap.
+These are workload-based choices, not online autotuning or a universal fastest
+kernel. Other architectures/shapes retain existing compatible automatic routes.
+Custom/STP cells, declared data parallelism and FP32 temporal replay do not
+automatically opt into this new projection.
+
+Joint projection accumulates sources together in FP32 and rounds once to the
+compute dtype. Ordinary projection rounds each source separately before adding.
+This intentional floating-point reassociation can change spikes and later
+training trajectories, including in full FP32; it is not bitwise trajectory or
+convergence equivalence. To retain separate projection, set:
+
+.. code-block:: json
+
+   {
+     "rnn_cell_params": {
+       "acceleration_profile": "auto",
+       "use_combined_current_sweep": false
+     }
+   }
+
+Inside an admitted joint sweep, automatic selection also chooses how each
+source's edges are traversed, when the loaded native library has the
+corresponding capability. These are scheduling choices over the same FP32
+tile accumulation and single rounding; per-source gradients, live weights,
+delays and Poisson counts are unchanged, although the order of atomic
+additions can differ.
+
+* ``use_cooperative_row_projection``: known target-unique sources with fewer
+  than 512 edges per delay-expanded row (the recurrent history) are packed
+  eight rows at a time into register-only warp work.
+* ``use_fanout_row_projection``: sources with at least 512 edges per row (the
+  LGN) are compacted to the rows that have edges in the block's target tile and
+  walked as one concatenated edge stream, with equal-target runs reduced
+  inside each warp before the shared addition.
+* ``use_target_gather_projection``: sources with at most 16 incoming edges per
+  target (the background input) are gathered target-major by one thread per
+  target, without atomics or row lookups.
+
+Explicit ``false`` keeps the original traversal for that source class; explicit
+``true`` on an older native library raises. The automatic policy also prepares
+exact per-step CPU Poisson counts once per rollout (``use_prepared_cpu_poisson``)
+for the direct NEST compute-temporal loop on a single replica, when the declared
+batch, rollout length and internal Poisson widths fit a 64 MiB count table.
+The counts are the same draws as the per-step sampler; outside that route the
+layer keeps the per-step sampler. Explicit ``true`` raises where the route is
+unavailable and keeps the 64 MiB runtime budget.
+
+Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
+``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
+are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
+device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
+routing; the automatic choice remains 256 (batch 1) or 2048. On the V1 reference
+workload a 5120 tile is faster for the LGN alone but slower for the full
+update, because the background source costs more per block there.
+Explicit choices retain validation and are not
+evidence that an unqualified hardware/feature combination is supported.
+Small tiles use more routing memory and are not a general large-batch tuning
+recommendation.
+
+``TargetFiringRate.compiled_spike_counts`` defaults to ``"auto"``. It selects the
+compiled FP32 count reduction after the model is built for a declared standard
+single-replica SM86/native model on TensorFlow 2.21. Other models retain the
+ordinary reduction. Explicit ``true``/``false`` override this choice; put the
+option alongside ``module`` and ``firing_rate`` in the loss configuration.
+Explicit compilation failures are reported, not silently replaced with another
+objective. This feature does not compile the entire RNN or accelerate every loss.
+Custom callers should feed compact spikes directly rather than first casting the
+entire sequence to FP32.
+
+The same admitted high-level native model prepares its live type-identity
+predicate on the compute device once per rollout, outside custom-gradient
+carrier arguments. Timestep transitions reuse that predicate to select compact
+or full-coefficient execution, falling back when within-type equality is lost.
+Automatic selection does not enable the static-dispatch promise.
 
 Precision and memory
 --------------------
