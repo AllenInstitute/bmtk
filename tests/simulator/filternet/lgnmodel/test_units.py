@@ -26,7 +26,7 @@ def test_onunit():
 
     cell = OnUnit(linear_filter, transfer_function)
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=10)
+    results = lgn.evaluate(mv, downsample=10, separable=False)
     assert(len(results) == 1)
 
     times = np.array(results[0][0], dtype=np.float64)
@@ -47,7 +47,7 @@ def test_offunit():
 
     cell = OffUnit(linear_filter, transfer_function)
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=10)
+    results = lgn.evaluate(mv, downsample=10, separable=False)
     assert(len(results) == 1)
 
     times = np.array(results[0][0], dtype=np.float64)
@@ -71,7 +71,7 @@ def test_lgnonoffcell():
 
     cell = LGNOnOffCell(on_linear_filter, off_linear_filter)
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=10)
+    results = lgn.evaluate(mv, downsample=10, separable=False)
     assert (len(results) == 1)
 
     times = np.array(results[0][0], dtype=np.float64)
@@ -104,7 +104,7 @@ def test_twosubfieldlinearcell():
                                  transfer_function=two_sub_transfer_fn)
 
     lgn = LGNModel([cell])
-    results = lgn.evaluate(mv, downsample=10)
+    results = lgn.evaluate(mv, downsample=10, separable=False)
     assert (len(results) == 1)
 
     times = np.array(results[0][0], dtype=np.float64)

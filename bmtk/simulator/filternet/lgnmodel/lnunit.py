@@ -18,7 +18,7 @@ class LNUnit(object):
     def get_spectrotemporal_kernel(self, *args, **kwargs):
         return self.linear_filter.get_spectrotemporal_kernel(*args, **kwargs)
 
-    def get_cursor(self, movie, threshold=0, separable=True):
+    def get_cursor(self, movie, threshold=0, separable=False):
         if separable:
             return SeparableLNUnitCursor(self, movie)
         else:
