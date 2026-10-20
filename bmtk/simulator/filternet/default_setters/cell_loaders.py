@@ -67,9 +67,9 @@ def get_sigma(node, dynamics_params):
         sigma = node['spatial_size']
     elif 'sigma' in node:
         sigma = node['sigma']
-    elif 'spatial_size' in dynamics_params:
+    elif dynamics_params is not None and 'spatial_size' in dynamics_params:
         sigma = dynamics_params['spatial_size']
-    elif 'sigma' in dynamics_params:
+    elif dynamics_params is not None and 'sigma' in dynamics_params:
         sigma = dynamics_params['spatial_size']
     else:
         # TODO: Raise warning
@@ -224,7 +224,7 @@ def default_cell_loader(node, template_name, dynamics_params):
             # Get spontaneous firing rate, either from the cell property of calculate from experimental data
             if 'spont_fr' in node:
                 spont_fr = node['spont_fr']
-            elif 'spont_fr' in dynamics_params:
+            elif dynamics_params is not None and 'spont_fr' in dynamics_params:
                 spont_fr = dynamics_params['spont_fr']
             else:
                 exp_prs_dict = get_data_metrics_for_each_subclass(cell_type)

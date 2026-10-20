@@ -10,7 +10,7 @@ class LNUnit(object):
         self.amplitude = amplitude
 
     def evaluate(self, movie, **kwargs):
-        return self.get_cursor(movie, separable=kwargs.pop('separable', False)).evaluate(**kwargs)
+        return self.get_cursor(movie, separable=kwargs.pop('separable', True)).evaluate(**kwargs)
  
     def get_spatiotemporal_kernel(self, *args, **kwargs):
         return self.linear_filter.get_spatiotemporal_kernel(*args, **kwargs)
@@ -18,7 +18,7 @@ class LNUnit(object):
     def get_spectrotemporal_kernel(self, *args, **kwargs):
         return self.linear_filter.get_spectrotemporal_kernel(*args, **kwargs)
 
-    def get_cursor(self, movie, threshold=0, separable=False):
+    def get_cursor(self, movie, threshold=0, separable=True):
         if separable:
             return SeparableLNUnitCursor(self, movie)
         else:
@@ -90,7 +90,7 @@ class MultiLNUnit(object):
     def get_cursor(self, *args, **kwargs):
         
         threshold = kwargs.get('threshold', 0.)
-        separable = kwargs.get('separable', False)
+        separable = kwargs.get('separable', True)
         
         if len(args) == 1:
             movie = args[0]
@@ -108,5 +108,5 @@ class MultiLNUnit(object):
             assert ValueError
     
     def evaluate(self, movie, **kwargs):
-        seperable = kwargs.pop('separable', False)
+        seperable = kwargs.pop('separable', True)
         return self.get_cursor(movie, separable=seperable).evaluate(**kwargs)
