@@ -10,14 +10,13 @@ from bmtk.simulator.dpointnet.loss_functions.target_firing_rates import TargetFi
 @pytest.mark.parametrize("units", ["Hz", "spikes_per_step"])
 @pytest.mark.parametrize("steps", [1, 25, 500])
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
-@pytest.mark.parametrize("activity", ["silent", "binary", "counts"])
-def test_compiled_rate_counts_match_fp32_values_and_scaled_vjps(units, steps, dtype, activity):
-    rng = np.random.default_rng(17)
-    values = rng.integers(
-        0, 5 if activity == "counts" else 2, (2, steps, 19)
-    ).astype(dtype.as_numpy_dtype)
-    if activity == "silent":
-        values.fill(0)
+def test_compiled_rate_counts_match_fp32_values_and_scaled_vjps(units, steps, dtype):
+    shape = (2, steps, 19)
+    activities = (
+        np.zeros(shape, dtype.as_numpy_dtype),
+        np.random.default_rng(17).integers(0, 2, shape).astype(dtype.as_numpy_dtype),
+        np.random.default_rng(17).integers(0, 5, shape).astype(dtype.as_numpy_dtype),
+    )
     rnn = SimpleNamespace(dt=1.0, seq_len=steps)
     reference = TargetFiringRate(rnn, 5.0 if units == "Hz" else 0.005, rate_units=units)
     compiled = TargetFiringRate(
@@ -25,24 +24,33 @@ def test_compiled_rate_counts_match_fp32_values_and_scaled_vjps(units, steps, dt
     )
     device = "/GPU:0" if tf.config.list_physical_devices("GPU") else "/CPU:0"
     with tf.device(device):
-        spikes = tf.constant(values)
+        spikes = tuple(tf.constant(values) for values in activities)
         loss_scale = 0.001 if units == "Hz" else 32768.0
 
         @tf.function
         def evaluate():
-            with tf.GradientTape(persistent=True) as tape:
-                tape.watch(spikes)
-                expected = reference(tf.cast(spikes, tf.float32)) * loss_scale
-                actual = compiled(spikes) * loss_scale
-            return actual, expected, tape.gradient(actual, spikes), tape.gradient(expected, spikes)
+            results = []
+            for activity in spikes:
+                with tf.GradientTape(persistent=True) as tape:
+                    tape.watch(activity)
+                    expected = reference(tf.cast(activity, tf.float32)) * loss_scale
+                    actual = compiled(activity) * loss_scale
+                results.append((
+                    actual, expected, tape.gradient(actual, activity),
+                    tape.gradient(expected, activity),
+                ))
+            return tuple(results)
 
-        actual, expected, actual_grad, expected_grad = evaluate()
-    np.testing.assert_array_equal(actual, expected)
-    np.testing.assert_array_equal(actual_grad, expected_grad)
-    assert actual.dtype == tf.float32
-    assert actual_grad.dtype == dtype
-    assert np.isfinite(actual_grad.numpy()).all()
-    assert np.any(actual_grad.numpy())
+        results = evaluate()
+    for activity, (actual, expected, actual_grad, expected_grad) in zip(
+        ("silent", "binary", "counts"), results
+    ):
+        np.testing.assert_array_equal(actual, expected, err_msg=activity)
+        np.testing.assert_array_equal(actual_grad, expected_grad, err_msg=activity)
+        assert actual.dtype == tf.float32
+        assert actual_grad.dtype == dtype
+        assert np.isfinite(actual_grad.numpy()).all()
+        assert np.any(actual_grad.numpy())
 
 
 @pytest.mark.parametrize("value", [1, "true", None])

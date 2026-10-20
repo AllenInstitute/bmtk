@@ -95,7 +95,9 @@ def test_omitted_checkpoint_size_tracks_effective_training_length(sequence_lengt
     assert engine.gradient_checkpoint_chunk_size == 17
 
 
-def test_short_sequence_default_prepares_and_differentiates_checkpoint_runner():
+@pytest.mark.parametrize("policy", ["float32", "mixed_float16"])
+def test_short_sequence_default_prepares_and_differentiates_checkpoint_runner(policy):
+    tf.keras.mixed_precision.set_global_policy(policy)
     inputs = tf.keras.layers.Input(shape=(None, 1), dtype=tf.float32)
     initial_state = tf.keras.layers.Input(shape=(1,), dtype=tf.float32)
     cell = tf.keras.layers.SimpleRNNCell(
@@ -104,7 +106,7 @@ def test_short_sequence_default_prepares_and_differentiates_checkpoint_runner():
         recurrent_initializer=tf.keras.initializers.Constant(0.4),
     )
     sequence, final_state = tf.keras.layers.RNN(
-        cell, return_sequences=True, return_state=True
+        cell, dtype="float32", return_sequences=True, return_state=True
     )(inputs, initial_state=[initial_state])
     model = tf.keras.Model((inputs, initial_state), (sequence, sequence, final_state))
     rnn = SimpleNamespace(seq_len=100, extractor_model=model, cell=SimpleNamespace())

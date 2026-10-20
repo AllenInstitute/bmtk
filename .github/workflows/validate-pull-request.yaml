@@ -6,38 +6,54 @@ on:
       - release/**
     paths:
       - bmtk/**
+      - tests/**
+      - test_requirements.txt
+      - setup.py
+      - setup.cfg
       - .github/workflows/**
+
+concurrency:
+  group: unit-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   run-tests:
     runs-on: ${{ matrix.os }}
     env:
+      CUDA_VISIBLE_DEVICES: ""
       BMTK_DPOINTNET_DISABLE_FUSED_CUDA: "1"
+      TF_NUM_INTRAOP_THREADS: "1"
+      TF_NUM_INTEROP_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      COVERAGE_ARGS: ${{ matrix.python-version == '3.11' && '--cov=bmtk --cov-append --cov-report=term --cov-report=xml' || '' }}
     strategy:
       matrix:
         os: [ubuntu-22.04]
         python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            test_requirements.txt
+            setup.py
       
       - name: Install Requirements
         run: |
-          pip install -r test_requirements.txt
-          pip install tensorflow
-          pip install neuron
-          pip install .
+          python -m pip install -r test_requirements.txt tensorflow neuron .
 
       - name: Check NRN mechanisms directory exists
         id: has_mechanisms_dir
-        uses: andstor/file-existence-action@v1
-        with:
-          files: tests/simulator/bionet/components/mechanisms
+        run: |
+          if [ -d tests/simulator/bionet/components/mechanisms ]; then
+            echo "files_exists=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Setup NEURON
         if: steps.has_mechanisms_dir.outputs.files_exists == 'true'
@@ -45,9 +61,22 @@ jobs:
           cd tests/simulator/bionet/components/mechanisms
           nrnivmodl modfiles
 
-      - name: Run Tests
+      - name: Run other simulator, builder and utility tests serially
         run: |
-          pytest --cov=bmtk --cov-report=html tests
+          python -m pytest -q $COVERAGE_ARGS --ignore=tests/simulator/dpointnet tests
+
+      - name: Run DPointNet tests with four isolated CPU workers
+        run: |
+          python -m pytest -q -n 4 --dist worksteal --durations=20 \
+            $COVERAGE_ARGS tests/simulator/dpointnet
+
+      - name: Upload coverage
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+          if-no-files-found: error
           
   linter:
     runs-on: ${{ matrix.os }}
@@ -57,12 +86,14 @@ jobs:
         python-version: [3.8]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: test_requirements.txt
 
       - name: Install Requirements
         run: |
