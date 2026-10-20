@@ -6,6 +6,43 @@ first-run configuration recipe.
 Current user guidance lives in :doc:`dpointnet_guide`,
 :doc:`dpointnet_training_standards` and :doc:`dpointnet_performance`.
 
+Running tests efficiently
+-------------------------
+
+Install the test dependencies with ``python -m pip install -r test_requirements.txt``.
+For CPU-only development, use four isolated pytest workers and one numerical
+thread per worker::
+
+    CUDA_VISIBLE_DEVICES="" BMTK_DPOINTNET_DISABLE_FUSED_CUDA=1 \
+      TF_NUM_INTRAOP_THREADS=1 TF_NUM_INTEROP_THREADS=1 \
+      OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+      python -m pytest -q -n 4 --dist worksteal --durations=20 \
+      tests/simulator/dpointnet
+
+Use fewer workers on hosts with fewer CPU cores or limited memory. Work stealing
+balances individual parameterized cases, including expensive traced replay and
+adjoint oracles. It does not select a reduced subset. Run focused files or node
+IDs during iteration; omit ``-n 4`` for serial debugging.
+
+The pull-request workflow retains Python3.8,3.9,3.10 and3.11 compatibility
+jobs. Each runs the complete DPointNet suite with four CPU workers; other
+simulators, builders and utilities remain serial because some use shared
+files or simulator-global state. Coverage is collected only on Python3.11,
+appended across both phases and uploaded as ``coverage.xml``. Dependency
+downloads are cached; a newer commit cancels the obsolete run for the same PR.
+Test-only and test-dependency changes also trigger validation.
+
+These CPU runs deliberately disable native CUDA loading. They do not replace
+serial native-GPU qualification from the intended source and matching operators.
+Do not run multiple pytest GPU workers against one GPU. Supported deprecated
+aliases retain regression coverage; a deprecation warning is not evidence that
+an API or its tests can be deleted.
+
+The compiled firing-rate oracle groups silent, binary and count inputs in one
+trace per units/length/dtype combination, keeping separate losses and gradients
+for all three inputs. This removes redundant trace setup, not numerical cases
+or their exact-equality assertions.
+
 GLIF3Cell gradient-control API
 ----------------------------------------
 
