@@ -2635,7 +2635,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
         )
 
     def restore_segmented_variable_gradients(self, variables, gradients):
-        if self._csr_master_weights:
+        if getattr(self, "_csr_master_weights", False):
             return gradients
         master = self.recurrent_weight_values
         master_value = master.value

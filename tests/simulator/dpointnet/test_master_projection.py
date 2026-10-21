@@ -136,7 +136,14 @@ def test_custom_gradient_variable_boundary_assignment_update_restore(tmp_path, c
         assert tf.dtypes.as_dtype(native[0].attr["T"].type) == tf.float16
 
 
+def require_cpu_reference():
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("The CPU CSR-master reference requires no visible GPU (CUDA-hidden suite).")
+
+
 def make_model(monkeypatch, enabled=True, mixed=True):
+    if enabled:
+        require_cpu_reference()
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
@@ -267,6 +274,7 @@ def test_resource_metadata_and_live_silent_credit_scale(dtype):
 
 @pytest.mark.parametrize("mixed", [False, True])
 def test_internal_poisson_and_frozen_named_masters(monkeypatch, mixed):
+    require_cpu_reference()
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     network, inputs, arguments = make_cell(

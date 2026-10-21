@@ -261,14 +261,19 @@ def test_rate_count_auto_uses_declared_single_replica_boundary():
         objective.compiled_spike_counts = "true"
 
 
+@pytest.mark.parametrize("csr_masters", [False, None])
 @pytest.mark.parametrize("selective", [False, True])
-@pytest.mark.parametrize("batch,tile", [(1, 256), (32, 2048)])
-def test_high_level_auto_selects_real_native_projection_without_manual_flags(selective, batch, tile):
+@pytest.mark.parametrize("batch", [1, 32])
+def test_high_level_auto_selects_real_native_projection_without_manual_flags(selective, batch, csr_masters):
     from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops
     if not csr_spike_ops.combined_sweep_available():
         pytest.skip("Rebuilt native combined sweep required")
-    if csr_spike_ops._gpu_compute_architecture() != 86:
-        pytest.skip("New automatic performance policy is qualified on SM86")
+    from bmtk.simulator.dpointnet.acceleration import JOINT_SWEEP_ARCHITECTURES
+    if csr_spike_ops._gpu_compute_architecture() not in JOINT_SWEEP_ARCHITECTURES:
+        pytest.skip("Automatic joint sweep requires a fat-binary target architecture")
+    # None: default automatic CSR masters/uint8/adaptive; False: previous route.
+    default = csr_masters is None
+    tile = 2048 if default or batch != 1 else 256
     from bmtk.simulator.dpointnet.rnn_model import RNN
     from bmtk.simulator.dpointnet.cell_models.state_rnn import _rollout_context
     from test_s8_type_indexed_nest_coefficients import _small_network_inputs
@@ -283,6 +288,7 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
             cell_params={
                 "acceleration_profile": "auto", "tau_basis": [2.0, 4.0, 8.0, 16.0],
                 "dynamics_mode": "nest", "train_recurrent": True,
+                **({} if default else {"use_csr_master_weights": False}),
             },
         )
         rnn._recurrent_networks["recurrent"] = SimpleNamespace(to_dict=lambda: network)
@@ -302,7 +308,20 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
         assert cell._declared_sequence_length == 7 and cell._declared_batch_size == batch
         assert "CPU:" in cell.recurrent_indices.device
         assert all("CPU:" in item["input_indices"].device for item in cell.inputs.values())
-        assert TargetFiringRate(rnn, 5.0).compiled_spike_counts
+        assert TargetFiringRate(rnn, 5.0).compiled_spike_counts is (
+            csr_spike_ops._gpu_compute_architecture() == 86
+        )
+        assert cell._csr_master_weights is default
+        assert cell._uint8_synapse_types is default
+        assert cell._adaptive_routing is default
+        report = rnn.acceleration_report
+        assert report["csr_master_weights"] == (
+            "direct_csr_fp32_master_host_lifecycle_v1" if default else "disabled"
+        )
+        assert report["adaptive_routing"] == (
+            "adaptive_segment_ticket_v1" if default else "disabled"
+        )
+        assert report["launch_geometry"]["valid"] and report["launch_geometry"]["tile"] == tile
 
         @tf.function
         def evaluate():
@@ -325,11 +344,15 @@ def test_high_level_auto_selects_real_native_projection_without_manual_flags(sel
             assert value is not None, name
             assert np.isfinite(value.numpy()).all(), name
         assert np.any(gradients[1].numpy())
+        operator = "DpointnetCombinedSweepCsrMaster" if default else "DpointnetCombinedSweep"
         sweep = [
             node for node in evaluate.get_concrete_function().graph.as_graph_def().node
-            if node.op == "DpointnetCombinedSweep"
+            if node.op == operator
         ]
         assert len(sweep) == 1
+        if default:
+            assert sweep[0].attr["adaptive_routing"].b and sweep[0].attr["uint8_types"].b
+            assert len(sweep[0].attr["adaptive_traversal"].list.i) == len(cell.inputs) + 1
         assert sweep[0].attr["fanout_rows"].b
         assert sweep[0].attr["target_tile_size"].i == tile
         assert len(sweep[0].attr["cooperative_rows"].list.b) == len(cell.inputs) + 1

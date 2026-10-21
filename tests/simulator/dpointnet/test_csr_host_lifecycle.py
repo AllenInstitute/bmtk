@@ -184,6 +184,8 @@ def test_csr_master_option_always_uses_host_lifecycle():
 
 
 def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch):
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("The CPU CSR-master reference requires no visible GPU (CUDA-hidden suite).")
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     import bmtk.simulator.dpointnet.csr_master as module
