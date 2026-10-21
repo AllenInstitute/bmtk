@@ -235,7 +235,10 @@ reorders live variables. ``RNN.train`` pairs optimizer slots with their masters
 after building the optimizer; custom loops that build their own optimizer call
 ``rnn.cell.bind_optimizer_checkpoint_slots(optimizer)`` before saving. Restoring
 endpoint indices that differ from the model's connectivity raises. Keras weight
-files (``save_weights``/``load_weights``) store the canonical rows as well.
+files (``save_weights``/``load_weights``) store the canonical rows as well; with
+Keras 3 they are interchangeable between layouts, while TF-Keras 2 weight files also
+list canonical models' compute shadows positionally, so a cross-layout load is
+rejected by the variable count (use ``tf.train.Checkpoint`` there).
 Exported SONATA weights (``ModelWeights``) are always canonical.
 
 Voltage regularization without full voltage output

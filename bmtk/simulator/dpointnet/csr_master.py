@@ -217,6 +217,20 @@ class CanonicalShadowCheckpoint(tf.Module):
         return tf.no_op()
 
 
+class CheckpointChildrenView(tf.Module):
+    """Checkpoint-only node exposing an explicit child mapping for save and restore."""
+
+    def __init__(self, children):
+        super().__init__(name=None)
+        self._view = types.SimpleNamespace(children=dict(children))
+
+    def _trackable_children(self, save_type="checkpoint", **kwargs):
+        return dict(self._view.children)
+
+    def _lookup_dependency(self, name, cached_dependencies=None):
+        return self._view.children.get(name)
+
+
 # Per-variable optimizer slot lists, paired with their variable by the optimizer's
 # own variable index (Keras 3 and TF-Keras optimizers, including ExponentiatedAdam).
 _INDEXED_SLOT_ATTRIBUTES = ("_momentums", "_velocities", "_velocity_hats", "momentums")

@@ -855,7 +855,44 @@ class GLIF3Cell(tf.keras.layers.Layer):
         if view is not None and getattr(save_type, "value", save_type) == "checkpoint":
             children = dict(children)
             children.update(view.children)
+            if "inputs" in children:
+                children["inputs"] = self._canonical_inputs_checkpoint_view(children["inputs"])
         return children
+
+    def _lookup_dependency(self, name, *args, **kwargs):
+        view = getattr(self, "_canonical_shadow_view", None)
+        if view is not None:
+            if name in view.children:
+                return view.children[name]
+            if name == "inputs":
+                tracked = super()._lookup_dependency(name, *args, **kwargs)
+                return None if tracked is None else self._canonical_inputs_checkpoint_view(tracked)
+        return super()._lookup_dependency(name, *args, **kwargs)
+
+    def _canonical_inputs_checkpoint_view(self, tracked_inputs):
+        """Per-input stand-ins when the inputs dict is tracked (TF-Keras 2)."""
+        view = self._canonical_shadow_view
+        if getattr(view, "inputs", None) is not None:
+            return view.inputs
+        from ..csr_master import CanonicalShadowCheckpoint, CheckpointChildrenView
+
+        per_input = {}
+        for name, item in tracked_inputs._trackable_children().items():
+            net = self.inputs.get(name)
+            children = dict(item._trackable_children())
+            if net is not None and "master_layout" in net:
+                master, layout = net["input_weight_values"], net["master_layout"]
+                if self.variable_dtype != self.compute_dtype or master.trainable:
+                    children["input_weight_values_compute"] = CanonicalShadowCheckpoint(
+                        master, layout, self.compute_dtype, canonical_order=True,
+                    )
+                if self._use_fused_cuda and net.get("fused_connectivity") is not None:
+                    children["csr_weight_values_compute"] = CanonicalShadowCheckpoint(
+                        master, layout, self.compute_dtype, canonical_order=False,
+                    )
+            per_input[name] = CheckpointChildrenView(children)
+        view.inputs = CheckpointChildrenView(per_input)
+        return view.inputs
 
     def _register_canonical_shadow_checkpoints(self, individual_training):
         """Checkpoint stand-ins for the shadows a canonical-order cell would track."""
@@ -877,6 +914,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
     def _own_store_variables(self):
         if hasattr(self, "_trainable_variables") and hasattr(self, "_non_trainable_variables"):
             return list(self._trainable_variables) + list(self._non_trainable_variables)
+        # TF-Keras 2 lists attribute-tracked variables only after updating trackables,
+        # as its load_own_variables does.
+        update = getattr(self, "_update_trackables", None)
+        if update is not None:
+            update()
         return list(self._trainable_weights) + list(self._non_trainable_weights)
 
     @staticmethod
@@ -1276,6 +1318,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     "Enable the native combined sweep or set use_csr_master_weights=False."
                 )
             if not use_fused_cuda:
+                from ..custom_ops.master_projection import reference_available
+
+                if not reference_available():
+                    raise RuntimeError(
+                        "use_csr_master_weights=True without native fused CUDA uses the CPU "
+                        "reference kernels in _csr_spike_ops.so, which could not be loaded for "
+                        "this TensorFlow; build the operators or set use_csr_master_weights=False."
+                    )
                 use_direct_csr_recurrent_gradient = False
                 use_fused_recurrent_accumulation = False
                 use_javier_recurrent_vjp = False

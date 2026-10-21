@@ -272,7 +272,11 @@ and custom loops must call it before saving. An unrecognized optimizer with
 per-edge state raises at binding time. Endpoint restores verify that the stored
 canonical connectivity equals the model's and raise otherwise. Keras weight files
 (``save_own_variables``/``load_own_variables``) and the EMD regularizer's group
-order store canonical rows as well. SavedModel export and graph-mode checkpoint
+order store canonical rows as well. Keras 3 weight files are interchangeable
+between layouts; TF-Keras 2 weight files list canonical models' compute shadows
+positionally, so cross-layout loads there are rejected by the variable count.
+Under TF-Keras 2 the tracked ``inputs`` dictionary also receives per-input shadow
+stand-ins, and restore lookups resolve them through ``_lookup_dependency``. SavedModel export and graph-mode checkpoint
 saving use a CPU permutation instead of the host path.
 
 ``bmtk.simulator.dpointnet.csr_master.transfer_canonical_state`` remains available

@@ -169,8 +169,8 @@ def test_prepared_loss_indices_are_host_only_and_exact(dtype):
 
 def test_csr_master_option_always_uses_host_lifecycle():
     from test_precision_credit import make_cell
-    if tf.config.get_visible_devices("GPU"):
-        pytest.skip("the CPU CSR-master reference requires no visible GPU")
+    from test_master_projection import require_cpu_reference
+    require_cpu_reference()
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     network, inputs, arguments = make_cell(
         "nest", use_csr_master_weights=True, train_recurrent=True, return_spec=True,
@@ -184,8 +184,8 @@ def test_csr_master_option_always_uses_host_lifecycle():
 
 
 def test_all_runtime_edge_fields_and_masks_follow_exact_stable_order(monkeypatch):
-    if tf.config.get_visible_devices("GPU"):
-        pytest.skip("The CPU CSR-master reference requires no visible GPU (CUDA-hidden suite).")
+    from test_master_projection import require_cpu_reference
+    require_cpu_reference()
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     import bmtk.simulator.dpointnet.csr_master as module

@@ -18,6 +18,15 @@ def library():
     return _LIBRARY
 
 
+def reference_available():
+    """Whether the built operator library (with its CPU reference kernels) loads here."""
+    try:
+        library()
+    except (tf.errors.NotFoundError, OSError):
+        return False
+    return True
+
+
 def project(spikes, master, metadata, basis, n_post, n_edges, spike_scale=1.0):
     """Return FP32 currents with canonical FP32 weight and live source VJPs."""
     spikes = tf.convert_to_tensor(spikes)

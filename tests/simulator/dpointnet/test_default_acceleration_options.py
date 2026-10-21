@@ -186,7 +186,7 @@ def test_dependent_options_stay_off_outside_automatic_admission(hardware):
     assert options["use_uint8_synapse_types"] is options["use_adaptive_routing"] is False
     assert "automatically admitted joint current sweep" in report["reasons"]["use_uint8_synapse_types"]
     explicit, _ = resolve(
-        {name: True for name in NEW_OPTIONS} | {"use_combined_current_sweep": True}, batch_size=64,
+        {**{name: True for name in NEW_OPTIONS}, "use_combined_current_sweep": True}, batch_size=64,
     )
     assert all(explicit[name] is True for name in NEW_OPTIONS)
 
@@ -391,13 +391,21 @@ def _native_gpu():
     return bool(tf.config.get_visible_devices("GPU")) and ops.combined_sweep_available()
 
 
+@pytest.fixture
+def forward_free(monkeypatch):
+    """Checkpoint tests never run a forward pass, so CPU CSR-master cells may be built
+    even where the native reference kernels cannot load (for example TF-Keras 2)."""
+    from bmtk.simulator.dpointnet.custom_ops import master_projection
+    monkeypatch.setattr(master_projection, "reference_available", lambda: True)
+
+
 def build_model(masters):
     """Small spike-input NEST cell with a trainable and a frozen named input plus Adam."""
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     gpu = _native_gpu()
     if masters and not gpu and tf.config.get_visible_devices("GPU"):
-        pytest.skip("CSR masters need the native library when a GPU is visible")
+        pytest.skip("The CPU CSR-master reference requires no visible GPU.")
     network, inputs, arguments = make_cell(
         "nest", fused=gpu, two_inputs=True, return_spec=True, train_recurrent=True,
         batch_size=4, use_csr_master_weights=masters,
@@ -463,7 +471,7 @@ def checkpoint(cell, optimizer):
 
 
 @pytest.mark.parametrize("source_masters,target_masters", [(False, True), (True, False), (True, True)])
-def test_checkpoints_restore_across_master_layouts_with_adam_slots(tmp_path, source_masters, target_masters):
+def test_checkpoints_restore_across_master_layouts_with_adam_slots(forward_free, tmp_path, source_masters, target_masters):
     source, source_optimizer, surfaces = build_model(source_masters)
     step(source, source_optimizer, surfaces, 1)
     step(source, source_optimizer, surfaces, 2)
@@ -501,7 +509,7 @@ def test_checkpoints_restore_across_master_layouts_with_adam_slots(tmp_path, sou
     }
 
 
-def test_saving_never_reorders_live_variables(tmp_path):
+def test_saving_never_reorders_live_variables(forward_free, tmp_path):
     cell, optimizer, surfaces = build_model(True)
     step(cell, optimizer, surfaces, 7)
     before = {name: cell.weight_loss_values(name).numpy().copy() for name in surfaces}
@@ -525,7 +533,7 @@ def test_saving_never_reorders_live_variables(tmp_path):
         np.testing.assert_array_equal(stored, cell.canonical_weight_values(name))
 
 
-def test_unbound_optimizer_slots_are_reported_by_binding_errors():
+def test_unbound_optimizer_slots_are_reported_by_binding_errors(forward_free):
     from bmtk.simulator.dpointnet.csr_master import bind_optimizer_checkpoint_slots
     cell, _, _ = build_model(True)
 
@@ -538,14 +546,29 @@ def test_unbound_optimizer_slots_are_reported_by_binding_errors():
         bind_optimizer_checkpoint_slots(cell, opaque)
 
 
-def test_keras_weight_store_round_trips_canonical_rows():
+def test_keras_weight_store_round_trips_canonical_rows(forward_free):
     source, _, surfaces = build_model(True)
     for name in surfaces:
         master = source.weight_loss_values(name)
         master.assign(master * 1.5)
     store = {}
     source.save_own_variables(store)
+    same, _, _ = build_model(True)
+    same.load_own_variables(store)
+    for name in surfaces:
+        np.testing.assert_array_equal(same.weight_loss_values(name), source.weight_loss_values(name))
+    for name, layout_name in (("<recurrent>", None), ("drive", "drive")):
+        master = source.weight_loss_values(name)
+        stored = [np.asarray(value) for value in store.values() if np.asarray(value).shape == master.shape]
+        assert any(np.array_equal(value, source.canonical_weight_values(name)) for value in stored)
     target, _, _ = build_model(False)
+    keras3 = hasattr(target, "_trainable_variables")
+    if not keras3:
+        # TF-Keras 2 weight lists also contain canonical models' compute shadows, so
+        # cross-layout weight files are rejected by the variable count, never misread.
+        with pytest.raises(ValueError, match="expected .* variables"):
+            target.load_own_variables(store)
+        return
     target.load_own_variables(store)
     for name in surfaces:
         np.testing.assert_array_equal(

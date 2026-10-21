@@ -21,6 +21,13 @@ KERNELS = (
 )
 
 
+@pytest.fixture(autouse=True)
+def require_native_library():
+    from bmtk.simulator.dpointnet.custom_ops.master_projection import reference_available
+    if not reference_available():
+        pytest.skip("Built native operators (and their CPU reference kernels) cannot be loaded here.")
+
+
 def kernel_body(text, name):
     at = text.index(name + "(")
     start = text.index("{", at)

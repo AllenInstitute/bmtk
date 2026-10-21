@@ -15,6 +15,13 @@ DEVICE = os.environ.get("_MASTER_TEST_DEVICE", "/CPU:0")
 
 
 @pytest.fixture(autouse=True)
+def require_native_library():
+    from bmtk.simulator.dpointnet.custom_ops.master_projection import reference_available
+    if not reference_available():
+        pytest.skip("Built native operators (and their CPU reference kernels) cannot be loaded here.")
+
+
+@pytest.fixture(autouse=True)
 def policy():
     old = tf.keras.mixed_precision.global_policy()
     with tf.device(DEVICE):
@@ -137,8 +144,11 @@ def test_custom_gradient_variable_boundary_assignment_update_restore(tmp_path, c
 
 
 def require_cpu_reference():
+    from bmtk.simulator.dpointnet.custom_ops.master_projection import reference_available
     if tf.config.get_visible_devices("GPU"):
         pytest.skip("The CPU CSR-master reference requires no visible GPU (CUDA-hidden suite).")
+    if not reference_available():
+        pytest.skip("Built native operators (CPU reference kernels) cannot be loaded here.")
 
 
 def make_model(monkeypatch, enabled=True, mixed=True):
