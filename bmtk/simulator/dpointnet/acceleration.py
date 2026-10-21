@@ -246,6 +246,8 @@ def resolve_csr_master_options(
     masters = options["use_csr_master_weights"] is True
 
     missing = [] if masters else ["use_csr_master_weights"]
+    if not admitted:
+        missing.append("automatically admitted joint current sweep")
     if synapse_type_range is None:
         missing.append("known synapse type IDs")
     elif not (0 <= synapse_type_range[0] and synapse_type_range[1] <= 255):
@@ -267,8 +269,8 @@ def resolve_csr_master_options(
     uint8 = options["use_uint8_synapse_types"] is True
 
     missing = [] if uint8 else ["use_uint8_synapse_types"]
-    if not joint:
-        missing.append("joint current sweep")
+    if not admitted or not joint:
+        missing.append("automatically admitted joint current sweep")
     if not csr_spike_ops.adaptive_routing_available():
         missing.append("native adaptive routing capability")
     if options.get("use_adaptive_routing") is True and not uint8:

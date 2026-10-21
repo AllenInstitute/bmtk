@@ -178,6 +178,19 @@ def test_explicit_true_outside_auto_admission_raises_with_reason(hardware):
         resolve({"use_adaptive_routing": True}, type_range=(0, 300))
 
 
+def test_dependent_options_stay_off_outside_automatic_admission(hardware):
+    options, report = resolve(
+        {"use_csr_master_weights": True, "use_combined_current_sweep": True}, batch_size=64,
+    )
+    assert options["use_csr_master_weights"] is True
+    assert options["use_uint8_synapse_types"] is options["use_adaptive_routing"] is False
+    assert "automatically admitted joint current sweep" in report["reasons"]["use_uint8_synapse_types"]
+    explicit, _ = resolve(
+        {name: True for name in NEW_OPTIONS} | {"use_combined_current_sweep": True}, batch_size=64,
+    )
+    assert all(explicit[name] is True for name in NEW_OPTIONS)
+
+
 def test_explicit_true_is_recorded_as_override(hardware):
     options, report = resolve({name: True for name in NEW_OPTIONS})
     for name in NEW_OPTIONS:
