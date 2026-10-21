@@ -4,8 +4,9 @@ Adaptive routing for the CSR-master sweep
 ``rnn_cell_params.use_adaptive_routing`` selects the ``adaptive_segment_ticket_v1``
 forward routing schema for the combined current sweep with CSR-ordered FP32
 masters and uint8 synapse types (:doc:`dpointnet_csr_masters`). It is selected
-automatically with uint8 types when the loaded library advertises the capability;
-see :doc:`dpointnet_performance`. It is an independent implementation of a
+automatically with uint8 types at batch 8 or larger
+(``acceleration.ADAPTIVE_ROUTING_MIN_BATCH``, measured slower at batch 1) when the
+loaded library advertises the capability; see :doc:`dpointnet_performance`. It is an independent implementation of a
 compressed-segment, registry-shared, adaptively scheduled projection design.
 
 Selection and errors
@@ -28,7 +29,12 @@ returns the same static plan. ``routing_geometry`` (and
 tile: ``dense_tile_starts`` with one ``tile`` when disabled, or the adaptive
 traversal with ``wide_tile``/``narrow_tile`` and the per-launch rule when enabled.
 With adaptive routing the automatic wide tile is 2048 at every batch, so the
-quarter-width narrow tile (512) is available at small batches.
+quarter-width narrow tile (512) is available at small batches. The per-launch rule
+is mirrored by ``csr_spike_ops.adaptive_selected_tile(batch, n_post, wide_tile,
+multiprocessors, wide_blocks_per_sm)``; ``combined_routing_census`` reports the
+tile actually selected (``last_selected_tile``) and built (``built_tiles``), which
+differ between devices (for example, batch 32 at 4,099 targets stays wide on an
+RTX 3090 but is narrow on an A100 or L40S).
 
 Operator and kernel names are unchanged for profilers: the forward op remains
 ``DpointnetCombinedSweepCsrMaster`` and the adaptive kernel is

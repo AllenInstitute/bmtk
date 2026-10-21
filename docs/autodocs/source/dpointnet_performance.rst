@@ -88,8 +88,8 @@ requires a compute capability targeted by the fat binaries (SM61, 70, 75, 80, 86
 compute-precision temporal gradients, FP16 or FP32 compute with FP32 masters,
 four bases, a batch of 1 to 32, nonempty recurrence and one to seven supported
 spike-input populations. It also checks the loaded native ABI. Batches above 32
-keep the previous routes without error. Without adaptive routing, batch 1 selects
-256-target tiles and larger batches 2048. A conservative 512-MiB routing-table
+keep the previous routes without error. Without adaptive routing (always the case
+automatically below batch 8), batch 1 selects 256-target tiles and larger batches 2048. A conservative 512-MiB routing-table
 budget can retain 2048 or the ordinary projection instead.
 The bound uses the network's maximum recurrent delay when ``max_delay`` is
 ``None`` or nonpositive, and accounts for each external input population's own
@@ -168,10 +168,16 @@ raises when unsupported and explicit ``false`` restores the previous path.
   every launch from the measured kernel occupancy and multiprocessor count.
   Sources with repeated targets use block rounds with equal-target aggregation,
   target-unique short rows use warp batches and low in-degree sources keep the
-  target-major gather. With adaptive routing the automatic wide tile is 2048 at
-  every batch; at batch 1 the narrow 512-target shape is normally selected. Per-edge
-  arithmetic and the single FP32 tile rounding are unchanged; atomic order is not
-  bitwise reproducible. Backward kernels keep their existing routing.
+  target-major gather. Automatic selection requires a batch of at least 8
+  (``acceleration.ADAPTIVE_ROUTING_MIN_BATCH``): in matched full-V1 firing-rate-loss
+  training arms on an RTX 3090 (20-sample medians), adaptive routing was 5.4% slower
+  at batch 1 (0.4304 vs 0.4085 s per update, also with a 256 wide tile) and 1.6%,
+  2.3% and 2.3% faster at batches 8, 16 and 32. Batches 2 to 7 were not measured
+  and keep the dense route (256-target tiles at batch 1, otherwise 2048); explicit
+  ``true`` is honored at any admitted batch. With adaptive routing the wide tile
+  is 2048. Per-edge arithmetic and the single FP32 tile rounding are unchanged;
+  atomic order is not bitwise reproducible. Backward kernels keep their existing
+  routing.
 
 Implementation details are in :doc:`dpointnet_csr_masters` and
 :doc:`dpointnet_adaptive_routing`. Inspect ``acceleration_report["csr_master_weights"]``,
@@ -200,7 +206,17 @@ most 43,184 bytes per block for every combined-sweep kernel on all seven targets
 dynamic shared memory and 1,024-thread blocks for 32-bit routing: SM61 (48 KiB per
 block) supports none of them, SM75 (64 KiB) only 3072, and SM70, SM80, SM86, SM89
 and SM90 all three. Automatic selection falls back to the widest valid tile; an
-explicit tile that a device cannot launch raises before construction.
+explicit tile that a device cannot launch raises before construction, and the
+native operator checks the device's opt-in per-block limit (static plus dynamic
+shared memory) before configuring a wide kernel, raising ``InvalidArgumentError``
+without leaving a CUDA error behind for later operators.
+
+On every admitted SM70 or newer target (SM61 has its own accumulator admission),
+the automatic policy also selects the fused recurrent weight-gradient accumulator
+(``use_fused_recurrent_accumulation``) with the FP16 Javier batch-32 VJP and, at
+batch 32, the packed backward. SM75 keeps requiring FP16 temporal backward for the
+accumulator. Before the joint sweep was admitted on Volta and Ampere these were
+limited to SM61, SM75 and SM86 or newer.
 
 Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
 ``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
