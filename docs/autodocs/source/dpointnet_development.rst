@@ -9,7 +9,7 @@ Current user guidance lives in :doc:`dpointnet_guide`,
 .. toctree::
    :maxdepth: 1
 
-   dpointnet_csr_master_prototype
+   dpointnet_csr_masters
    dpointnet_adaptive_routing
 
 Running tests efficiently

@@ -1,23 +1,27 @@
-Private CSR-ordered FP32 live-master prototype
-=============================================
+CSR-ordered FP32 master weights: implementation reference
+=========================================================
 
-This isolated, uninstalled snapshot is not a release or default change.
-Set ``_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS=1`` before constructing
-``GLIF3Cell``. Unset it or set it to ``0`` for the same-source shadow
-baseline. The earlier ``_DPOINTNET_EXPERIMENTAL_MASTER_PROJECTION`` flag
-does not activate this prototype.
+``rnn_cell_params.use_csr_master_weights`` stores every recurrent and named-input
+FP32 master in stable CSR (source-major) edge order and lets the native kernels
+read it directly. It is selected automatically inside an admitted joint current
+sweep; :doc:`dpointnet_performance` describes the selection policy and
+:doc:`dpointnet_training_standards` the defaults and migration. This page is the
+implementation reference for the layout, metadata, ownership and canonical
+boundaries. ``use_uint8_synapse_types`` and ``use_adaptive_routing`` build on it.
 
-Optional host lifecycle control
--------------------------------
+Explicit ``true`` requires NEST dynamics, compute temporal gradients, per-edge
+recurrent weights, one replica, FP32 masters, spike or count inputs and, with
+native CUDA, the combined current sweep; otherwise construction raises. Without
+native CUDA and with no visible GPU, explicit ``true`` selects a CPU reference
+implementation used for correctness tests. ``false`` keeps canonical-order masters
+with their compute shadows. The acceleration report records
+``csr_master_weights`` (``direct_csr_fp32_master_host_lifecycle_v1`` or
+``disabled``) and ``csr_master_projection``
+(``optimized_combined_csr_fp32_master``, ``cpu_reference_csr_fp32_master`` or
+``disabled``).
 
-This successor snapshot adds a separately gated lifecycle, selected only by
-``_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE=1`` together with the CSR-master
-flag above. Lifecycle without CSR masters raises before construction. Unset/0
-retains the preceding direct-CSR implementation, including its native metadata
-and two CPU int64 TensorFlow permutations. Neither flag changes installed code.
-The additional top-level acceleration-report field ``experimental_csr_lifecycle``
-is ``host_numpy_uint32_v1`` or ``disabled``. The projection marker is unchanged.
-``experimental_csr_host_lifecycle`` remains an alias for compatibility.
+Host-prepared lifecycle
+-----------------------
 
 The lifecycle keeps exactly one read-only NumPy ``csr_to_canonical`` mapping
 (uint32 for admitted edge counts; uint64 beyond the uint32 range).
@@ -47,15 +51,9 @@ tracing, as below. Low-level ``layout.to_canonical`` remains an explicit
 differentiable permutation for CPU native reference probes and tests; it is not
 the host export API and must not be inserted into a timed native loss.
 
-The checkpoint-boundary idea is adopted without an in-place live-state rewrite.
-Raw CSR master keys remain guarded. Runtime endpoint variables also have
-permutation-guarded keys, so old canonical endpoint checkpoints cannot silently
-overwrite CSR endpoint rows. Rebuild immutable routing at target construction;
-use explicit ``transfer_canonical_state`` for old/new representation conversion
-with independently paired slots and separately copied noise/runner/loss state.
-Never save by transiently canonicalizing live variables or match slots by
-length: equal-size populations and concurrently retained graphs make that unsafe.
-All nontraining canonical exports are copies; they do not alter masters/slots.
+Checkpoints never rewrite live state: every CSR-ordered checkpointed variable
+(masters, endpoint indices and paired optimizer slots) serializes a host-converted
+canonical copy, as described under the checkpoint section below.
 ``cell.csr_host_lifecycle_metadata()`` reports exact owned payload bytes per
 surface for mapping, native resource, incoming arrays, endpoints, types and
 export factors. These are not allocator peaks, cached mirrors or driver memory.
@@ -68,30 +66,27 @@ Count a handle only once: master/fused connectivity attributes alias the same
 resource. Reading the resource for independent shape validation is optional and
 untimed; the census API itself never reads or copies its payload.
 
-The admitted execution is single-replica NEST, independently parameterized
-FP32 edge weights, spike/count inputs, compute temporal gradients and the
-optimized native combined sweep. CPU primitive probes are correctness
-references only. This is not FP32-temporal, distributed, local-learning,
-continuous-current or arbitrary saved-projection support.
+Supported execution is single-replica NEST with independently parameterized FP32
+edge weights, spike/count inputs, compute temporal gradients and the optimized
+native combined sweep. The CPU implementation is a correctness reference only.
+FP32-temporal replay, distributed strategies, local learning rules, continuous
+current inputs and alternate saved projection values use canonical-order masters.
 
-Optional native uint8 synapse types
-----------------------------------
+Native uint8 synapse types
+--------------------------
 
-The isolated typed successor additionally accepts
-``_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES=1`` before construction. Both CSR
-FP32-master and host-lifecycle flags must also be ``1``. Explicit typed mode
-requires the native combined route; CPU probes, current inputs and other
-unsupported direct-master compositions raise rather than fall back. Unset/0
-preserves the exact preceding lifecycle packing in this same source. No
-installed profile, dynamics, optimizer, loss, traversal or geometry changes.
-The new acceleration-report marker ``experimental_csr_uint8_types`` is
-``csr_live_uint8_type_tail_v1`` or ``disabled``; existing markers are unchanged.
+``use_uint8_synapse_types`` stores per-edge synapse types as a byte tail of the
+same metadata resource. It requires CSR masters and the native combined route;
+automatic selection additionally requires every recurrent and input type ID to be
+within 0..255 and all five native type consumers to accept the byte tail. ``false``
+keeps wide per-edge types. The report marker ``csr_uint8_types`` is
+``csr_live_uint8_type_tail_v1`` or ``disabled``.
 
 Every per-edge ID must have an integer dtype and be nonnegative, no larger
 than 255, and inside the declared basis table before any uint8 conversion.
 Fractional, nonfinite, Boolean, complex, string and out-of-range IDs reject
-before resource allocation. Valid larger IDs still use the wide representation
-when the private flag is disabled; explicit typed mode never truncates them.
+before resource allocation. Valid larger IDs use the wide representation in automatic
+selection; explicit typed mode never truncates them.
 Type-table rows and pair-type IDs keep their existing interpretation.
 
 There is still one packed resource per surface with the original index dtype
@@ -151,12 +146,12 @@ report marker alone, establish execution. Metadata is derived at construction;
 master/permutation checkpoint keys, Adam slots, canonical loss references and
 canonical export boundaries are unchanged.
 
-Optional adaptive routing
--------------------------
+Adaptive routing
+----------------
 
-With all three flags above set, ``_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING=1``
-selects the ``adaptive_segment_ticket_v1`` forward sweep schema; unset/0 keeps
-this page's typed sweep on the same binaries. See :doc:`dpointnet_adaptive_routing`.
+``use_adaptive_routing`` selects the ``adaptive_segment_ticket_v1`` forward sweep
+schema on top of uint8 types; ``false`` keeps the dense tile sweep on the same
+binaries. See :doc:`dpointnet_adaptive_routing`.
 
 Ownership and native reads
 --------------------------
@@ -190,7 +185,7 @@ into live CSR positions, including the packed batch-32 specialization. The
 default remains canonical for the disabled baseline. Only the destination
 address changes; arithmetic, traversal and launch geometry are unchanged.
 No ``DpointnetCsrReorder`` or ``DpointnetCsrRestore`` is needed in a native
-candidate update. Both operators must be rebuilt for this attribute; an older
+update. Both operators must be rebuilt for this attribute; an older
 library is not sufficient.
 Constraint signs and EMD connection-type groups are reordered with weights.
 Frozen inputs remain live resource reads without optimizer participation.
@@ -235,8 +230,8 @@ the weights while leaving per-edge group metadata canonical.
 
 ``cell.canonical_weight_values()`` is appropriate for untimed logical master
 hashes, export and migration. Record raw physical-master hashes separately.
-Baseline canonical hashes must match candidate logical canonical hashes,
-not candidate raw CSR hashes. Calling the canonical accessor inside every
+Canonical-order model hashes must match CSR-master logical canonical hashes,
+not raw CSR hashes. Calling the canonical accessor inside every
 timed EMD evaluation would add a whole-edge gather and is not the preferred
 adapter above.
 
@@ -258,16 +253,31 @@ for canonical assignment. Native projection never calls these adapters.
 export factors and SONATA edge ordering. A live, non-deep-copy export rereads
 masters each time. Direct ``master.assign`` explicitly means CSR order.
 
-Raw cross-layout checkpoint restore is intentionally rejected: CSR resources
-serialize a ``CSR_MASTER_V1_<permutation SHA256>`` key rather than the legacy
-``VARIABLE_VALUE``. Different CSR permutations also reject raw restore,
-including CPU reference versus GPU target-sorted layouts.
-Automatic legacy restore is unsafe even when variable shapes agree.
-The cell also adds a nontrainable int32 layout-version scalar, so legacy
-Keras topology weight counts cannot silently match. Only explicit TensorFlow
-resource checkpoints are qualified here; Keras/HDF5 round trips and restores
-with skipped mismatches are unsupported.
-Use the following explicit conversion protocol in either direction:
+Checkpoints use the canonical format. Each CSR-ordered master and endpoint index
+variable, and every optimizer slot paired with a master, serializes a
+host-converted canonical copy under the ordinary ``VARIABLE_VALUE`` key and
+converts restored canonical rows back to the live layout; the live variables are
+never reordered. Compute-shadow entries that canonical-order models track
+(``recurrent_weight_values_compute`` and, with native CUDA,
+``recurrent_csr_weight_values_compute``) are written by checkpoint-only stand-ins
+holding the cast master values and are ignored on restore. Checkpoint object
+graphs and values are therefore identical to those of a canonical-order model with
+the same configuration, so ``tf.train.Checkpoint`` files restore in both
+directions (including checkpoints written before this option existed) and
+``assert_consumed()`` holds. Optimizer slots are paired explicitly through the
+optimizer's own variable index (Adam/AMSGrad, SGD momentum, ``exp_adam``) or legacy
+``get_slot``, never by shape; ``RNN.train`` calls
+``cell.bind_optimizer_checkpoint_slots(optimizer)`` after building the optimizer,
+and custom loops must call it before saving. An unrecognized optimizer with
+per-edge state raises at binding time. Endpoint restores verify that the stored
+canonical connectivity equals the model's and raise otherwise. Keras weight files
+(``save_own_variables``/``load_own_variables``) and the EMD regularizer's group
+order store canonical rows as well. SavedModel export and graph-mode checkpoint
+saving use a CPU permutation instead of the host path.
+
+``bmtk.simulator.dpointnet.csr_master.transfer_canonical_state`` remains available
+to copy state between two live cells explicitly, for example between different
+optimizer instances, without writing a checkpoint:
 
 #. Construct and restore the source cell with its original representation.
 #. Construct the target with the same canonical graph, initialization, variable
@@ -300,8 +310,9 @@ Build both operators with GPUs hidden from the declared TF2.21 prefix::
 
 Both manifests and binary hashes must be recorded. SM61/70/75/80/86/89/90
 and PTX90 compilation is not execution qualification on every GPU family.
-Focused tests cover canonical/CSR conversion, duplicate rows, raw-format
-rejection, explicit Adam migration in both directions, projection/VJPs,
+Focused tests cover canonical/CSR conversion, duplicate rows, canonical
+checkpoint format, checkpoint restore in both directions with Adam slots,
+explicit Adam migration, projection/VJPs,
 named trainable/frozen masters, reused compiled graphs, assignment, checkpoint
 restore and full/segmented-remainder replay. Full-network timings and memory
 controls belong to the parent orchestration, not these component tests.

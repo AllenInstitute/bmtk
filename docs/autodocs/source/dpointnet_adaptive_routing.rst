@@ -1,42 +1,34 @@
-Experimental adaptive routing for the CSR-master sweep
-======================================================
+Adaptive routing for the CSR-master sweep
+=========================================
 
-This isolated, uninstalled snapshot is not a release or default change. It adds
-an opt-in forward routing schema, ``adaptive_segment_ticket_v1``, to the
-combined current sweep of the private CSR-ordered FP32 master prototype
-(:doc:`dpointnet_csr_master_prototype`). It is an independent implementation of
-a compressed-segment, registry-shared, adaptively scheduled projection design;
-no external source text is copied.
+``rnn_cell_params.use_adaptive_routing`` selects the ``adaptive_segment_ticket_v1``
+forward routing schema for the combined current sweep with CSR-ordered FP32
+masters and uint8 synapse types (:doc:`dpointnet_csr_masters`). It is selected
+automatically with uint8 types when the loaded library advertises the capability;
+see :doc:`dpointnet_performance`. It is an independent implementation of a
+compressed-segment, registry-shared, adaptively scheduled projection design.
 
-Activation
-----------
+Selection and errors
+--------------------
 
-Set all of the following before constructing the cell::
-
-    _DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS=1
-    _DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE=1
-    _DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES=1
-    _DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING=1
-
-``0`` or unset keeps the exact typed combined sweep on the same source and
-binaries. Any other value raises ``ValueError``. Adaptive routing without all
-three base flags, without native fused CUDA or without the combined current
-sweep raises ``ValueError`` during construction. A native library without the
+``false`` keeps the dense tile sweep on the same binaries. Explicit ``true``
+without uint8 types, native fused CUDA or the combined current sweep raises
+``ValueError`` during construction. A native library without the
 ``adaptive_routing``/``adaptive_traversal`` attributes of
 ``dpointnet_combined_sweep_csr_master`` or without ``dpointnet_routing_census``
-raises ``RuntimeError`` ("Rebuild both CUDA operators"); there is no silent
-fallback. The low-level ``fused_combined_currents(..., adaptive_routing=True)``
+raises ``RuntimeError`` for explicit ``true`` and is skipped by automatic
+selection. The low-level ``fused_combined_currents(..., adaptive_routing=True)``
 requires a boolean, ``csr_master_weights=True`` and uint8 type metadata.
 
-The acceleration report records
-``experimental_adaptive_routing = "adaptive_segment_ticket_v1"`` or
-``"disabled"``, and with the flag set
-``experimental_adaptive_routing_plan`` (schema, wide/narrow tile and per-source
-traversal). ``cell.adaptive_routing_plan()`` returns the same static plan.
-In both schemas ``experimental_routing_geometry`` (and
+The acceleration report records ``adaptive_routing`` (``"adaptive_segment_ticket_v1"``
+or ``"disabled"``) and, when enabled, ``adaptive_routing_plan`` (schema,
+wide/narrow tile and per-source traversal); ``cell.adaptive_routing_plan()``
+returns the same static plan. ``routing_geometry`` (and
 ``cell.combined_routing_geometry()``) gives each source's static traversal and
 tile: ``dense_tile_starts`` with one ``tile`` when disabled, or the adaptive
 traversal with ``wide_tile``/``narrow_tile`` and the per-launch rule when enabled.
+With adaptive routing the automatic wide tile is 2048 at every batch, so the
+quarter-width narrow tile (512) is available at small batches.
 
 Operator and kernel names are unchanged for profilers: the forward op remains
 ``DpointnetCombinedSweepCsrMaster`` and the adaptive kernel is
@@ -107,7 +99,7 @@ Per source, fixed at graph construction by ``adaptive_routing_plan``:
   or high fanout).
 
 These supersede the cooperative-row and fanout-round requests inside the
-adaptive schema; both remain available with the flag unset.
+adaptive schema; both remain in effect with ``use_adaptive_routing=false``.
 
 Per launch, on the host from the actual batch: the configured
 ``combined_current_target_tile_size`` is the wide tile. A narrow tile (a quarter
@@ -150,5 +142,8 @@ Limitations
 * Carried per-delay-slot queue records are not used; each launch compacts the
   full ``[batch, width]`` activity of each non-gathered source.
 * Background/neuron-update fusion is not part of this schema.
-* Only RTX3090 (SM86) execution is qualified for this snapshot; other compiled
-  targets are not execution-qualified.
+* Kernel execution has been validated on RTX 3090 (SM86). All seven compiled
+  targets are admitted automatically; their launch geometry is checked from the
+  compute capability (512-thread blocks with static shared memory below 48 KiB for
+  automatic tiles, occupancy measured at launch), but execution on other GPU
+  families has not been separately qualified.

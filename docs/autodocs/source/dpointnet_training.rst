@@ -191,10 +191,12 @@ calculated. It is enabled by default:
      - ``min(25, sequence length)``
      - Chunk length in simulation steps, not always milliseconds.
    * - ``pack_spike_checkpoints``
-     - ``false``
-     - Additional packing of binary spike-history states into on-device
-       int64 words (63 spikes per word) at checkpoint boundaries. Nonzero
-       values are treated as spikes, so only binary spike states are lossless.
+     - ``"auto"``
+     - Bit-pack the binary spike-history state at segment boundaries into
+       on-device int64 words (63 spikes per word). ``"auto"`` packs for GLIF3
+       cells, whose first recurrent state is the binary spike buffer, and keeps
+       other cell classes unpacked. ``false`` restores unpacked checkpoints.
+       Nonzero values are treated as spikes, so only binary states are lossless.
    * - ``regenerate_initial_state_each_epoch``
      - ``true``
      - Regenerate the configured initial state at epoch boundaries.
@@ -204,8 +206,13 @@ calculated. It is enabled by default:
 
 Set ``gradient_checkpointing=false`` to disable recomputation. The chunk size
 must be between one and the sequence length. Smaller chunks change memory and
-recomputation costs, not the intended temporal derivative. Spike packing is
-optional and leaves continuous neuron states unpacked.
+recomputation costs, not the intended temporal derivative. Spike packing leaves
+continuous neuron states unpacked; outputs and gradients are identical to the
+unpacked route. On the V1 reference workload (RTX 3090) it cost about 0.5-0.6 percent update
+time at batch 1, 16 and 32 while lowering the stored boundary payload by roughly
+7 MB per sample; it gives no saving at batch 1. The FP32 temporal-adjoint route
+(``temporal_gradient_precision="float32"``) keeps unpacked checkpoints unless
+``pack_spike_checkpoints`` is set explicitly.
 The omitted chunk size follows the effective training-parameter sequence length,
 including a shorter per-condition length; an explicit size is not silently
 clamped. Existing legacy examples pin checkpointing off to preserve their
@@ -213,6 +220,23 @@ integer-refractory-state training route.
 
 This is different from **saved checkpoints**, which store weights and, when
 explicitly included, optimizer/state variables for later restoration.
+
+Saved checkpoints are written in canonical SONATA edge order regardless of the
+selected weight layout. With ``use_csr_master_weights`` (the automatic default on
+admitted GPU routes, see :doc:`dpointnet_performance`) the live FP32 masters,
+their endpoint indices and paired Adam/SGD slots are stored in CSR order, but each
+is serialized as a host-converted canonical copy under the ordinary variable key;
+compute-shadow entries that canonical-order models track are written as the cast
+master values. Consequently ``tf.train.Checkpoint(model=..., optimizer=...)``
+checkpoints restore in both directions between models built with and without
+CSR masters, including checkpoints written before this option existed, and
+``assert_consumed()`` holds when the remaining configuration matches. Saving never
+reorders live variables. ``RNN.train`` pairs optimizer slots with their masters
+after building the optimizer; custom loops that build their own optimizer call
+``rnn.cell.bind_optimizer_checkpoint_slots(optimizer)`` before saving. Restoring
+endpoint indices that differ from the model's connectivity raises. Keras weight
+files (``save_weights``/``load_weights``) store the canonical rows as well.
+Exported SONATA weights (``ModelWeights``) are always canonical.
 
 Voltage regularization without full voltage output
 --------------------------------------------------

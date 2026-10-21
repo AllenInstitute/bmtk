@@ -82,12 +82,15 @@ precision:
        Group membership, stable tie credit and the signed-int32 checkpoint schema
        are preserved.
 
-For the standard high-level GLIF cell on one SM86 GPU, automatic joint projection
-requires NEST dynamics, compute-precision temporal gradients, FP16 or FP32 compute
-with FP32 masters, four bases, batch 1, 16 or 32, nonempty recurrence and one to
-seven supported spike-input populations. It also checks the loaded native ABI.
-Batch 1 selects 256-target tiles; batch 16/32 select 2048. A conservative
-512-MiB routing-table budget can retain 2048 or the ordinary projection instead.
+For the standard high-level GLIF cell on one GPU, automatic joint projection
+requires a compute capability targeted by the fat binaries (SM61, 70, 75, 80, 86,
+89 or 90) whose SASS the loaded library carries, NEST dynamics,
+compute-precision temporal gradients, FP16 or FP32 compute with FP32 masters,
+four bases, a batch of 1 to 32, nonempty recurrence and one to seven supported
+spike-input populations. It also checks the loaded native ABI. Batches above 32
+keep the previous routes without error. Without adaptive routing, batch 1 selects
+256-target tiles and larger batches 2048. A conservative 512-MiB routing-table
+budget can retain 2048 or the ordinary projection instead.
 The bound uses the network's maximum recurrent delay when ``max_delay`` is
 ``None`` or nonpositive, and accounts for each external input population's own
 maximum delay independently of the recurrent cap.
@@ -138,11 +141,73 @@ The counts are the same draws as the per-step sampler; outside that route the
 layer keeps the per-step sampler. Explicit ``true`` raises where the route is
 unavailable and keeps the 64 MiB runtime budget.
 
+CSR-ordered masters, uint8 types and adaptive routing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Inside an automatically admitted joint sweep, three further options default to
+automatic selection. Each falls back silently to the previous path, with the unmet
+prerequisites recorded in ``acceleration_report["reasons"]``; explicit ``true``
+raises when unsupported and explicit ``false`` restores the previous path.
+
+* ``use_csr_master_weights``: the recurrent and every named-input FP32 master
+  variable is stored in stable CSR (source-major) edge order, and native forward
+  and backward kernels read it directly as FP32. The separate FP16 and CSR compute
+  shadows are removed, so no refresh or reordering happens after updates. Routing
+  metadata, endpoint indices and type IDs are prepared on the host in the same
+  order; one read-only ``uint32`` CSR-to-canonical map (``uint64`` above
+  :math:`2^{32}` edges) is kept on the host and device canonical edge IDs are
+  omitted. Requires NEST dynamics, compute temporal gradients, per-edge trainable
+  recurrent weights, a single replica, a BPTT learning rule (set before the model
+  is built) and the rebuilt native library.
+* ``use_uint8_synapse_types``: per-edge synapse types become a byte tail of the
+  same metadata resource when every type ID is in 0..255. IDs outside that range
+  keep wide types; explicit ``true`` then raises instead of narrowing.
+* ``use_adaptive_routing``: the joint forward sweep walks compressed per-row
+  segments of nonempty target tiles (64-bit tile masks up to 64 tiles), compacts
+  active rows on the device and chooses a wide or quarter-width narrow tile at
+  every launch from the measured kernel occupancy and multiprocessor count.
+  Sources with repeated targets use block rounds with equal-target aggregation,
+  target-unique short rows use warp batches and low in-degree sources keep the
+  target-major gather. With adaptive routing the automatic wide tile is 2048 at
+  every batch; at batch 1 the narrow 512-target shape is normally selected. Per-edge
+  arithmetic and the single FP32 tile rounding are unchanged; atomic order is not
+  bitwise reproducible. Backward kernels keep their existing routing.
+
+Implementation details are in :doc:`dpointnet_csr_masters` and
+:doc:`dpointnet_adaptive_routing`. Inspect ``acceleration_report["csr_master_weights"]``,
+``["csr_uint8_types"]``, ``["adaptive_routing"]``, ``["adaptive_routing_plan"]``,
+``["routing_geometry"]`` and ``["launch_geometry"]``; after a warm execution,
+``rnn.cell.adaptive_routing_report()`` returns the native routing-table census per
+source (built tables, tile shapes and bytes). These describe selection and
+allocation, not proof that every kernel executed.
+
+With CSR masters, ``cell.recurrent_weight_values`` and
+``cell.inputs[name]["input_weight_values"]`` hold live CSR-ordered rows, and so do
+their gradients, constraints and optimizer slots. Use
+``cell.canonical_weight_values(name)`` and ``cell.assign_canonical_weights(values,
+name)`` for canonical access, and ``cell.weight_loss_indices`` /
+``cell.weight_loss_reference`` to compose canonical per-edge loss metadata into
+live order once before tracing. Built-in exports, ``ModelWeights``, Keras weight
+files and ``tf.train.Checkpoint`` files stay canonical and interchangeable with
+canonical-order models (see the saved-checkpoint notes in
+:doc:`dpointnet_training`). ``eprop`` and local rules use canonical surfaces; a
+learning rule configured before building keeps automatic CSR masters off.
+
+Joint-sweep launch geometry is checked per device from its compute capability.
+Tiles up to 2048 targets launch 512-thread blocks with static shared memory (at
+most 43,184 bytes per block for every combined-sweep kernel on all seven targets,
+64 registers and no spills), which is valid on every target. Wider tiles use
+dynamic shared memory and 1,024-thread blocks for 32-bit routing: SM61 (48 KiB per
+block) supports none of them, SM75 (64 KiB) only 3072, and SM70, SM80, SM86, SM89
+and SM90 all three. Automatic selection falls back to the widest valid tile; an
+explicit tile that a device cannot launch raises before construction.
+
 Advanced explicit joint selection uses ``use_combined_current_sweep=true`` and
 ``combined_current_target_tile_size`` in ``rnn_cell_params``. Allowed tile sizes
 are 256, 512, 1024, 2048 and the wide 3072, 4096 and 5120. Wide tiles need
 device-supported opt-in shared memory and launch 1,024-thread blocks for 32-bit
-routing; the automatic choice remains 256 (batch 1) or 2048. On the V1 reference
+routing; the automatic choice remains 256 (batch 1 without adaptive routing) or
+2048. On the V1 reference
 workload a 5120 tile is faster for the LGN alone but slower for the full
 update, because the background source costs more per block there.
 Explicit choices retain validation and are not

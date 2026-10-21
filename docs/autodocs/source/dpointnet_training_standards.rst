@@ -44,17 +44,59 @@ settings override them; targets and the training protocol are chosen separately.
      - Mixed FP16, selective FP32 voltage/ASC
      - See the precision section below.
    * - Activation checkpointing
-     - On, chunk size ``min(25, sequence length)`` steps
+     - On, chunk size ``min(25, sequence length)`` steps; spike boundaries bit-packed
      - Save memory by recomputing intermediates, without truncating BPTT.
+       Binary GLIF3 spike states are packed losslessly at segment boundaries.
    * - Voltage output
      - Compact penalty tracking, not full voltage sequences
      - Tracking alone adds no loss and does not clamp voltage.
    * - Acceleration
      - ``auto``
      - Select compatible implementations without changing the requested precision or dynamics.
+       On admitted GPU routes this includes CSR-ordered FP32 master weights, uint8
+       synapse types and adaptive routing; checkpoints and exports stay canonical.
    * - Drifting-grating LGN generation
      - Device generation for supported seeded inputs
      - See :doc:`dpointnet_lgn_pipeline` if using this optional visual-input model.
+
+Weight layout, routing and checkpoint packing defaults
+------------------------------------------------------
+
+The automatic profile selects the following where their prerequisites hold and
+otherwise keeps the previous path, recording the reason in
+``rnn.acceleration_report["reasons"]``. None changes dynamics, precision, the
+optimizer, Poisson inputs or canonical exports; see :doc:`dpointnet_performance`.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 35 35
+
+   * - Option
+     - Default
+     - Previous behavior
+   * - ``rnn_cell_params.use_csr_master_weights``
+     - Automatic: on inside an admitted joint current sweep with NEST dynamics,
+       compute temporal gradients, per-edge trainable recurrent weights, one
+       replica, a BPTT learning rule and the rebuilt native library
+     - ``false``: canonical-order masters with FP16/CSR compute shadows
+   * - ``rnn_cell_params.use_uint8_synapse_types``
+     - Automatic with CSR masters when every synapse type ID is in 0..255
+     - ``false``: wide per-edge type metadata
+   * - ``rnn_cell_params.use_adaptive_routing``
+     - Automatic with uint8 synapse types
+     - ``false``: dense tile routing
+   * - ``training.pack_spike_checkpoints``
+     - ``"auto"``: packed for GLIF3 cells
+     - ``false``: unpacked spike boundaries
+   * - Joint current sweep admission
+     - SM61/70/75/80/86/89/90 with native SASS, batch 1..32
+     - SM86 only, batch 1, 16 or 32
+
+To reproduce the previous route exactly, set the three cell options to ``false``
+(``use_csr_master_weights=false`` alone also disables the dependent two),
+``training.pack_spike_checkpoints=false`` and, on GPUs other than SM86 or batches
+other than 1, 16 and 32, ``use_combined_current_sweep=false``. Checkpoints written
+by either layout restore into the other.
 
 ``dynamics_mode="nest"`` selects DPointNet's NEST-compatible implementation,
 not the NEST simulator. It is the default for new training and simulation.
