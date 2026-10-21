@@ -762,7 +762,7 @@ def test_glif_state_availability_uses_its_own_architecture_metadata(monkeypatch)
     assert glif_state_ops._ARCHITECTURE_PATH.name == "_glif_state_ops.archs"
 
 
-@pytest.mark.parametrize("architecture", [61, 70, 80])
+@pytest.mark.parametrize("architecture", [61])
 def test_packed_sm120_auto_uses_conservative_older_fallback(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
@@ -787,7 +787,7 @@ def test_portable_packed_explicit_opt_in_retains_shape_validation(monkeypatch, a
         _resolve_packed_sm120_model_option(True, True, tf.float16, 16, 4)
 
 
-@pytest.mark.parametrize("architecture", [75, 86, 89, 120])
+@pytest.mark.parametrize("architecture", [70, 75, 80, 86, 89, 120])
 def test_packed_sm120_auto_selects_eligible_architecture(monkeypatch, architecture):
     connectivity = {
         "index_dtype": "uint32",
@@ -832,7 +832,7 @@ def test_forced_packed_sm120_rejects_sm60(monkeypatch):
 
 @pytest.mark.parametrize(
     ("architecture", "expected"),
-    [(61, False), (70, False), (75, "auto"), (80, False),
+    [(61, False), (70, "auto"), (75, "auto"), (80, "auto"),
      (86, "auto"), (89, "auto"), (120, "auto")],
 )
 def test_packed_sm120_external_model_selection(monkeypatch, architecture, expected):
