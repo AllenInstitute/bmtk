@@ -73,6 +73,10 @@ inline int BlockCountFor(int64_t count, int threads, const GPUDevice& device) {
       std::max<int64_t>(1, std::min<int64_t>(requested, maximum)));
 }
 
+}  // namespace tensorflow
+#include "master_projection.cuh"
+namespace tensorflow {
+
 template <typename T>
 __device__ inline void FastAtomicAdd(T* address, T value) {
   GpuAtomicAdd(address, value);
@@ -169,10 +173,20 @@ Status BuildActiveSlotQueue(
 
 constexpr int kCombinedSources = 8;
 
-template <typename T, typename Index>
+template <typename T, typename Index, bool Canonical>
+using ProjectionWeights = std::conditional_t<Canonical, const float*, const T*>;
+
+template <typename T, typename Index, bool Canonical>
+ProjectionWeights<T, Index, Canonical> ProjectionWeightView(
+    const Tensor& values, const Index* canonical) {
+  if constexpr (Canonical) return values.flat<float>().data();
+  else return values.flat<T>().data();
+}
+
+template <typename T, typename Index, typename W = const T*>
 struct CombinedSource {
   const T* spikes;
-  const T* weights;
+  W weights;
   const Index* posts;
   const Index* types;
   const Index* splits;
@@ -204,9 +218,9 @@ __global__ void CombinedActiveRowsKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 struct CombinedSources {
-  CombinedSource<T, Index> source[kCombinedSources];
+  CombinedSource<T, Index, W> source[kCombinedSources];
 };
 
 template <int kValues>
@@ -277,9 +291,9 @@ __global__ void CombinedCscSourcesKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W>
 __device__ __forceinline__ void DpointnetCombinedAccumulateEdge(
-    const CombinedSource<T, Index>& source, const T* basis, Index edge,
+    const CombinedSource<T, Index, W>& source, const T* basis, Index edge,
     bool valid, float spike, int target_start, int lane, float* sums,
     unsigned int segment = 0) {
   const unsigned int target = valid ? source.posts[edge] - target_start : 0xffffffffu;
@@ -325,9 +339,9 @@ __device__ __forceinline__ void DpointnetCombinedAccumulateEdge(
 }
 
 template <typename T, typename Index, int kTargets, int kThreads = 512,
-          bool kCooperative = false, bool kFanout = false>
+          bool kCooperative = false, bool kFanout = false, typename W = const T*>
 __global__ void __launch_bounds__(kThreads, 1024 / kThreads) DpointnetCombinedSweepKernel(
-    CombinedSources<T, Index> sources, int source_count, int n_post,
+    CombinedSources<T, Index, W> sources, int source_count, int n_post,
     const T* basis, bool batch_fast, T* output) {
   static_assert(kThreads == 512 || kThreads == 1024, "combined sweep block size");
   __shared__ float static_sums[kTargets <= 2048 ? kTargets * 4 : 1];
@@ -898,10 +912,10 @@ __global__ void AddInitialCurrentsKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
-    const T* current_grad, const Index* post_ids, const T* weights,
+    const T* current_grad, const Index* post_ids, W weights,
     const Index* synapse_types, const T* basis,
     const Index* row_splits, const Index* edge_ids, T* spike_grad,
     float* weight_grad, const T* spike_gradient_scale,
@@ -958,10 +972,10 @@ __global__ void CsrSpikeGradKernel(
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradSmallBatchKernel(
     int batch_size, int n_pre, int n_post, int n_basis, const T* spikes,
-    const T* current_grad, const Index* post_ids, const T* weights,
+    const T* current_grad, const Index* post_ids, W weights,
     const Index* synapse_types, const T* basis, const Index* row_splits,
     const Index* edge_ids, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale, bool write_csr_weight_gradient,
@@ -1131,9 +1145,9 @@ __global__ void DpointnetPreprojectPairsHalfBatch32Kernel(
   }
 }
 
-template <typename T, typename Index, int kSlice = 32>
+template <typename T, typename Index, int kSlice = 32, typename W = const T*>
 __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Kernel(
-  int n_pre, int batch, const Index* row_splits, const Index* pair_ids, const T* weights,
+  int n_pre, int batch, const Index* row_splits, const Index* pair_ids, W weights,
     const Eigen::half* projected, T* spike_grad, const T* spike_gradient_scale,
     const float* inverse_scale, Index sentinel_pair) {
   constexpr int kPack = kSlice < 8 ? kSlice : 8;
@@ -1203,10 +1217,10 @@ __global__ __launch_bounds__(128) void DpointnetSpikeGradRowPerWarpHalfBatch32Ke
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, typename W = const T*>
 __global__ void CsrSpikeGradPairBatch32Kernel(
     int n_pre, const T* spikes, const Index* row_splits,
-    const Index* edge_ids, const Index* pair_ids, const T* weights,
+    const Index* edge_ids, const Index* pair_ids, W weights,
     const float* projected, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale) {
   constexpr int kBatch = 32;
@@ -1242,10 +1256,10 @@ __global__ void CsrSpikeGradPairBatch32Kernel(
       FromFloat<T>(pre_gradient * ToFloat(*spike_gradient_scale));
 }
 
-template <typename T, typename Index, int kSlice>
+template <typename T, typename Index, int kSlice, typename W = const T*>
 __global__ void CsrSpikeGradPairVariableBatchKernel(
     int batch, int n_pre, const Index* row_splits,
-    const Index* pair_ids, const T* weights, const float* projected,
+    const Index* pair_ids, W weights, const float* projected,
     T* spike_grad, const T* spike_gradient_scale) {
   constexpr int kPack = 4;
   constexpr int kLanesPerEdge = kSlice / kPack;
@@ -1432,10 +1446,10 @@ __device__ __forceinline__ int ReverseBits(int value) {
   return result;
 }
 
-template <typename T, typename Index, bool kWriteCsrGradient, bool kAccumulate = false>
+template <typename T, typename Index, bool kWriteCsrGradient, bool kAccumulate = false, typename W = const T*>
 __global__ __launch_bounds__(64) void CsrSpikeGradPairPackedBatch32Kernel(
     int n_pre, const T* spikes, const Index* row_splits,
-    const Index* edge_ids, const Index* pair_ids, const T* weights,
+    const Index* edge_ids, const Index* pair_ids, W weights,
     const float* projected, T* spike_grad, float* weight_grad,
     const T* spike_gradient_scale, const float* accumulator) {
   constexpr int kBatch = 32;
@@ -1595,6 +1609,7 @@ inline uint32 PackedRowSplitCount(int64_t n_rows) {
       std::min<int64_t>(64, std::max<int64_t>(1, splits)));
 }
 
+template <bool kWriteCsrGradient = false>
 __global__ __launch_bounds__(64) void CsrWeightGradPairPackedBatch32Kernel(
     int64_t n_pre, const Eigen::half* spikes, const float* projected,
     const uint32* pair_ids, const uint32* edge_ids,
@@ -1668,12 +1683,13 @@ __global__ __launch_bounds__(64) void CsrWeightGradPairPackedBatch32Kernel(
     }
     const uint64_t edge = base + kSlots * target + slot;
     if (sub < kPerSlot && edge < end) {
-      weight_grad[static_cast<int64_t>(edge_ids[edge])] = partial[0];
+      weight_grad[kWriteCsrGradient ? static_cast<int64_t>(edge)
+                                   : static_cast<int64_t>(edge_ids[edge])] = partial[0];
     }
   }
 }
 
-template <typename T, typename Index>
+template <typename T, typename Index, bool kWriteCsrGradient = false>
 __global__ void CsrWeightGradKernel(
     int count, int n_pre, int n_post, int n_basis, const T* spikes,
     const T* current_grad, const Index* post_ids,
@@ -1706,7 +1722,7 @@ __global__ void CsrWeightGradKernel(
           ToFloat(basis[basis_base + receptor]);
     }
     GpuAtomicAdd(
-        weight_grad + static_cast<int64_t>(edge_ids[edge]),
+        weight_grad + (kWriteCsrGradient ? edge : static_cast<int64_t>(edge_ids[edge])),
         edge_gradient * spike);
   }
 }
@@ -1898,6 +1914,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context->GetAttr(
             "use_device_active_queue_forward", &use_device_active_queue_forward_));
     OP_REQUIRES_OK(context, context->GetAttr("vjp_only", &vjp_only_));
+    OP_REQUIRES_OK(context, context->GetAttr("csr_master_weights", &csr_master_weights_));
+    OP_REQUIRES(context, !csr_master_weights_ || vjp_only_,
+                errors::InvalidArgument("Canonical-master forward operands require VJP-only proxies."));
   }
 
   void Compute(OpKernelContext* context) override {
@@ -1911,6 +1930,9 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
     const Tensor& incoming_edge_ids = context->input(8);
     const Tensor& incoming_types = context->input(9);
     const Tensor& initial = context->input(10);
+    OP_REQUIRES(context, weights.dtype() == (
+        csr_master_weights_ ? DT_FLOAT : DataTypeToEnum<T>::v()),
+        errors::InvalidArgument("Projection weight storage dtype does not match its representation."));
     core::RefCountPtr<Var> metadata_variable;
     if (!LookupVariable<Index>(
             context, 2, "metadata", &metadata_variable)) {
@@ -2148,9 +2170,10 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
   bool use_forward_run_aggregation_;
   bool use_device_active_queue_forward_;
   bool vjp_only_;
+  bool csr_master_weights_;
 };
 
-template <typename T, typename Index, bool kAccumulate = false>
+template <typename T, typename Index, bool kAccumulate = false, bool Canonical = false>
 class DpointnetCsrSpikeGradOp : public OpKernel {
  public:
   explicit DpointnetCsrSpikeGradOp(OpKernelConstruction* context)
@@ -2268,6 +2291,8 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
     const Index* edge_ids = row_splits + n_pre + 1;
+    using W = ProjectionWeights<T, Index, Canonical>;
+    const W weight_values = ProjectionWeightView<T, Index, Canonical>(weights, edge_ids);
     const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
@@ -2359,10 +2384,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             if (compute_spike_gradient_) {
 #define LAUNCH_HALF_ROWS(SLICE) \
             OP_REQUIRES_OK(context, GpuLaunchKernel( \
-                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE>, \
+                DpointnetSpikeGradRowPerWarpHalfBatch32Kernel<T, Index, SLICE, W>, \
                 static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
                 static_cast<int>(n_pre), static_cast<int>(batch), row_splits, pair_ids, \
-                weights.flat<T>().data(), projected_half.flat<Eigen::half>().data(), \
+                weight_values, projected_half.flat<Eigen::half>().data(), \
                 spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data(), \
                 scale, static_cast<Index>(n_pairs_)))
             switch (slice) {
@@ -2416,19 +2441,19 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         if (n_pre > 0) {
           if (write_csr_weight_gradient_) {
             OP_REQUIRES_OK(context, GpuLaunchKernel(
-                CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, kAccumulate>,
+                CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, kAccumulate, W>,
                 static_cast<int>(n_pre), 64, 0, device.stream(),
                 static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                edge_ids, pair_ids, weights.flat<T>().data(),
+                edge_ids, pair_ids, weight_values,
                 projected.flat<float>().data(), spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data(), accumulator));
           } else {
             OP_REQUIRES_OK(context, GpuLaunchKernel(
-                CsrSpikeGradPairPackedBatch32Kernel<T, Index, false>,
+                CsrSpikeGradPairPackedBatch32Kernel<T, Index, false, false, W>,
                 static_cast<int>(n_pre), 64, 0, device.stream(),
                 static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                edge_ids, pair_ids, weights.flat<T>().data(),
+                edge_ids, pair_ids, weight_values,
                 projected.flat<float>().data(), spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2468,10 +2493,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
       if (n_pre > 0) {
   #define LAUNCH_VARIABLE_BATCH(SLICE) \
       OP_REQUIRES_OK(context, GpuLaunchKernel( \
-        CsrSpikeGradPairVariableBatchKernel<T, Index, SLICE>, \
+        CsrSpikeGradPairVariableBatchKernel<T, Index, SLICE, W>, \
         static_cast<int>((n_pre + 3) / 4), 128, 0, device.stream(), \
         static_cast<int>(batch), static_cast<int>(n_pre), row_splits, pair_ids, \
-        weights.flat<T>().data(), general_projection, \
+        weight_values, general_projection, \
         spike_grad->flat<T>().data(), spike_gradient_scale.flat<T>().data()))
       if (batch <= 4) { LAUNCH_VARIABLE_BATCH(4); }
       else if (batch <= 8) { LAUNCH_VARIABLE_BATCH(8); }
@@ -2513,10 +2538,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
                   errors::InvalidArgument("Small-batch backward requires batch size 1..8."));
       if (n_pre > 0) {
         OP_REQUIRES_OK(context, GpuLaunchKernel(
-            CsrSpikeGradSmallBatchKernel<T, Index>, static_cast<int>(n_pre), 128, 0,
+            CsrSpikeGradSmallBatchKernel<T, Index, W>, static_cast<int>(n_pre), 128, 0,
             device.stream(), static_cast<int>(batch), static_cast<int>(n_pre), n_post_,
             static_cast<int>(n_basis), spikes.flat<T>().data(), current_grad.flat<T>().data(),
-            post_ids, weights.flat<T>().data(), synapse_types, basis.flat<T>().data(),
+            post_ids, weight_values, synapse_types, basis.flat<T>().data(),
             row_splits, edge_ids, spike_grad->flat<T>().data(), weight_grad->flat<float>().data(),
             spike_gradient_scale.flat<T>().data(), write_csr_weight_gradient_,
             general_projection, pair_ids));
@@ -2546,10 +2571,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             OP_REQUIRES_OK(
                 context,
                 GpuLaunchKernel(
-                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, true>,
+                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, true, false, W>,
                     static_cast<int>(n_pre), 64, 0, device.stream(),
                     static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    edge_ids, pair_ids, weight_values,
                     projected.flat<float>().data(), spike_grad->flat<T>().data(),
                     weight_grad->flat<float>().data(),
                     spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2557,10 +2582,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
             OP_REQUIRES_OK(
                 context,
                 GpuLaunchKernel(
-                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, false>,
+                    CsrSpikeGradPairPackedBatch32Kernel<T, Index, false, false, W>,
                     static_cast<int>(n_pre), 64, 0, device.stream(),
                     static_cast<int>(n_pre), spikes.flat<T>().data(), row_splits,
-                    edge_ids, pair_ids, weights.flat<T>().data(),
+                    edge_ids, pair_ids, weight_values,
                     projected.flat<float>().data(), spike_grad->flat<T>().data(),
                     weight_grad->flat<float>().data(),
                     spike_gradient_scale.flat<T>().data(), nullptr));
@@ -2573,10 +2598,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
           OP_REQUIRES_OK(
               context,
               GpuLaunchKernel(
-                  CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                  CsrSpikeGradPairBatch32Kernel<T, Index, W>, gradient_blocks,
                   gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
                   spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
-                  weights.flat<T>().data(), projected.flat<float>().data(),
+                  weight_values, projected.flat<float>().data(),
                   spike_grad->flat<T>().data(),
                   weight_grad->flat<float>().data(),
                   spike_gradient_scale.flat<T>().data()));
@@ -2589,10 +2614,10 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
         OP_REQUIRES_OK(
             context,
             GpuLaunchKernel(
-                CsrSpikeGradPairBatch32Kernel<T, Index>, gradient_blocks,
+                CsrSpikeGradPairBatch32Kernel<T, Index, W>, gradient_blocks,
                 gradient_threads, 0, device.stream(), static_cast<int>(n_pre),
                 spikes.flat<T>().data(), row_splits, edge_ids, pair_ids,
-                weights.flat<T>().data(), projected.flat<float>().data(),
+                weight_values, projected.flat<float>().data(),
                 spike_grad->flat<T>().data(),
                 weight_grad->flat<float>().data(),
                 spike_gradient_scale.flat<T>().data()));
@@ -2609,11 +2634,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
       OP_REQUIRES_OK(
         context,
         GpuLaunchKernel(
-          CsrSpikeGradKernel<T, Index>, work_count, 128, 0,
+          CsrSpikeGradKernel<T, Index, W>, work_count, 128, 0,
           device.stream(), work_count, static_cast<int>(n_pre), n_post_,
           static_cast<int>(n_basis), spikes.flat<T>().data(),
           current_grad.flat<T>().data(), post_ids,
-          weights.flat<T>().data(), synapse_types,
+          weight_values, synapse_types,
           basis.flat<T>().data(), row_splits, edge_ids,
           spike_grad->flat<T>().data(),
           weight_grad->flat<float>().data(),
@@ -2641,6 +2666,8 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
     OP_REQUIRES_OK(context, context->GetAttr("n_edges", &n_edges_));
     OP_REQUIRES_OK(context, context->GetAttr("n_pairs", &n_pairs_));
+    OP_REQUIRES_OK(
+        context, context->GetAttr("write_csr_weight_gradient", &write_csr_weight_gradient_));
     OP_REQUIRES_OK(
       context,
       context->GetAttr(
@@ -2742,14 +2769,21 @@ class DpointnetCsrWeightGradOp : public OpKernel {
                 n_post_, current_grad.flat<T>().data(), basis.flat<T>().data(),
                 pair_posts, pair_types, projected.flat<float>().data()));
         const uint32 splits = PackedRowSplitCount(n_pre);
-        OP_REQUIRES_OK(
-            context,
-            GpuLaunchKernel(
-                CsrWeightGradPairPackedBatch32Kernel,
-                dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
-                device.stream(), n_pre, spikes.flat<T>().data(),
-                projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
-                splits, weight_grad->flat<float>().data()));
+        if (write_csr_weight_gradient_) {
+          OP_REQUIRES_OK(context, GpuLaunchKernel(
+              CsrWeightGradPairPackedBatch32Kernel<true>,
+              dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
+              device.stream(), n_pre, spikes.flat<T>().data(),
+              projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
+              splits, weight_grad->flat<float>().data()));
+        } else {
+          OP_REQUIRES_OK(context, GpuLaunchKernel(
+              CsrWeightGradPairPackedBatch32Kernel<false>,
+              dim3(static_cast<unsigned>(n_pre), splits), 64, 0,
+              device.stream(), n_pre, spikes.flat<T>().data(),
+              projected.flat<float>().data(), pair_ids, edge_ids, row_splits,
+              splits, weight_grad->flat<float>().data()));
+        }
         return;
       }
     }
@@ -2763,17 +2797,20 @@ class DpointnetCsrWeightGradOp : public OpKernel {
             weight_grad->flat<float>().data()));
 
     const int work_count = static_cast<int>(batch * n_pre);
-    OP_REQUIRES_OK(
-        context,
-        GpuLaunchKernel(
-            CsrWeightGradKernel<T, Index>, work_count, 128, 0,
-            device.stream(),
-            work_count,
-            static_cast<int>(n_pre), n_post_, static_cast<int>(n_basis),
-            spikes.flat<T>().data(), current_grad.flat<T>().data(),
-            post_ids, synapse_types, basis.flat<T>().data(),
-            row_splits, edge_ids,
-            weight_grad->flat<float>().data()));
+#define LAUNCH_WEIGHT_GRAD(CSR) \
+    OP_REQUIRES_OK(context, GpuLaunchKernel( \
+        CsrWeightGradKernel<T, Index, CSR>, work_count, 128, 0, \
+        device.stream(), work_count, static_cast<int>(n_pre), n_post_, \
+        static_cast<int>(n_basis), spikes.flat<T>().data(), \
+        current_grad.flat<T>().data(), post_ids, synapse_types, \
+        basis.flat<T>().data(), row_splits, edge_ids, \
+        weight_grad->flat<float>().data()))
+    if (write_csr_weight_gradient_) {
+      LAUNCH_WEIGHT_GRAD(true);
+    } else {
+      LAUNCH_WEIGHT_GRAD(false);
+    }
+#undef LAUNCH_WEIGHT_GRAD
   }
 
  private:
@@ -2781,9 +2818,10 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   int64_t n_edges_;
   int64_t n_pairs_;
   bool use_packed_sm120_backward_;
+  bool write_csr_weight_gradient_;
 };
 
-template <typename T, typename Index>
+template <typename T, typename Index, bool Canonical = false>
 class DpointnetCombinedSweepOp : public OpKernel {
  public:
   explicit DpointnetCombinedSweepOp(OpKernelConstruction* context) : OpKernel(context) {
@@ -2824,7 +2862,8 @@ class DpointnetCombinedSweepOp : public OpKernel {
     OP_REQUIRES(context, batch > 0 && batch <= 65535,
                 errors::InvalidArgument("Combined sweep batch must be in 1..65535."));
     const GPUDevice& device = context->eigen_device<GPUDevice>();
-    CombinedSources<T, Index> views{};
+    using W = ProjectionWeights<T, Index, Canonical>;
+    CombinedSources<T, Index, W> views{};
     Tensor queues[kCombinedSources];
     Tensor counts[kCombinedSources];
     core::RefCountPtr<Var> resources[kCombinedSources];
@@ -2883,7 +2922,7 @@ class DpointnetCombinedSweepOp : public OpKernel {
         cached_width_[source] = width;
       }
       views.source[source] = {
-          spikes.flat<T>().data(), weights.flat<T>().data(), data, data + edges_[source],
+          spikes.flat<T>().data(), ProjectionWeightView<T, Index, Canonical>(weights, data + 2 * edges_[source] + width + 1), data, data + edges_[source],
           data + 2 * edges_[source], tile_starts_[source].flat<Index>().data(),
           queues[source].flat<int32>().data(),
           counts[source].flat<int32>().data(), width,
@@ -2907,10 +2946,10 @@ class DpointnetCombinedSweepOp : public OpKernel {
            where the 32-bit row tables still fit beside the tile. */        \
         constexpr int threads = Targets > 2048 && sizeof(Index) == 4 ? 1024 : 512; \
         auto kernel = use_fanout_                                        \
-            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, true>  \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, true, W>  \
             : use_cooperative_                                           \
-            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true>        \
-            : DpointnetCombinedSweepKernel<T, Index, Targets, threads, false>;      \
+            ? DpointnetCombinedSweepKernel<T, Index, Targets, threads, true, false, W>        \
+            : DpointnetCombinedSweepKernel<T, Index, Targets, threads, false, false, W>;      \
         constexpr int shared_bytes = Targets > 2048 ? Targets * 4 * sizeof(float) : 0; \
         if constexpr (shared_bytes > 0) {                                 \
           if (!shared_memory_configured_) {                               \
@@ -3058,6 +3097,28 @@ REGISTER_KERNEL_BUILDER(
         .Device(DEVICE_GPU).TypeConstraint<Eigen::half>("T")
         .TypeConstraint<uint32>("Tindex"),
     DpointnetCsrSpikeGradOp<Eigen::half, uint32, true>);
+
+
+#define REGISTER_MASTER_MATCHED(T, Index) \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCombinedSweepCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCombinedSweepOp<T, Index, true>); \
+  REGISTER_KERNEL_BUILDER(Name("DpointnetCsrSpikeGradCsrMaster").Device(DEVICE_GPU) \
+      .TypeConstraint<T>("T").TypeConstraint<Index>("Tindex"), \
+      DpointnetCsrSpikeGradOp<T, Index, false, true>);
+REGISTER_MASTER_MATCHED(Eigen::half, uint32)
+REGISTER_MASTER_MATCHED(Eigen::half, int64_t)
+REGISTER_MASTER_MATCHED(float, uint32)
+REGISTER_MASTER_MATCHED(float, int64_t)
+#undef REGISTER_MASTER_MATCHED
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<Eigen::half>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<Eigen::half, uint32, true, true>);
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetCsrSpikeGradAccumulateCsrMaster").Device(DEVICE_GPU)
+      .TypeConstraint<float>("T").TypeConstraint<uint32>("Tindex"),
+    DpointnetCsrSpikeGradOp<float, uint32, true, true>);
 
 #undef REGISTER_GPU_KERNELS_FOR_TYPE
 #undef REGISTER_GPU_KERNELS

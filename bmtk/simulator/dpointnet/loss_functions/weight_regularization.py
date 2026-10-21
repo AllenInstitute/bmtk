@@ -203,6 +203,8 @@ class EMDWeightRegularization:
         group_ids = _connection_type_ids(self._network, data_dir=data_dir).astype(
             np.int64, copy=False
         )
+        if getattr(rnn.cell, "_experimental_csr_master", False):
+            group_ids = rnn.cell.recurrent_master_layout.to_live(group_ids).numpy()
         n_groups = int(np.max(group_ids) + 1) if group_ids.size else 0
 
         # Presort the initial values per group so the call only needs to sort the current weights.

@@ -6,6 +6,11 @@ first-run configuration recipe.
 Current user guidance lives in :doc:`dpointnet_guide`,
 :doc:`dpointnet_training_standards` and :doc:`dpointnet_performance`.
 
+.. toctree::
+   :maxdepth: 1
+
+   dpointnet_csr_master_prototype
+
 Running tests efficiently
 -------------------------
 

@@ -549,7 +549,11 @@ def _fused_spike_currents_gradient(op, current_grad):
     n_post = op.get_attr("n_post")
     index_dtype = op.get_attr("Tindex")
     if compute_spike_gradient:
-        spike_grad, weight_grad = _OPS.dpointnet_csr_spike_grad(
+        gradient_operator = (
+            _OPS.dpointnet_csr_spike_grad_csr_master
+            if op.get_attr("csr_master_weights") else _OPS.dpointnet_csr_spike_grad
+        )
+        spike_grad, weight_grad = gradient_operator(
             op.inputs[0],
             current_grad,
             op.inputs[2],
@@ -561,7 +565,9 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
-            write_csr_weight_gradient=op.get_attr("write_csr_weight_gradient"),
+            write_csr_weight_gradient=(
+                op.get_attr("write_csr_weight_gradient") or op.get_attr("csr_master_weights")
+            ),
             use_small_batch_backward=op.get_attr("use_small_batch_backward"),
             use_javier_batch32_backward=False,
         )
@@ -579,6 +585,7 @@ def _fused_spike_currents_gradient(op, current_grad):
             n_edges=op.get_attr("n_edges"),
             n_pairs=op.get_attr("n_pairs"),
             use_packed_sm120_backward=op.get_attr("use_packed_sm120_backward"),
+            **({"write_csr_weight_gradient": True} if op.get_attr("csr_master_weights") else {}),
         )
     else:
         spike_grad = None
@@ -631,6 +638,7 @@ def fused_recurrent_weight_carry(
     use_forward_run_aggregation=False,
     use_device_active_queue_forward=False,
     compute_spike_gradient=True,
+    csr_master_weights=False,
 ):
     """Currents with a differentiable identity weight carrier.
 
@@ -660,7 +668,8 @@ def fused_recurrent_weight_carry(
             "Rebuild CUDA operators for compute_spike_gradient=False; "
             "the loaded accumulator does not support weight-only gradients."
         )
-    if any(value.dtype != spikes.dtype for value in (csr_weights, basis)):
+    weight_dtype = tf.float32 if csr_master_weights else spikes.dtype
+    if csr_weights.dtype != weight_dtype or basis.dtype != spikes.dtype:
         raise ValueError(
             "Fused recurrent accumulation requires matching compute operands."
         )
@@ -681,6 +690,7 @@ def fused_recurrent_weight_carry(
             use_active_row_forward=use_active_row_forward,
             use_forward_run_aggregation=use_forward_run_aggregation,
             use_device_active_queue_forward=use_device_active_queue_forward,
+            **({"csr_master_weights": True} if csr_master_weights else {}),
         )
         # Reuse this FuncGraph's capture; recapturing the eager handle in grad
         # breaks TensorFlow's nested while-gradient resource mapping.
@@ -696,7 +706,11 @@ def fused_recurrent_weight_carry(
             if dcurrents is None:
                 dcurrents = tf.zeros_like(currents)
             spike_options = {} if compute_spike_gradient else {"compute_spike_gradient": False}
-            dz, accumulated = _OPS.dpointnet_csr_spike_grad_accumulate(
+            gradient_operator = (
+                _OPS.dpointnet_csr_spike_grad_accumulate_csr_master
+                if csr_master_weights else _OPS.dpointnet_csr_spike_grad_accumulate
+            )
+            dz, accumulated = gradient_operator(
                 z,
                 dcurrents,
                 metadata,
@@ -746,6 +760,7 @@ def fused_spike_currents(
     use_forward_run_aggregation=False,
     use_device_active_queue_forward=False,
     vjp_only=False,
+    csr_master_weights=False,
 ):
     """Project currents, or supply only their registered VJP for recorded replay.
 
@@ -774,7 +789,10 @@ def fused_spike_currents(
         )
     if vjp_only and initial_currents is not None:
         raise ValueError("VJP-only projection requires no initial currents.")
-    if csr_weights.dtype != spikes.dtype or basis.dtype != spikes.dtype:
+    weight_dtype = tf.float32 if csr_master_weights else spikes.dtype
+    if csr_master_weights and not vjp_only:
+        raise ValueError("Canonical master weights require joint VJP-only projection.")
+    if csr_weights.dtype != weight_dtype or basis.dtype != spikes.dtype:
         raise TypeError("spikes, csr_weights, and basis must have the same dtype.")
     if master_weights.shape.rank != 1 or csr_weights.shape.rank != 1:
         raise ValueError("master_weights and csr_weights must be rank 1.")
@@ -883,6 +901,7 @@ def fused_spike_currents(
         write_csr_weight_gradient=write_csr_weight_gradient,
         use_small_batch_backward=use_small_batch_backward,
         vjp_only=vjp_only,
+        **({"csr_master_weights": True} if csr_master_weights else {}),
     )
 
 
@@ -950,6 +969,7 @@ def validate_combined_target_tile_size(target_tile_size):
 def fused_combined_currents(
     spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
     cooperative_rows=False, fanout_rows=False, gather_sources=False,
+    csr_master_weights=False,
 ):
     """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs."""
     target_tile_size = validate_combined_target_tile_size(target_tile_size)
@@ -976,7 +996,8 @@ def fused_combined_currents(
     if dtype not in (tf.float16, tf.float32) or basis.dtype != dtype or basis.shape[1] != 4:
         raise ValueError("Combined sweep requires matching FP16/FP32 operands and four bases.")
     for z, weight, connectivity in zip(spikes, weights, connectivities):
-        if z.dtype != dtype or weight.dtype != dtype or z.shape.rank != 2:
+        weight_dtype = tf.float32 if csr_master_weights else dtype
+        if z.dtype != dtype or weight.dtype != weight_dtype or z.shape.rank != 2:
             raise ValueError("Combined sweep spike/weight dtypes and spike ranks must match.")
         if not connectivity.get("sorted_by_target", False) or connectivity["index_dtype"] != index:
             raise ValueError("Combined sweep requires target-sorted CSR with matching index dtypes.")
@@ -1000,7 +1021,11 @@ def fused_combined_currents(
             and conn["n_edges"] // conn["n_sources"] < 512
             for conn in connectivities
         ]
-    primal = _OPS.dpointnet_combined_sweep(
+    operator = (
+        _OPS.dpointnet_combined_sweep_csr_master if csr_master_weights
+        else _OPS.dpointnet_combined_sweep
+    )
+    primal = operator(
         spikes, weights, [conn["metadata_handle"] for conn in connectivities], basis,
         Tindex=tf.as_dtype(index), n_post=connectivities[0]["n_post"],
         n_edges=[conn["n_edges"] for conn in connectivities],
@@ -1012,3 +1037,4 @@ def fused_combined_currents(
 
 
 ops.NotDifferentiable("DpointnetCombinedSweep")
+ops.NotDifferentiable("DpointnetCombinedSweepCsrMaster")

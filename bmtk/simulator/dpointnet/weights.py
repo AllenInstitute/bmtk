@@ -23,7 +23,12 @@ class ModelWeights:
 
         self._network_weights = {}
         for name in self._networks:
-            model_vals = cell.recurrent_weight_values if name == '<recurrent>' else self.cell.inputs[name]['input_weight_values']
+            model_vals = (
+                cell.canonical_weight_values(name)
+                if getattr(cell, '_experimental_csr_master', False)
+                else cell.recurrent_weight_values if name == '<recurrent>'
+                else self.cell.inputs[name]['input_weight_values']
+            )
             model_vals = self._copy_to_host(model_vals) if deep_copy else model_vals
             self._network_weights[name] = model_vals
 
@@ -51,6 +56,8 @@ class ModelWeights:
     def to_dataframe(self, cache=False):
         ret_df = None
         for netname, netweights in self._network_weights.items():
+            if not self.deep_copy and getattr(self.cell, '_experimental_csr_master', False):
+                netweights = self.cell.canonical_weight_values(netname)
             netadaptor = self.rnn.get_network(netname)
             conn_table_df = netadaptor.connection_table
             # Recover physical syn_weight from the internally-scaled weights the cell trains on

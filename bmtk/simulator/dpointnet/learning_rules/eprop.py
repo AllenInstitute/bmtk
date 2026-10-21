@@ -89,6 +89,8 @@ class EPropLearningRule(LearningRule):
 
     def _build_weight_surfaces(self, rnn):
         cell = rnn._cell
+        if getattr(cell, "_experimental_csr_master", False):
+            raise ValueError("The private CSR-master prototype supports BPTT, not eprop.")
         if cell._hard_reset:
             raise ValueError('eprop does not currently support hard_reset=True.')
         self._validate_requested_surfaces(cell)

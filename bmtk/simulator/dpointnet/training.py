@@ -15,6 +15,11 @@ from .segmented_recompute import FullBPTTGradientRunner, SegmentedRecomputeRunne
 from .loss_functions import loss_utils
 from .loss_functions.weight_regularization import weight_regularization_scope
 
+
+def _live_master_gradients(variables, gradients):
+    return gradients
+
+
 class TrainingParameters:
     def __init__(self, name, batch_size=None, seq_len=None):
         self.name = name
@@ -586,6 +591,7 @@ class TrainingEngine:
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
         )
+        csr_live_masters = getattr(cell, "_experimental_csr_master", False)
         if self._extractor_forward is not None:
             return
         if not self.gradient_checkpointing and not use_direct_csr_gradient:
@@ -596,9 +602,13 @@ class TrainingEngine:
             )
         if not self.gradient_checkpointing:
             self._extractor_forward = FullBPTTGradientRunner(
-                self.rnn.extractor_model, cell.restore_segmented_variable_gradients
+                self.rnn.extractor_model,
+                _live_master_gradients if csr_live_masters
+                else cell.restore_segmented_variable_gradients,
             )
             io.log_info(
+                "Full BPTT with live CSR-master gradients enabled."
+                if csr_live_masters else
                 "Full BPTT with one canonical recurrent-gradient restore enabled."
             )
             return
@@ -611,7 +621,7 @@ class TrainingEngine:
             pack_spike_checkpoints=self.pack_spike_checkpoints,
             variable_gradient_transform=(
                 cell.restore_segmented_variable_gradients
-                if use_direct_csr_gradient
+                if use_direct_csr_gradient and not csr_live_masters
                 else None
             ),
         )
