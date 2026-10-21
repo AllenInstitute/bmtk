@@ -302,13 +302,17 @@ Status BuildAdaptiveSegments(OpKernelContext* context, const Index* posts, const
         static_cast<unsigned int*>(nullptr), static_cast<unsigned long long*>(nullptr)));
   }
   size_t scratch_bytes = 0;
-  cub::DeviceScan::ExclusiveSum(nullptr, scratch_bytes, segment_splits, segment_splits,
-                                width + 1, stream);
+  if (cub::DeviceScan::ExclusiveSum(nullptr, scratch_bytes, segment_splits, segment_splits,
+                                    width + 1, stream) != cudaSuccess) {
+    cudaGetLastError();
+    return errors::Internal("sizing the adaptive routing segment scan failed");
+  }
   Tensor scratch;
   TF_RETURN_IF_ERROR(context->allocate_temp(
       DT_INT8, TensorShape({static_cast<int64_t>(std::max<size_t>(scratch_bytes, 1))}), &scratch));
   if (cub::DeviceScan::ExclusiveSum(scratch.flat<int8>().data(), scratch_bytes, segment_splits,
                                     segment_splits, width + 1, stream) != cudaSuccess) {
+    cudaGetLastError();
     return errors::Internal("scanning adaptive routing segment counts failed");
   }
   // One-time table construction reads the segment total on the host; warm
@@ -381,10 +385,13 @@ Status BuildAdaptiveCsc(OpKernelContext* context, const Index* posts, const Inde
     TF_RETURN_IF_ERROR(GpuLaunchKernel(CombinedIotaKernel<Index>, blocks, 256, 0, stream, edges,
                                        iota.flat<Index>().data()));
     size_t scratch_bytes = 0;
-    cub::DeviceRadixSort::SortPairs(
-        nullptr, scratch_bytes, posts, table->targets.template flat<Index>().data(),
-        iota.flat<Index>().data(), table->edge_positions.template flat<Index>().data(), edges, 0,
-        static_cast<int>(sizeof(Index) * 8), stream);
+    if (cub::DeviceRadixSort::SortPairs(
+            nullptr, scratch_bytes, posts, table->targets.template flat<Index>().data(),
+            iota.flat<Index>().data(), table->edge_positions.template flat<Index>().data(), edges, 0,
+            static_cast<int>(sizeof(Index) * 8), stream) != cudaSuccess) {
+      cudaGetLastError();
+      return errors::Internal("sizing the adaptive gather edge sort failed");
+    }
     Tensor scratch;
     TF_RETURN_IF_ERROR(context->allocate_temp(
         DT_INT8, TensorShape({static_cast<int64_t>(scratch_bytes)}), &scratch));
@@ -392,6 +399,7 @@ Status BuildAdaptiveCsc(OpKernelContext* context, const Index* posts, const Inde
             scratch.flat<int8>().data(), scratch_bytes, posts, table->targets.template flat<Index>().data(),
             iota.flat<Index>().data(), table->edge_positions.template flat<Index>().data(), edges, 0,
             static_cast<int>(sizeof(Index) * 8), stream) != cudaSuccess) {
+      cudaGetLastError();
       return errors::Internal("sorting adaptive gather edges by target failed");
     }
     TF_RETURN_IF_ERROR(GpuLaunchKernel(
@@ -534,11 +542,16 @@ Status BuildAdaptiveQueue(OpKernelContext* context, const T* spikes, int batch, 
       spikes, AdaptiveIsActive<T>{});
   const int items = batch * width;
   size_t scratch_bytes = 0;
-  cub::DeviceSelect::Flagged(nullptr, scratch_bytes, indices, active, queue, count, items, stream);
+  if (cub::DeviceSelect::Flagged(nullptr, scratch_bytes, indices, active, queue, count, items,
+                                 stream) != cudaSuccess) {
+    cudaGetLastError();
+    return errors::Internal("sizing the adaptive active-row queue failed");
+  }
   TF_RETURN_IF_ERROR(context->allocate_temp(
       DT_INT8, TensorShape({static_cast<int64_t>(std::max<size_t>(scratch_bytes, 1))}), scratch));
   if (cub::DeviceSelect::Flagged(scratch->flat<int8>().data(), scratch_bytes, indices, active,
                                  queue, count, items, stream) != cudaSuccess) {
+    cudaGetLastError();
     return errors::Internal("building the adaptive active-row queue failed");
   }
   *scratch_bytes_out = static_cast<int64_t>(scratch->TotalBytes());

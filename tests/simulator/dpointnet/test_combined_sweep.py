@@ -120,6 +120,14 @@ def test_combined_accuracy_and_all_canonical_vjps(
 @pytest.mark.parametrize("compiled", [False, True])
 @pytest.mark.parametrize("index_dtype", ["uint32", "int64"])
 def test_wide_tiles_values_and_all_canonical_vjps(tile, dtype, batch, compiled, index_dtype, monkeypatch):
+    from bmtk.simulator.dpointnet import acceleration
+
+    architecture = ops._gpu_compute_architecture()
+    geometry = acceleration.combined_sweep_launch_geometry(
+        architecture, tile, index_bytes=4 if index_dtype == "uint32" else 8,
+    )
+    if architecture is not None and not geometry["valid"]:
+        pytest.skip(f"tile {tile} is not launchable on SM{architecture}: {geometry['reasons']}")
     test_combined_accuracy_and_all_canonical_vjps(
         dtype, batch, compiled, index_dtype, 10243, monkeypatch, target_tile_size=tile,
         high_fanout=True,

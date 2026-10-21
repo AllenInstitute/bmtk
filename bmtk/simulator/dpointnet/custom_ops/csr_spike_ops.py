@@ -1126,6 +1126,21 @@ def adaptive_narrow_tile(wide):
     return 1024 if quarter >= 1024 else 512 if quarter >= 512 else 256
 
 
+def adaptive_selected_tile(batch, n_post, wide_tile, multiprocessors, wide_blocks_per_sm):
+    """Per-launch adaptive tile, mirroring the native rule for given device properties.
+
+    The narrow tile is chosen when the wide grid fills at most half of the device's
+    resident wide-kernel block slots (``multiprocessors * wide_blocks_per_sm``, the
+    latter measured natively by an occupancy query); otherwise the wide tile is kept.
+    """
+    wide = validate_combined_target_tile_size(wide_tile)
+    narrow = adaptive_narrow_tile(wide)
+    if narrow == wide:
+        return wide
+    wide_blocks = int(batch) * (-(-int(n_post) // wide))
+    return narrow if 2 * wide_blocks <= int(multiprocessors) * int(wide_blocks_per_sm) else wide
+
+
 def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sources=False):
     """Deterministic per-source traversal policy of the adaptive routing schema.
 

@@ -30,6 +30,41 @@ constexpr int64_t kActiveQueueMaxBatch = int64_t{1} << (32 - kActiveQueueRowBits
 constexpr int kDpointnetForwardThreads = 256;
 constexpr int kDpointnetForwardBlocks = 4512;
 
+// Opts ``kernel`` into ``bytes`` of dynamic shared memory after checking the
+// current device's opt-in per-block limit. A failed runtime call must not leave
+// a sticky "last error" behind: CUB and later TensorFlow launches peek at it and
+// would otherwise report unrelated failures (observed on SM75, whose 64 KiB
+// opt-in limit rejects the 4096/5120-target tiles).
+inline Status ConfigureDynamicSharedMemory(const void* kernel, int bytes, const char* what) {
+  int device = 0;
+  int limit = 0;
+  cudaError_t error = cudaGetDevice(&device);
+  if (error == cudaSuccess) {
+    error = cudaDeviceGetAttribute(&limit, cudaDevAttrMaxSharedMemoryPerBlockOptin, device);
+  }
+  cudaFuncAttributes attributes;
+  if (error == cudaSuccess) error = cudaFuncGetAttributes(&attributes, kernel);
+  if (error != cudaSuccess) {
+    cudaGetLastError();
+    return errors::Internal(what, " shared memory limit query failed: ",
+                            cudaGetErrorString(error));
+  }
+  const int64_t total = static_cast<int64_t>(bytes) + attributes.sharedSizeBytes;
+  if (total > limit) {
+    return errors::InvalidArgument(what, " needs ", total, " bytes of shared memory per block (",
+                                   attributes.sharedSizeBytes, " static + ", bytes,
+                                   " dynamic); this device permits at most ", limit,
+                                   ". Choose a narrower tile.");
+  }
+  error = cudaFuncSetAttribute(kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, bytes);
+  if (error != cudaSuccess) {
+    cudaGetLastError();
+    return errors::InvalidArgument("Requested ", what, " shared memory unavailable: ",
+                                   cudaGetErrorString(error));
+  }
+  return OkStatus();
+}
+
 template <typename T>
 __device__ inline float ToFloat(T value) {
   return static_cast<float>(value);
@@ -3074,12 +3109,9 @@ class DpointnetCombinedSweepOp : public OpKernel {
         constexpr int shared_bytes = Targets > 2048 ? Targets * 4 * sizeof(float) : 0; \
         if constexpr (shared_bytes > 0) {                                 \
           if (!shared_memory_configured_) {                               \
-            const cudaError_t error = cudaFuncSetAttribute(               \
-                kernel,                                                  \
-                cudaFuncAttributeMaxDynamicSharedMemorySize, shared_bytes); \
-            OP_REQUIRES(context, error == cudaSuccess,                    \
-                        errors::InvalidArgument("Requested combined tile shared memory unavailable: ", \
-                                                cudaGetErrorString(error))); \
+            OP_REQUIRES_OK(context, ConfigureDynamicSharedMemory(         \
+                reinterpret_cast<const void*>(kernel), shared_bytes,      \
+                "combined tile"));                                       \
             shared_memory_configured_ = true;                            \
           }                                                              \
         }                                                                \
@@ -3127,6 +3159,7 @@ class DpointnetCombinedSweepOp : public OpKernel {
           const cudaError_t error = cudaOccupancyMaxActiveBlocksPerMultiprocessor(
               &blocks, Shape::Kernel(), Shape::kThreads, Shape::kSharedBytes);
           if (error != cudaSuccess || blocks < 1) {
+            cudaGetLastError();
             return errors::Internal("Adaptive routing occupancy query failed: ",
                                     cudaGetErrorString(error));
           }
@@ -3254,12 +3287,8 @@ class DpointnetCombinedSweepOp : public OpKernel {
     const int bit = AdaptiveTileBit(kTile);
     if ((adaptive_configured_ & bit) != 0) return OkStatus();
     if (Shape::kSharedBytes > 0) {
-      const cudaError_t error = cudaFuncSetAttribute(
-          Shape::Kernel(), cudaFuncAttributeMaxDynamicSharedMemorySize, Shape::kSharedBytes);
-      if (error != cudaSuccess) {
-        return errors::InvalidArgument("Requested adaptive tile shared memory unavailable: ",
-                                       cudaGetErrorString(error));
-      }
+      TF_RETURN_IF_ERROR(ConfigureDynamicSharedMemory(
+          reinterpret_cast<const void*>(Shape::Kernel()), Shape::kSharedBytes, "adaptive tile"));
     }
     adaptive_configured_ |= bit;
     return OkStatus();

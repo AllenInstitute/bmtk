@@ -27,6 +27,18 @@ def restore_policy():
     tf.keras.mixed_precision.set_global_policy(policy)
 
 
+def skip_unlaunchable(tile, index):
+    """Skip explicit tiles whose shared memory exceeds this device's per-block limit."""
+    from bmtk.simulator.dpointnet import acceleration
+
+    architecture = ops._gpu_compute_architecture()
+    geometry = acceleration.combined_sweep_launch_geometry(
+        architecture, tile, index_bytes=tf.as_dtype(index).size,
+    )
+    if not geometry["valid"]:
+        pytest.skip(f"tile {tile} is not launchable on SM{architecture}: {geometry['reasons']}")
+
+
 def native():
     if not tf.config.get_visible_devices("GPU") or not ops.combined_sweep_available():
         pytest.skip("native GPU test requires the isolated rebuilt library")
@@ -81,6 +93,28 @@ def test_disabled_geometry_mirrors_native_dispatch():
     )
     assert [(g["traversal"], g["wide_tile"], g["narrow_tile"]) for g in adaptive] == [
         ("warp_batches", 2048, 512), ("block_rounds", 2048, 512), ("gather", 2048, 512)]
+
+
+# Multiprocessor counts of representative products per fat-binary target.
+PRODUCT_MULTIPROCESSORS = {61: 28, 70: 80, 75: 72, 80: 108, 86: 82, 89: 142, 90: 132}
+
+
+@pytest.mark.parametrize("architecture", sorted(PRODUCT_MULTIPROCESSORS))
+def test_adaptive_tile_selection_with_mocked_device_properties(architecture):
+    from bmtk.simulator.dpointnet import acceleration
+
+    sms = PRODUCT_MULTIPROCESSORS[architecture]
+    resident = acceleration.combined_sweep_launch_geometry(architecture, 2048)["resident_blocks_per_sm"]
+    assert resident >= 1
+    for occupancy in range(1, resident + 1):
+        for batch in (1, 8, 16, 32):
+            wide_blocks = batch * 3  # ceil(4099 / 2048)
+            expected = 512 if 2 * wide_blocks <= sms * occupancy else 2048
+            assert ops.adaptive_selected_tile(batch, 4099, 2048, sms, occupancy) == expected
+        # Batch 1 on n_post 4099 always fits; a single-SM device would not.
+        assert ops.adaptive_selected_tile(1, 4099, 2048, sms, occupancy) == 512
+    assert ops.adaptive_selected_tile(32, 4099, 2048, 1, 1) == 2048
+    assert ops.adaptive_selected_tile(32, 4099, 256, sms, resident) == 256
 
 
 @pytest.mark.parametrize("wide,narrow", [
@@ -319,6 +353,7 @@ def test_gpu_fp64_forward_and_vjps_both_modes(monkeypatch, geometry, dtype, batc
     # Only the four-row BKG-like source is gather-eligible, as in the full model.
     monkeypatch.setattr(ops, "combined_gather_eligible", lambda conn: conn["n_sources"] == 4)
     n_post, tile = GEOMETRIES[geometry]
+    skip_unlaunchable(tile, index)
     rng = np.random.default_rng(2026 + batch)
     kinds = ("recurrent", "lgn", "bkg", "repeat_low", "empty")
     sources = [make_source(kind, rng, n_post, batch, dtype) for kind in kinds]
@@ -357,6 +392,58 @@ def test_gpu_fp64_forward_and_vjps_both_modes(monkeypatch, geometry, dtype, batc
         for x, y in zip(a[1], b[1]):
             # Per-source VJPs keep existing routing; only atomic order may differ.
             np.testing.assert_allclose(x, y, rtol=1e-5, atol=1e-5 * max(1.0, amax(x)))
+    finally:
+        for conn in conns:
+            conn.close()
+
+
+def test_gpu_unlaunchable_tile_errors_cleanly_and_device_stays_usable(monkeypatch):
+    """A tile beyond the per-block shared limit fails clearly without a stale CUDA error.
+
+    SM75 regression: the failed attribute call used to leave the runtime's last
+    error set, so the next CUB scan or TensorFlow sort failed or produced garbage.
+    """
+    from bmtk.simulator.dpointnet import acceleration
+
+    native()
+    architecture = ops._gpu_compute_architecture()
+    invalid = [
+        tile for tile in acceleration.COMBINED_TARGET_TILES
+        if not acceleration.combined_sweep_launch_geometry(architecture, tile)["valid"]
+    ]
+    if not invalid:
+        pytest.skip(f"every combined tile is launchable on SM{architecture}")
+    monkeypatch.setattr(ops, "_csr_index_dtype", lambda *a: tf.uint32)
+    monkeypatch.setattr(ops, "combined_gather_eligible", lambda conn: conn["n_sources"] == 4)
+    rng = np.random.default_rng(75)
+    dtype, batch = np.float32, 3
+    for tile in invalid:
+        n_post = 2 * tile + 3
+        sources = [make_source(kind, rng, n_post, batch, dtype) for kind in ("recurrent", "lgn")]
+        basis = rng.uniform(-0.8, 1.1, (N_TYPES, 4)).astype(dtype)
+        dy = rng.uniform(-0.5, 0.5, (batch, n_post, 4)).astype(dtype)
+        conns = [build(s[0], s[1], s[3].shape[1], n_post) for s in sources]
+        try:
+            for adaptive in (False, True):
+                with pytest.raises(tf.errors.InvalidArgumentError, match="shared memory"):
+                    run_sweep(sources, conns, basis, dy, adaptive=adaptive, tile=tile,
+                              gather=False, n_post=n_post)
+        finally:
+            for conn in conns:
+                conn.close()
+    n_post, tile = GEOMETRIES["masks"]
+    sources = [make_source(kind, rng, n_post, batch, dtype)
+               for kind in ("recurrent", "lgn", "bkg", "repeat_low", "empty")]
+    sources[3][3][:] = 0
+    basis = rng.uniform(-0.8, 1.1, (N_TYPES, 4)).astype(dtype)
+    dy = rng.uniform(-0.5, 0.5, (batch, n_post, 4)).astype(dtype)
+    reference = fp64_oracle(sources, basis, dy)
+    conns = [build(s[0], s[1], s[3].shape[1], n_post) for s in sources]
+    try:
+        for adaptive in (False, True):
+            out, grads, layouts, _ = run_sweep(sources, conns, basis, dy, adaptive=adaptive,
+                                               tile=tile, gather=True, n_post=n_post)
+            check_against_oracle(out, grads, layouts, reference, dtype)
     finally:
         for conn in conns:
             conn.close()
@@ -625,9 +712,11 @@ def test_gpu_registry_sharing_bounded_shapes_and_release():
                 np.testing.assert_allclose(actual, expected, rtol=3e-5, atol=3e-5 * np.abs(expected).max())
         items = census(conns)
         for item in items:
-            # Two operators share one table per shape: B1 narrow 512, B32 wide 2048.
-            assert item["segment_tables"] == 2
-            assert item["built_tiles"] == [512, 2048]
+            # Two operators share one table per built shape. B1 (6 wide blocks) is narrow
+            # 512 on every device; B32 (192 wide blocks) is wide 2048 or, on devices with
+            # enough resident block slots (e.g. A100, L40S), narrow 512 as well.
+            assert 512 in item["built_tiles"] and set(item["built_tiles"]) <= {512, 2048}
+            assert item["segment_tables"] == len(item["built_tiles"])
             assert item["operators"] == 2
             assert item["dense_tile_bytes"] == 0 and item["dense_tile_tables"] == 0
             assert item["routing_table_bytes"] == item["segment_bytes"] + item["mask_bytes"] > 0
@@ -669,9 +758,13 @@ def test_gpu_segment_census_matches_independent_count():
 
         run()
         item = census([conn])[0]
+        # The per-launch tile depends on the device's resident block slots.
+        tile = item["last_selected_tile"]
+        assert tile in (2048, ops.adaptive_narrow_tile(2048))
+        assert item["built_tiles"] == [tile]
         order = np.lexsort((indices[:, 0], indices[:, 1]))
         pre, post = indices[order, 1], indices[order, 0]
-        tiles = post // 2048
+        tiles = post // tile
         segments = int(np.count_nonzero(np.r_[True, (pre[1:] != pre[:-1]) | (tiles[1:] != tiles[:-1])])) if pre.size else 0
         width = spikes.shape[1]
         assert item["segments"] == segments
