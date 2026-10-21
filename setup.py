@@ -72,7 +72,7 @@ setup(
     # package_data={'': ['*.md', '*.txt', '*.cfg', '**/*.json', '**/*.hoc']},
     include_package_data=True,
     package_data={
-        'bmtk.simulator.dpointnet.custom_ops': ['*.cc', '*.cu.cc', '*.sh'],
+        'bmtk.simulator.dpointnet.custom_ops': ['*.cc', '*.cu.cc', '*.cuh', '*.h', '*.sh'],
     },
     entry_points={
         'console_scripts': [
