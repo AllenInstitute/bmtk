@@ -544,7 +544,14 @@ class RNN:
                     if cell_params.get("temporal_checkpoint_chunk_size", size) != size:
                         raise ValueError("Cell temporal and training checkpoint chunk sizes conflict.")
                     cell_params["temporal_checkpoint_chunk_size"] = size
-                cell_params["temporal_pack_spike_checkpoints"] = self.training_engine.pack_spike_checkpoints
+                # Automatic packing applies to segmented recomputation; the FP32 temporal
+                # adjoint keeps unpacked checkpoints unless packing is explicitly requested.
+                explicit_packing = getattr(
+                    self.training_engine, "pack_spike_checkpoints_explicit",
+                    self.training_engine.pack_spike_checkpoints,
+                )
+                if explicit_packing is not None:
+                    cell_params["temporal_pack_spike_checkpoints"] = explicit_packing
         elif "acceleration_profile" in cell_params:
             raise ValueError("acceleration_profile requires a GLIF3Cell model.")
         combined_auto = False
@@ -1300,7 +1307,7 @@ class RNN:
             gradient_checkpoint_chunk_size = train_dict.get(
                 "gradient_checkpoint_chunk_size", UNSET
             )
-            pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", False)
+            pack_spike_checkpoints = train_dict.get("pack_spike_checkpoints", "auto")
             regenerate_initial_state_each_epoch = train_dict.get(
                 "regenerate_initial_state_each_epoch", True
             )

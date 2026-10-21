@@ -4,7 +4,7 @@ import pandas as pd
 import copy
 
 from . import optimizers
-from ._options import UNSET
+from ._options import UNSET, validate_bool_option
 from .callbacks import Callbacks
 from .callbacks import callback_classes
 from .io_tools import io
@@ -18,6 +18,23 @@ from .loss_functions.weight_regularization import weight_regularization_scope
 
 def _live_master_gradients(variables, gradients):
     return gradients
+
+
+def _binary_spike_checkpoint_state(rnn):
+    """Whether the RNN cell's first state is the binary GLIF3 spike buffer."""
+    from .cell_models.glif3_cell import GLIF3Cell
+
+    cell = getattr(rnn, "_cell", None)
+    if cell is None:
+        cell_cls = getattr(rnn, "cell_cls", None)
+        return isinstance(cell_cls, type) and issubclass(cell_cls, GLIF3Cell)
+    if not isinstance(cell, GLIF3Cell):
+        return False
+    try:
+        _, names = cell.zero_state(1, tf.float32, with_names=True)
+    except (TypeError, ValueError):
+        return False
+    return bool(names) and names[0] == "z0_buf"
 
 
 class TrainingParameters:
@@ -151,7 +168,7 @@ class TrainingEngine:
         self._gradient_checkpoint_chunk_size = (
             UNSET if chunk_size is UNSET else int(chunk_size)
         )
-        self.pack_spike_checkpoints = bool(kwargs.get("pack_spike_checkpoints", False))
+        self.pack_spike_checkpoints = kwargs.get("pack_spike_checkpoints", "auto")
         if chunk_size is not UNSET and self._gradient_checkpoint_chunk_size < 1:
             raise ValueError("gradient_checkpoint_chunk_size must be positive.")
         self.regenerate_initial_state_each_epoch = kwargs.get(
@@ -175,6 +192,31 @@ class TrainingEngine:
     @property
     def optimizer(self):
         return self._optimizer
+
+    @property
+    def pack_spike_checkpoints(self):
+        """Whether segmented recomputation stores bit-packed spike checkpoints.
+
+        Default ``"auto"`` packs (63 spikes per on-device int64 word) when the cell's
+        first recurrent state is the binary spike buffer of the GLIF3 family; other
+        cells keep unpacked checkpoints. Explicit booleans are used as given.
+        """
+        if self._pack_spike_checkpoints != "auto":
+            return self._pack_spike_checkpoints
+        return _binary_spike_checkpoint_state(self.rnn)
+
+    @pack_spike_checkpoints.setter
+    def pack_spike_checkpoints(self, value):
+        if value is None or value is UNSET:
+            value = "auto"
+        if value != "auto":
+            validate_bool_option(value, "pack_spike_checkpoints")
+        self._pack_spike_checkpoints = value
+
+    @property
+    def pack_spike_checkpoints_explicit(self):
+        """The explicit boolean request, or None when automatic."""
+        return None if self._pack_spike_checkpoints == "auto" else self._pack_spike_checkpoints
 
     @property
     def adjusted_batch_size(self):
