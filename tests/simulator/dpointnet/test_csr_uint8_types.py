@@ -19,6 +19,13 @@ NAMES = (
 )
 
 
+@pytest.fixture(autouse=True)
+def restore_policy():
+    policy = tf.keras.mixed_precision.global_policy()
+    yield
+    tf.keras.mixed_precision.set_global_policy(policy)
+
+
 def capability(*, uint8_types=False):
     return uint8_types
 
@@ -145,16 +152,14 @@ def test_non_boolean_low_level_requests_reject(host_capability, value):
         ops.build_csr_connectivity([[0, 0]], [0], 1, 1, 1, host_lifecycle=True, uint8_types=value)
 
 
-def test_invalid_flag_and_cpu_composition_reject(monkeypatch):
+def test_invalid_option_and_cpu_composition_reject():
     from test_precision_credit import make_cell
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES", "auto")
-    with pytest.raises(ValueError, match="must be 0 or 1"):
-        make_cell()
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES", "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
-    with pytest.raises(ValueError, match="require native fused CUDA"):
-        make_cell("nest")
+    with pytest.raises(ValueError, match="use_uint8_synapse_types must be true or false"):
+        make_cell("nest", use_uint8_synapse_types="auto")
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("the CPU CSR-master reference requires no visible GPU")
+    with pytest.raises(ValueError, match="requires native fused CUDA"):
+        make_cell("nest", use_csr_master_weights=True, use_uint8_synapse_types=True)
 
 
 @pytest.mark.parametrize("missing", NAMES)
@@ -162,19 +167,15 @@ def test_old_partial_native_libraries_reject_explicit_typed_request(monkeypatch,
     library = {name: capability for name in NAMES}
     library[missing] = lambda: None
     monkeypatch.setattr(ops, "_OPS", SimpleNamespace(**library))
-    with pytest.raises(RuntimeError, match="Rebuild both CUDA operators"):
+    with pytest.raises(RuntimeError, match="requires rebuilt CUDA operators"):
         ops.build_csr_connectivity([[0, 0]], [0], 1, 1, 1, host_lifecycle=True, uint8_types=True)
     assert ops._uint8_type_options({}) == {}
 
 
-@pytest.mark.parametrize("csr,host", [(0, 0), (0, 1), (1, 0)])
-def test_flag_composition_rejects_unsupported_modes(monkeypatch, csr, host):
+def test_uint8_without_csr_masters_rejects():
     from test_precision_credit import make_cell
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES", "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", str(csr))
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", str(host))
-    with pytest.raises(ValueError, match="require CSR FP32 masters and host lifecycle"):
-        make_cell()
+    with pytest.raises(ValueError, match="use_uint8_synapse_types=True requires use_csr_master_weights"):
+        make_cell("nest", use_csr_master_weights=False, use_uint8_synapse_types=True)
 
 
 def native():
@@ -375,7 +376,7 @@ def test_gpu_each_traversal_and_resource_identity_cache(monkeypatch, traversal, 
 
 @pytest.mark.parametrize("mixed", [False, True])
 @pytest.mark.parametrize("batch", [1, 3, 32])
-def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(monkeypatch, tmp_path, mixed, batch):
+def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(tmp_path, mixed, batch):
     native()
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet import acceleration
@@ -383,14 +384,13 @@ def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(monkeypa
     from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
     from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
 
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", "1")
     original_policy = tf.keras.mixed_precision.global_policy()
     def construct(typed):
-        monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES", str(int(typed)))
         network, inputs, arguments = make_cell(
             "nest", fused=True, two_inputs=True, return_spec=True, selective=mixed,
             train_recurrent=True, batch_size=batch, acceleration_profile="auto",
+            use_csr_master_weights=True, use_uint8_synapse_types=typed,
+            use_adaptive_routing=False,
             _canonical_gradient_boundary=True, use_fused_recurrent_accumulation=(mixed and batch == 32),
             **({"use_combined_current_sweep": True} if batch == 3 else {}),
         )
@@ -431,11 +431,13 @@ def test_gpu_actual_cell_named_full_remainder_adam_and_canonical_export(monkeypa
     try:
         baseline, candidate = construct(False), construct(True)
         a, b = baseline[0], candidate[0]
-        assert a.acceleration_report["selected"] == b.acceleration_report["selected"]
-        assert b.acceleration_report["experimental_csr_uint8_types"] == "csr_live_uint8_type_tail_v1"
-        assert a.acceleration_report["experimental_csr_uint8_types"] == "disabled"
-        assert b.acceleration_report["experimental_projection"] == "optimized_combined_csr_fp32_master"
-        assert b.acceleration_report["experimental_csr_lifecycle"] == "host_numpy_uint32_v1"
+        assert {k: v for k, v in a.acceleration_report["selected"].items() if k != "use_uint8_synapse_types"} == {
+            k: v for k, v in b.acceleration_report["selected"].items() if k != "use_uint8_synapse_types"
+        }
+        assert b.acceleration_report["csr_uint8_types"] == "csr_live_uint8_type_tail_v1"
+        assert a.acceleration_report["csr_uint8_types"] == "disabled"
+        assert b.acceleration_report["csr_master_projection"] == "optimized_combined_csr_fp32_master"
+        assert b.acceleration_report["csr_master_weights"] == "direct_csr_fp32_master_host_lifecycle_v1"
         for name in ("<recurrent>", *b.inputs):
             np.testing.assert_array_equal(a.canonical_weight_values(name), b.canonical_weight_values(name))
             canonical = b.canonical_weight_values(name)

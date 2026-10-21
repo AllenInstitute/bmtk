@@ -1,4 +1,4 @@
-"""Experimental adaptive routing (adaptive_segment_ticket_v1) for the CSR-master sweep.
+"""Adaptive routing (adaptive_segment_ticket_v1) for the CSR-master sweep.
 
 Independent FP64 oracles for the forward and every affected per-source VJP, both
 routing modes on the same source/binaries, registry/cache lifetime, topology
@@ -16,11 +16,7 @@ import tensorflow as tf
 from bmtk.simulator.dpointnet.custom_ops import csr_spike_ops as ops
 from bmtk.simulator.dpointnet.csr_master import CsrMasterLayout
 
-BASE_FLAGS = (
-    "_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS",
-    "_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE",
-    "_DPOINTNET_EXPERIMENTAL_CSR_UINT8_TYPES",
-)
+BASE_OPTIONS = ("use_csr_master_weights", "use_uint8_synapse_types")
 N_TYPES = 6
 
 
@@ -117,9 +113,9 @@ def test_old_or_partial_library_reports_unavailable(monkeypatch, missing):
     monkeypatch.setattr(ops, "_OPS", SimpleNamespace(**library))
     monkeypatch.setattr(ops, "fused_cuda_available", lambda: True)
     assert not ops.adaptive_routing_available()
-    with pytest.raises(RuntimeError, match="Rebuild both CUDA operators for experimental adaptive"):
+    with pytest.raises(RuntimeError, match="use_adaptive_routing=True requires rebuilt CUDA operators"):
         ops.require_adaptive_routing()
-    with pytest.raises(RuntimeError, match="Rebuild both CUDA operators for experimental adaptive"):
+    with pytest.raises(RuntimeError, match="use_adaptive_routing=True requires rebuilt CUDA operators"):
         ops.fused_combined_currents([], [], [], None, [], csr_master_weights=True,
                                     adaptive_routing=True)
 
@@ -135,31 +131,32 @@ def test_low_level_request_requires_csr_masters():
         ops.fused_combined_currents([], [], [], None, [], adaptive_routing=True)
 
 
-@pytest.mark.parametrize("value", ["auto", "true", "2", " 1"])
-def test_invalid_flag_value_rejects(monkeypatch, value):
+@pytest.mark.parametrize("value", ["auto", "true", 2, 1])
+def test_invalid_option_value_rejects(value):
     from test_precision_credit import make_cell
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING", value)
-    with pytest.raises(ValueError, match="ADAPTIVE_ROUTING must be 0 or 1"):
-        make_cell()
+    with pytest.raises(ValueError, match="use_adaptive_routing must be true or false"):
+        make_cell("nest", acceleration_profile=None, use_adaptive_routing=value)
 
 
-@pytest.mark.parametrize("flags", [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 0, 1)])
-def test_unsupported_flag_compositions_reject(monkeypatch, flags):
+@pytest.mark.parametrize("options", [(False, False), (True, False), (False, True)])
+def test_unsupported_option_compositions_reject(options):
     from test_precision_credit import make_cell
-    for name, value in zip(BASE_FLAGS, flags):
-        monkeypatch.setenv(name, str(value))
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING", "1")
-    with pytest.raises(ValueError, match="masters|lifecycle|uint8"):
-        make_cell()
+    with pytest.raises(ValueError, match="use_uint8_synapse_types=True requires|use_adaptive_routing=True requires"):
+        make_cell(
+            "nest", acceleration_profile=None, use_adaptive_routing=True,
+            **dict(zip(BASE_OPTIONS, options)),
+        )
 
 
-def test_cpu_composition_rejects(monkeypatch):
+def test_cpu_composition_rejects():
     from test_precision_credit import make_cell
-    for name in BASE_FLAGS:
-        monkeypatch.setenv(name, "1")
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING", "1")
+    if tf.config.get_visible_devices("GPU"):
+        pytest.skip("the CPU CSR-master reference requires no visible GPU")
     with pytest.raises(ValueError, match="native fused CUDA"):
-        make_cell("nest")
+        make_cell(
+            "nest", acceleration_profile=None, use_csr_master_weights=True,
+            use_uint8_synapse_types=True, use_adaptive_routing=True,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -691,7 +688,7 @@ def test_gpu_segment_census_matches_independent_count():
 
 @pytest.mark.parametrize("mixed", [False, True])
 @pytest.mark.parametrize("batch", [1, 3, 32])
-def test_gpu_actual_cell_both_modes_replay_adam_and_report(monkeypatch, mixed, batch):
+def test_gpu_actual_cell_both_modes_replay_adam_and_report(mixed, batch):
     native()
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet import acceleration
@@ -699,14 +696,12 @@ def test_gpu_actual_cell_both_modes_replay_adam_and_report(monkeypatch, mixed, b
     from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
     from bmtk.simulator.dpointnet.segmented_recompute import SegmentedRecomputeRunner
 
-    for name in BASE_FLAGS:
-        monkeypatch.setenv(name, "1")
-
     def construct(adaptive):
-        monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING", str(int(adaptive)))
         network, inputs, arguments = make_cell(
             "nest", fused=True, two_inputs=True, return_spec=True, selective=mixed,
             train_recurrent=True, batch_size=batch, acceleration_profile="auto",
+            use_csr_master_weights=True, use_uint8_synapse_types=True,
+            use_adaptive_routing=adaptive,
             _canonical_gradient_boundary=True, use_fused_recurrent_accumulation=(mixed and batch == 32),
             **({"use_combined_current_sweep": True} if batch == 3 else {}),
         )
@@ -758,15 +753,18 @@ def test_gpu_actual_cell_both_modes_replay_adam_and_report(monkeypatch, mixed, b
     try:
         baseline, candidate = construct(False), construct(True)
         a, b = baseline[0], candidate[0]
-        assert a.acceleration_report["selected"] == b.acceleration_report["selected"]
-        assert a.acceleration_report["experimental_adaptive_routing"] == "disabled"
-        assert b.acceleration_report["experimental_adaptive_routing"] == "adaptive_segment_ticket_v1"
-        assert b.acceleration_report["experimental_csr_uint8_types"] == "csr_live_uint8_type_tail_v1"
+        differing = {"use_adaptive_routing", "combined_current_target_tile_size"}
+        assert {k: v for k, v in a.acceleration_report["selected"].items() if k not in differing} == {
+            k: v for k, v in b.acceleration_report["selected"].items() if k not in differing
+        }
+        assert a.acceleration_report["adaptive_routing"] == "disabled"
+        assert b.acceleration_report["adaptive_routing"] == "adaptive_segment_ticket_v1"
+        assert b.acceleration_report["csr_uint8_types"] == "csr_live_uint8_type_tail_v1"
         assert b._use_combined_current_sweep
-        assert b.acceleration_report["experimental_adaptive_routing_plan"] == b.adaptive_routing_plan()
-        assert "experimental_adaptive_routing_plan" not in a.acceleration_report
-        assert a.acceleration_report["experimental_routing_geometry"] == a.combined_routing_geometry()
-        assert b.acceleration_report["experimental_routing_geometry"] == b.combined_routing_geometry()
+        assert b.acceleration_report["adaptive_routing_plan"] == b.adaptive_routing_plan()
+        assert "adaptive_routing_plan" not in a.acceleration_report
+        assert a.acceleration_report["routing_geometry"] == a.combined_routing_geometry()
+        assert b.acceleration_report["routing_geometry"] == b.combined_routing_geometry()
         for name, item in b.combined_routing_geometry().items():
             assert item["schema"] == "adaptive_segment_ticket_v1"
             assert item["traversal"] == b.adaptive_routing_plan()["traversals"][name]

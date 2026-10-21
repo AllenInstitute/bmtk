@@ -1,4 +1,7 @@
-"""Private direct-canonical FP32-weight experiment; not a production option."""
+"""Reference CSR-master connectivity and projection used by CPU reference and tests.
+
+The optimized path is the native combined sweep with ``use_csr_master_weights``.
+"""
 
 from pathlib import Path
 

@@ -8,11 +8,15 @@ from bmtk.simulator.dpointnet import acceleration
 from bmtk.simulator.dpointnet.loss_functions.target_firing_rates import TargetFiringRate
 
 
+FAT_BINARY_ARCHITECTURES = (61, 70, 75, 80, 86, 89, 90)
+
+
 @pytest.fixture
 def projection_hardware(monkeypatch):
     monkeypatch.setattr(acceleration.csr_spike_ops, "combined_sweep_available", lambda: True)
     monkeypatch.setattr(acceleration.csr_spike_ops, "fused_cuda_available", lambda: True)
     monkeypatch.setattr(acceleration.csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "_SM_ARCHITECTURES", FAT_BINARY_ARCHITECTURES)
 
 
 def context(**overrides):
@@ -42,13 +46,28 @@ def test_auto_projection_selects_qualified_batch_geometry(projection_hardware, b
     assert "rounds once" in reason
 
 
-@pytest.mark.parametrize("architecture", [61, 70, 75, 80, 89, 90, None])
-def test_unqualified_architectures_keep_existing_routes(projection_hardware, architecture):
+@pytest.mark.parametrize("architecture", FAT_BINARY_ARCHITECTURES)
+@pytest.mark.parametrize("batch", [1, 2, 7, 13, 16, 31, 32])
+def test_every_fat_binary_architecture_and_batch_up_to_32_is_admitted(
+    projection_hardware, architecture, batch,
+):
+    enabled, tile, _ = select(architecture=architecture, batch_size=batch)
+    assert enabled and tile == (256 if batch == 1 else 2048)
+
+
+@pytest.mark.parametrize("architecture", [52, 60, 72, 87, 100, 120, None])
+def test_non_target_architectures_keep_existing_routes(projection_hardware, architecture):
     assert not select(architecture=architecture)[0]
 
 
-@pytest.mark.parametrize("batch", [0, 7, 13, 33, None, True])
-def test_unknown_or_unqualified_batch_does_not_get_new_route(projection_hardware, batch):
+def test_architecture_without_native_sass_keeps_existing_route(projection_hardware, monkeypatch):
+    monkeypatch.setattr(acceleration.csr_spike_ops, "_SM_ARCHITECTURES", (86,))
+    assert select(architecture=86)[0]
+    assert not select(architecture=89)[0]
+
+
+@pytest.mark.parametrize("batch", [0, 33, 64, None, True])
+def test_unknown_or_large_batch_does_not_get_new_route(projection_hardware, batch):
     assert not select(batch_size=batch)[0]
 
 
@@ -94,6 +113,7 @@ def test_routing_budget_exact_boundary_and_fallback(projection_hardware):
 
 def test_auto_projection_requires_new_native_tile_abi(monkeypatch):
     monkeypatch.setattr(acceleration.csr_spike_ops, "fused_cuda_available", lambda: True)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "_SM_ARCHITECTURES", FAT_BINARY_ARCHITECTURES)
     monkeypatch.setattr(
         acceleration.csr_spike_ops, "_OPS",
         SimpleNamespace(dpointnet_combined_sweep=lambda sources: None),
@@ -562,6 +582,7 @@ def _resolver_hardware(monkeypatch, *, cooperative=True, fanout=True, gather=Tru
     monkeypatch.setattr(acceleration.csr_spike_ops, "combined_sweep_available", lambda: True)
     monkeypatch.setattr(acceleration.csr_spike_ops, "fused_cuda_available", lambda: True)
     monkeypatch.setattr(acceleration.csr_spike_ops, "_gpu_compute_architecture", lambda: 86)
+    monkeypatch.setattr(acceleration.csr_spike_ops, "_SM_ARCHITECTURES", FAT_BINARY_ARCHITECTURES)
     monkeypatch.setattr(acceleration.csr_spike_ops, "cooperative_combined_sweep_available", lambda: cooperative)
     monkeypatch.setattr(acceleration.csr_spike_ops, "fanout_combined_sweep_available", lambda: fanout)
     monkeypatch.setattr(acceleration.csr_spike_ops, "gather_combined_sweep_available", lambda: gather)
@@ -624,8 +645,8 @@ def test_auto_omits_traversals_without_the_rebuilt_native_capability(monkeypatch
 @pytest.mark.parametrize("boundary", [
     {"options": {"use_combined_current_sweep": False}},
     {"options": {"acceleration_profile": None}},
-    {"architecture": 89},
-    {"batch_size": 7},
+    {"architecture": 120},
+    {"batch_size": 33},
     {"metadata": None},
 ])
 def test_traversals_follow_the_joint_sweep_boundary(monkeypatch, boundary):

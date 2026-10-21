@@ -63,7 +63,7 @@ def test_training_engine_never_canonical_restores_live_csr_gradients(checkpointi
         pytest.fail("TrainingEngine must not canonical-restore CSR-live master gradients")
 
     cell = SimpleNamespace(
-        _experimental_csr_master=True, _use_direct_csr_recurrent_gradient=True,
+        _csr_master_weights=True, _use_direct_csr_recurrent_gradient=True,
         restore_segmented_variable_gradients=forbidden_restore,
     )
     core = SimpleNamespace(
@@ -127,7 +127,7 @@ def fake_cell(csr, host_lifecycle=False):
         for master in masters:
             guard_csr_checkpoint(master)
     cell = SimpleNamespace(
-        _experimental_csr_master=csr, recurrent_master_layout=mapping,
+        _csr_master_weights=csr, recurrent_master_layout=mapping,
         recurrent_weight_values=masters[0],
         inputs={
             "trainable": dict(input_weight_values=masters[1], master_layout=mapping),
@@ -157,7 +157,7 @@ def test_explicit_old_new_checkpoint_adam_migration_and_resumed_update(tmp_path,
     def step(cell, opt, masters):
         gradient = (
             cell.recurrent_master_layout.to_live(canonical_gradient)
-            if cell._experimental_csr_master else canonical_gradient
+            if cell._csr_master_weights else canonical_gradient
         )
         opt.apply_gradients([(gradient, master) for master in masters[:2]])
 

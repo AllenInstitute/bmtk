@@ -140,10 +140,9 @@ def make_model(monkeypatch, enabled=True, mixed=True):
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
     from bmtk.simulator.dpointnet.cell_models.state_rnn import ExplicitStateRNN
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "1" if enabled else "0")
     network, inputs, arguments = make_cell(
         "nest", two_inputs=True, return_spec=True, train_recurrent=True,
-        selective=mixed,
+        selective=mixed, use_csr_master_weights=enabled,
     )
     for props in inputs.values():
         props["input_type"] = "spikes"
@@ -270,10 +269,9 @@ def test_resource_metadata_and_live_silent_credit_scale(dtype):
 def test_internal_poisson_and_frozen_named_masters(monkeypatch, mixed):
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
-    monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", "1")
     network, inputs, arguments = make_cell(
         "nest", noise=True, two_inputs=True, selective=mixed, return_spec=True,
-        train_recurrent=True,
+        train_recurrent=True, use_csr_master_weights=True,
     )
     inputs["background"]["options"]["trainable"] = False
     cell = GLIF3Cell(network, inputs, **arguments)
@@ -323,17 +321,20 @@ def test_cell_recurrent_and_each_named_input_against_fp64(monkeypatch, mixed):
         return result, tape.gradient(loss, [z, *masters])
 
     result, gradients = evaluate()
+    # Endpoint indices and types are stored in live CSR order; the oracle is canonical.
+    canonical = cell.recurrent_master_layout.host_to_canonical
     rec = oracle(
-        cell.recurrent_indices.numpy(), cell.syn_ids.numpy(), cell.canonical_weight_values().numpy(),
-        z.numpy(), basis, upstream.astype(np.float32),
+        canonical(cell.recurrent_indices.numpy()), canonical(cell.syn_ids.numpy()),
+        cell.canonical_weight_values().numpy(), z.numpy(), basis, upstream.astype(np.float32),
     )
     expected = [rec]
     for idx, (name, net) in enumerate(cell.inputs.items()):
         current = x[:, cell.inputs_idx[idx]:cell.inputs_idx[idx + 1]].numpy()
         prior = state[7][:, net["history_start"]:net["history_stop"]].numpy()
         delayed = np.concatenate([current, prior], axis=1)
+        to_canonical = net["master_layout"].host_to_canonical
         expected.append(oracle(
-            net["input_indices"].numpy(), net["input_syn_ids"].numpy(),
+            to_canonical(net["input_indices"].numpy()), to_canonical(net["input_syn_ids"].numpy()),
             cell.canonical_weight_values(name).numpy(), delayed, basis, upstream.astype(np.float32),
         ))
     reference = sum(item[0] for item in expected)

@@ -11,6 +11,7 @@ from .io_tools import io
 
 def performance_projection_context(
     network, inputs, *, dt, max_delay, standard_cell, single_replica, sequence_length=None,
+    bptt_training=None,
 ):
     """Describe the high-level runner's static projection admission boundary."""
     recurrent_delay = np.max(network["synapses"]["delays"], initial=dt)
@@ -44,7 +45,116 @@ def performance_projection_context(
         "recurrent_edges": len(network["synapses"]["indices"]),
         # Declared rollout length for static admission of prepared Poisson counts.
         "sequence_length": None if sequence_length is None else int(sequence_length),
+        # None without a training engine; False for local learning rules, which use
+        # canonical-order weight surfaces.
+        "bptt_training": bptt_training,
     }
+
+
+# Compute capabilities targeted by the mandatory fat binaries. The joint sweep is
+# admitted automatically on each one whose SASS the loaded library carries.
+JOINT_SWEEP_ARCHITECTURES = (61, 70, 75, 80, 86, 89, 90)
+# Native small-batch routes cap at 32 samples; larger batches keep previous routes.
+JOINT_SWEEP_MAX_BATCH = 32
+COMBINED_TARGET_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
+
+# Architecture-determined limits (CUDA programming guide, technical specifications
+# per compute capability). Multiprocessor counts differ between products; the
+# native operator queries them and the measured kernel occupancy at launch.
+DEVICE_LIMITS = {
+    61: {"shared_per_block_optin": 48 * 1024, "shared_per_sm": 96 * 1024,
+         "threads_per_sm": 2048, "blocks_per_sm": 32, "reserved_shared_per_block": 0},
+    70: {"shared_per_block_optin": 96 * 1024, "shared_per_sm": 96 * 1024,
+         "threads_per_sm": 2048, "blocks_per_sm": 32, "reserved_shared_per_block": 0},
+    75: {"shared_per_block_optin": 64 * 1024, "shared_per_sm": 64 * 1024,
+         "threads_per_sm": 1024, "blocks_per_sm": 16, "reserved_shared_per_block": 0},
+    80: {"shared_per_block_optin": 163 * 1024, "shared_per_sm": 164 * 1024,
+         "threads_per_sm": 2048, "blocks_per_sm": 32, "reserved_shared_per_block": 1024},
+    86: {"shared_per_block_optin": 99 * 1024, "shared_per_sm": 100 * 1024,
+         "threads_per_sm": 1536, "blocks_per_sm": 16, "reserved_shared_per_block": 1024},
+    89: {"shared_per_block_optin": 99 * 1024, "shared_per_sm": 100 * 1024,
+         "threads_per_sm": 1536, "blocks_per_sm": 24, "reserved_shared_per_block": 1024},
+    90: {"shared_per_block_optin": 227 * 1024, "shared_per_sm": 228 * 1024,
+         "threads_per_sm": 2048, "blocks_per_sm": 32, "reserved_shared_per_block": 1024},
+}
+_STATIC_SHARED_LIMIT = 48 * 1024
+_MAX_THREADS_PER_BLOCK = 1024
+# Upper bound of every combined-sweep kernel's static shared scratch beyond the
+# tile accumulators (block scan, row windows, offsets, amplitudes), per block
+# size and index width. Checked against the built kernels' resource usage.
+_SWEEP_SCRATCH_SHARED_BYTES = {(512, 4): 8 * 1024, (512, 8): 12 * 1024,
+                               (1024, 4): 16 * 1024, (1024, 8): 24 * 1024}
+
+
+def combined_sweep_launch_geometry(architecture, target_tile_size, *, index_bytes=4):
+    """Block shape, shared memory and validity of one combined-sweep tile on a device.
+
+    Pure function of the compute capability, mirroring the native dispatch: tiles up
+    to 2048 targets use 512 threads and static shared accumulators; wider tiles use
+    dynamic shared memory (1024 threads with 32-bit routing indices) and need the
+    device's per-block opt-in limit. ``resident_blocks_per_sm`` is an upper bound;
+    the operator measures actual occupancy before choosing narrow/wide tiles.
+    """
+    tile = int(target_tile_size)
+    if tile not in COMBINED_TARGET_TILES:
+        raise ValueError(f"combined target tile must be one of {COMBINED_TARGET_TILES}.")
+    if index_bytes not in (4, 8):
+        raise ValueError("index_bytes must be 4 or 8.")
+    threads = 1024 if tile > 2048 and index_bytes == 4 else 512
+    accumulators = tile * 4 * 4
+    scratch = _SWEEP_SCRATCH_SHARED_BYTES[(threads, index_bytes)]
+    static = scratch + (accumulators if tile <= 2048 else 0)
+    dynamic = accumulators if tile > 2048 else 0
+    total = static + dynamic
+    limits = DEVICE_LIMITS.get(architecture)
+    reasons = []
+    if limits is None:
+        reasons.append(f"compute capability {architecture} is not a fat-binary target")
+    else:
+        if static > _STATIC_SHARED_LIMIT:
+            reasons.append("static shared memory exceeds 48 KiB")
+        if total > limits["shared_per_block_optin"]:
+            reasons.append(
+                f"{total} shared bytes exceed the SM{architecture} per-block limit "
+                f"{limits['shared_per_block_optin']}"
+            )
+        if threads > _MAX_THREADS_PER_BLOCK:
+            reasons.append("block exceeds 1024 threads")
+    resident = 0
+    if not reasons:
+        per_block = total + limits["reserved_shared_per_block"]
+        resident = min(
+            limits["threads_per_sm"] // threads,
+            limits["shared_per_sm"] // per_block,
+            limits["blocks_per_sm"],
+        )
+    return {
+        "architecture": architecture, "tile": tile, "threads": threads,
+        "static_shared_bytes": static, "dynamic_shared_bytes": dynamic,
+        "total_shared_bytes": total,
+        "shared_per_block_optin": None if limits is None else limits["shared_per_block_optin"],
+        "resident_blocks_per_sm": resident, "valid": not reasons, "reasons": reasons,
+    }
+
+
+def select_combined_target_tile(architecture, batch_size, *, adaptive, index_bytes=4):
+    """Automatic wide tile: 2048 targets, or 256 for batch 1 without adaptive routing.
+
+    Adaptive routing derives its per-launch narrow tile (a quarter, at least 256) from
+    the wide tile, so it keeps 2048 at batch 1 where the narrow 512 shape is selected
+    on the device. Falls back to the widest valid narrower tile on smaller devices.
+    """
+    preferred = 2048 if adaptive or batch_size != 1 else 256
+    for tile in sorted((t for t in COMBINED_TARGET_TILES if t <= preferred), reverse=True):
+        if combined_sweep_launch_geometry(architecture, tile, index_bytes=index_bytes)["valid"]:
+            return tile
+    return None
+
+
+def _index_bytes(context):
+    return 4 if max(
+        context["n_post"], context["source_rows_upper_bound"], context["max_edges"]
+    ) <= 2**32 - 1 else 8
 
 
 def select_performance_projection(
@@ -53,9 +163,9 @@ def select_performance_projection(
 ):
     """Choose a qualified joint-current route without changing explicit options."""
     reason = (
-        "single-replica standard GLIF/NEST, SM86, FP16/FP32 with FP32 masters, "
-        "batch1/16/32, four bases, native spike inputs and bounded routing; "
-        "joint FP32 accumulation rounds once to compute dtype"
+        "single-replica standard GLIF/NEST, fat-binary SM61/70/75/80/86/89/90 with native "
+        "SASS, FP16/FP32 with FP32 masters, batch1..32, four bases, native spike inputs and "
+        "bounded routing; joint FP32 accumulation rounds once to compute dtype"
     )
     eligible = (
         options.get("acceleration_profile", "auto") == "auto"
@@ -63,11 +173,12 @@ def select_performance_projection(
         and options.get("use_fused_cuda") is not False
         and options.get("dynamics_mode", "nest") == "nest"
         and options.get("temporal_gradient_precision", "compute") == "compute"
-        and architecture == 86
+        and architecture in JOINT_SWEEP_ARCHITECTURES
+        and architecture in csr_spike_ops._SM_ARCHITECTURES
         and tf.as_dtype(compute_dtype) in (tf.float16, tf.float32)
         and tf.as_dtype(variable_dtype) == tf.float32
         and isinstance(batch_size, Integral) and not isinstance(batch_size, bool)
-        and batch_size in (1, 16, 32) and basis_width == 4
+        and 1 <= batch_size <= JOINT_SWEEP_MAX_BATCH and basis_width == 4
         and context is not None and context["standard_cell"]
         and context["single_replica"] and context["spike_inputs"]
         and context["recurrent_edges"] > 0
@@ -75,9 +186,7 @@ def select_performance_projection(
     )
     tile = 256 if eligible and batch_size == 1 else 2048
     if eligible:
-        index_bytes = 4 if max(
-            context["n_post"], context["source_rows_upper_bound"], context["max_edges"]
-        ) <= 2**32 - 1 else 8
+        index_bytes = _index_bytes(context)
 
         def routing_bytes(targets):
             return (
@@ -87,19 +196,104 @@ def select_performance_projection(
 
         if routing_bytes(tile) > 512 * 1024**2:
             tile = 2048
-        eligible = routing_bytes(tile) <= 512 * 1024**2
+        eligible = routing_bytes(tile) <= 512 * 1024**2 and combined_sweep_launch_geometry(
+            architecture, tile, index_bytes=index_bytes,
+        )["valid"]
     return bool(eligible), tile, reason
+
+
+def _option_names_requiring(missing):
+    return "; ".join(missing)
+
+
+def resolve_csr_master_options(
+    options, report, *, select, admitted, joint, variable_dtype, train_recurrent_per_type,
+    performance_context, synapse_type_range,
+):
+    """Resolve the CSR-master layout, uint8 type tail and adaptive routing options.
+
+    Omitted options enable each feature exactly where its prerequisites hold and
+    otherwise keep the previous path, recording the unmet prerequisites in
+    ``report["reasons"]``. Explicit ``True`` on a dependent option whose parent
+    resolved to ``False`` raises; explicit ``False`` restores the previous path.
+    """
+    missing = []
+    if not admitted or not joint:
+        missing.append("automatically admitted joint current sweep")
+    if performance_context is None or not performance_context.get("single_replica", False):
+        missing.append("single-replica standard high-level context")
+    elif tf.distribute.get_strategy().num_replicas_in_sync != 1:
+        missing.append("single replica")
+    if options.get("dynamics_mode", "nest") != "nest":
+        missing.append("NEST dynamics")
+    if options.get("temporal_gradient_precision", "compute") != "compute":
+        missing.append("compute temporal gradients")
+    if tf.as_dtype(variable_dtype) != tf.float32:
+        missing.append("FP32 master variables")
+    if not options.get("train_recurrent", True) or options.get(
+        "train_recurrent_per_type", train_recurrent_per_type
+    ):
+        missing.append("per-edge trainable recurrent weights")
+    if performance_context is not None and performance_context.get("bptt_training") is False:
+        missing.append("BPTT learning rule (local rules use canonical surfaces)")
+    if not csr_spike_ops.csr_master_weights_available():
+        missing.append("native CSR-master capability in the loaded library")
+    select(
+        "use_csr_master_weights", not missing,
+        "CSR-ordered FP32 masters read directly by native kernels with host-prepared "
+        "metadata" if not missing else "previous path kept; requires " + _option_names_requiring(missing),
+    )
+    masters = options["use_csr_master_weights"] is True
+
+    missing = [] if masters else ["use_csr_master_weights"]
+    if synapse_type_range is None:
+        missing.append("known synapse type IDs")
+    elif not (0 <= synapse_type_range[0] and synapse_type_range[1] <= 255):
+        missing.append(
+            f"synapse type IDs within 0..255 (found {synapse_type_range[0]}..{synapse_type_range[1]})"
+        )
+    if not csr_spike_ops.uint8_synapse_types_available():
+        missing.append("native uint8 type capability on all five type consumers")
+    if options.get("use_uint8_synapse_types") is True and not masters:
+        raise ValueError(
+            "use_uint8_synapse_types=True requires use_csr_master_weights, which resolved to "
+            "False: " + report["reasons"]["use_csr_master_weights"]
+        )
+    select(
+        "use_uint8_synapse_types", not missing,
+        "uint8 per-edge type tail in the single CSR metadata resource" if not missing
+        else "wide types kept; requires " + _option_names_requiring(missing),
+    )
+    uint8 = options["use_uint8_synapse_types"] is True
+
+    missing = [] if uint8 else ["use_uint8_synapse_types"]
+    if not joint:
+        missing.append("joint current sweep")
+    if not csr_spike_ops.adaptive_routing_available():
+        missing.append("native adaptive routing capability")
+    if options.get("use_adaptive_routing") is True and not uint8:
+        raise ValueError(
+            "use_adaptive_routing=True requires use_uint8_synapse_types, which resolved to "
+            "False: " + report["reasons"]["use_uint8_synapse_types"]
+        )
+    select(
+        "use_adaptive_routing", not missing,
+        "compressed segment routing with per-launch wide/narrow tiles" if not missing
+        else "dense tile routing kept; requires " + _option_names_requiring(missing),
+    )
 
 
 def resolve_acceleration_options(
     cell_params, *, compute_dtype, variable_dtype, batch_size, basis_width,
     train_recurrent_per_type=False, canonical_gradient_boundary=True,
-    performance_context=None,
+    performance_context=None, synapse_type_range=None,
 ):
     """Resolve ``acceleration_profile="auto"`` without overriding explicit flags.
 
     The returned report is suitable for recording with execution provenance.
     Omitting the profile selects auto; explicit None disables profile expansion.
+    ``synapse_type_range`` is the (min, max) per-edge synapse type ID over the
+    recurrent and every input network, used by ``use_uint8_synapse_types``.
     """
     options = dict(cell_params)
     profile = options.pop("acceleration_profile", "auto")
@@ -152,14 +346,6 @@ def resolve_acceleration_options(
     )
     select("use_combined_current_sweep", currents and combined, combined_reason)
     joint = options["use_combined_current_sweep"] is True
-    if joint:
-        tile_name = "combined_current_target_tile_size"
-        report["reasons"][tile_name] = (
-            "explicit override; constructor validation retained"
-            if tile_name in options else "batch-aware bounded target routing"
-        )
-        options.setdefault(tile_name, tile)
-        report["selected"][tile_name] = options[tile_name]
     # Projection traversal choices inside the admitted joint sweep. Each is a
     # pure scheduling change over the same FP32 tile accumulation and rounding;
     # per-source VJPs, live operands, delays and Poisson counts are unchanged.
@@ -182,6 +368,53 @@ def resolve_acceleration_options(
         "admitted joint sweep and rebuilt gather capability; target-major atomic-free "
         "gather for sources with at most16incoming edges per target",
     )
+    resolve_csr_master_options(
+        options, report, select=select, admitted=currents and combined, joint=joint,
+        variable_dtype=variable_dtype, train_recurrent_per_type=train_recurrent_per_type,
+        performance_context=performance_context, synapse_type_range=synapse_type_range,
+    )
+    if joint:
+        tile_name = "combined_current_target_tile_size"
+        if tile_name in options:
+            report["reasons"][tile_name] = "explicit override; constructor validation retained"
+            if architecture in DEVICE_LIMITS and options[tile_name] in COMBINED_TARGET_TILES:
+                geometry = combined_sweep_launch_geometry(
+                    architecture, options[tile_name],
+                    index_bytes=4 if performance_context is None else _index_bytes(performance_context),
+                )
+                if not geometry["valid"]:
+                    valid = [
+                        t for t in COMBINED_TARGET_TILES
+                        if combined_sweep_launch_geometry(architecture, t)["valid"]
+                    ]
+                    raise ValueError(
+                        f"combined_current_target_tile_size={options[tile_name]} is not launchable "
+                        f"on SM{architecture}: {'; '.join(geometry['reasons'])}. "
+                        f"Valid tiles on this device: {valid}."
+                    )
+        else:
+            adaptive = options.get("use_adaptive_routing") is True
+            auto_tile = tile
+            if combined:
+                auto_tile = select_combined_target_tile(
+                    architecture, batch_size, adaptive=adaptive,
+                    index_bytes=_index_bytes(performance_context),
+                ) or tile
+            options[tile_name] = auto_tile
+            report["reasons"][tile_name] = (
+                "batch-aware bounded target routing; 2048 wide tiles (adaptive routing picks "
+                "a narrow quarter tile per launch) or 256 at batch1 without adaptive routing; "
+                "narrower when the device's shared-memory limit requires it"
+            )
+        report["selected"][tile_name] = options[tile_name]
+        report["launch_geometry"] = (
+            combined_sweep_launch_geometry(
+                architecture, options[tile_name],
+                index_bytes=_index_bytes(performance_context),
+            )
+            if architecture in DEVICE_LIMITS and performance_context is not None
+            and options[tile_name] in COMBINED_TARGET_TILES else None
+        )
     known_batch = isinstance(batch_size, Integral) and not isinstance(batch_size, bool) and batch_size > 0
     small_batch = known_batch and batch_size <= 32
     four_basis = basis_width == 4

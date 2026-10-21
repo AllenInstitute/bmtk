@@ -591,7 +591,7 @@ class TrainingEngine:
         use_direct_csr_gradient = getattr(
             cell, "_use_direct_csr_recurrent_gradient", False
         )
-        csr_live_masters = getattr(cell, "_experimental_csr_master", False)
+        csr_live_masters = getattr(cell, "_csr_master_weights", False)
         if self._extractor_forward is not None:
             return
         if not self.gradient_checkpointing and not use_direct_csr_gradient:

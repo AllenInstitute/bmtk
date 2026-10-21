@@ -128,6 +128,9 @@ class CsrMasterLayout:
         return {name: transform(value) for name, value in values.items()}
 
 
+CSR_MASTER_SCHEMA = "direct_csr_fp32_master_host_lifecycle_v1"
+
+
 def guard_csr_checkpoint(master, layout=None):
     """Give CSR resources a nonlegacy checkpoint key; never reinterpret old rows."""
     resource = master.value
@@ -179,11 +182,11 @@ def transfer_canonical_state(source, target, *, per_edge_slots, scalar_state=())
         source_layout = (
             source.recurrent_master_layout if name == "<recurrent>"
             else source.inputs[name]["master_layout"]
-        ) if source._experimental_csr_master else None
+        ) if source._csr_master_weights else None
         target_layout = (
             target.recurrent_master_layout if name == "<recurrent>"
             else target.inputs[name]["master_layout"]
-        ) if target._experimental_csr_master else None
+        ) if target._csr_master_weights else None
         source_constraint = getattr(source_master, "constraint", None)
         target_constraint = getattr(target_master, "constraint", None)
         if source_constraint is not None and target_constraint is not None:

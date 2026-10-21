@@ -317,16 +317,12 @@ def _projection_type_representatives(basis, n_synapse_types):
 def _uint8_type_options(connectivity):
     if not connectivity.get("uint8_types", False):
         return {}
-    names = (
-        "dpointnet_csr_spike_forward", "dpointnet_csr_weight_grad",
-        "dpointnet_csr_spike_grad_csr_master",
-        "dpointnet_csr_spike_grad_accumulate_csr_master",
-        "dpointnet_combined_sweep_csr_master",
-    )
-    for name in names:
-        operator = getattr(_OPS, name, None)
-        if operator is None or "uint8_types" not in inspect.signature(operator).parameters:
-            raise RuntimeError("Rebuild both CUDA operators for uint8 CSR type metadata: " + name)
+    for name in _UINT8_TYPE_OPERATORS:
+        if not _operator_accepts(name, ("uint8_types",)):
+            raise RuntimeError(
+                "use_uint8_synapse_types=True requires rebuilt CUDA operators; the loaded "
+                "library lacks uint8_types on " + name
+            )
     return {"uint8_types": True}
 
 
@@ -1064,14 +1060,53 @@ _ROUTING_CENSUS_FIELDS = (
 _ADAPTIVE_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
 
 
+def _operator_accepts(name, attributes):
+    operator = getattr(_OPS, name, None)
+    if operator is None:
+        return False
+    parameters = inspect.signature(operator).parameters
+    return all(attribute in parameters for attribute in attributes)
+
+
+# Native operators that read CSR-ordered FP32 master weights directly.
+_CSR_MASTER_OPERATORS = (
+    ("dpointnet_combined_sweep_csr_master", ()),
+    ("dpointnet_csr_spike_grad_csr_master", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_spike_grad_accumulate_csr_master", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_weight_grad", ("write_csr_weight_gradient",)),
+    ("dpointnet_csr_spike_forward", ("csr_master_weights",)),
+)
+# Every native consumer of per-edge synapse types must read the uint8 tail.
+_UINT8_TYPE_OPERATORS = (
+    "dpointnet_csr_spike_forward", "dpointnet_csr_weight_grad",
+    "dpointnet_csr_spike_grad_csr_master",
+    "dpointnet_csr_spike_grad_accumulate_csr_master",
+    "dpointnet_combined_sweep_csr_master",
+)
+
+
+def csr_master_weights_available():
+    """Whether the loaded library reads CSR-ordered FP32 master weights natively."""
+    return combined_sweep_available() and all(
+        _operator_accepts(name, attributes) for name, attributes in _CSR_MASTER_OPERATORS
+    )
+
+
+def uint8_synapse_types_available():
+    """Whether every native per-edge type consumer accepts the uint8 type tail."""
+    return csr_master_weights_available() and all(
+        _operator_accepts(name, ("uint8_types",)) for name in _UINT8_TYPE_OPERATORS
+    )
+
+
 def adaptive_routing_available():
     """Whether the loaded library has the adaptive routing attributes and census op."""
     return (
         _combined_sweep_accepts("cooperative_rows")
         and hasattr(_OPS, "dpointnet_routing_census")
-        and all(
-            name in inspect.signature(_OPS.dpointnet_combined_sweep_csr_master).parameters
-            for name in ("adaptive_routing", "adaptive_traversal", "uint8_types")
+        and _operator_accepts(
+            "dpointnet_combined_sweep_csr_master",
+            ("adaptive_routing", "adaptive_traversal", "uint8_types"),
         )
     )
 
@@ -1079,8 +1114,9 @@ def adaptive_routing_available():
 def require_adaptive_routing():
     if not adaptive_routing_available():
         raise RuntimeError(
-            "Rebuild both CUDA operators for experimental adaptive routing: the loaded library "
-            "lacks dpointnet_routing_census or the adaptive_routing/adaptive_traversal attributes."
+            "use_adaptive_routing=True requires rebuilt CUDA operators: the loaded library "
+            "lacks dpointnet_routing_census or the adaptive_routing/adaptive_traversal attributes. "
+            "Rebuild both operators or set use_adaptive_routing=False."
         )
 
 
@@ -1235,7 +1271,7 @@ def fused_combined_currents(
 ):
     """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs.
 
-    ``adaptive_routing=True`` selects the experimental adaptive_segment_ticket_v1 forward
+    ``adaptive_routing=True`` selects the adaptive_segment_ticket_v1 forward
     schedule (CSR FP32 masters and uint8 type metadata required); per-source VJPs keep
     their existing routing. The cooperative/fanout requests are superseded by the
     adaptive per-source traversal; gather_sources still admits eligible gather sources.

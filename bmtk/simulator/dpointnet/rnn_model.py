@@ -562,6 +562,10 @@ class RNN:
                     self.data_parallel is None and self.strategy.num_replicas_in_sync == 1
                 ),
                 sequence_length=self._declared_sequence_length(),
+                bptt_training=(
+                    None if self.training_engine is None
+                    else bool(getattr(self.training_engine.learning_rule, "uses_bptt", True))
+                ),
             )
             cell_params["_performance_auto_context"] = context
             basis = cell_params.get("tau_basis")

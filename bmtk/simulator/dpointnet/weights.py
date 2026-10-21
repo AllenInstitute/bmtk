@@ -25,7 +25,7 @@ class ModelWeights:
         for name in self._networks:
             model_vals = (
                 cell.canonical_weight_values(name)
-                if getattr(cell, '_experimental_csr_master', False)
+                if getattr(cell, '_csr_master_weights', False)
                 else cell.recurrent_weight_values if name == '<recurrent>'
                 else self.cell.inputs[name]['input_weight_values']
             )
@@ -56,7 +56,7 @@ class ModelWeights:
     def to_dataframe(self, cache=False):
         ret_df = None
         for netname, netweights in self._network_weights.items():
-            if not self.deep_copy and getattr(self.cell, '_experimental_csr_master', False):
+            if not self.deep_copy and getattr(self.cell, '_csr_master_weights', False):
                 netweights = self.cell.canonical_weight_values(netname)
             netadaptor = self.rnn.get_network(netname)
             conn_table_df = netadaptor.connection_table
@@ -67,7 +67,7 @@ class ModelWeights:
                 export_factor = self.cell._recurrent_export_factor
             else:
                 export_factor = self.cell.inputs[netname]['export_factor']
-            if getattr(self.cell, '_experimental_csr_host_lifecycle', False):
+            if getattr(self.cell, '_csr_host_lifecycle', False):
                 layout = (
                     self.cell.recurrent_master_layout if netname == '<recurrent>'
                     else self.cell.inputs[netname]['master_layout']

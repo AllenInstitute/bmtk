@@ -1,5 +1,5 @@
-// Experimental adaptive routing for the combined CSR-master sweep
-// (_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING=1, schema adaptive_segment_ticket_v1).
+// Adaptive routing for the combined CSR-master sweep (use_adaptive_routing,
+// schema adaptive_segment_ticket_v1).
 //
 // Independent implementation of a compressed-segment / adaptive-scheduler
 // projection design, included inside namespace tensorflow by
