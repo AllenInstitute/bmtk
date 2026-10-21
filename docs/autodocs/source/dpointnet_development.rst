@@ -10,6 +10,7 @@ Current user guidance lives in :doc:`dpointnet_guide`,
    :maxdepth: 1
 
    dpointnet_csr_master_prototype
+   dpointnet_adaptive_routing
 
 Running tests efficiently
 -------------------------

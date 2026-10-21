@@ -192,7 +192,9 @@ calculated. It is enabled by default:
      - Chunk length in simulation steps, not always milliseconds.
    * - ``pack_spike_checkpoints``
      - ``false``
-     - Additional packing of binary spike-history states.
+     - Additional packing of binary spike-history states into on-device
+       int64 words (63 spikes per word) at checkpoint boundaries. Nonzero
+       values are treated as spikes, so only binary spike states are lossless.
    * - ``regenerate_initial_state_each_epoch``
      - ``true``
      - Regenerate the configured initial state at epoch boundaries.

@@ -42,6 +42,7 @@ from bmtk.simulator.dpointnet.custom_ops.csr_spike_ops import (
     _gpu_compute_architecture,
     _resolve_packed_sm120_model_option,
     _validate_packed_sm120_option,
+    ADAPTIVE_ROUTING_SCHEMA,
     fused_recurrent_accumulation_available,
     fused_recurrent_weight_carry,
     combined_sweep_available,
@@ -1048,6 +1049,14 @@ class GLIF3Cell(tf.keras.layers.Layer):
             raise ValueError("uint8 CSR types require CSR FP32 masters and host lifecycle flags.")
         if self._experimental_csr_host_lifecycle and not self._experimental_csr_master:
             raise ValueError("CSR host lifecycle requires CSR FP32 masters.")
+        adaptive_routing_flag = os.environ.get("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING", "0")
+        if adaptive_routing_flag not in ("0", "1"):
+            raise ValueError("_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING must be 0 or 1.")
+        self._experimental_adaptive_routing = adaptive_routing_flag == "1"
+        if self._experimental_adaptive_routing and not self._experimental_csr_uint8_types:
+            raise ValueError(
+                "Adaptive routing requires CSR FP32 masters, host lifecycle and uint8 type flags."
+            )
         self._performance_auto_context = _performance_auto_context
         self._declared_sequence_length = (_performance_auto_context or {}).get("sequence_length")
         self._declared_batch_size = (
@@ -1165,6 +1174,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 raise ValueError("Optimized direct masters require the combined native sweep.")
             if self._experimental_csr_uint8_types and not use_fused_cuda:
                 raise ValueError("uint8 CSR types require native fused CUDA and the combined sweep.")
+            if self._experimental_adaptive_routing:
+                if not (use_fused_cuda and use_combined_current_sweep):
+                    raise ValueError("Adaptive routing requires native fused CUDA and the combined sweep.")
+                from ..custom_ops.csr_spike_ops import require_adaptive_routing
+
+                require_adaptive_routing()
             if not use_fused_cuda and tf.config.get_visible_devices("GPU"):
                 raise ValueError("CPU primitive probes cannot substitute for the optimized GPU candidate.")
             if not use_fused_cuda:
@@ -1190,6 +1205,9 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 )
                 self.acceleration_report["experimental_csr_uint8_types"] = (
                     "csr_live_uint8_type_tail_v1" if self._experimental_csr_uint8_types else "disabled"
+                )
+                self.acceleration_report["experimental_adaptive_routing"] = (
+                    ADAPTIVE_ROUTING_SCHEMA if self._experimental_adaptive_routing else "disabled"
                 )
         use_prepacked_nest_coefficients = execution.get("use_prepacked_nest_coefficients", False)
         use_type_indexed_nest_coefficients = execution.get("use_type_indexed_nest_coefficients", False)
@@ -2216,6 +2234,15 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 for net in self.inputs.values()
             ):
                 raise ValueError("Combined current sweep requires four bases and native spike-input connectivity.")
+            if self.acceleration_report is not None:
+                if self._experimental_adaptive_routing:
+                    self.acceleration_report["experimental_adaptive_routing_plan"] = (
+                        self.adaptive_routing_plan()
+                    )
+                if self._experimental_csr_master:
+                    self.acceleration_report["experimental_routing_geometry"] = (
+                        self.combined_routing_geometry()
+                    )
 
         """
         lgn_inputs = inputs[0]
@@ -2326,6 +2353,77 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         input_net["fused_connectivity"],
                     )
                 )
+
+    def _combined_routing_sources(self):
+        """Named connectivities in combined-sweep source order."""
+        sources = {"recurrent": self._recurrent_projection_connectivity()}
+        for name, input_net in self.inputs.items():
+            if input_net.get("input_type") != "current" and input_net.get("fused_connectivity") is not None:
+                sources[name] = input_net["fused_connectivity"]
+        return sources
+
+    def adaptive_routing_plan(self):
+        """Static per-source adaptive routing selection; None when the sweep is not combined."""
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return None
+        from ..custom_ops.csr_spike_ops import adaptive_routing_plan
+
+        sources = self._combined_routing_sources()
+        plan = adaptive_routing_plan(
+            list(sources.values()), target_tile_size=self.combined_current_target_tile_size,
+            gather_sources=self._use_target_gather_projection,
+        )
+        return {
+            "schema": plan["schema"], "wide_tile": plan["wide_tile"],
+            "narrow_tile": plan["narrow_tile"],
+            "traversals": dict(zip(sources, plan["traversals"])),
+        }
+
+    def combined_routing_geometry(self):
+        """Static per-source routing geometry of the combined sweep in the active schema."""
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return None
+        from ..custom_ops.csr_spike_ops import combined_routing_geometry
+
+        sources = self._combined_routing_sources()
+        geometry = combined_routing_geometry(
+            list(sources.values()), target_tile_size=self.combined_current_target_tile_size,
+            cooperative_rows=self._use_cooperative_row_projection,
+            fanout_rows=self._use_fanout_row_projection,
+            gather_sources=self._use_target_gather_projection,
+            adaptive_routing=self._experimental_adaptive_routing,
+        )
+        return dict(zip(sources, geometry))
+
+    def adaptive_routing_report(self):
+        """Per-source routing mode, static policy and exact native routing-table census.
+
+        ``routing_table_bytes`` sums live persistent routing tables keyed by the source's
+        metadata allocation (dense per-operator tile tables, shared compressed segments,
+        masks and gather tables), over every live operator instance; transient per-launch
+        queue bytes are reported separately. Native tables are built on first execution.
+        """
+        if not self._use_combined_current_sweep or self.recurrent_fused_connectivity is None:
+            return {}
+        from ..custom_ops.csr_spike_ops import ADAPTIVE_ROUTING_SCHEMA as schema
+        from ..custom_ops.csr_spike_ops import combined_routing_census
+
+        sources = self._combined_routing_sources()
+        plan = self.adaptive_routing_plan()
+        census = combined_routing_census(list(sources.values()))
+        adaptive = self._experimental_adaptive_routing
+        geometry = self.combined_routing_geometry()
+        report = {}
+        for name, item in zip(sources, census):
+            report[name] = {
+                "adaptive": adaptive,
+                "schema": schema if adaptive else "dense_tile_starts",
+                "policy_traversal": geometry[name]["traversal"],
+                "wide_tile": plan["wide_tile"],
+                "narrow_tile": plan["narrow_tile"] if adaptive else plan["wide_tile"],
+                **item,
+            }
+        return report
 
     def close_fused_cuda(self):
         connectivity = getattr(self, "recurrent_fused_connectivity", None)
@@ -3303,6 +3401,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 fanout_rows=self._use_fanout_row_projection,
                 gather_sources=self._use_target_gather_projection,
                 **({"csr_master_weights": True} if optimized_master else {}),
+                **({"adaptive_routing": True} if self._experimental_adaptive_routing else {}),
             )
         elif extern_currents:
             rec_inputs = rec_inputs + tf.add_n(extern_currents)

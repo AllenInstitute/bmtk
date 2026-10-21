@@ -1049,6 +1049,154 @@ def gather_combined_sweep_available():
     return _combined_sweep_accepts("gather_sources")
 
 
+ADAPTIVE_ROUTING_SCHEMA = "adaptive_segment_ticket_v1"
+ADAPTIVE_TRAVERSAL_CODES = {"warp_batches": 1, "block_rounds": 2, "gather": 3}
+_ADAPTIVE_TRAVERSAL_NAMES = {code: name for name, code in ADAPTIVE_TRAVERSAL_CODES.items()}
+_BASELINE_TRAVERSAL_NAMES = {
+    10: "scatter_rows", 11: "balanced_rounds", 12: "cooperative_rows", 13: "fanout_rounds",
+    14: "gather",
+}
+_ROUTING_CENSUS_FIELDS = (
+    "dense_tile_bytes", "dense_tile_tables", "segment_bytes", "segment_tables", "mask_bytes",
+    "gather_table_bytes", "gather_tables", "transient_queue_bytes", "queue_operators",
+    "last_selected_tile", "traversal_code", "segments", "built_tile_bits", "operators",
+)
+_ADAPTIVE_TILES = (256, 512, 1024, 2048, 3072, 4096, 5120)
+
+
+def adaptive_routing_available():
+    """Whether the loaded library has the adaptive routing attributes and census op."""
+    return (
+        _combined_sweep_accepts("cooperative_rows")
+        and hasattr(_OPS, "dpointnet_routing_census")
+        and all(
+            name in inspect.signature(_OPS.dpointnet_combined_sweep_csr_master).parameters
+            for name in ("adaptive_routing", "adaptive_traversal", "uint8_types")
+        )
+    )
+
+
+def require_adaptive_routing():
+    if not adaptive_routing_available():
+        raise RuntimeError(
+            "Rebuild both CUDA operators for experimental adaptive routing: the loaded library "
+            "lacks dpointnet_routing_census or the adaptive_routing/adaptive_traversal attributes."
+        )
+
+
+def adaptive_narrow_tile(wide):
+    """Narrow tile paired with ``wide``; equal to ``wide`` when none is narrower."""
+    quarter = int(wide) // 4
+    return 1024 if quarter >= 1024 else 512 if quarter >= 512 else 256
+
+
+def adaptive_routing_plan(connectivities, *, target_tile_size=2048, gather_sources=False):
+    """Deterministic per-source traversal policy of the adaptive routing schema.
+
+    gather: low in-degree source (``combined_gather_eligible``) when target gather is
+    enabled; warp_batches: rows never repeat a target and mean fanout is below 512;
+    block_rounds: every other source (repeated targets, unknown repetition or high fanout).
+    The tile width is chosen per launch on the device: ``wide`` unless the wide grid
+    fills at most half of the resident block slots, then ``narrow``.
+    """
+    wide = validate_combined_target_tile_size(target_tile_size)
+    traversals = []
+    for conn in connectivities:
+        if gather_sources and combined_gather_eligible(conn):
+            traversals.append("gather")
+        elif (
+            conn.get("has_repeated_targets") is False
+            and conn["n_sources"] > 0
+            and conn["n_edges"] // conn["n_sources"] < 512
+        ):
+            traversals.append("warp_batches")
+        else:
+            traversals.append("block_rounds")
+    return {
+        "schema": ADAPTIVE_ROUTING_SCHEMA,
+        "wide_tile": wide,
+        "narrow_tile": adaptive_narrow_tile(wide),
+        "traversals": traversals,
+        "codes": [ADAPTIVE_TRAVERSAL_CODES[name] for name in traversals],
+    }
+
+
+def combined_routing_geometry(
+    connectivities, *, target_tile_size=2048, cooperative_rows=False, fanout_rows=False,
+    gather_sources=False, adaptive_routing=False,
+):
+    """Static per-source routing geometry for either schema, as the native op dispatches it.
+
+    Disabled schema: one fixed tile and the existing traversal per source (gather,
+    cooperative_rows, fanout_rounds, balanced_rounds or scatter_rows). Adaptive schema:
+    the adaptive plan's traversal plus wide/narrow tiles chosen per launch. Traversal
+    names match ``combined_routing_census(...)[i]["traversal"]`` after execution.
+    """
+    tile = validate_combined_target_tile_size(target_tile_size)
+    if adaptive_routing:
+        plan = adaptive_routing_plan(
+            connectivities, target_tile_size=tile, gather_sources=gather_sources,
+        )
+        rule = (
+            "narrow iff 2*batch*ceil(n_post/wide_tile) <= multiprocessors*resident wide blocks "
+            "per multiprocessor; else wide"
+        )
+        return [
+            {"schema": ADAPTIVE_ROUTING_SCHEMA, "traversal": name, "wide_tile": plan["wide_tile"],
+             "narrow_tile": plan["narrow_tile"], "tile_rule": rule}
+            for name in plan["traversals"]
+        ]
+    result = []
+    for conn in connectivities:
+        cooperative = (
+            cooperative_rows and conn.get("has_repeated_targets") is False
+            and conn["n_sources"] > 0 and conn["n_edges"] // conn["n_sources"] < 512
+        )
+        high_fanout = conn["n_sources"] > 0 and conn["n_edges"] // conn["n_sources"] >= 512
+        if gather_sources and combined_gather_eligible(conn):
+            name = "gather"
+        elif cooperative:
+            name = "cooperative_rows"
+        elif high_fanout:
+            name = "fanout_rounds" if fanout_rows else "balanced_rounds"
+        else:
+            name = "scatter_rows"
+        result.append({"schema": "dense_tile_starts", "traversal": name, "tile": tile})
+    return result
+
+
+def combined_routing_census(connectivities):
+    """Exact native census of live routing allocations per connectivity.
+
+    Reads only allocation sizes recorded by the native operators and shared tables
+    keyed by each metadata resource's current allocation; no routing data is read or
+    copied. Tables are built on first execution, so call after a warm execution.
+    Totals include every live operator instance (for example several compiled graphs).
+    """
+    if not hasattr(_OPS, "dpointnet_routing_census"):
+        raise RuntimeError("Rebuild both CUDA operators for the native routing census.")
+    handles = [conn["metadata_handle"] for conn in connectivities]
+    with tf.device(handles[0].device or None):
+        values = _OPS.dpointnet_routing_census(handles).numpy()
+    result = []
+    for row in values:
+        item = dict(zip(_ROUTING_CENSUS_FIELDS, (int(value) for value in row)))
+        code = item["traversal_code"]
+        item["traversal"] = (
+            _ADAPTIVE_TRAVERSAL_NAMES.get(code) or _BASELINE_TRAVERSAL_NAMES.get(code)
+            or ("unexecuted" if code == 0 else f"unknown_{code}")
+        )
+        item["built_tiles"] = [
+            tile for bit, tile in enumerate(_ADAPTIVE_TILES) if item["built_tile_bits"] & (1 << bit)
+        ]
+        item["routing_table_bytes"] = (
+            item["dense_tile_bytes"] + item["segment_bytes"] + item["mask_bytes"]
+            + item["gather_table_bytes"]
+        )
+        result.append(item)
+    return result
+
+
 # Average incoming edges per target at or below which a source is projected by a
 # target-major gather (one owner thread per target, no atomics or row lookups)
 # instead of the source-major scatter walk.
@@ -1083,10 +1231,22 @@ def validate_combined_target_tile_size(target_tile_size):
 def fused_combined_currents(
     spikes, weights, connectivities, basis, proxies, *, target_tile_size=2048,
     cooperative_rows=False, fanout_rows=False, gather_sources=False,
-    csr_master_weights=False,
+    csr_master_weights=False, adaptive_routing=False,
 ):
-    """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs."""
+    """FP32 four-basis joint sweep with existing per-source canonical/carrier VJPs.
+
+    ``adaptive_routing=True`` selects the experimental adaptive_segment_ticket_v1 forward
+    schedule (CSR FP32 masters and uint8 type metadata required); per-source VJPs keep
+    their existing routing. The cooperative/fanout requests are superseded by the
+    adaptive per-source traversal; gather_sources still admits eligible gather sources.
+    """
     target_tile_size = validate_combined_target_tile_size(target_tile_size)
+    if type(adaptive_routing) is not bool:
+        raise ValueError("adaptive_routing must be true or false.")
+    if adaptive_routing:
+        if not csr_master_weights:
+            raise ValueError("Adaptive routing requires direct CSR FP32 master weights.")
+        require_adaptive_routing()
     if type(cooperative_rows) is not bool:
         raise ValueError("cooperative_rows must be true or false.")
     if type(fanout_rows) is not bool:
@@ -1110,6 +1270,8 @@ def fused_combined_currents(
     type_options = _uint8_type_options(connectivities[0])
     if type_options and not csr_master_weights:
         raise ValueError("uint8 CSR metadata requires direct CSR FP32 masters.")
+    if adaptive_routing and not type_options:
+        raise ValueError("Adaptive routing requires uint8 CSR type metadata (host lifecycle).")
     if dtype not in (tf.float16, tf.float32) or basis.dtype != dtype or basis.shape[1] != 4:
         raise ValueError("Combined sweep requires matching FP16/FP32 operands and four bases.")
     for z, weight, connectivity in zip(spikes, weights, connectivities):
@@ -1140,6 +1302,12 @@ def fused_combined_currents(
             and conn["n_edges"] // conn["n_sources"] < 512
             for conn in connectivities
         ]
+    if adaptive_routing:
+        plan = adaptive_routing_plan(
+            connectivities, target_tile_size=target_tile_size, gather_sources=gather_sources,
+        )
+        schedule["adaptive_routing"] = True
+        schedule["adaptive_traversal"] = plan["codes"]
     operator = (
         _OPS.dpointnet_combined_sweep_csr_master if csr_master_weights
         else _OPS.dpointnet_combined_sweep

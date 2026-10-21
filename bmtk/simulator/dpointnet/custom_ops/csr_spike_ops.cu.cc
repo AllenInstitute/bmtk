@@ -4,7 +4,10 @@
 
 #include <algorithm>
 #include <limits>
+#include <map>
+#include <memory>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include <cub/cub.cuh>
@@ -2882,12 +2885,17 @@ class DpointnetCsrWeightGradOp : public OpKernel {
   bool uint8_types_ = false;
 };
 
+// Inside namespace tensorflow; its standard headers are included above.
+#include "adaptive_routing.cuh"
+
 template <typename T, typename Index, bool Canonical = false>
 class DpointnetCombinedSweepOp : public OpKernel {
  public:
   explicit DpointnetCombinedSweepOp(OpKernelConstruction* context) : OpKernel(context) {
     if constexpr (Canonical) {
       OP_REQUIRES_OK(context, context->GetAttr("uint8_types", &uint8_types_));
+      OP_REQUIRES_OK(context, context->GetAttr("adaptive_routing", &adaptive_));
+      OP_REQUIRES_OK(context, context->GetAttr("adaptive_traversal", &traversal_));
     }
     OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
     OP_REQUIRES_OK(context, context->GetAttr("n_post", &n_post_));
@@ -2910,10 +2918,32 @@ class DpointnetCombinedSweepOp : public OpKernel {
     OP_REQUIRES(context, sources_ <= kCombinedSources &&
                     edges_.size() == sources_ && pairs_.size() == sources_,
                 errors::InvalidArgument("Combined sweep requires two to eight matching sources."));
+    if (adaptive_) {
+      OP_REQUIRES(context, uint8_types_,
+                  errors::InvalidArgument("Adaptive routing requires uint8 CSR type metadata."));
+      OP_REQUIRES(context, traversal_.size() == static_cast<size_t>(sources_),
+                  errors::InvalidArgument("adaptive_traversal must name one traversal per source."));
+      for (int code : traversal_) {
+        OP_REQUIRES(context, code == kAdaptiveWarpBatches || code == kAdaptiveBlockRounds ||
+                        code == kAdaptiveGather,
+                    errors::InvalidArgument("adaptive_traversal codes must be 1, 2 or 3."));
+      }
+    } else {
+      OP_REQUIRES(context, traversal_.empty(),
+                  errors::InvalidArgument("adaptive_traversal requires adaptive_routing=true."));
+    }
   }
+
+  ~DpointnetCombinedSweepOp() override { DpointnetRoutingLedger::Get().EraseOwner(this); }
 
   void Compute(OpKernelContext* context) override {
     mutex_lock cache_lock(cache_mu_);
+    if constexpr (Canonical) {
+      if (adaptive_) {
+        ComputeAdaptive(context);
+        return;
+      }
+    }
     const Tensor& basis = context->input(3 * sources_);
     RequireMatrix(context, basis, "basis");
     if (!context->status().ok()) return;
@@ -2983,6 +3013,34 @@ class DpointnetCombinedSweepOp : public OpKernel {
         }
         cached_metadata_[source] = metadata;
         cached_width_[source] = width;
+        const void* key = metadata.tensor_data().data();
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingDenseTiles,
+            {key, kRoutingDenseTiles, static_cast<int64_t>(tile_starts_[source].TotalBytes()), 1, 0});
+        if (gather) {
+          DpointnetRoutingLedger::Get().Set(
+              this, source * 8 + kRoutingCsc,
+              {key, kRoutingCsc,
+               static_cast<int64_t>(csc_splits_[source].TotalBytes() + csc_targets_[source].TotalBytes() +
+                                    csc_edges_[source].TotalBytes() + csc_sources_[source].TotalBytes()),
+               1, 0});
+        } else {
+          DpointnetRoutingLedger::Get().Erase(this, source * 8 + kRoutingCsc);
+        }
+        const int code = gather ? 14
+            : (use_cooperative_ || use_fanout_) && !cooperative_rows_.empty() && cooperative_rows_[source] ? 12
+            : width > 0 && edges_[source] / width >= 512 ? (use_fanout_ ? 13 : 11) : 10;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingSelection, {key, kRoutingSelection, tile_targets_, 0, code});
+      }
+      const int64_t queue_bytes = static_cast<int64_t>(queues[source].TotalBytes() + counts[source].TotalBytes());
+      if (recorded_queue_bytes_[source] != queue_bytes ||
+          recorded_queue_key_[source] != metadata.tensor_data().data()) {
+        recorded_queue_bytes_[source] = queue_bytes;
+        recorded_queue_key_[source] = metadata.tensor_data().data();
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingQueue,
+            {metadata.tensor_data().data(), kRoutingQueue, queue_bytes, 1, 0});
       }
       views.source[source] = {
           spikes.flat<T>().data(), ProjectionWeightView<T, Index, Canonical>(weights, view.splits + width + 1),
@@ -3042,6 +3100,182 @@ class DpointnetCombinedSweepOp : public OpKernel {
   }
 
  private:
+  // Adaptive routing (schema adaptive_segment_ticket_v1); see adaptive_routing.cuh.
+  void ComputeAdaptive(OpKernelContext* context) {
+    const Tensor& basis = context->input(3 * sources_);
+    RequireMatrix(context, basis, "basis");
+    if (!context->status().ok()) return;
+    OP_REQUIRES(context, basis.dim_size(0) > 0 && basis.dim_size(1) == 4,
+                errors::InvalidArgument("Combined sweep requires four basis columns."));
+    const Tensor& first = context->input(0);
+    RequireMatrix(context, first, "spikes");
+    if (!context->status().ok()) return;
+    const int64_t batch = first.dim_size(0);
+    OP_REQUIRES(context, batch > 0 && batch <= 65535,
+                errors::InvalidArgument("Combined sweep batch must be in 1..65535."));
+    const GPUDevice& device = context->eigen_device<GPUDevice>();
+    const int wide = tile_targets_;
+    const int narrow = AdaptiveNarrowTile(wide);
+    int selected = wide;
+    if (narrow != wide) {
+      if (wide_blocks_per_sm_ < 0) {
+        OP_REQUIRES_OK(context, WithAdaptiveTile(wide, [&](auto shape) -> Status {
+          constexpr int tile = decltype(shape)::value;
+          using Shape = AdaptiveSweepShape<T, Index, tile>;
+          TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+          int blocks = 0;
+          const cudaError_t error = cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+              &blocks, Shape::Kernel(), Shape::kThreads, Shape::kSharedBytes);
+          if (error != cudaSuccess || blocks < 1) {
+            return errors::Internal("Adaptive routing occupancy query failed: ",
+                                    cudaGetErrorString(error));
+          }
+          wide_blocks_per_sm_ = blocks;
+          return OkStatus();
+        }));
+      }
+      const int64_t wide_blocks = batch * ((n_post_ + wide - 1) / wide);
+      const int64_t slots = static_cast<int64_t>(device.getNumGpuMultiProcessors()) * wide_blocks_per_sm_;
+      if (2 * wide_blocks <= slots) selected = narrow;
+    }
+    const int shape_slot = selected == wide ? 0 : 1;
+    AdaptiveSources<T, Index> views{};
+    core::RefCountPtr<Var> resources[kCombinedSources];
+    Tensor queues[kCombinedSources];
+    Tensor scratch[kCombinedSources];
+    for (int source = 0; source < sources_; ++source) {
+      const Tensor& spikes = context->input(source);
+      const Tensor& weights = context->input(sources_ + source);
+      RequireMatrix(context, spikes, "spikes");
+      RequireVector(context, weights, "weights");
+      if (!context->status().ok()) return;
+      OP_REQUIRES(context, spikes.dim_size(0) == batch &&
+                      spikes.dim_size(1) <= std::numeric_limits<int>::max() &&
+                      weights.NumElements() == edges_[source] &&
+                      edges_[source] >= 0 && pairs_[source] >= 0,
+                  errors::InvalidArgument("Combined sweep source shape or edge count mismatch."));
+      if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
+      const Tensor& metadata = *resources[source]->tensor();
+      const int width = spikes.dim_size(1);
+      CsrMetadataView<Index> view{};
+      OP_REQUIRES_OK(context, ReadCsrMetadata(
+          metadata, edges_[source], width, pairs_[source], Canonical, uint8_types_, &view));
+      const void* key = metadata.tensor_data().data();
+      if (held_vars_[source] && held_vars_[source].get() == resources[source].get()) {
+        // Holding the variable keeps its address, and holding the tables keeps
+        // the old allocation alive, so any assignment yields a new address.
+        OP_REQUIRES(context, held_buffers_[source] == key,
+                    errors::InvalidArgument(
+                        "Adaptive routing requires immutable connectivity metadata; rebuild the "
+                        "connectivity instead of assigning a new topology."));
+      } else {
+        resources[source]->Ref();
+        held_vars_[source].reset(resources[source].get());
+        held_buffers_[source] = key;
+        held_segments_[source][0].reset();
+        held_segments_[source][1].reset();
+        held_csc_[source].reset();
+        recorded_tile_[source] = 0;
+        recorded_queue_bytes_[source] = -1;
+      }
+      const int traversal = traversal_[source];
+      AdaptiveSource<T, Index> item{};
+      item.spikes = spikes.flat<T>().data();
+      item.weights = ProjectionWeightView<T, Index, Canonical>(weights, view.splits + width + 1);
+      item.posts = view.posts;
+      item.types = view.types;
+      item.width = width;
+      item.traversal = traversal;
+      int64_t transient = 0;
+      if (traversal == kAdaptiveGather) {
+        OP_REQUIRES_OK(context, EnsureAdaptiveCsc<Index>(
+            context, metadata, view.posts, view.splits, width, edges_[source], n_post_,
+            uint8_types_, &held_csc_[source]));
+        const auto& table = *held_csc_[source];
+        item.csc_splits = table.splits.template flat<Index>().data();
+        item.csc_edges = table.edge_positions.template flat<Index>().data();
+        item.csc_sources = table.sources.template flat<Index>().data();
+      } else if (edges_[source] > 0 && width > 0) {
+        OP_REQUIRES(context, batch * width <= std::numeric_limits<int>::max(),
+                    errors::InvalidArgument(
+                        "Adaptive routing active-row queues require batch * source width < 2^31."));
+        OP_REQUIRES_OK(context, EnsureAdaptiveSegments<Index>(
+            context, metadata, view.posts, view.splits, width, edges_[source], n_post_, selected,
+            uint8_types_, &held_segments_[source][shape_slot]));
+        const auto& table = *held_segments_[source][shape_slot];
+        item.segment_splits = table.splits.template flat<Index>().data();
+        item.segment_starts = table.starts.template flat<Index>().data();
+        item.segment_tiles = table.tiles.NumElements() > 0
+            ? reinterpret_cast<const unsigned int*>(table.tiles.template flat<int32>().data()) : nullptr;
+        item.masks = table.masks.NumElements() > 0
+            ? reinterpret_cast<const unsigned long long*>(table.masks.template flat<int64>().data()) : nullptr;
+        OP_REQUIRES_OK(context, context->allocate_temp(
+            DT_INT32, TensorShape({batch * width + batch + 2}), &queues[source]));
+        unsigned int* words = reinterpret_cast<unsigned int*>(queues[source].flat<int32>().data());
+        int64_t scratch_bytes = 0;
+        OP_REQUIRES_OK(context, BuildAdaptiveQueue<T>(
+            context, item.spikes, static_cast<int>(batch), width, words, words + batch * width,
+            words + batch * width + 1, &scratch[source], &scratch_bytes));
+        item.queue = words;
+        item.sample_starts = words + batch * width + 1;
+        transient = static_cast<int64_t>(queues[source].TotalBytes()) + scratch_bytes;
+      }
+      views.source[source] = item;
+      if (recorded_tile_[source] != selected) {
+        recorded_tile_[source] = selected;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingSelection, {key, kRoutingSelection, selected, 0, traversal});
+      }
+      if (recorded_queue_bytes_[source] != transient) {
+        recorded_queue_bytes_[source] = transient;
+        DpointnetRoutingLedger::Get().Set(
+            this, source * 8 + kRoutingQueue, {key, kRoutingQueue, transient, 1, 0});
+      }
+    }
+    Tensor* output = nullptr;
+    OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({batch * n_post_, 4}), &output));
+    const int tiles = (n_post_ + selected - 1) / selected;
+    const bool batch_fast = tiles <= 65535;
+    const dim3 grid = batch_fast ? dim3(batch, tiles) : dim3(tiles, batch);
+    OP_REQUIRES_OK(context, WithAdaptiveTile(selected, [&](auto shape) -> Status {
+      constexpr int tile = decltype(shape)::value;
+      using Shape = AdaptiveSweepShape<T, Index, tile>;
+      TF_RETURN_IF_ERROR(ConfigureAdaptiveTile<tile>());
+      return GpuLaunchKernel(
+          adaptive_routing::DpointnetCombinedSweepKernel<T, Index, tile, Shape::kThreads>, grid, Shape::kThreads,
+          Shape::kSharedBytes, device.stream(), views, sources_, n_post_, basis.flat<T>().data(),
+          batch_fast, output->flat<T>().data());
+    }));
+  }
+
+  template <int kTile>
+  Status ConfigureAdaptiveTile() {
+    using Shape = AdaptiveSweepShape<T, Index, kTile>;
+    const int bit = AdaptiveTileBit(kTile);
+    if ((adaptive_configured_ & bit) != 0) return OkStatus();
+    if (Shape::kSharedBytes > 0) {
+      const cudaError_t error = cudaFuncSetAttribute(
+          Shape::Kernel(), cudaFuncAttributeMaxDynamicSharedMemorySize, Shape::kSharedBytes);
+      if (error != cudaSuccess) {
+        return errors::InvalidArgument("Requested adaptive tile shared memory unavailable: ",
+                                       cudaGetErrorString(error));
+      }
+    }
+    adaptive_configured_ |= bit;
+    return OkStatus();
+  }
+
+  bool adaptive_ = false;
+  std::vector<int> traversal_;
+  int wide_blocks_per_sm_ = -1;
+  int adaptive_configured_ = 0;
+  core::RefCountPtr<Var> held_vars_[kCombinedSources];
+  const void* held_buffers_[kCombinedSources] = {};
+  std::shared_ptr<AdaptiveSegmentTable<Index>> held_segments_[kCombinedSources][2];
+  std::shared_ptr<AdaptiveCscTable<Index>> held_csc_[kCombinedSources];
+  int recorded_tile_[kCombinedSources] = {};
+  int64_t recorded_queue_bytes_[kCombinedSources] = {-1, -1, -1, -1, -1, -1, -1, -1};
+  const void* recorded_queue_key_[kCombinedSources] = {};
   // Stable target sort of the edge positions, then per-target ranges and
   // per-entry source rows. Runs once per cached metadata identity.
   Status BuildCscTables(OpKernelContext* context, int64_t edges, int width, const Index* posts,
@@ -3107,6 +3341,37 @@ class DpointnetCombinedSweepOp : public OpKernel {
   std::vector<int64_t> edges_;
   std::vector<int64_t> pairs_;
 };
+
+// Noncopying census of live routing allocations keyed by each metadata
+// resource's current allocation; see DpointnetRoutingLedger::Census.
+class DpointnetRoutingCensusOp : public OpKernel {
+ public:
+  explicit DpointnetRoutingCensusOp(OpKernelConstruction* context) : OpKernel(context) {
+    OP_REQUIRES_OK(context, context->GetAttr("N", &sources_));
+  }
+
+  void Compute(OpKernelContext* context) override {
+    Tensor* census = nullptr;
+    OP_REQUIRES_OK(context, context->allocate_output(
+        0, TensorShape({sources_, kRoutingCensusFields}), &census));
+    int64_t* values = census->flat<int64_t>().data();
+    for (int source = 0; source < sources_; ++source) {
+      core::RefCountPtr<Var> variable;
+      OP_REQUIRES_OK(context, LookupResource(context, HandleFromInput(context, source), &variable));
+      const void* key = variable->tensor()->tensor_data().data();
+      DpointnetRoutingLedger::Get().Census(key, values + source * kRoutingCensusFields);
+    }
+  }
+
+ private:
+  int sources_;
+};
+
+REGISTER_KERNEL_BUILDER(
+    Name("DpointnetRoutingCensus").Device(DEVICE_GPU).HostMemory("census"),
+    DpointnetRoutingCensusOp);
+REGISTER_KERNEL_BUILDER(Name("DpointnetRoutingCensus").Device(DEVICE_CPU),
+                        DpointnetRoutingCensusOp);
 
 #define REGISTER_GPU_KERNELS(T, Index)                                    \
   REGISTER_KERNEL_BUILDER(                                               \

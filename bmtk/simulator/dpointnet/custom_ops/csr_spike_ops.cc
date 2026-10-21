@@ -362,6 +362,8 @@ REGISTER_OP("DpointnetCsrSpikeGradAccumulate")
 
 REGISTER_OP("DpointnetCombinedSweepCsrMaster")
     .Attr("uint8_types: bool = false")
+    .Attr("adaptive_routing: bool = false")
+    .Attr("adaptive_traversal: list(int) = []")
     .Input("spikes: N * T")
     .Input("weights: N * float")
     .Input("metadata: N * resource")
@@ -389,6 +391,18 @@ REGISTER_OP("DpointnetCombinedSweepCsrMaster")
       DimensionHandle batch_posts;
       TF_RETURN_IF_ERROR(context->Multiply(context->Dim(spikes, 0), n_post, &batch_posts));
       context->set_output(0, context->Matrix(batch_posts, context->Dim(basis, 1)));
+      return absl::OkStatus();
+    });
+
+REGISTER_OP("DpointnetRoutingCensus")
+    .Input("metadata: N * resource")
+    .Attr("N: int >= 1")
+    .Output("census: int64")
+    .SetIsStateful()
+    .SetShapeFn([](InferenceContext* context) -> absl::Status {
+      int sources;
+      TF_RETURN_IF_ERROR(context->GetAttr("N", &sources));
+      context->set_output(0, context->Matrix(sources, 16));
       return absl::OkStatus();
     });
 

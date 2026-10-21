@@ -593,7 +593,7 @@ def test_direct_csr_gradient_uses_full_tape_without_checkpointing():
     assert isinstance(engine._extractor_forward, training.FullBPTTGradientRunner)
 
 
-@pytest.mark.parametrize("width", [31, 32, 62])
+@pytest.mark.parametrize("width", [31, 32, 62, 63, 64, 127])
 @pytest.mark.parametrize("dtype", [tf.float16, tf.float32])
 def test_spike_checkpoint_pack_roundtrip(width, dtype):
     rng = np.random.default_rng(29)
@@ -608,8 +608,9 @@ def test_spike_checkpoint_pack_roundtrip(width, dtype):
         packed = _pack_spikes(spikes)
         restored = _unpack_spikes(packed, width, dtype)
 
-        assert packed.dtype == tf.int32
-        assert packed.shape == (3, (width + 30) // 31)
+        assert packed.dtype == tf.int64
+        assert packed.shape == (3, (width + 62) // 63)
+        assert np.all(packed.numpy() >= 0)
         np.testing.assert_array_equal(restored, spikes)
 
 

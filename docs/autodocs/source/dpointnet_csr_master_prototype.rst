@@ -151,6 +151,13 @@ report marker alone, establish execution. Metadata is derived at construction;
 master/permutation checkpoint keys, Adam slots, canonical loss references and
 canonical export boundaries are unchanged.
 
+Optional adaptive routing
+-------------------------
+
+With all three flags above set, ``_DPOINTNET_EXPERIMENTAL_ADAPTIVE_ROUTING=1``
+selects the ``adaptive_segment_ticket_v1`` forward sweep schema; unset/0 keeps
+this page's typed sweep on the same binaries. See :doc:`dpointnet_adaptive_routing`.
+
 Ownership and native reads
 --------------------------
 
