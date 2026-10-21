@@ -7,6 +7,67 @@ Set ``_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS=1`` before constructing
 baseline. The earlier ``_DPOINTNET_EXPERIMENTAL_MASTER_PROJECTION`` flag
 does not activate this prototype.
 
+Optional host lifecycle control
+-------------------------------
+
+This successor snapshot adds a separately gated lifecycle, selected only by
+``_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE=1`` together with the CSR-master
+flag above. Lifecycle without CSR masters raises before construction. Unset/0
+retains the preceding direct-CSR implementation, including its native metadata
+and two CPU int64 TensorFlow permutations. Neither flag changes installed code.
+The additional top-level acceleration-report field ``experimental_csr_lifecycle``
+is ``host_numpy_uint32_v1`` or ``disabled``. The projection marker is unchanged.
+``experimental_csr_host_lifecycle`` remains an alias for compatibility.
+
+The lifecycle keeps exactly one read-only NumPy ``csr_to_canonical`` mapping
+(uint32 for admitted edge counts; uint64 beyond the uint32 range).
+``canonical_to_csr`` is a fresh NumPy inverse on demand, never cached. The
+connectivity and layout share that same mapping array. There is no eager
+TensorFlow permutation constant for TensorFlow to mirror on the GPU.
+Initialization reorders weights, constraint signs, delay-expanded endpoints,
+synapse types and export factors on the host. Endpoint variables and type
+constants remain CPU-resident in live CSR order; necessary native routing stays
+device-local. Prepared endpoint variables are assigned that runtime order.
+
+Native resources omit the unused canonical edge-ID segment only for lifecycle
+connectivity. Layout is ``posts, types, splits, [pair_ids, pair_posts,
+pair_types]``; compact consumers recognize the exact shorter shape, never infer
+an identity edge-ID table. All direct forward, spike/carrier VJPs, weight-only
+VJPs, queues and target-gather routing support it. Canonical/reorder/restore
+consumers reject the shorter shape. The unused fixed-four input-forward tables
+are not built for this VJP-only producer path. CSC edge positions used by the
+actual target-gather forward are not canonical edge IDs and are retained. Both fat operators
+must be rebuilt; an old library rejects the compact shape.
+
+Canonical hashing/export/assignment, reference preparation, index composition
+and explicit checkpoint migration use NumPy host boundaries. Canonical export
+and index composition reject graph tracing. ``weight_loss_values`` still returns
+the exact differentiable CSR master; compose EMD indices only once before
+tracing, as below. Low-level ``layout.to_canonical`` remains an explicit
+differentiable permutation for CPU native reference probes and tests; it is not
+the host export API and must not be inserted into a timed native loss.
+
+The checkpoint-boundary idea is adopted without an in-place live-state rewrite.
+Raw CSR master keys remain guarded. Runtime endpoint variables also have
+permutation-guarded keys, so old canonical endpoint checkpoints cannot silently
+overwrite CSR endpoint rows. Rebuild immutable routing at target construction;
+use explicit ``transfer_canonical_state`` for old/new representation conversion
+with independently paired slots and separately copied noise/runner/loss state.
+Never save by transiently canonicalizing live variables or match slots by
+length: equal-size populations and concurrently retained graphs make that unsafe.
+All nontraining canonical exports are copies; they do not alter masters/slots.
+``cell.csr_host_lifecycle_metadata()`` reports exact owned payload bytes per
+surface for mapping, native resource, incoming arrays, endpoints, types and
+export factors. These are not allocator peaks, cached mirrors or driver memory.
+For native cells the report also includes ``metadata_shape``, ``metadata_schema``,
+``canonical_edge_ids_present``, ``canonical_edge_id_offset`` and existing resource
+object IDs/devices for a noncopying census. The corresponding connectivity exposes
+these static resource-creation receipts and ``metadata_resource_handles``. These
+describe the actual packed resource allocation, not an empty wrapper argument.
+Count a handle only once: master/fused connectivity attributes alias the same
+resource. Reading the resource for independent shape validation is optional and
+untimed; the census API itself never reads or copies its payload.
+
 The admitted execution is single-replica NEST, independently parameterized
 FP32 edge weights, spike/count inputs, compute temporal gradients and the
 optimized native combined sweep. CPU primitive probes are correctness

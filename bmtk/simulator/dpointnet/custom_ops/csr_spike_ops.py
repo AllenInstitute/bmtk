@@ -136,6 +136,11 @@ class CsrConnectivity(Mapping):
         for finalizer in self._finalizers:
             finalizer()
 
+    @property
+    def metadata_resource_handles(self):
+        """Owned resident resource handles, without reading or copying their values."""
+        return self._handles
+
 
 def _environment_flag(name):
     value = os.environ.get(name, "").strip().lower()
@@ -314,6 +319,7 @@ def build_csr_connectivity(
     build_fixed4_incoming=False,
     sort_by_target=False,
     projection_basis=None,
+    host_lifecycle=False,
 ):
     """Build canonical CSR routing and optional immutable-basis projection sharing.
 
@@ -420,7 +426,7 @@ def build_csr_connectivity(
         incoming_pre_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_edge_ids = np.empty(0, dtype=numpy_index_dtype)
         incoming_types = np.empty(0, dtype=numpy_index_dtype)
-        if build_fixed4_incoming and post_ids.size == 4 * n_target_neurons:
+        if build_fixed4_incoming and not host_lifecycle and post_ids.size == 4 * n_target_neurons:
             post_counts = np.bincount(post_ids, minlength=n_target_neurons)
             if np.all(post_counts == 4):
                 incoming_order = np.argsort(post_ids, kind="stable").astype(
@@ -437,8 +443,9 @@ def build_csr_connectivity(
             post_ids,
             sorted_synapse_types,
             row_splits,
-            edge_ids,
         ]
+        if not host_lifecycle:
+            metadata_parts.append(edge_ids)
         n_pairs = 0
         if build_compact_pairs and post_ids.size:
             pair_types = (
@@ -498,6 +505,21 @@ def build_csr_connectivity(
                 "n_post": int(n_target_neurons),
                 "n_synapse_types": int(n_synapse_types),
                 "n_pairs": n_pairs,
+                "metadata_shape": tuple(metadata.shape),
+                "metadata_bytes": int(metadata.nbytes),
+                "metadata_schema": (
+                    "csr_live_without_edge_ids_v1" if host_lifecycle else "canonical_edge_ids_v1"
+                ),
+                "canonical_edge_id_offset": (
+                    None if host_lifecycle else 2 * int(indices.shape[0]) + int(n_source_neurons) + 1
+                ),
+                "device_edge_ids": not host_lifecycle,
+                **({
+                    "host_edge_order": edge_ids.astype(
+                        np.uint32 if indices.shape[0] <= np.iinfo(np.uint32).max else np.uint64,
+                        copy=False,
+                    ),
+                } if host_lifecycle else {}),
                 "projection_basis_shared": (
                     projection_types is not None
                     and bool(np.any(projection_types != np.arange(n_synapse_types)))

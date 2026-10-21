@@ -1964,8 +1964,11 @@ class DpointnetCsrSpikeForwardOp : public OpKernel {
         context, master_weights.NumElements() == n_edges_,
         errors::InvalidArgument(
             "master_weights length must equal n_edges."));
+    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
+        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
     OP_REQUIRES(
         context,
+      (csr_master_weights_ && metadata.NumElements() == compact_size) ||
       metadata.NumElements() ==
         3 * n_edges_ + n_pre + 1 +
           (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
@@ -2248,9 +2251,13 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     OP_REQUIRES(
         context, weights.NumElements() == n_edges_,
         errors::InvalidArgument("weights length must equal n_edges."));
+    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
+        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
+    const bool compact = Canonical && write_csr_weight_gradient_ &&
+        metadata.NumElements() == compact_size;
     OP_REQUIRES(
         context,
-      metadata.NumElements() ==
+      compact || metadata.NumElements() ==
         3 * n_edges_ + n_pre + 1 +
           (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
         errors::InvalidArgument(
@@ -2290,10 +2297,11 @@ class DpointnetCsrSpikeGradOp : public OpKernel {
     const Index* post_ids = metadata_values;
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
-    const Index* edge_ids = row_splits + n_pre + 1;
+    const Index* after_splits = row_splits + n_pre + 1;
+    const Index* edge_ids = compact ? nullptr : after_splits;
     using W = ProjectionWeights<T, Index, Canonical>;
     const W weight_values = ProjectionWeightView<T, Index, Canonical>(weights, edge_ids);
-    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* spike_grad = nullptr;
@@ -2695,9 +2703,13 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     const int64_t batch = spikes.dim_size(0);
     const int64_t n_pre = spikes.dim_size(1);
     const int64_t n_basis = basis.dim_size(1);
+    const int64_t compact_size = 2 * n_edges_ + n_pre + 1 +
+        (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0);
+    const bool compact = write_csr_weight_gradient_ &&
+        metadata.NumElements() == compact_size;
     OP_REQUIRES(
         context,
-      metadata.NumElements() ==
+      compact || metadata.NumElements() ==
         3 * n_edges_ + n_pre + 1 +
           (n_pairs_ > 0 ? n_edges_ + 2 * n_pairs_ : 0),
         errors::InvalidArgument(
@@ -2739,8 +2751,9 @@ class DpointnetCsrWeightGradOp : public OpKernel {
     const Index* post_ids = metadata_values;
     const Index* synapse_types = metadata_values + n_edges_;
     const Index* row_splits = metadata_values + 2 * n_edges_;
-    const Index* edge_ids = row_splits + n_pre + 1;
-    const Index* pair_ids = n_pairs_ > 0 ? edge_ids + n_edges_ : nullptr;
+    const Index* after_splits = row_splits + n_pre + 1;
+    const Index* edge_ids = compact ? nullptr : after_splits;
+    const Index* pair_ids = n_pairs_ > 0 ? after_splits + (compact ? 0 : n_edges_) : nullptr;
     const Index* pair_posts = n_pairs_ > 0 ? pair_ids + n_edges_ : nullptr;
     const Index* pair_types = n_pairs_ > 0 ? pair_posts + n_pairs_ : nullptr;
     Tensor* weight_grad = nullptr;
@@ -2881,7 +2894,10 @@ class DpointnetCombinedSweepOp : public OpKernel {
       if (!LookupVariable<Index>(context, 2 * sources_ + source, "metadata", &resources[source])) return;
       const Tensor& metadata = *resources[source]->tensor();
       const int width = spikes.dim_size(1);
-      OP_REQUIRES(context, metadata.NumElements() ==
+      const int64_t compact_size = 2 * edges_[source] + width + 1 +
+          (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0);
+      OP_REQUIRES(context, (Canonical && metadata.NumElements() == compact_size) ||
+                      metadata.NumElements() ==
                       3 * edges_[source] + width + 1 +
                           (pairs_[source] ? edges_[source] + 2 * pairs_[source] : 0),
                   errors::InvalidArgument("Combined sweep metadata shape mismatch."));

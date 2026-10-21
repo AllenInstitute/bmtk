@@ -12,10 +12,13 @@ from bmtk.simulator.dpointnet.csr_master import (
 from bmtk.simulator.dpointnet.custom_ops.master_projection import cpu_connectivity
 
 
-def layout():
+def layout(host_lifecycle=False):
     # Duplicate endpoints remain distinct and preserve their initial row ordering.
     indices = np.array([[1, 2], [0, 0], [1, 2], [0, 1], [1, 0]])
-    return CsrMasterLayout(cpu_connectivity(indices, [0, 1, 0, 1, 0], 3, 2))
+    return CsrMasterLayout(
+        cpu_connectivity(indices, [0, 1, 0, 1, 0], 3, 2, host_lifecycle=host_lifecycle),
+        host_lifecycle=host_lifecycle,
+    )
 
 
 def raw(variable):
@@ -112,8 +115,8 @@ def test_checkpoint_rejects_changed_csr_permutation(tmp_path):
     np.testing.assert_array_equal(target, np.zeros(5))
 
 
-def fake_cell(csr):
-    mapping = layout()
+def fake_cell(csr, host_lifecycle=False):
+    mapping = layout(host_lifecycle=host_lifecycle)
     canonical = tf.constant([0.11, -0.23, 0.37, -0.41, 0.59])
     masters = [
         tf.Variable(mapping.to_live(canonical) if csr else canonical,
@@ -142,9 +145,10 @@ def fake_cell(csr):
 
 
 @pytest.mark.parametrize("source_csr", [False, True])
-def test_explicit_old_new_checkpoint_adam_migration_and_resumed_update(tmp_path, source_csr):
-    source, source_masters = fake_cell(source_csr)
-    target, target_masters = fake_cell(not source_csr)
+@pytest.mark.parametrize("host_lifecycle", [False, True])
+def test_explicit_old_new_checkpoint_adam_migration_and_resumed_update(tmp_path, source_csr, host_lifecycle):
+    source, source_masters = fake_cell(source_csr, host_lifecycle)
+    target, target_masters = fake_cell(not source_csr, host_lifecycle)
     source_opt, target_opt = tf.keras.optimizers.Adam(0.01), tf.keras.optimizers.Adam(0.01)
     for opt, masters in ((source_opt, source_masters), (target_opt, target_masters)):
         opt.build(masters[:2])

@@ -389,8 +389,9 @@ def test_gpu_weight_only_vjp_writes_live_csr_directly(dtype, batch, index_dtype,
             source[4].close()
 
 
+@pytest.mark.parametrize("lifecycle", [False, True])
 @pytest.mark.parametrize("carrier,frozen_named", [(False, False), (True, False), (True, True)])
-def test_gpu_auto_cell_replay_update_and_explicit_restore(monkeypatch, tmp_path, carrier, frozen_named):
+def test_gpu_auto_cell_replay_update_and_explicit_restore(monkeypatch, tmp_path, carrier, frozen_named, lifecycle):
     if not ops.combined_sweep_available():
         pytest.skip("GPU and rebuilt optimized operators required")
     from test_precision_credit import make_cell
@@ -403,6 +404,7 @@ def test_gpu_auto_cell_replay_update_and_explicit_restore(monkeypatch, tmp_path,
 
     def construct(enabled):
         monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS", str(int(enabled)))
+        monkeypatch.setenv("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE", str(int(enabled and lifecycle)))
         network, inputs, arguments = make_cell(
             "nest", fused=True, two_inputs=True, return_spec=True,
             train_recurrent=True, batch_size=32, acceleration_profile="auto",
@@ -422,6 +424,17 @@ def test_gpu_auto_cell_replay_update_and_explicit_restore(monkeypatch, tmp_path,
     assert cell.acceleration_report["experimental_projection"] == "optimized_combined_csr_fp32_master"
     assert cell._use_fused_cuda and cell._use_combined_current_sweep
     assert cell._use_direct_csr_recurrent_gradient
+    assert cell.acceleration_report["experimental_csr_host_lifecycle"] == (
+        "host_numpy_uint32_v1" if lifecycle else "disabled"
+    )
+    assert cell.acceleration_report["experimental_csr_lifecycle"] == (
+        cell.acceleration_report["experimental_csr_host_lifecycle"]
+    )
+    if lifecycle:
+        assert "CPU:" in cell.recurrent_indices.device
+        assert isinstance(cell.recurrent_master_layout.csr_to_canonical, np.ndarray)
+        assert cell.recurrent_master_layout.csr_to_canonical.dtype == np.uint32
+        assert not cell.recurrent_fused_connectivity["device_edge_ids"]
     assert cell.use_fused_recurrent_accumulation == carrier
     masters = [cell.recurrent_weight_values] + [
         net["input_weight_values"] for net in cell.inputs.values()

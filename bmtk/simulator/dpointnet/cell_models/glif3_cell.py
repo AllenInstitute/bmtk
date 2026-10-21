@@ -780,6 +780,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.recurrent_master_layout if name == "<recurrent>"
             else self.inputs[name]["master_layout"]
         )
+        if self._experimental_csr_host_lifecycle:
+            if not tf.executing_eagerly():
+                raise ValueError("Prepare per-edge loss references before tracing.")
+            with tf.device("/CPU:0"):
+                return tf.convert_to_tensor(layout.host_to_live(np.asarray(canonical_reference)))
         return layout.to_live(canonical_reference)
 
     def canonical_weight_values(self, name="<recurrent>"):
@@ -793,6 +798,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self.recurrent_master_layout if name == "<recurrent>"
             else self.inputs[name]["master_layout"]
         )
+        if self._experimental_csr_host_lifecycle:
+            if not tf.executing_eagerly():
+                raise ValueError("Canonical export is a host boundary, not a live loss operation.")
+            with tf.device("/CPU:0"):
+                return tf.convert_to_tensor(layout.host_to_canonical(master.numpy()))
         return layout.to_canonical(master)
 
     def assign_canonical_weights(self, values, name="<recurrent>"):
@@ -809,6 +819,70 @@ class GLIF3Cell(tf.keras.layers.Layer):
         else:
             master.assign(values)
         self.refresh_recurrent_weight_shadow()
+
+    def csr_host_lifecycle_metadata(self):
+        """Exact owned payload bytes; not allocator, cache or driver measurements."""
+        if not self._experimental_csr_master:
+            raise ValueError("CSR metadata accounting requires CSR masters.")
+        surfaces = [
+            ("<recurrent>", self.recurrent_master_layout, self._master_recurrent_connectivity,
+             self.recurrent_indices, self.syn_ids, self._recurrent_export_factor),
+            *[
+                (name, net["master_layout"], net["master_connectivity"],
+                 net["input_indices"], net["input_syn_ids"], net["export_factor"])
+                for name, net in self.inputs.items()
+            ],
+        ]
+        report = {}
+        for name, layout, connectivity, indices, types, factor in surfaces:
+            def payload(value):
+                dtype = tf.as_dtype(value.dtype)
+                return int(np.prod(value.shape)) * dtype.size
+            host_bytes = payload(layout.csr_to_canonical)
+            if not layout.host_lifecycle:
+                host_bytes += payload(layout.canonical_to_csr)
+            metadata_bytes = connectivity.get("metadata_bytes")
+            if metadata_bytes is None:
+                n, width, pairs = (
+                    connectivity["n_edges"], connectivity["n_sources"], connectivity.get("n_pairs", 0)
+                )
+                metadata_bytes = (3 * n + width + 1 + (n + 2 * pairs if pairs else 0)) * (
+                    tf.as_dtype(connectivity.get("index_dtype", "int64")).size
+                )
+            report[name] = {
+                "edges": connectivity["n_edges"],
+                "mapping_host_bytes": host_bytes,
+                "persistent_inverse": not layout.host_lifecycle,
+                "mapping_storage": str(layout.csr_to_canonical.dtype),
+                "native_metadata_bytes": metadata_bytes,
+                **({
+                    "metadata_shape": connectivity["metadata_shape"],
+                    "metadata_schema": connectivity["metadata_schema"],
+                    "canonical_edge_id_offset": connectivity["canonical_edge_id_offset"],
+                    "canonical_edge_ids_present": connectivity["device_edge_ids"],
+                    "metadata_resource_ids": [
+                        id(handle) for handle in connectivity.metadata_resource_handles
+                    ],
+                    "metadata_resource_devices": [
+                        handle.device for handle in connectivity.metadata_resource_handles
+                    ],
+                } if self._use_fused_cuda else {}),
+                "native_incoming_bytes": sum(
+                    payload(connectivity[key]) for key in (
+                        "incoming_pre_ids", "incoming_edge_ids", "incoming_types"
+                    ) if key in connectivity
+                ),
+                "native_canonical_edge_id_bytes": (
+                    0 if layout.host_lifecycle and self._use_fused_cuda else
+                    connectivity["n_edges"] * tf.as_dtype(connectivity.get("index_dtype", "int64")).size
+                ),
+                "endpoint_host_bytes": payload(indices) if "CPU:" in indices.device else 0,
+                "endpoint_device_bytes": payload(indices) if "GPU:" in indices.device else 0,
+                "type_host_bytes": payload(types) if "CPU:" in types.device else 0,
+                "type_device_bytes": payload(types) if "GPU:" in types.device else 0,
+                "export_factor_host_bytes": int(factor.nbytes),
+            }
+        return report
 
     def _tracked_weight(self, initial_value, name, trainable, dtype, constraint=None):
         initial_value = np.asarray(initial_value)
@@ -956,6 +1030,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         self._experimental_csr_master = (
             os.environ.get("_DPOINTNET_EXPERIMENTAL_CSR_FP32_MASTERS") == "1"
         )
+        self._experimental_csr_host_lifecycle = (
+            os.environ.get("_DPOINTNET_EXPERIMENTAL_CSR_HOST_LIFECYCLE") == "1"
+        )
+        if self._experimental_csr_host_lifecycle and not self._experimental_csr_master:
+            raise ValueError("CSR host lifecycle requires CSR FP32 masters.")
         self._performance_auto_context = _performance_auto_context
         self._declared_sequence_length = (_performance_auto_context or {}).get("sequence_length")
         self._declared_batch_size = (
@@ -1087,6 +1166,12 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 self.acceleration_report["experimental_projection"] = (
                     "optimized_combined_csr_fp32_master" if use_fused_cuda
                     else "cpu_primitive_csr_fp32_master"
+                )
+                self.acceleration_report["experimental_csr_host_lifecycle"] = (
+                    "host_numpy_uint32_v1" if self._experimental_csr_host_lifecycle else "disabled"
+                )
+                self.acceleration_report["experimental_csr_lifecycle"] = (
+                    self.acceleration_report["experimental_csr_host_lifecycle"]
                 )
         use_prepacked_nest_coefficients = execution.get("use_prepacked_nest_coefficients", False)
         use_type_indexed_nest_coefficients = execution.get("use_type_indexed_nest_coefficients", False)
@@ -1728,10 +1813,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
         # Define the Tensorflow variables
         if _host_index_variables is not None and not self._use_combined_current_sweep:
             raise ValueError("Prepared host index variables require the explicit combined sweep.")
-        self.recurrent_indices = _canonical_index_variable(
-            indices,
-            None if _host_index_variables is None else _host_index_variables["recurrent"],
-        )
+        if not self._experimental_csr_host_lifecycle:
+            self.recurrent_indices = _canonical_index_variable(
+                indices,
+                None if _host_index_variables is None else _host_index_variables["recurrent"],
+            )
         self._recurrent_projection_basis_reference = self.synaptic_basis_weights
         self._unshared_recurrent_fused_connectivity = None
         if self._use_fused_cuda:
@@ -1752,6 +1838,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                     and self.temporal_gradient_precision != "float32"
                     else None
                 ),
+                host_lifecycle=self._experimental_csr_host_lifecycle,
             )
             self.pre_ind_table = None
         else:
@@ -1766,11 +1853,26 @@ class GLIF3Cell(tf.keras.layers.Layer):
             self._master_recurrent_connectivity = (
                 self.recurrent_fused_connectivity if self._use_fused_cuda
                 else cpu_connectivity(
-                    indices, syn_ids, self.recurrent_dense_shape[1], self._n_neurons
+                    indices, syn_ids, self.recurrent_dense_shape[1], self._n_neurons,
+                    host_lifecycle=self._experimental_csr_host_lifecycle,
                 )
             )
-            self.recurrent_master_layout = CsrMasterLayout(self._master_recurrent_connectivity)
+            self.recurrent_master_layout = CsrMasterLayout(
+                self._master_recurrent_connectivity,
+                host_lifecycle=self._experimental_csr_host_lifecycle,
+            )
             weights = self.recurrent_master_layout.to_live(weights).numpy()
+            if self._experimental_csr_host_lifecycle:
+                layout = self.recurrent_master_layout
+                indices = layout.host_to_live(indices)
+                syn_ids = layout.host_to_live(syn_ids)
+                self._recurrent_export_factor = layout.host_to_live(self._recurrent_export_factor)
+                with tf.device("/CPU:0"):
+                    self.recurrent_indices = _canonical_index_variable(
+                        indices,
+                        None if _host_index_variables is None else _host_index_variables["recurrent"],
+                    )
+                guard_csr_checkpoint(self.recurrent_indices, layout)
         recurrent_weight_positive = tf.constant(weights >= 0, dtype=tf.bool)
         if use_fused_recurrent_accumulation and (
             not self._use_fused_cuda
@@ -1862,7 +1964,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             )
         else:
             self.recurrent_csr_weight_values_compute = None
-        with tf.device("/CPU:0") if self._use_combined_current_sweep else nullcontext():
+        with tf.device("/CPU:0") if self._use_combined_current_sweep or self._experimental_csr_host_lifecycle else nullcontext():
             self.syn_ids = tf.constant(syn_ids, dtype=tf.int64)
         # self.recurrent_weights_factors = tf.gather(self.synaptic_basis_weights, self.syn_ids, axis=0) # TensorShape([23525415, 5])
         io.log_debug(
@@ -1915,10 +2017,11 @@ class GLIF3Cell(tf.keras.layers.Layer):
             input_weights = (
                 input_weights / voltage_scale[self._node_type_ids[input_indices[:, 0]]]
             )
-            input_props["input_indices"] = _canonical_index_variable(
-                input_indices,
-                None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
-            )
+            if not self._experimental_csr_host_lifecycle:
+                input_props["input_indices"] = _canonical_index_variable(
+                    input_indices,
+                    None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
+                )
 
             input_options = input_network.get("options", {})
             input_type = input_options.get("input_type", input_network["input_type"])
@@ -1945,12 +2048,28 @@ class GLIF3Cell(tf.keras.layers.Layer):
                         ),
                         build_fixed4_incoming=self._use_fixed4_input_forward,
                         sort_by_target=self._use_forward_run_aggregation or self._use_combined_current_sweep,
+                        host_lifecycle=self._experimental_csr_host_lifecycle,
                     ) if self._use_fused_cuda else cpu_connectivity(
-                        input_indices, input_syn_ids, input_dense_shape[1], self._n_neurons
+                        input_indices, input_syn_ids, input_dense_shape[1], self._n_neurons,
+                        host_lifecycle=self._experimental_csr_host_lifecycle,
                     )
                 )
-                input_props["master_layout"] = CsrMasterLayout(input_props["master_connectivity"])
+                input_props["master_layout"] = CsrMasterLayout(
+                    input_props["master_connectivity"],
+                    host_lifecycle=self._experimental_csr_host_lifecycle,
+                )
                 input_weights = input_props["master_layout"].to_live(input_weights).numpy()
+                if self._experimental_csr_host_lifecycle:
+                    layout = input_props["master_layout"]
+                    input_indices = layout.host_to_live(input_indices)
+                    input_syn_ids = layout.host_to_live(input_syn_ids)
+                    input_props["export_factor"] = layout.host_to_live(input_props["export_factor"])
+                    with tf.device("/CPU:0"):
+                        input_props["input_indices"] = _canonical_index_variable(
+                            input_indices,
+                            None if _host_index_variables is None else _host_index_variables["inputs"][input_name],
+                        )
+                    guard_csr_checkpoint(input_props["input_indices"], layout)
             input_weight_positive = tf.constant(input_weights >= 0, dtype=tf.bool)
 
             input_props["input_weight_values"] = self._tracked_weight(
@@ -1983,7 +2102,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
                 input_props["input_weight_values_compute"] = input_props[
                     "input_weight_values"
                 ]
-            host_types = self._use_combined_current_sweep and input_type != "current"
+            host_types = (self._use_combined_current_sweep or self._experimental_csr_host_lifecycle) and input_type != "current"
             with tf.device("/CPU:0") if host_types else nullcontext():
                 input_props["input_syn_ids"] = tf.constant(input_syn_ids, dtype=tf.int64)
             input_props["input_type"] = input_type
@@ -3141,7 +3260,7 @@ class GLIF3Cell(tf.keras.layers.Layer):
             basis = _rollout_constant(self, "synaptic_basis_weights")
             rec_inputs = tf.cast(tf.add_n([
                 connected_project(
-                    combined_spikes[0], self.canonical_weight_values(),
+                    combined_spikes[0], self.recurrent_master_layout.to_canonical(self.recurrent_weight_values),
                     self._master_recurrent_connectivity, basis,
                     _rollout_constant(self, "_recurrent_dampening"),
                 ),

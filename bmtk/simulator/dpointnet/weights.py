@@ -67,6 +67,12 @@ class ModelWeights:
                 export_factor = self.cell._recurrent_export_factor
             else:
                 export_factor = self.cell.inputs[netname]['export_factor']
+            if getattr(self.cell, '_experimental_csr_host_lifecycle', False):
+                layout = (
+                    self.cell.recurrent_master_layout if netname == '<recurrent>'
+                    else self.cell.inputs[netname]['master_layout']
+                )
+                export_factor = layout.host_to_canonical(export_factor)
             netweights_np = netweights.numpy() if hasattr(netweights, 'numpy') else netweights
             conn_table_df['syn_weight'] = np.asarray(netweights_np, dtype=np.float32) * export_factor
             order = netadaptor.canonical_edge_order

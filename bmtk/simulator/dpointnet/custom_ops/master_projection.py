@@ -57,7 +57,7 @@ def connected_project(spikes, master, connectivity, basis, spike_scale=1.0):
     )
 
 
-def cpu_connectivity(indices, types, width, posts):
+def cpu_connectivity(indices, types, width, posts, *, host_lifecycle=False):
     """Same CSR field schema, without requiring a visible GPU for CPU tests."""
     indices = np.asarray(indices, dtype=np.int64)
     types = np.asarray(types, dtype=np.int64)
@@ -71,8 +71,12 @@ def cpu_connectivity(indices, types, width, posts):
     order = np.argsort(indices[:, 1], kind="stable")
     splits = np.r_[0, np.cumsum(np.bincount(indices[:, 1], minlength=width))]
     metadata = np.concatenate((indices[order, 0], types[order], splits, order))
-    return {
+    result = {
         "master_metadata": tf.constant(metadata, tf.int64),
         "n_post": posts, "n_edges": len(indices), "n_sources": width,
     }
-
+    if host_lifecycle:
+        result["host_edge_order"] = order.astype(
+            np.uint32 if len(indices) <= np.iinfo(np.uint32).max else np.uint64
+        )
+    return result
