@@ -396,10 +396,18 @@ def test_gpu_weight_only_vjp_writes_live_csr_directly(dtype, batch, index_dtype,
             source[4].close()
 
 
+@pytest.mark.parametrize("guarded", [None, False])
 @pytest.mark.parametrize("carrier,frozen_named", [(False, False), (True, False), (True, True)])
-def test_gpu_auto_cell_replay_update_and_explicit_restore(monkeypatch, tmp_path, carrier, frozen_named):
+def test_gpu_auto_cell_replay_update_and_explicit_restore(
+    monkeypatch, tmp_path, carrier, frozen_named, guarded,
+):
     if not ops.combined_sweep_available():
         pytest.skip("GPU and rebuilt optimized operators required")
+    if guarded is False:
+        # Every architecture except SM86/TF2.21 uses the TensorFlow-conditional type
+        # dispatch; its branches must stay differentiable through replay while loops.
+        from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
+        monkeypatch.setattr(GLIF3Cell, "_guarded_type_indexed_dispatch", property(lambda self: False))
     from test_precision_credit import make_cell
     from bmtk.simulator.dpointnet import acceleration
     from bmtk.simulator.dpointnet.cell_models.glif3_cell import GLIF3Cell
